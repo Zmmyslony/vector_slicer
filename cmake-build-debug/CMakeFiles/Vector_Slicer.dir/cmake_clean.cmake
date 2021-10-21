@@ -8,6 +8,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Vector_Slicer.dir/libs/auxiliary/ValarrayConversion.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/auxiliary/ValarrayOperations.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/gui/OpenFiles.cpp.obj"
+  "CMakeFiles/Vector_Slicer.dir/libs/high_level/AutomaticPathGeneration.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/FilledPattern.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/FillingPatterns.cpp.obj"

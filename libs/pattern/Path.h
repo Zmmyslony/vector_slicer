@@ -10,14 +10,13 @@
 
 class Path {
 public:
-    std::vector<std::valarray<int>> positionsAlongDirector;
-    std::vector<std::valarray<int>> positionsOppositeToDirector;
+    std::vector<std::valarray<int>> sequenceOfPositions;
 
     explicit Path(std::valarray<int>& startingPosition);
-    Path(std::vector<std::valarray<int>>& forwardPath, std::vector<std::valarray<int>>& backwardPath);
+    Path(Path forwardPath, Path backwardPath);
 
-    void addPointToForwardArray(std::valarray<int>& startingPosition);
-    void addPointToReverseArray(std::valarray<int>& startingPosition);
+    void addPoint(std::valarray<int>& positions);
+    unsigned int getLength() const;
 };
 
 

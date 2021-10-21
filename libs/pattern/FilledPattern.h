@@ -12,6 +12,7 @@
 
 class FilledPattern {
     int printRadius;
+    bool isPerimeterSearchOn = true;
     std::vector<Path> sequenceOfPaths;
     std::vector<std::valarray<int>> pointsInCircle;
 
@@ -19,16 +20,22 @@ class FilledPattern {
     void fillPointsFromDisplacement(const std::valarray<int>& startingPosition,
                                     const std::vector<std::valarray<int>>& listOfDisplacements,
                                     const std::valarray<int>& previousStep);
-    std::vector<std::valarray<int>> searchWholeGridForFillablePoints();
-    std::vector<std::valarray<int>> searchForRemainingFillablePoints();
+    std::vector<std::valarray<int>> findAllFillablePoints();
+//    std::vector<std::valarray<int>> searchForRemainingFillablePoints();
     std::valarray<double> getNewStep(std::valarray<double>& realCoordinates, int& length, std::valarray<double>& previousStep);
     bool
     tryGeneratingPathWithLength(Path& currentPath, std::valarray<double>& positions, std::valarray<double>& newStep,
                                 int length);
     void fillPoint(const std::valarray<int> &point, const std::valarray<double>& previousStep);
+    std::vector<std::valarray<int>> findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints);
+
+    std::valarray<int> findFirstPointOnPerimeter();
+    std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint, std::valarray<int> &previousDirection,
+                                                std::vector<std::valarray<int>> &perimeterList);
+    std::vector<std::valarray<int>> findPerimeterOfTheShape();
+
 public:
     int stepLength;
-    bool isRandomSearchOn = true;
     std::vector<std::vector<double>> xFieldFilled;
     std::vector<std::vector<double>> yFieldFilled;
     DesiredPattern desiredPattern;
@@ -40,6 +47,8 @@ public:
     Path generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep);
     FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
     FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength);
+
+    void fillPointsInCircle(std::valarray<int> &startingCoordinates);
 
     void findRemainingFillablePoints();
     std::vector<Path> getSequenceOfPaths();

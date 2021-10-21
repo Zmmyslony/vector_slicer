@@ -32,6 +32,15 @@ CMakeFiles/Vector_Slicer.dir/libs/gui/OpenFiles.cpp.obj
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
+CMakeFiles/Vector_Slicer.dir/libs/high_level/AutomaticPathGeneration.cpp.obj
+ C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.cpp
+ C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h
 CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj
  C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/SimpleMathOperations.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/TableReading.h
@@ -76,10 +85,8 @@ CMakeFiles/Vector_Slicer.dir/libs/printer/Printer.cpp.obj
  C:/Work/Cambridge/printer/Vector Slicer/libs/printer/Printer.cpp
  C:/Work/Cambridge/printer/Vector Slicer/libs/printer/Printer.h
 CMakeFiles/Vector_Slicer.dir/main.cpp.obj
- C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
- C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
- C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/main.cpp
