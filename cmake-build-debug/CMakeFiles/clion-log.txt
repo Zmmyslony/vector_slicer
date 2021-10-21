@@ -1,0 +1,4 @@
+"C:\Program Files\JetBrains\Toolbox\apps\CLion\ch-0\212.5080.54\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - NMake Makefiles" "C:\Work\Cambridge\printer\Vector Slicer"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug

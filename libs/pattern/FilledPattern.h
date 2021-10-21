@@ -1,0 +1,52 @@
+//
+// Created by Michał Zmyślony on 21/09/2021.
+//
+#ifndef VECTOR_SLICER_FILLEDPATTERN_H
+#define VECTOR_SLICER_FILLEDPATTERN_H
+
+
+#include "DesiredPattern.h"
+#include "Path.h"
+#include <string>
+
+
+class FilledPattern {
+    int printRadius;
+    std::vector<Path> sequenceOfPaths;
+    std::vector<std::valarray<int>> pointsInCircle;
+
+    void fillPointsFromList(const std::vector<std::valarray<int>>& listOfPoints, const std::valarray<int>& previousStep);
+    void fillPointsFromDisplacement(const std::valarray<int>& startingPosition,
+                                    const std::vector<std::valarray<int>>& listOfDisplacements,
+                                    const std::valarray<int>& previousStep);
+    std::vector<std::valarray<int>> searchWholeGridForFillablePoints();
+    std::vector<std::valarray<int>> searchForRemainingFillablePoints();
+    std::valarray<double> getNewStep(std::valarray<double>& realCoordinates, int& length, std::valarray<double>& previousStep);
+    bool
+    tryGeneratingPathWithLength(Path& currentPath, std::valarray<double>& positions, std::valarray<double>& newStep,
+                                int length);
+    void fillPoint(const std::valarray<int> &point, const std::valarray<double>& previousStep);
+public:
+    int stepLength;
+    bool isRandomSearchOn = true;
+    std::vector<std::vector<double>> xFieldFilled;
+    std::vector<std::vector<double>> yFieldFilled;
+    DesiredPattern desiredPattern;
+
+    std::vector<std::valarray<int>> pointsToFill;
+    std::vector<std::valarray<int>> collisionList;
+    std::vector<std::vector<int>> numberOfTimesFilled;
+
+    Path generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep);
+    FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
+    FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength);
+
+    void findRemainingFillablePoints();
+    std::vector<Path> getSequenceOfPaths();
+    void addNewPath(Path& newPath);
+
+    void exportToDirectory(std::string& directory) const;
+};
+
+
+#endif //VECTOR_SLICER_FILLEDPATTERN_H

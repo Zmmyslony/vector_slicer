@@ -1,0 +1,3 @@
+C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir
+C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/rebuild_cache.dir
