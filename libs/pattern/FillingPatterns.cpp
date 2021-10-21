@@ -16,7 +16,11 @@ bool tryGeneratingNewPath(FilledPattern& pattern) {
         Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions, pattern.desiredPattern.preferredDirection(startingPoint.positions, pattern.stepLength));
         Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions, -pattern.desiredPattern.preferredDirection(startingPoint.positions, pattern.stepLength));
 
-        Path newPath(newPathForward.positionsAlongDirector, newPathBackwards.positionsOppositeToDirector);
+        Path newPath(newPathForward, newPathBackwards);
+
+        if (newPath.getLength() == 1) {
+            pattern.fillPointsInCircle(newPath.sequenceOfPositions[0]);
+        }
 
         pattern.addNewPath(newPath);
         return true;

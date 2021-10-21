@@ -32,6 +32,15 @@ CMakeFiles\Vector_Slicer.dir\libs\gui\OpenFiles.cpp.obj: ..\libs\pattern\Desired
 CMakeFiles\Vector_Slicer.dir\libs\gui\OpenFiles.cpp.obj: ..\libs\pattern\FilledPattern.h
 CMakeFiles\Vector_Slicer.dir\libs\gui\OpenFiles.cpp.obj: ..\libs\pattern\Path.h
 
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\gui\OpenFiles.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\high_level\AutomaticPathGeneration.cpp
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\high_level\AutomaticPathGeneration.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\DesiredPattern.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\FilledPattern.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\FillingPatterns.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\Path.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\QuantifyPattern.h
+
 CMakeFiles\Vector_Slicer.dir\libs\pattern\DesiredPattern.cpp.obj: ..\libs\auxiliary\SimpleMathOperations.h
 CMakeFiles\Vector_Slicer.dir\libs\pattern\DesiredPattern.cpp.obj: ..\libs\auxiliary\TableReading.h
 CMakeFiles\Vector_Slicer.dir\libs\pattern\DesiredPattern.cpp.obj: ..\libs\pattern\DesiredPattern.cpp
@@ -75,11 +84,9 @@ CMakeFiles\Vector_Slicer.dir\libs\pattern\StartingPoint.cpp.obj: ..\libs\pattern
 CMakeFiles\Vector_Slicer.dir\libs\printer\Printer.cpp.obj: ..\libs\printer\Printer.cpp
 CMakeFiles\Vector_Slicer.dir\libs\printer\Printer.cpp.obj: ..\libs\printer\Printer.h
 
-CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\gui\OpenFiles.h
+CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\high_level\AutomaticPathGeneration.h
 CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\pattern\DesiredPattern.h
 CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\pattern\FilledPattern.h
-CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\pattern\FillingPatterns.h
 CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\pattern\Path.h
-CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\libs\pattern\QuantifyPattern.h
 CMakeFiles\Vector_Slicer.dir\main.cpp.obj: ..\main.cpp
 

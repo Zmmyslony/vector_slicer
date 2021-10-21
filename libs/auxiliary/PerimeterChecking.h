@@ -9,13 +9,15 @@
 #include <tuple>
 #include <valarray>
 
-std::valarray<double> getRepulsion(std::vector<std::vector<int>>& filledTable,
-                                   std::vector<std::valarray<int>>& checkedArea,
-                                   std::valarray<int>& startPositions,
-                                   std::valarray<int>& sizes, double repulsionCoefficient);
+std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
+                                   std::vector<std::valarray<int>> &checkedArea,
+                                   std::valarray<int> &startPositions,
+                                   std::valarray<int> &sizes, double repulsionCoefficient);
 
-bool isPerimeterFree(std::vector<std::vector<int>>& filledTable, std::vector<std::vector<int>>& shapeTable,
-                     std::vector<std::valarray<int>>& perimeterList, std::valarray<int>& startPositions,
-                     std::valarray<int>& sizes);
+bool isPerimeterFree(std::vector<std::vector<int>> &filledTable, std::vector<std::vector<int>> &shapeTable,
+                     std::vector<std::valarray<int>> &perimeterList, std::valarray<int> &startPositions,
+                     std::valarray<int> &sizes);
+
+bool isOnEdge(std::vector<std::vector<int>> &shapeTable, std::valarray<int> &startPositions, std::valarray<int> &sizes);
 
 #endif //VECTOR_SLICER_PERIMETERCHECKING_H

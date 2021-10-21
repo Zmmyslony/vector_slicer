@@ -26,6 +26,7 @@ FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, in
         stepLength(stepLength) {
     srand(seed);
     pointsInCircle = findPointsInCircle(printRadius);
+    pointsToFill = findPerimeterOfTheShape();
 }
 
 
@@ -33,7 +34,59 @@ FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, in
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) { }
 
 
-std::vector<std::valarray<int>> FilledPattern::searchWholeGridForFillablePoints() {
+std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
+    std::vector<std::valarray<int>> perimeterList;
+    for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
+        for (int j = 0; j < desiredPattern.dimensions[1]; j++) {
+            std::valarray<int> currentPos = {i, j};
+            if (isOnEdge(desiredPattern.shapeMatrix, currentPos, desiredPattern.dimensions)) {
+                return(currentPos);
+            }
+        }
+    }
+    return {-1, -1};
+}
+
+std::valarray<int> FilledPattern::findNextPointOnPerimeter(std::valarray<int> &currentPoint,
+                                                           std::valarray<int> &previousDirection,
+                                                           std::vector<std::valarray<int>> &perimeterList) {
+    for (auto &displacement : perimeterList) {
+        std::valarray<int> newPoint = currentPoint + displacement;
+        if (0 <= newPoint[0] && newPoint[0] < desiredPattern.dimensions[0] &&
+            0 <= newPoint[1] && newPoint[1] < desiredPattern.dimensions[1]) {
+            double direction = previousDirection[0] * displacement[0] + previousDirection[1] * displacement[1];
+            if (direction >= 0 && isOnEdge(desiredPattern.shapeMatrix, newPoint, desiredPattern.dimensions)) {
+                return newPoint;
+            }
+        }
+    }
+    return currentPoint;
+}
+
+std::vector<std::valarray<int>> FilledPattern::findPerimeterOfTheShape() {
+    std::vector<std::valarray<int>> listOfPerimeters;
+    std::valarray<int> firstPointOnPerimeter = findFirstPointOnPerimeter();
+    listOfPerimeters.push_back(firstPointOnPerimeter);
+
+    std::valarray<int> previousDirection = {1, 0};
+    std::vector<std::valarray<int>> perimeterSlightlyLargerThanPrint = generatePerimeterList(2 * printRadius - 1);
+
+    std::valarray<int> previousPoint = firstPointOnPerimeter;
+    std::valarray<int> currentPoint = findNextPointOnPerimeter(firstPointOnPerimeter, previousDirection,
+                                                               perimeterSlightlyLargerThanPrint);
+
+    listOfPerimeters.push_back(currentPoint);
+    while (norm(itodArray(firstPointOnPerimeter - currentPoint)) > printRadius) {
+        previousDirection = currentPoint - previousPoint;
+        previousPoint = currentPoint;
+        currentPoint = findNextPointOnPerimeter(currentPoint, previousDirection, perimeterSlightlyLargerThanPrint);
+        listOfPerimeters.push_back(currentPoint);
+    }
+    return listOfPerimeters;
+}
+
+
+std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     std::vector<std::valarray<int>> newPointsToFill;
     for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
         for (int j = 0; j < desiredPattern.dimensions[1]; j++) {
@@ -48,27 +101,29 @@ std::vector<std::valarray<int>> FilledPattern::searchWholeGridForFillablePoints(
 }
 
 
-std::vector<std::valarray<int>> FilledPattern::searchForRemainingFillablePoints() {
-    std::vector<std::valarray<int>> newPointsToFill;
-    for (auto & currentPos : pointsToFill) {
-        if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix,collisionList, currentPos,
-                            desiredPattern.dimensions)) {
-            newPointsToFill.push_back(currentPos);
+std::vector<std::valarray<int>> FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints) {
+    std::vector<std::valarray<int>> fillablePointsList;
+    for (auto &point : listOfPoints) {
+        if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix,collisionList,
+                            point,desiredPattern.dimensions)) {
+            fillablePointsList.push_back(point);
         }
     }
-    return newPointsToFill;
+    return fillablePointsList;
 }
 
 
 void FilledPattern::findRemainingFillablePoints() {
-    isRandomSearchOn = false;
+    if (isPerimeterSearchOn) {
+        pointsToFill = findRemainingFillablePointsInList(pointsToFill);
 
-    std::vector<std::valarray<int>> newPointsToFill;
-    if (pointsToFill.empty()) {
-        pointsToFill = searchWholeGridForFillablePoints();
+        if (pointsToFill.empty()) {
+            isPerimeterSearchOn = false;
+            pointsToFill = findAllFillablePoints();
+        }
     }
     else {
-        pointsToFill = searchForRemainingFillablePoints();
+        pointsToFill = findRemainingFillablePointsInList(pointsToFill);
     }
 }
 
@@ -134,20 +189,15 @@ bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray
                                                    desiredPattern.dimensions, 0.7);
     newPositions -= repulsion;
     newCoordinates = dtoiArray(newPositions);
-//    printf("Current coordinates %i, %i, new coordinates %i, %i, repulsion %.2f, %.2f, new step %.2f, %.2f \n",
-//           currentCoordinates[0], currentCoordinates[1], newCoordinates[0], newCoordinates[1],
-//           repulsion[0], repulsion[1], newStep[0], newStep[1]);
 
     if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList, newCoordinates, desiredPattern.dimensions)) {
         std::vector<std::valarray<int>> currentPointsToFill = findPointsToFill(currentCoordinates, newCoordinates, printRadius);
-//        std::valarray<int> newStepInt = dtoiArray(newStep);
         std::valarray<int> newStepInt = newCoordinates - currentCoordinates;
         fillPointsFromList(currentPointsToFill, newStepInt);
-        currentPath.addPointToForwardArray(newCoordinates);
+        currentPath.addPoint(newCoordinates);
 
         newStep = getNewStep(newPositions, length, newStep);
         positions = newPositions;
-//        printf("\t New position created.");
         return true;
     }
     return false;
@@ -156,18 +206,22 @@ bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray
 
 Path FilledPattern::generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep) {
     Path newPath(startingCoordinates);
-    bool wasLineCreated = false;
+//    bool wasLineCreated = false;
     std::valarray<double> currentPositions = itodArray(startingCoordinates);
     std::valarray<double> currentStep = itodArray(startingStep);
     for (int length = stepLength; length >= printRadius; length--) {
         while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {
-            wasLineCreated = true;
+//            wasLineCreated = true;
         }
     }
-    if (!wasLineCreated) {
-        fillPointsFromDisplacement(startingCoordinates, pointsInCircle, startingStep);
-    }
+//    if (!wasLineCreated) {
+//        fillPointsFromDisplacement(startingCoordinates, pointsInCircle, startingStep);
+//    }
     return newPath;
+}
+
+void FilledPattern::fillPointsInCircle(std::valarray<int> &startingCoordinates) {
+    fillPointsFromDisplacement(startingCoordinates, pointsInCircle, {1, 0});
 }
 
 

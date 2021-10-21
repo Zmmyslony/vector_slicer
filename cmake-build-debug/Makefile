@@ -334,6 +334,30 @@ libs\gui\OpenFiles.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\gui\OpenFiles.cpp.s
 .PHONY : libs\gui\OpenFiles.cpp.s
 
+libs\high_level\AutomaticPathGeneration.obj: libs\high_level\AutomaticPathGeneration.cpp.obj
+.PHONY : libs\high_level\AutomaticPathGeneration.obj
+
+# target to build an object file
+libs\high_level\AutomaticPathGeneration.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj
+.PHONY : libs\high_level\AutomaticPathGeneration.cpp.obj
+
+libs\high_level\AutomaticPathGeneration.i: libs\high_level\AutomaticPathGeneration.cpp.i
+.PHONY : libs\high_level\AutomaticPathGeneration.i
+
+# target to preprocess a source file
+libs\high_level\AutomaticPathGeneration.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.i
+.PHONY : libs\high_level\AutomaticPathGeneration.cpp.i
+
+libs\high_level\AutomaticPathGeneration.s: libs\high_level\AutomaticPathGeneration.cpp.s
+.PHONY : libs\high_level\AutomaticPathGeneration.s
+
+# target to generate assembly for a file
+libs\high_level\AutomaticPathGeneration.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.s
+.PHONY : libs\high_level\AutomaticPathGeneration.cpp.s
+
 libs\pattern\DesiredPattern.obj: libs\pattern\DesiredPattern.cpp.obj
 .PHONY : libs\pattern\DesiredPattern.obj
 
@@ -562,6 +586,9 @@ help:
 	@echo ... libs/gui/OpenFiles.obj
 	@echo ... libs/gui/OpenFiles.i
 	@echo ... libs/gui/OpenFiles.s
+	@echo ... libs/high_level/AutomaticPathGeneration.obj
+	@echo ... libs/high_level/AutomaticPathGeneration.i
+	@echo ... libs/high_level/AutomaticPathGeneration.s
 	@echo ... libs/pattern/DesiredPattern.obj
 	@echo ... libs/pattern/DesiredPattern.i
 	@echo ... libs/pattern/DesiredPattern.s

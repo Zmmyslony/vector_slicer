@@ -136,6 +136,12 @@
 		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
+		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.cpp">
+			<Option target="Vector_Slicer"/>
+		</Unit>
+		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h">
+			<Option target="Vector_Slicer"/>
+		</Unit>
 		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>

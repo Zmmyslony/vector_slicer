@@ -17,6 +17,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayConversion.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/auxiliary/ValarrayConversion.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayOperations.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/auxiliary/ValarrayOperations.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/gui/OpenFiles.cpp.obj"
+  "C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/high_level/AutomaticPathGeneration.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/pattern/FilledPattern.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/CMakeFiles/Vector_Slicer.dir/libs/pattern/FillingPatterns.cpp.obj"

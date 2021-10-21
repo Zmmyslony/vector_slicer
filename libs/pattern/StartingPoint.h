@@ -10,7 +10,6 @@
 
 
 class StartingPoint {
-//    FilledPattern pattern;
     bool isStartingPointFound = false;
     bool areThereFillablePointsRemaining = true;
     int tries;
@@ -19,7 +18,7 @@ public:
     explicit StartingPoint();
 
     std::valarray<int> positions;
-    void findSuitableStartPointRandomly(FilledPattern& pattern);
+//    void findSuitableStartPointRandomly(FilledPattern& pattern);
     void findSuitableStartPointSemiRandomly(FilledPattern& pattern);
 
     std::valarray<int> findSuitableStartPoint(FilledPattern& pattern);
