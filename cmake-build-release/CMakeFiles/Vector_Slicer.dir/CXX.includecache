@@ -6,81 +6,287 @@
 
 #IncludeRegexTransform: 
 
-C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.cpp
+Exporting.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.h
+iostream
+-
+fstream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.h
+string
+-
+valarray
+-
+vector
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Geometry.cpp
+utility
+-
+vector
+-
+valarray
+-
+algorithm
+-
+iostream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Geometry.h
+utility
+-
+vector
+-
+valarray
+-
+algorithm
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.cpp
+PerimeterChecking.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.h
+ValarrayConversion.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.h
+vector
+-
+tuple
+-
+valarray
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.cpp
+PerimeterGeneration.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.h
+valarray
+-
+vector
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.cpp
+SimpleMathOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.h
+cmath
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.cpp
+TableReading.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.h
+iostream
+-
+fstream
+-
+sstream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.h
+vector
+-
+valarray
+-
+string
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.cpp
+ValarrayConversion.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+cmath
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+valarray
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.cpp
+ValarrayOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h
+ValarrayConversion.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h
+valarray
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.cpp
+OpenFiles.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.h
+iostream
+-
+fstream
+-
+sstream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.h
 ../pattern/FilledPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
 string
 -
 vector
 -
 
-C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.cpp
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.cpp
 AutomaticPathGeneration.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.h
 ../pattern/FillingPatterns.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.h
 ../gui/OpenFiles.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.h
 ../pattern/QuantifyPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.h
 ctime
 -
 windows.h
 -
 ../pattern/GcodeGenerator.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/GcodeGenerator.h
 iostream
 -
 
-C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.h
 ../pattern/FilledPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
 
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
-string
--
-vector
--
-valarray
--
-
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.cpp
 DesiredPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
-Path.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.h
+../auxiliary/TableReading.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.h
+../auxiliary/SimpleMathOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.h
 string
 -
-
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
-FilledPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
-
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.h
-vector
--
-valarray
--
-Path.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
-FilledPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
-string
--
-
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
 vector
 -
 valarray
 -
 
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.cpp
+cstdlib
+-
+iostream
+-
 FilledPattern.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+../auxiliary/PerimeterGeneration.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.h
+../auxiliary/PerimeterChecking.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.h
+../auxiliary/SimpleMathOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.h
+../auxiliary/Geometry.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Geometry.h
+../auxiliary/ValarrayConversion.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+../auxiliary/Exporting.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.h
+../auxiliary/ValarrayOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h
 
-C:/Work/Cambridge/printer/Vector Slicer/main.cpp
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+DesiredPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.h
+Path.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.h
+string
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.cpp
+FillingPatterns.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.h
+StartingPoint.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.h
+iostream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.h
+FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/GcodeGenerator.cpp
+GcodeGenerator.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/GcodeGenerator.h
+../auxiliary/ValarrayOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h
+../auxiliary/ValarrayConversion.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h
+iostream
+-
+fstream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/GcodeGenerator.h
+vector
+-
+valarray
+-
+Path.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.h
+FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+string
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.cpp
+Path.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.h
+../auxiliary/ValarrayOperations.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.h
+vector
+-
+valarray
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.cpp
+QuantifyPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.h
+utility
+-
+cmath
+-
+iostream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.h
+FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.cpp
+StartingPoint.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.h
+utility
+-
+../auxiliary/PerimeterChecking.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.h
+iostream
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.h
+FilledPattern.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h
+valarray
+-
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/printer/Printer.cpp
+Printer.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/printer/Printer.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/printer/Printer.h
+
+C:/Users/zmmys/CLionProjects/Vector_Slicer/main.cpp
 iostream
 -
 ./libs/high_level/AutomaticPathGeneration.h
-C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h
+C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.h
 

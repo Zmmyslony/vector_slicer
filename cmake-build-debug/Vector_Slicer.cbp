@@ -8,24 +8,24 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug"/>
+				<Option working_dir="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 all"/>
-					<CompileFile command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
-					<DistClean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Vector_Slicer">
-				<Option output="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/Vector_Slicer.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug"/>
+				<Option output="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug/Vector_Slicer.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include"/>
-					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
@@ -33,21 +33,21 @@
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 Vector_Slicer"/>
-					<CompileFile command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
-					<DistClean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 Vector_Slicer"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Vector_Slicer/fast">
-				<Option output="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/Vector_Slicer.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug"/>
+				<Option output="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug/Vector_Slicer.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include"/>
-					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
@@ -55,139 +55,139 @@
 					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 Vector_Slicer/fast"/>
-					<CompileFile command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
-					<DistClean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 Vector_Slicer/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug"/>
+				<Option working_dir="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 edit_cache"/>
-					<CompileFile command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
-					<DistClean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug"/>
+				<Option working_dir="C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
-					<DistClean command="nmake /NOLOGO /f &quot;C:\Work\Cambridge\printer\Vector Slicer\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\zmmys\CLionProjects\Vector_Slicer\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/Exporting.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/Exporting.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Exporting.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/Geometry.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Geometry.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/Geometry.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/Geometry.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/PerimeterChecking.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/PerimeterChecking.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterChecking.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/PerimeterGeneration.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/PerimeterGeneration.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/PerimeterGeneration.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/SimpleMathOperations.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/SimpleMathOperations.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/SimpleMathOperations.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/TableReading.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/TableReading.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/TableReading.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayConversion.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayConversion.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayConversion.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayOperations.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayOperations.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/auxiliary/ValarrayOperations.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/gui/OpenFiles.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/gui/OpenFiles.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/high_level/AutomaticPathGeneration.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/high_level/AutomaticPathGeneration.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/DesiredPattern.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FilledPattern.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/FillingPatterns.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/Path.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/QuantifyPattern.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/StartingPoint.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/StartingPoint.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/pattern/StartingPoint.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/printer/Printer.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/printer/Printer.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/printer/Printer.h">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/libs/printer/Printer.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/main.cpp">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/main.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>
-		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/CMakeLists.txt">
+		<Unit filename="C:/Users/zmmys/CLionProjects/Vector_Slicer/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

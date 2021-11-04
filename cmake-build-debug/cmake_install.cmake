@@ -1,4 +1,4 @@
-# Install script for directory: C:/Work/Cambridge/printer/Vector Slicer
+# Install script for directory: C:/Users/zmmys/CLionProjects/Vector_Slicer
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
