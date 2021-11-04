@@ -39,6 +39,7 @@ CMakeFiles/Vector_Slicer.dir/libs/high_level/AutomaticPathGeneration.cpp.obj
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.h
 CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj
@@ -65,7 +66,16 @@ CMakeFiles/Vector_Slicer.dir/libs/pattern/FillingPatterns.cpp.obj
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/StartingPoint.h
+CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.obj
+ C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayConversion.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayOperations.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.cpp
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.h
+ C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
 CMakeFiles/Vector_Slicer.dir/libs/pattern/Path.cpp.obj
+ C:/Work/Cambridge/printer/Vector Slicer/libs/auxiliary/ValarrayOperations.h
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.cpp
  C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.h
 CMakeFiles/Vector_Slicer.dir/libs/pattern/QuantifyPattern.cpp.obj

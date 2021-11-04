@@ -38,6 +38,7 @@ CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..
 CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\DesiredPattern.h
 CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\FilledPattern.h
 CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\FillingPatterns.h
+CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\GcodeGenerator.h
 CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\Path.h
 CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj: ..\libs\pattern\QuantifyPattern.h
 
@@ -65,6 +66,15 @@ CMakeFiles\Vector_Slicer.dir\libs\pattern\FillingPatterns.cpp.obj: ..\libs\patte
 CMakeFiles\Vector_Slicer.dir\libs\pattern\FillingPatterns.cpp.obj: ..\libs\pattern\Path.h
 CMakeFiles\Vector_Slicer.dir\libs\pattern\FillingPatterns.cpp.obj: ..\libs\pattern\StartingPoint.h
 
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\auxiliary\ValarrayConversion.h
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\auxiliary\ValarrayOperations.h
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\DesiredPattern.h
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\FilledPattern.h
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\GcodeGenerator.cpp
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\GcodeGenerator.h
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\Path.h
+
+CMakeFiles\Vector_Slicer.dir\libs\pattern\Path.cpp.obj: ..\libs\auxiliary\ValarrayOperations.h
 CMakeFiles\Vector_Slicer.dir\libs\pattern\Path.cpp.obj: ..\libs\pattern\Path.cpp
 CMakeFiles\Vector_Slicer.dir\libs\pattern\Path.cpp.obj: ..\libs\pattern\Path.h
 

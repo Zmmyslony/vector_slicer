@@ -44,15 +44,16 @@ public:
     std::vector<std::valarray<int>> collisionList;
     std::vector<std::vector<int>> numberOfTimesFilled;
 
-    Path generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep);
+
     FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
     FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength);
 
-    void fillPointsInCircle(std::valarray<int> &startingCoordinates);
-
-    void findRemainingFillablePoints();
-    std::vector<Path> getSequenceOfPaths();
     void addNewPath(Path& newPath);
+    void findRemainingFillablePoints();
+    void fillPointsInCircle(std::valarray<int> &startingCoordinates);
+    Path generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep);
+
+    std::vector<Path> getSequenceOfPaths();
 
     void exportToDirectory(std::string& directory) const;
 };

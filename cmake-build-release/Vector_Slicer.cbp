@@ -160,6 +160,12 @@
 		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.h">
 			<Option target="Vector_Slicer"/>
 		</Unit>
+		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.cpp">
+			<Option target="Vector_Slicer"/>
+		</Unit>
+		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.h">
+			<Option target="Vector_Slicer"/>
+		</Unit>
 		<Unit filename="C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.cpp">
 			<Option target="Vector_Slicer"/>
 		</Unit>

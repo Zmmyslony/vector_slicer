@@ -430,6 +430,30 @@ libs\pattern\FillingPatterns.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\pattern\FillingPatterns.cpp.s
 .PHONY : libs\pattern\FillingPatterns.cpp.s
 
+libs\pattern\GcodeGenerator.obj: libs\pattern\GcodeGenerator.cpp.obj
+.PHONY : libs\pattern\GcodeGenerator.obj
+
+# target to build an object file
+libs\pattern\GcodeGenerator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj
+.PHONY : libs\pattern\GcodeGenerator.cpp.obj
+
+libs\pattern\GcodeGenerator.i: libs\pattern\GcodeGenerator.cpp.i
+.PHONY : libs\pattern\GcodeGenerator.i
+
+# target to preprocess a source file
+libs\pattern\GcodeGenerator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.i
+.PHONY : libs\pattern\GcodeGenerator.cpp.i
+
+libs\pattern\GcodeGenerator.s: libs\pattern\GcodeGenerator.cpp.s
+.PHONY : libs\pattern\GcodeGenerator.s
+
+# target to generate assembly for a file
+libs\pattern\GcodeGenerator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Vector_Slicer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.s
+.PHONY : libs\pattern\GcodeGenerator.cpp.s
+
 libs\pattern\Path.obj: libs\pattern\Path.cpp.obj
 .PHONY : libs\pattern\Path.obj
 
@@ -598,6 +622,9 @@ help:
 	@echo ... libs/pattern/FillingPatterns.obj
 	@echo ... libs/pattern/FillingPatterns.i
 	@echo ... libs/pattern/FillingPatterns.s
+	@echo ... libs/pattern/GcodeGenerator.obj
+	@echo ... libs/pattern/GcodeGenerator.i
+	@echo ... libs/pattern/GcodeGenerator.s
 	@echo ... libs/pattern/Path.obj
 	@echo ... libs/pattern/Path.i
 	@echo ... libs/pattern/Path.s

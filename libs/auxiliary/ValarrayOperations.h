@@ -9,6 +9,7 @@
 
 double generalNorm(const std::valarray<double>& array, const double& exponent);
 double norm(const std::valarray<double>& array);
+double norm(const std::valarray<int>& array);
 std::valarray<double> generalNormalize(const std::valarray<double>& array, const double& exponent);
 std::valarray<double> normalize(const std::valarray<double>& array);
 

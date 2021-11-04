@@ -12,6 +12,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/FilledPattern.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/FillingPatterns.cpp.obj"
+  "CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/Path.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/QuantifyPattern.cpp.obj"
   "CMakeFiles/Vector_Slicer.dir/libs/pattern/StartingPoint.cpp.obj"

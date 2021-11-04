@@ -16,7 +16,11 @@ public:
     Path(Path forwardPath, Path backwardPath);
 
     void addPoint(std::valarray<int>& positions);
-    unsigned int getLength() const;
+    std::valarray<int> first();
+    std::valarray<int> last();
+    unsigned int getSize() const;
+
+    double getLength();
 };
 
 

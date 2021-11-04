@@ -17,6 +17,10 @@ double norm(const std::valarray<double>& array) {
     return generalNorm(array, 2);
 }
 
+double norm(const std::valarray<int>& array) {
+    return norm(itodArray(array));
+}
+
 std::valarray<double> generalNormalize(const std::valarray<double>& array, const double& exponent) {
     return array / generalNorm(array, exponent);
 }

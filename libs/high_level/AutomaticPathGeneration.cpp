@@ -8,6 +8,8 @@
 #include "../pattern/QuantifyPattern.h"
 #include <ctime>
 #include <windows.h>
+#include "../pattern/GcodeGenerator.h"
+#include <iostream>
 
 
 FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern desiredPattern, int seed) {
@@ -18,7 +20,7 @@ FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern des
 }
 
 
-void exportPatternToDirectory(const FilledPattern& pattern, const std::string& directorPath, const int& seed) {
+void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed) {
     std::string resultsDirectory = directorPath + R"(\results\)";
     std::string patternDirectory = directorPath + R"(\results\seed_)" + std::to_string(seed);
 
@@ -28,17 +30,28 @@ void exportPatternToDirectory(const FilledPattern& pattern, const std::string& d
 }
 
 
-void generateAndExportPrintPattern(const std::string& directorPath, const DesiredPattern& desiredPattern, int seed) {
+void findBestPath(FilledPattern &pattern) {
+    GcodeGenerator gcodeBase(pattern);
+//    printf("Created base.\n");
+    gcodeBase.findBestStartingPoints();
+}
+
+
+void generateAndExportPrintPattern(const std::string &directorPath, const DesiredPattern &desiredPattern, int seed) {
     FilledPattern pattern = generateAPrintPattern(directorPath, desiredPattern, seed);
+//    printf("Best pattern generated.\n");
+//    findBestPath(pattern);
+//    printf("Best path found.\n");
     exportPatternToDirectory(pattern, directorPath, seed);
 }
 
 
-void generatePrintPattern(std::string& directorPath, int minSeed, int maxSeed) {
+void generatePrintPattern(std::string &directorPath, int minSeed, int maxSeed) {
     clock_t tStart = clock();
-    printf("\nReading the pattern.\n");
+    std::cout << "\nCurrent directory: " << directorPath << std::endl;
+//    printf("\nReading the pattern.\n");
     DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
-    printf("Pattern read in %.2fs.\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+//    printf("Pattern read in %.2fs.\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
     int bestSeed = 0;
     double bestDisagreement = 1000;
@@ -47,9 +60,9 @@ void generatePrintPattern(std::string& directorPath, int minSeed, int maxSeed) {
 
         FilledPattern testPattern = generateAPrintPattern(directorPath, desiredPattern, currentSeed);
         QuantifyPattern patternAgreement(testPattern);
-        printf("\n%i/%i done in %.2fs.\n", currentSeed - minSeed + 1, maxSeed - minSeed + 1,
-               (double)(clock() - seedStart) / CLOCKS_PER_SEC);
-        patternAgreement.printResults();
+//        printf("\n%i/%i done in %.2fs.\n", currentSeed - minSeed + 1, maxSeed - minSeed + 1,
+//               (double)(clock() - seedStart) / CLOCKS_PER_SEC);
+//        patternAgreement.printResults();
         double currentDisagreement = patternAgreement.calculateCorrectness(5, 0.2, 1, 1);
         if (currentDisagreement < bestDisagreement) {
             bestSeed = currentSeed;

@@ -2,6 +2,7 @@
 // Created by Michał Zmyślony on 21/09/2021.
 //
 
+
 #include <cstdlib>
 #include <iostream>
 
@@ -14,6 +15,8 @@
 #include "../auxiliary/ValarrayConversion.h"
 #include "../auxiliary/Exporting.h"
 #include "../auxiliary/ValarrayOperations.h"
+
+double repulsionCoeff = 1;
 
 
 FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed):
@@ -29,10 +32,8 @@ FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, in
     pointsToFill = findPerimeterOfTheShape();
 }
 
-
 FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength):
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) { }
-
 
 std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
     std::vector<std::valarray<int>> perimeterList;
@@ -85,7 +86,6 @@ std::vector<std::valarray<int>> FilledPattern::findPerimeterOfTheShape() {
     return listOfPerimeters;
 }
 
-
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     std::vector<std::valarray<int>> newPointsToFill;
     for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
@@ -100,7 +100,6 @@ std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     return newPointsToFill;
 }
 
-
 std::vector<std::valarray<int>> FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints) {
     std::vector<std::valarray<int>> fillablePointsList;
     for (auto &point : listOfPoints) {
@@ -111,7 +110,6 @@ std::vector<std::valarray<int>> FilledPattern::findRemainingFillablePointsInList
     }
     return fillablePointsList;
 }
-
 
 void FilledPattern::findRemainingFillablePoints() {
     if (isPerimeterSearchOn) {
@@ -127,7 +125,6 @@ void FilledPattern::findRemainingFillablePoints() {
     }
 }
 
-
 std::valarray<double> normalizeDirection(const std::valarray<int>& previousStep) {
     std::valarray<double> normalizedDirection  = normalize(previousStep);
     if (previousStep[0] > 0 || previousStep[0] == 0 && previousStep[1] > 0) {
@@ -138,13 +135,11 @@ std::valarray<double> normalizeDirection(const std::valarray<int>& previousStep)
     }
 }
 
-
 void FilledPattern::fillPoint(const std::valarray<int>& point, const std::valarray<double>& normalizedDirection) {
     numberOfTimesFilled[point[0]][point[1]] += 1;
     xFieldFilled[point[0]][point[1]] += normalizedDirection[0];
     yFieldFilled[point[0]][point[1]] += normalizedDirection[1];
 }
-
 
 void FilledPattern::fillPointsFromList(const std::vector<std::valarray<int>>& listOfPoints,
                                        const std::valarray<int>& previousStep) {
@@ -153,7 +148,6 @@ void FilledPattern::fillPointsFromList(const std::vector<std::valarray<int>>& li
         fillPoint(point, normalizedDirection);
     }
 }
-
 
 void FilledPattern::fillPointsFromDisplacement(const std::valarray<int>& startingPosition,
                                                const std::vector<std::valarray<int>>& listOfDisplacements,
@@ -167,7 +161,6 @@ void FilledPattern::fillPointsFromDisplacement(const std::valarray<int>& startin
     }
 }
 
-
 std::valarray<double> FilledPattern::getNewStep(std::valarray<double>& positions, int& length,
                                                 std::valarray<double>& previousMove) {
     std::valarray<double> newMove = desiredPattern.preferredDirection(positions, length);
@@ -178,7 +171,6 @@ std::valarray<double> FilledPattern::getNewStep(std::valarray<double>& positions
     return newMove;
 }
 
-
 bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray<double>& positions,
                                                 std::valarray<double>& previousStep, int length) {
     std::valarray<int> currentCoordinates = dtoiArray(positions);
@@ -186,7 +178,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray
     std::valarray<double> newPositions = positions + newStep;
     std::valarray<int> newCoordinates = dtoiArray(newPositions);
     std::valarray<double> repulsion = getRepulsion(numberOfTimesFilled, pointsInCircle, newCoordinates,
-                                                   desiredPattern.dimensions, 0.7);
+                                                   desiredPattern.dimensions, repulsionCoeff);
     newPositions -= repulsion;
     newCoordinates = dtoiArray(newPositions);
 
@@ -203,28 +195,19 @@ bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray
     return false;
 }
 
-
 Path FilledPattern::generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep) {
     Path newPath(startingCoordinates);
-//    bool wasLineCreated = false;
     std::valarray<double> currentPositions = itodArray(startingCoordinates);
     std::valarray<double> currentStep = itodArray(startingStep);
     for (int length = stepLength; length >= printRadius; length--) {
-        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {
-//            wasLineCreated = true;
-        }
+        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) { }
     }
-//    if (!wasLineCreated) {
-//        fillPointsFromDisplacement(startingCoordinates, pointsInCircle, startingStep);
-//    }
     return newPath;
 }
 
 void FilledPattern::fillPointsInCircle(std::valarray<int> &startingCoordinates) {
     fillPointsFromDisplacement(startingCoordinates, pointsInCircle, {1, 0});
 }
-
-
 
 void FilledPattern::exportToDirectory(std::string& directory) const {
     std::string filledFilename = directory + "\\number_of_times_filled.csv";
@@ -233,11 +216,9 @@ void FilledPattern::exportToDirectory(std::string& directory) const {
     exportVectorTableToFile(numberOfTimesFilled, filledFilename);
 }
 
-
 std::vector<Path> FilledPattern::getSequenceOfPaths() {
     return sequenceOfPaths;
 }
-
 
 void FilledPattern::addNewPath(Path& newPath) {
     sequenceOfPaths.push_back(newPath);

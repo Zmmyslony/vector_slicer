@@ -18,7 +18,7 @@ bool tryGeneratingNewPath(FilledPattern& pattern) {
 
         Path newPath(newPathForward, newPathBackwards);
 
-        if (newPath.getLength() == 1) {
+        if (newPath.getSize() == 1) {
             pattern.fillPointsInCircle(newPath.sequenceOfPositions[0]);
         }
 

@@ -397,6 +397,25 @@ CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.s: cmak
  /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.s /c "C:\Work\Cambridge\printer\Vector Slicer\libs\high_level\AutomaticPathGeneration.cpp"
 <<
 
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: CMakeFiles\Vector_Slicer.dir\flags.make
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj: ..\libs\pattern\GcodeGenerator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Work\Cambridge\printer\Vector Slicer\cmake-build-release\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.obj"
+	C:\PROGRA~2\MIB055~1\2019\BUILDT~1\VC\Tools\MSVC\1429~1.301\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj /FdCMakeFiles\Vector_Slicer.dir\ /FS -c "C:\Work\Cambridge\printer\Vector Slicer\libs\pattern\GcodeGenerator.cpp"
+<<
+
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.i"
+	C:\PROGRA~2\MIB055~1\2019\BUILDT~1\VC\Tools\MSVC\1429~1.301\bin\Hostx86\x86\cl.exe > CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Work\Cambridge\printer\Vector Slicer\libs\pattern\GcodeGenerator.cpp"
+<<
+
+CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.s"
+	C:\PROGRA~2\MIB055~1\2019\BUILDT~1\VC\Tools\MSVC\1429~1.301\bin\Hostx86\x86\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.s /c "C:\Work\Cambridge\printer\Vector Slicer\libs\pattern\GcodeGenerator.cpp"
+<<
+
 # Object files for target Vector_Slicer
 Vector_Slicer_OBJECTS = \
 "CMakeFiles\Vector_Slicer.dir\main.cpp.obj" \
@@ -416,7 +435,8 @@ Vector_Slicer_OBJECTS = \
 "CMakeFiles\Vector_Slicer.dir\libs\auxiliary\ValarrayConversion.cpp.obj" \
 "CMakeFiles\Vector_Slicer.dir\libs\auxiliary\Exporting.cpp.obj" \
 "CMakeFiles\Vector_Slicer.dir\libs\auxiliary\ValarrayOperations.cpp.obj" \
-"CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj"
+"CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj" \
+"CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj"
 
 # External object files for target Vector_Slicer
 Vector_Slicer_EXTERNAL_OBJECTS =
@@ -439,9 +459,10 @@ Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\libs\auxiliary\ValarrayConversio
 Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\libs\auxiliary\Exporting.cpp.obj
 Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\libs\auxiliary\ValarrayOperations.cpp.obj
 Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\libs\high_level\AutomaticPathGeneration.cpp.obj
+Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\libs\pattern\GcodeGenerator.cpp.obj
 Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\build.make
 Vector_Slicer.exe: CMakeFiles\Vector_Slicer.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Work\Cambridge\printer\Vector Slicer\cmake-build-release\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable Vector_Slicer.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Work\Cambridge\printer\Vector Slicer\cmake-build-release\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX executable Vector_Slicer.exe"
 	"C:\Program Files\JetBrains\Toolbox\apps\CLion\ch-0\212.5080.54\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\Vector_Slicer.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x86\mt.exe --manifests -- C:\PROGRA~2\MIB055~1\2019\BUILDT~1\VC\Tools\MSVC\1429~1.301\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\Vector_Slicer.dir\objects1.rsp @<<
  /out:Vector_Slicer.exe /implib:Vector_Slicer.lib /pdb:"C:\Work\Cambridge\printer\Vector Slicer\cmake-build-release\Vector_Slicer.pdb" /version:0.0 /machine:X86 /INCREMENTAL:NO /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<

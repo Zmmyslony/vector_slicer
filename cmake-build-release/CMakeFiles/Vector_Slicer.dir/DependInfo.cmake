@@ -21,6 +21,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/DesiredPattern.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/DesiredPattern.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FilledPattern.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/FilledPattern.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/FillingPatterns.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/FillingPatterns.cpp.obj"
+  "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/GcodeGenerator.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/GcodeGenerator.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/Path.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/Path.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/QuantifyPattern.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/QuantifyPattern.cpp.obj"
   "C:/Work/Cambridge/printer/Vector Slicer/libs/pattern/StartingPoint.cpp" "C:/Work/Cambridge/printer/Vector Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir/libs/pattern/StartingPoint.cpp.obj"
