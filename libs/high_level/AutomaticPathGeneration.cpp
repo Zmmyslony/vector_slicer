@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "../pattern/GcodeGenerator.h"
 #include <iostream>
+#include "ProgressBar.h"
 
 
 FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern desiredPattern, int seed) {
@@ -47,28 +48,23 @@ void generateAndExportPrintPattern(const std::string &directorPath, const Desire
 
 
 void generatePrintPattern(std::string &directorPath, int minSeed, int maxSeed) {
-    clock_t tStart = clock();
     std::cout << "\nCurrent directory: " << directorPath << std::endl;
-//    printf("\nReading the pattern.\n");
     DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
-//    printf("Pattern read in %.2fs.\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
 
     int bestSeed = 0;
     double bestDisagreement = 1000;
     for (int currentSeed = minSeed; currentSeed <= maxSeed; currentSeed++) {
-        clock_t seedStart = clock();
-
+        showProgress(currentSeed - minSeed, maxSeed - minSeed);
         FilledPattern testPattern = generateAPrintPattern(directorPath, desiredPattern, currentSeed);
         QuantifyPattern patternAgreement(testPattern);
-//        printf("\n%i/%i done in %.2fs.\n", currentSeed - minSeed + 1, maxSeed - minSeed + 1,
-//               (double)(clock() - seedStart) / CLOCKS_PER_SEC);
-//        patternAgreement.printResults();
+
         double currentDisagreement = patternAgreement.calculateCorrectness(5, 0.2, 1, 1);
         if (currentDisagreement < bestDisagreement) {
             bestSeed = currentSeed;
             bestDisagreement = currentDisagreement;
         }
     }
+    std::cout << std::endl;
     printf("%i seeds from %i to %i were tested. Seed %i had the lowest disagreement of %.2f\n",
            maxSeed - minSeed + 1, minSeed, maxSeed, bestSeed, bestDisagreement);
     generateAndExportPrintPattern(directorPath, desiredPattern, bestSeed);
