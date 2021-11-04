@@ -1,3 +1,0 @@
-C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-release/CMakeFiles/Vector_Slicer.dir
-C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-release/CMakeFiles/edit_cache.dir
-C:/Users/zmmys/CLionProjects/Vector_Slicer/cmake-build-release/CMakeFiles/rebuild_cache.dir
