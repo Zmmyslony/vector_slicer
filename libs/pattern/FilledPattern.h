@@ -7,6 +7,7 @@
 
 #include "DesiredPattern.h"
 #include "Path.h"
+#include "../auxiliary/FillingConfig.h"
 #include <string>
 #include <random>
 
@@ -14,6 +15,8 @@
 class FilledPattern {
     int printRadius;
     bool isPerimeterSearchOn = true;
+    double repulsionCoefficient = 1.0;
+
     std::vector<Path> sequenceOfPaths;
     std::vector<std::valarray<int>> pointsInCircle;
 
@@ -22,7 +25,7 @@ class FilledPattern {
                                     const std::vector<std::valarray<int>>& listOfDisplacements,
                                     const std::valarray<int>& previousStep);
     std::vector<std::valarray<int>> findAllFillablePoints();
-//    std::vector<std::valarray<int>> searchForRemainingFillablePoints();
+
     std::valarray<double> getNewStep(std::valarray<double>& realCoordinates, int& length, std::valarray<double>& previousStep);
     bool
     tryGeneratingPathWithLength(Path& currentPath, std::valarray<double>& positions, std::valarray<double>& newStep,
@@ -46,10 +49,11 @@ public:
     std::vector<std::valarray<int>> pointsToFill;
     std::vector<std::valarray<int>> collisionList;
     std::vector<std::vector<int>> numberOfTimesFilled;
-
+    bool isPerimeterFilledRandomly = true;
 
     FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
     FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength);
+    FilledPattern(DesiredPattern desiredPattern, FillingConfig config, int seed);
 
     void addNewPath(Path& newPath);
     void findRemainingFillablePoints();

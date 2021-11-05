@@ -18,10 +18,10 @@ public:
     explicit StartingPoint();
 
     std::valarray<int> positions;
-//    void findSuitableStartPointRandomly(FilledPattern& pattern);
-    void findSuitableStartPointSemiRandomly(FilledPattern& pattern);
+    void findStartPointConsecutively(FilledPattern &pattern);
+    void findStartPointRandomly(FilledPattern &pattern);
 
-    std::valarray<int> findSuitableStartPoint(FilledPattern& pattern);
+    std::valarray<int> findStartPoint(FilledPattern &pattern);
 };
 
 

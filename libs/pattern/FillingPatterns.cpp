@@ -8,7 +8,7 @@
 
 bool tryGeneratingNewPath(FilledPattern& pattern) {
     StartingPoint startingPoint;
-    std::valarray<int> startingCoordinates = startingPoint.findSuitableStartPoint(pattern);
+    std::valarray<int> startingCoordinates = startingPoint.findStartPoint(pattern);
     if (startingPoint.positions[0] == -1 || startingPoint.positions[1] == -1) {
         return false;
     }

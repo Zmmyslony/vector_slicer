@@ -5,6 +5,7 @@
 
 //#include <cstdlib>
 #include <iostream>
+#include <utility>
 
 #include "FilledPattern.h"
 
@@ -16,8 +17,6 @@
 #include "../auxiliary/ValarrayConversion.h"
 #include "../auxiliary/ValarrayOperations.h"
 
-double repulsionCoeff = 1;
-
 
 FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed):
         desiredPattern(desiredPattern),
@@ -27,7 +26,6 @@ FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int
         printRadius(printRadius),
         collisionList(generatePerimeterList(collisionRadius)),
         stepLength(stepLength)
-//        seed(seed)
         {
     randomEngine = std::mt19937(seed);
 
@@ -35,6 +33,14 @@ FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int
     pointsToFill = findPerimeterOfTheShape();
     unsigned int numberOfFillablePoints = pointsToFill.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
+}
+
+
+FilledPattern::FilledPattern(DesiredPattern desiredPattern, FillingConfig config, int seed):
+    FilledPattern(std::move(desiredPattern), config.getPrintRadius(), config.getCollisionRadius(),
+                  config.getStepLength(), seed) {
+    repulsionCoefficient = config.getRepulsion();
+    isPerimeterFilledRandomly = config.getPerimeterFillingMode();
 }
 
 FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength):
@@ -185,7 +191,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path& currentPath, std::valarray
     std::valarray<double> newPositions = positions + newStep;
     std::valarray<int> newCoordinates = dtoiArray(newPositions);
     std::valarray<double> repulsion = getRepulsion(numberOfTimesFilled, pointsInCircle, newCoordinates,
-                                                   desiredPattern.dimensions, repulsionCoeff);
+                                                   desiredPattern.dimensions, repulsionCoefficient);
     newPositions -= repulsion;
     newCoordinates = dtoiArray(newPositions);
 

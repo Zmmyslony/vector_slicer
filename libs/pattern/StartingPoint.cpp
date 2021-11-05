@@ -3,10 +3,8 @@
 //
 
 #include "StartingPoint.h"
-#include <utility>
 #include "../auxiliary/PerimeterChecking.h"
 #include <iostream>
-#include <cstdlib>
 
 
 int const MAX_RANDOM_SEARCH_TRIES = 100;
@@ -16,9 +14,8 @@ StartingPoint::StartingPoint():
 }
 
 
-void StartingPoint::findSuitableStartPointSemiRandomly(FilledPattern &pattern) {
+void StartingPoint::findStartPointRandomly(FilledPattern &pattern) {
     tries++;
-//    unsigned int element = rand() % pattern.pointsToFill.size();
     unsigned int element = pattern.getNewElement();
     positions = pattern.pointsToFill[element];
 
@@ -29,10 +26,21 @@ void StartingPoint::findSuitableStartPointSemiRandomly(FilledPattern &pattern) {
 }
 
 
-std::valarray<int> StartingPoint::findSuitableStartPoint(FilledPattern &pattern) {
+void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
+    for (int i = 0; i < pattern.pointsToFill.size(); i++) {
+        positions = pattern.pointsToFill[i];
+        if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
+                            pattern.collisionList, positions, pattern.desiredPattern.dimensions)) {
+            isStartingPointFound = true;
+        }
+    }
+}
+
+
+std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     while(!isStartingPointFound) {
         if (tries < MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
-            findSuitableStartPointSemiRandomly(pattern);
+            findStartPointRandomly(pattern);
         }
         else if (tries == MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
             tries = 0;
