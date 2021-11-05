@@ -6,7 +6,6 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
-#include <iostream>
 
 
 bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<int> EdgeFirst,
@@ -38,8 +37,8 @@ bool isInRectangle(std::valarray<int>& point, std::valarray<int>& EdgeFirst,
     }
 }
 
-std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> pointFirst,
-                                                 std::valarray<int> pointSecond, int radius) {
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointFirst,
+                                                 const std::valarray<int> pointSecond, int radius) {
     std::valarray<int> connectingVector = pointSecond - pointFirst;
     double norm = sqrt(connectingVector[0] * connectingVector[0] + connectingVector[1] * connectingVector[1]);
     std::valarray<int> perpendicularVector = {(int)trunc(connectingVector[1] / norm * (radius + 1)),

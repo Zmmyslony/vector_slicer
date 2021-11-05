@@ -2,8 +2,6 @@
 // Created by Michał Zmyślony on 21/09/2021.
 //
 
-
-//#include <cstdlib>
 #include <iostream>
 #include <utility>
 
@@ -45,6 +43,7 @@ FilledPattern::FilledPattern(DesiredPattern desiredPattern, FillingConfig config
 
 FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength):
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) { }
+
 
 std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
     std::vector<std::valarray<int>> perimeterList;

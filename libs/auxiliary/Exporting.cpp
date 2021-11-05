@@ -7,7 +7,7 @@
 #include <fstream>
 
 std::string readRowToString(std::vector<int>& row) {
-    std::string rowString = "";
+    std::string rowString;
     for (auto& element : row) {
         rowString += std::to_string(element);
         rowString += ",";
@@ -19,7 +19,7 @@ std::string readRowToString(std::vector<int>& row) {
 
 
 std::string readRowToString(std::vector<double>& row) {
-    std::string rowString = "";
+    std::string rowString;
     for (auto& element : row) {
         rowString += std::to_string(element);
         rowString += ",";
