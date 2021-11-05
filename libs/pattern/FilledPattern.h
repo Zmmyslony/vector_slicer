@@ -8,6 +8,7 @@
 #include "DesiredPattern.h"
 #include "Path.h"
 #include <string>
+#include <random>
 
 
 class FilledPattern {
@@ -33,6 +34,8 @@ class FilledPattern {
     std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint, std::valarray<int> &previousDirection,
                                                 std::vector<std::valarray<int>> &perimeterList);
     std::vector<std::valarray<int>> findPerimeterOfTheShape();
+    std::mt19937 randomEngine;
+    std::uniform_int_distribution<unsigned int> distribution;
 
 public:
     int stepLength;
@@ -45,8 +48,8 @@ public:
     std::vector<std::vector<int>> numberOfTimesFilled;
 
 
-    FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
-    FilledPattern(DesiredPattern& desiredPattern, int printRadius, int collisionRadius, int stepLength);
+    FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed);
+    FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength);
 
     void addNewPath(Path& newPath);
     void findRemainingFillablePoints();
@@ -54,7 +57,7 @@ public:
     Path generateNewPathForDirection(std::valarray<int>& startingCoordinates, const std::valarray<int>& startingStep);
 
     std::vector<Path> getSequenceOfPaths();
-
+    unsigned int getNewElement();
     void exportToDirectory(std::string& directory) const;
 };
 

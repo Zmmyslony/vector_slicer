@@ -14,6 +14,6 @@ void exportPatternToDirectory(const FilledPattern& pattern, const std::string& d
 void generateAndExportPrintPattern(const std::string& directorPath, const DesiredPattern& desiredPattern, int seed);
 
 void generatePrintPattern(std::string& directorPath, int minSeed, int maxSeed);
-
+void generatePrintPatternMultithreading(std::string &directorPath, int minSeed, int maxSeed, int threads);
 
 #endif //VECTOR_SLICER_AUTOMATICPATHGENERATION_H

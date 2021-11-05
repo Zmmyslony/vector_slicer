@@ -3,36 +3,41 @@
 //
 
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <iostream>
 
 #include "FilledPattern.h"
 
+#include "../auxiliary/Exporting.h"
+#include "../auxiliary/Geometry.h"
 #include "../auxiliary/PerimeterGeneration.h"
 #include "../auxiliary/PerimeterChecking.h"
 #include "../auxiliary/SimpleMathOperations.h"
-#include "../auxiliary/Geometry.h"
 #include "../auxiliary/ValarrayConversion.h"
-#include "../auxiliary/Exporting.h"
 #include "../auxiliary/ValarrayOperations.h"
 
 double repulsionCoeff = 1;
 
 
-FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed):
+FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength, unsigned int seed):
         desiredPattern(desiredPattern),
         numberOfTimesFilled(desiredPattern.dimensions[0], std::vector<int>(desiredPattern.dimensions[1])),
         xFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
         yFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
         printRadius(printRadius),
         collisionList(generatePerimeterList(collisionRadius)),
-        stepLength(stepLength) {
-    srand(seed);
+        stepLength(stepLength)
+//        seed(seed)
+        {
+    randomEngine = std::mt19937(seed);
+
     pointsInCircle = findPointsInCircle(printRadius);
     pointsToFill = findPerimeterOfTheShape();
+    unsigned int numberOfFillablePoints = pointsToFill.size();
+    distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
 }
 
-FilledPattern::FilledPattern(DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength):
+FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength):
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) { }
 
 std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
@@ -123,6 +128,8 @@ void FilledPattern::findRemainingFillablePoints() {
     else {
         pointsToFill = findRemainingFillablePointsInList(pointsToFill);
     }
+    unsigned int numberOfFillablePoints = pointsToFill.size();
+    distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
 }
 
 std::valarray<double> normalizeDirection(const std::valarray<int>& previousStep) {
@@ -222,4 +229,9 @@ std::vector<Path> FilledPattern::getSequenceOfPaths() {
 
 void FilledPattern::addNewPath(Path& newPath) {
     sequenceOfPaths.push_back(newPath);
+}
+
+unsigned int FilledPattern::getNewElement() {
+
+    return distribution(randomEngine);
 }
