@@ -30,11 +30,11 @@ std::vector<std::vector<double>> readFileToTableDouble(std::string &filename) {
 
 std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &doubleTable) {
     std::vector<std::vector<int>> intTable;
-    for (auto & row : doubleTable) {
+    for (auto &row: doubleTable) {
         std::vector<int> intRow;
         intRow.reserve(row.size());
-        for (auto & element : row) {
-            intRow.push_back( (int) element);
+        for (auto &element: row) {
+            intRow.push_back((int) element);
         }
         intTable.push_back(intRow);
     }
@@ -69,7 +69,7 @@ std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> 
 
 std::vector<std::vector<int>> readFileToTableInt(std::string &filename) {
     std::vector<std::vector<double>> doubleTable = readFileToTableDouble(filename);
-    return(tableDoubleToInt(doubleTable));
+    return (tableDoubleToInt(doubleTable));
 }
 
 //std::vector<std::vector<bool>> readFileToTableBool(std::string &filename) {

@@ -9,6 +9,7 @@
 #include <string>
 
 FillingConfig findBestConfig(const std::string &path, int threads, int iterationDepth, int seed);
+
 FillingConfig findBestConfig(const std::string &path, int threads, int iterationDepth);
 
 #endif //VECTOR_SLICER_OPTIMIZEPATHGENERATION_H

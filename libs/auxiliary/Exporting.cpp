@@ -6,9 +6,9 @@
 #include <iostream>
 #include <fstream>
 
-std::string readRowToString(std::vector<int>& row) {
+std::string readRowToString(std::vector<int> &row) {
     std::string rowString;
-    for (auto& element : row) {
+    for (auto &element: row) {
         rowString += std::to_string(element);
         rowString += ",";
     }
@@ -18,9 +18,9 @@ std::string readRowToString(std::vector<int>& row) {
 }
 
 
-std::string readRowToString(std::vector<double>& row) {
+std::string readRowToString(std::vector<double> &row) {
     std::string rowString;
-    for (auto& element : row) {
+    for (auto &element: row) {
         rowString += std::to_string(element);
         rowString += ",";
     }
@@ -30,10 +30,10 @@ std::string readRowToString(std::vector<double>& row) {
 }
 
 
-void exportVectorTableToFile(std::vector<std::vector<int>> table, std::string& filename) {
+void exportVectorTableToFile(std::vector<std::vector<int>> table, std::string &filename) {
     std::ofstream file(filename);
     if (file.is_open()) {
-        for (auto& row : table) {
+        for (auto &row: table) {
             file << readRowToString(row);
         }
         file.close();
@@ -41,10 +41,10 @@ void exportVectorTableToFile(std::vector<std::vector<int>> table, std::string& f
 }
 
 
-void exportVectorTableToFile(std::vector<std::vector<double>>& table, std::string& filename) {
+void exportVectorTableToFile(std::vector<std::vector<double>> &table, std::string &filename) {
     std::ofstream file(filename);
     if (file.is_open()) {
-        for (auto& row : table) {
+        for (auto &row: table) {
             file << readRowToString(row);
         }
     }

@@ -105,28 +105,28 @@ int FillingConfig::getPrintRadius() const {
 ConfigOptions stringToConfig(std::string stringOption) {
     static std::unordered_map<std::string, ConfigOptions> const mapping = {
             {"InitialFillingMethod", ConfigOptions::InitialFillingMethod},
-            {"CollisionRadius", ConfigOptions::CollisionRadius},
-            {"StepLength", ConfigOptions::StepLength},
-            {"PrintRadius", ConfigOptions::PrintRadius},
-            {"Repulsion", ConfigOptions::Repulsion},
-            {"MinimalStepLength", ConfigOptions::MinimalStepLength}
+            {"CollisionRadius",      ConfigOptions::CollisionRadius},
+            {"StepLength",           ConfigOptions::StepLength},
+            {"PrintRadius",          ConfigOptions::PrintRadius},
+            {"Repulsion",            ConfigOptions::Repulsion},
+            {"MinimalStepLength",    ConfigOptions::MinimalStepLength}
     };
     auto it = mapping.find(stringOption);
     if (it != mapping.end()) {
-        return it -> second;
+        return it->second;
     }
 }
 
 FillingMethod stringToMethod(std::string stringOption) {
     static std::unordered_map<std::string, FillingMethod> const mapping = {
             {"ConsecutivePerimeter", FillingMethod::ConsecutivePerimeter},
-            {"RandomPerimeter", FillingMethod::RandomPerimeter},
-            {"ConsecutiveRadial", FillingMethod::ConsecutiveRadial},
-            {"RandomRadial", FillingMethod::RandomRadial}
+            {"RandomPerimeter",      FillingMethod::RandomPerimeter},
+            {"ConsecutiveRadial",    FillingMethod::ConsecutiveRadial},
+            {"RandomRadial",         FillingMethod::RandomRadial}
     };
     auto it = mapping.find(stringOption);
     if (it != mapping.end()) {
-        return it -> second;
+        return it->second;
     }
 }
 
@@ -134,7 +134,7 @@ FillingMethod stringToMethod(std::string stringOption) {
 void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
     std::string parameterName = line[0];
     std::transform(parameterName.begin(), parameterName.end(), parameterName.begin(),
-                   [](unsigned char c){ return std::tolower(c); });
+                   [](unsigned char c) { return std::tolower(c); });
     std::string value = line[1];
 
     ConfigOptions option = stringToConfig(parameterName);
@@ -174,8 +174,7 @@ FillingConfig::FillingConfig(std::string &configPath) {
 
 FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,
                              int newCollisionRadius, int newMinimalStepLength,
-                             double newRepulsion, int newStepLength, int newPrintRadius)
-                             {
+                             double newRepulsion, int newStepLength, int newPrintRadius) {
     fillingMethod = newPerimeterFillingMethod;
     collisionRadius = newCollisionRadius;
     minimalStepLength = newMinimalStepLength;

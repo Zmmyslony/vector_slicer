@@ -7,10 +7,9 @@
 
 int roundUp(double number) {
     if (number > 0) {
-        return (int)ceil(number);
-    }
-    else {
-        return (int)floor(number);
+        return (int) ceil(number);
+    } else {
+        return (int) floor(number);
     }
 }
 

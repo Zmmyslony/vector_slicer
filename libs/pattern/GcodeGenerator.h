@@ -22,9 +22,12 @@ class GcodeGenerator {
     std::vector<bool> isPathInCorrectDirection;
 
     double getMovedDistance();
+
     void startGeneratingPrintPathsFrom(std::valarray<int> startingPoint);
+
 public:
     explicit GcodeGenerator(FilledPattern pattern);
+
     void exportToPath(std::string gcodePath);
 
     std::valarray<int> findBestStartingPoints();

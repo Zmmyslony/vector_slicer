@@ -9,30 +9,28 @@
 
 
 bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<int> EdgeFirst,
-                             std::valarray<int> EdgeSecond) {
-    int sign = (int)((EdgeSecond[0] - EdgeFirst[0]) * (point[1] - EdgeFirst[1]) -
-                     (point[0] - EdgeFirst[0]) * (EdgeSecond[1] - EdgeFirst[1]));
+                           std::valarray<int> EdgeSecond) {
+    int sign = (int) ((EdgeSecond[0] - EdgeFirst[0]) * (point[1] - EdgeFirst[1]) -
+                      (point[0] - EdgeFirst[0]) * (EdgeSecond[1] - EdgeFirst[1]));
     if (sign > 0) {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
-bool isInRectangle(std::valarray<int>& point, std::valarray<int>& EdgeFirst,
-                   std::valarray<int>& EdgeSecond, std::valarray<int>& EdgeThird,
-                   std::valarray<int>& EdgeFourth) {
-    bool isOnLeftOfFirstEdge = isOnTheLeftSideOfEdge(point,EdgeFirst,EdgeSecond);
-    bool isOnLeftOfSecondEdge = isOnTheLeftSideOfEdge(point,EdgeSecond,EdgeThird);
-    bool isOnLeftOfThirdEdge = isOnTheLeftSideOfEdge(point,EdgeThird,EdgeFourth);
-    bool isOnLeftOfFourthEdge = isOnTheLeftSideOfEdge(point,EdgeFourth,EdgeFirst);
+bool isInRectangle(std::valarray<int> &point, std::valarray<int> &EdgeFirst,
+                   std::valarray<int> &EdgeSecond, std::valarray<int> &EdgeThird,
+                   std::valarray<int> &EdgeFourth) {
+    bool isOnLeftOfFirstEdge = isOnTheLeftSideOfEdge(point, EdgeFirst, EdgeSecond);
+    bool isOnLeftOfSecondEdge = isOnTheLeftSideOfEdge(point, EdgeSecond, EdgeThird);
+    bool isOnLeftOfThirdEdge = isOnTheLeftSideOfEdge(point, EdgeThird, EdgeFourth);
+    bool isOnLeftOfFourthEdge = isOnTheLeftSideOfEdge(point, EdgeFourth, EdgeFirst);
 
     if (isOnLeftOfFirstEdge && isOnLeftOfSecondEdge && isOnLeftOfThirdEdge && isOnLeftOfFourthEdge) {
 //        printf("Current filled point coordinates: %i, %i\n", point[0], point[1]);
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
@@ -41,8 +39,8 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointF
                                                  const std::valarray<int> pointSecond, int radius) {
     std::valarray<int> connectingVector = pointSecond - pointFirst;
     double norm = sqrt(connectingVector[0] * connectingVector[0] + connectingVector[1] * connectingVector[1]);
-    std::valarray<int> perpendicularVector = {(int)trunc(connectingVector[1] / norm * (radius + 1)),
-                                               (int)trunc(-connectingVector[0] / norm * (radius + 1))};
+    std::valarray<int> perpendicularVector = {(int) trunc(connectingVector[1] / norm * (radius + 1)),
+                                              (int) trunc(-connectingVector[0] / norm * (radius + 1))};
 
     std::valarray<int> firstEdge = pointFirst + perpendicularVector;
     std::valarray<int> secondEdge = pointSecond + perpendicularVector;
@@ -64,17 +62,15 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointF
             if (isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) &&
                 topPoint[1] >= yCurr && topPoint[1] <= yMax) {
                 topPoint[1]++;
-            }
-            else if (!isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) &&
-                     topPoint[1] <= yCurr && topPoint[1] >= yMin) {
+            } else if (!isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) &&
+                       topPoint[1] <= yCurr && topPoint[1] >= yMin) {
                 topPoint[1]--;
-            }
-            else {
+            } else {
                 searchingForTopPoint = false;
             }
         }
 
-        while(isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) && topPoint[1] >= 0) {
+        while (isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) && topPoint[1] >= 0) {
             pointsToFill.push_back(topPoint);
             topPoint[1]--;
         }
@@ -86,8 +82,8 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointF
 std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius) {
     std::vector<std::valarray<int>> pointsToFill;
     for (int i = -radius; i <= radius; i++) {
-        for (int j = -radius; j <= radius; j++){
-            if (i * i + j * j <= radius * radius){
+        for (int j = -radius; j <= radius; j++) {
+            if (i * i + j * j <= radius * radius) {
                 pointsToFill.push_back({point[0] + i, point[1] + j});
             }
         }
@@ -98,8 +94,8 @@ std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int r
 std::vector<std::valarray<int>> findPointsInCircle(int radius) {
     std::vector<std::valarray<int>> pointsInCircle;
     for (int i = -radius; i <= radius; i++) {
-        for (int j = -radius; j <= radius; j++){
-            if (i * i + j * j <= radius * radius){
+        for (int j = -radius; j <= radius; j++) {
+            if (i * i + j * j <= radius * radius) {
                 pointsInCircle.push_back({i, j});
             }
         }

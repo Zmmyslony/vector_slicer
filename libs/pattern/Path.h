@@ -12,12 +12,16 @@ class Path {
 public:
     std::vector<std::valarray<int>> sequenceOfPositions;
 
-    explicit Path(std::valarray<int>& startingPosition);
+    explicit Path(std::valarray<int> &startingPosition);
+
     Path(Path forwardPath, Path backwardPath);
 
-    void addPoint(std::valarray<int>& positions);
+    void addPoint(std::valarray<int> &positions);
+
     std::valarray<int> first();
+
     std::valarray<int> last();
+
     unsigned int getSize() const;
 
     double getLength();

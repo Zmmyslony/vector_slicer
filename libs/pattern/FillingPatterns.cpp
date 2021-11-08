@@ -6,15 +6,19 @@
 #include "StartingPoint.h"
 #include <iostream>
 
-bool tryGeneratingNewPath(FilledPattern& pattern) {
+bool tryGeneratingNewPath(FilledPattern &pattern) {
     StartingPoint startingPoint;
     std::valarray<int> startingCoordinates = startingPoint.findStartPoint(pattern);
     if (startingPoint.positions[0] == -1 || startingPoint.positions[1] == -1) {
         return false;
-    }
-    else {
-        Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions, pattern.desiredPattern.preferredDirection(startingPoint.positions, pattern.stepLength));
-        Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions, -pattern.desiredPattern.preferredDirection(startingPoint.positions, pattern.stepLength));
+    } else {
+        Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions,
+                                                                  pattern.desiredPattern.preferredDirection(
+                                                                          startingPoint.positions, pattern.stepLength));
+        Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions,
+                                                                    -pattern.desiredPattern.preferredDirection(
+                                                                            startingPoint.positions,
+                                                                            pattern.stepLength));
 
         Path newPath(newPathForward, newPathBackwards);
 
@@ -27,7 +31,7 @@ bool tryGeneratingNewPath(FilledPattern& pattern) {
     }
 }
 
-void fillWithPaths(FilledPattern& pattern) {
+void fillWithPaths(FilledPattern &pattern) {
     bool isThereAnySpotFillable = true;
     while (isThereAnySpotFillable) {
         isThereAnySpotFillable = tryGeneratingNewPath(pattern);

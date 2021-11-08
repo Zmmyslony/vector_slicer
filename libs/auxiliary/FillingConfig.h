@@ -24,15 +24,15 @@ class FillingConfig {
 public:
     void printConfig();
     void setInitialFillingMethod(FillingMethod method);
-    void setInitialFillingMethodToRandomPerimeter();
-    void setInitialFillingMethodToConsecutivePerimeter();
-    void setInitialFillingMethodToRandomRadial();
-    void setInitialFillingMethodToConsecutiveRadial();
     void setCollisionRadius(int radius);
     void setRepulsion (double repulsionCoefficient);
     void setStepLength (int step);
     void setMinimalStepLength (int step);
     void setPrintRadius(int radius);
+    void setInitialFillingMethodToRandomPerimeter();
+    void setInitialFillingMethodToConsecutivePerimeter();
+    void setInitialFillingMethodToRandomRadial();
+    void setInitialFillingMethodToConsecutiveRadial();
 
     bool getInitialFillingMethod() const;
     int getCollisionRadius() const;

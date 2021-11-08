@@ -23,7 +23,7 @@ int main() {
     std::string spiral = mainDirectory + R"(\spiral, r = 0.5 cm)";
 
     std::vector<std::string> allPatterns = {radial, azimuthal, diagonal, linear, spiral};
-    for (auto &patternType : allPatterns) {
+    for (auto &patternType: allPatterns) {
         generatePrintPatternMultithreading(patternType, 1, 100, 12);
     }
     return 0;

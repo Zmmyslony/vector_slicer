@@ -12,8 +12,7 @@ void showProgress(double progress) {
     for (int i = 0; i < barWidth; ++i) {
         if (i <= pos) {
             std::cout << "=";
-        }
-        else {
+        } else {
             std::cout << " ";
         }
     }
@@ -22,5 +21,5 @@ void showProgress(double progress) {
 }
 
 void showProgress(int currentStep, int maxStep) {
-    showProgress((double)currentStep / (double)maxStep);
+    showProgress((double) currentStep / (double) maxStep);
 }

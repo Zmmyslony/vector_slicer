@@ -15,8 +15,10 @@ public:
     std::vector<std::vector<double>> xFieldPreferred;
     std::vector<std::vector<double>> yFieldPreferred;
 
-    DesiredPattern(std::string& shapeFilename, std::string& xVectorFieldFilename, std::string& yVectorFieldFilename);
+    DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename, std::string &yVectorFieldFilename);
+
     std::valarray<int> preferredDirection(std::valarray<int> position, int distance);
+
     std::valarray<double> preferredDirection(std::valarray<double> position, int distance);
 };
 

@@ -50,7 +50,6 @@ void generateAndExportPrintPattern(const std::string &directorPath, const Desire
 }
 
 
-
 void checkSeed(DesiredPattern desiredPattern, std::string directorPath, int seed, int &bestSeed,
                double &bestDisagreement) {
     FilledPattern testPattern = generateAPrintPattern(directorPath, desiredPattern, seed);
@@ -82,7 +81,7 @@ void generatePrintPattern(std::string &directorPath, int minSeed, int maxSeed) {
         showProgress(currentSeed - minSeed, maxSeed - minSeed);
         checkSeed(desiredPattern, directorPath, currentSeed, bestSeed, bestDisagreement);
     }
-    printf("\nSingle-thread execution time %.2f", (double)(clock() - startTime)/CLOCKS_PER_SEC);
+    printf("\nSingle-thread execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
     printf("\n%i seeds from %i to %i were tested. Seed %i had the lowest disagreement of %.2f\n",
            maxSeed - minSeed + 1, minSeed, maxSeed, bestSeed, bestDisagreement);
     generateAndExportPrintPattern(directorPath, desiredPattern, bestSeed);
@@ -104,13 +103,13 @@ void generatePrintPatternMultithreading(std::string &directorPath, int minSeed, 
     time_t startTime = clock();
 
     omp_set_num_threads(threads);
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int currentSeed = minSeed; currentSeed <= maxSeed; currentSeed++) {
         checkSeed(desiredPattern, directorPath, currentSeed, disagreements[currentSeed - minSeed]);
     }
 
-    printf("Multi-thread execution time %.2f", (double)(clock() - startTime)/CLOCKS_PER_SEC);
-    unsigned int  bestSeed = indexOfSmallestElement(disagreements);
+    printf("Multi-thread execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
+    unsigned int bestSeed = indexOfSmallestElement(disagreements);
     double bestDisagreement = disagreements[bestSeed];
 
     printf("\n%i seeds from %i to %i were tested. Seed %i had the lowest disagreement of %.2f\n",

@@ -10,8 +10,11 @@
 #include <string>
 
 std::vector<std::vector<double>> readFileToTableDouble(std::string &filename);
+
 std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &doubleTable);
+
 std::vector<std::vector<int>> readFileToTableInt(std::string &filename);
+
 std::valarray<int> getTableDimensions(std::string &filename);
 
 

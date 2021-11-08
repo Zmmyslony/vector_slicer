@@ -6,6 +6,7 @@
 #define VECTOR_SLICER_PROGRESSBAR_H
 
 void showProgress(double progress);
+
 void showProgress(int currentStep, int maxStep);
 
 #endif //VECTOR_SLICER_PROGRESSBAR_H

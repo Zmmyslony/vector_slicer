@@ -9,11 +9,12 @@
 
 FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern desiredPattern, int seed);
 
-void exportPatternToDirectory(const FilledPattern& pattern, const std::string& directorPath, const int& seed);
+void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed);
 
-void generateAndExportPrintPattern(const std::string& directorPath, const DesiredPattern& desiredPattern, int seed);
+void generateAndExportPrintPattern(const std::string &directorPath, const DesiredPattern &desiredPattern, int seed);
 
-void generatePrintPattern(std::string& directorPath, int minSeed, int maxSeed);
+void generatePrintPattern(std::string &directorPath, int minSeed, int maxSeed);
+
 void generatePrintPatternMultithreading(std::string &directorPath, int minSeed, int maxSeed, int threads);
 
 #endif //VECTOR_SLICER_AUTOMATICPATHGENERATION_H

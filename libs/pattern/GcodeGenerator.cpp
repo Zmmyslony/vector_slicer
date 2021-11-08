@@ -12,7 +12,7 @@
 std::vector<std::valarray<int>> getStartAndEndPositions(std::vector<Path> &sequenceOfPaths) {
     std::vector<std::valarray<int>> startEndPositions;
     int iterator = 0;
-    for (auto &path : sequenceOfPaths) {
+    for (auto &path: sequenceOfPaths) {
         std::valarray<int> newElementFront = {path.first()[0], path.first()[1], iterator};
         std::valarray<int> newElementBack = {path.last()[0], path.last()[1], iterator};
         startEndPositions.push_back(newElementFront);
@@ -29,7 +29,7 @@ int findClosestElementInList(std::valarray<int> &previousPosition, std::vector<s
     for (int i = 0; i < startEndPositions.size(); i++) {
         std::valarray<int> currentPosition = {startEndPositions[i][0], startEndPositions[i][1]};
         double currentDistance = norm(itodArray(currentPosition - previousPosition));
-        if(currentDistance < distance && currentDistance > 0) {
+        if (currentDistance < distance && currentDistance > 0) {
             distance = currentDistance;
             index = i;
         }
@@ -38,7 +38,7 @@ int findClosestElementInList(std::valarray<int> &previousPosition, std::vector<s
 }
 
 
-GcodeGenerator::GcodeGenerator(FilledPattern pattern):
+GcodeGenerator::GcodeGenerator(FilledPattern pattern) :
         sequenceOfPaths(pattern.getSequenceOfPaths()) {
     startAndEndPositions = getStartAndEndPositions(sequenceOfPaths);
 }
@@ -58,12 +58,13 @@ void GcodeGenerator::startGeneratingPrintPathsFrom(std::valarray<int> startingPo
         isPathInCorrectDirection.push_back(!isItEndingPoint);
 
         if (!isItEndingPoint) {
-            currentPoint = {localStartAndEndPositions[closestIndex + 1][0], localStartAndEndPositions[closestIndex + 1][1]};
+            currentPoint = {localStartAndEndPositions[closestIndex + 1][0],
+                            localStartAndEndPositions[closestIndex + 1][1]};
             localStartAndEndPositions.erase(localStartAndEndPositions.begin() + closestIndex);
             localStartAndEndPositions.erase(localStartAndEndPositions.begin() + closestIndex);
-        }
-        else {
-            currentPoint = {localStartAndEndPositions[closestIndex - 1][0], localStartAndEndPositions[closestIndex - 1][1]};
+        } else {
+            currentPoint = {localStartAndEndPositions[closestIndex - 1][0],
+                            localStartAndEndPositions[closestIndex - 1][1]};
             localStartAndEndPositions.erase(localStartAndEndPositions.begin() + closestIndex - 1);
             localStartAndEndPositions.erase(localStartAndEndPositions.begin() + closestIndex - 1);
         }
@@ -78,8 +79,7 @@ double GcodeGenerator::getMovedDistance() {
 
     if (isPathInCorrectDirection[0]) {
         previousPosition = sequenceOfPaths[currentIndex].last();
-    }
-    else {
+    } else {
         previousPosition = sequenceOfPaths[currentIndex].first();
     }
 
@@ -89,8 +89,7 @@ double GcodeGenerator::getMovedDistance() {
             std::valarray<int> currentPosition = sequenceOfPaths[currentIndex].first();
             movedDistance += norm(currentPosition - previousPosition);
             previousPosition = sequenceOfPaths[currentIndex].last();
-        }
-        else {
+        } else {
             std::valarray<int> currentPosition = sequenceOfPaths[currentIndex].last();
             movedDistance += norm(currentPosition - previousPosition);
             previousPosition = sequenceOfPaths[currentIndex].first();
@@ -103,7 +102,7 @@ double GcodeGenerator::getMovedDistance() {
 std::valarray<int> GcodeGenerator::findBestStartingPoints() {
     std::valarray<int> bestStartingPoint;
     double lowestMovedDistance = DBL_MAX;
-    for (auto &startingPoint : startAndEndPositions) {
+    for (auto &startingPoint: startAndEndPositions) {
         startGeneratingPrintPathsFrom(startingPoint);
         double currentMovedDistance = getMovedDistance();
 //        printf("Current starting position: %i, %i. \tMoved distance: %.2f\n", startingPoint[0], startingPoint[1],

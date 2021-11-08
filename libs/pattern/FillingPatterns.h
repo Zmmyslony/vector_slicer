@@ -7,7 +7,8 @@
 
 #include "FilledPattern.h"
 
-bool tryGeneratingNewPath(FilledPattern& pattern);
-void fillWithPaths(FilledPattern& pattern);
+bool tryGeneratingNewPath(FilledPattern &pattern);
+
+void fillWithPaths(FilledPattern &pattern);
 
 #endif //VECTOR_SLICER_FILLINGPATTERNS_H

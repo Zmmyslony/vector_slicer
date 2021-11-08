@@ -9,12 +9,17 @@
 #include <string>
 #include <vector>
 
-DesiredPattern openPatternFromDirectory(const std::string& directoryPath);
+DesiredPattern openPatternFromDirectory(const std::string &directoryPath);
 
-FilledPattern openFilledPatternFromDirectory(const std::string& directoryPath);
-FilledPattern openFilledPatternFromDirectory(const std::string& directoryPath, unsigned int seed);
-std::vector<int> readConfigTable(const std::string& configPath);
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string& directoryPath, DesiredPattern& pattern, unsigned int seed);
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string& directoryPath, DesiredPattern& pattern);
+FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath);
+
+FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath, unsigned int seed);
+
+std::vector<int> readConfigTable(const std::string &configPath);
+
+FilledPattern
+openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern, unsigned int seed);
+
+FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern);
 
 #endif //VECTOR_SLICER_OPENFILES_H

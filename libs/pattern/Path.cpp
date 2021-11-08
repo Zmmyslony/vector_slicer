@@ -5,12 +5,12 @@
 #include "Path.h"
 #include "../auxiliary/ValarrayOperations.h"
 
-void Path::addPoint(std::valarray<int>& positions) {
+void Path::addPoint(std::valarray<int> &positions) {
     sequenceOfPositions.push_back(positions);
 }
 
 
-Path::Path(std::valarray<int>& startingPositions) {
+Path::Path(std::valarray<int> &startingPositions) {
     addPoint(startingPositions);
 
 }
