@@ -7,31 +7,46 @@
 #include <string>
 #include <vector>
 
+enum FillingMethod {ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial};
+enum ConfigOptions {InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, MinimalStepLength};
+
+
 class FillingConfig {
-    bool isPerimeterFilledRandomly;
+    FillingMethod fillingMethod;
     int collisionRadius;
     double repulsion;
     int stepLength;
     int minimalStepLength;
     int printRadius;
 
+    void readLineOfConfig(std::vector<std::string> line);
+
 public:
     void printConfig();
-    void setPerimeterFillingToRandom();
-    void setPerimeterFillingToConsecutive();
+    void setInitialFillingMethod(FillingMethod method);
+    void setInitialFillingMethodToRandomPerimeter();
+    void setInitialFillingMethodToConsecutivePerimeter();
+    void setInitialFillingMethodToRandomRadial();
+    void setInitialFillingMethodToConsecutiveRadial();
     void setCollisionRadius(int radius);
-    void setRepulsion (double repulsionCoefficient);\
+    void setRepulsion (double repulsionCoefficient);
     void setStepLength (int step);
+    void setMinimalStepLength (int step);
     void setPrintRadius(int radius);
 
-    bool getPerimeterFillingMode() const;
+    bool getInitialFillingMethod() const;
     int getCollisionRadius() const;
     double getRepulsion() const;
     int getStepLength() const;
+    int getMinimalStepLength() const;
     int getPrintRadius() const;
 
-    void readLineOfConfig(std::vector<std::string> line);
+
+
     explicit FillingConfig(std::string &configPath);
+    FillingConfig(FillingMethod newPerimeterFillingMethod, int newCollisionRadius,
+                  int newMinimalStepLength, double newRepulsion, int newStepLength,
+                  int newPrintRadius);
 };
 
 

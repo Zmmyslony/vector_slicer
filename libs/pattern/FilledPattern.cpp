@@ -38,7 +38,7 @@ FilledPattern::FilledPattern(DesiredPattern desiredPattern, FillingConfig config
     FilledPattern(std::move(desiredPattern), config.getPrintRadius(), config.getCollisionRadius(),
                   config.getStepLength(), seed) {
     repulsionCoefficient = config.getRepulsion();
-    isPerimeterFilledRandomly = config.getPerimeterFillingMode();
+    isPerimeterFilledRandomly = config.getInitialFillingMethod();
 }
 
 FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength):

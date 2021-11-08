@@ -8,18 +8,24 @@
 #include <cctype>
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
 #include <sstream>
+
 
 void FillingConfig::printConfig() {
     std::string message;
     message += "Current configuration:";
 
     message += "\n\tRandom perimeter filling is ";
-    if (isPerimeterFilledRandomly) {
-        message += "ON.";
-    }
-    else {
-        message += "OFF.";
+    switch (fillingMethod) {
+        case ConsecutivePerimeter:
+            message += "consecutive perimeter.";
+        case RandomPerimeter:
+            message += "random perimeter.";
+        case ConsecutiveRadial:
+            message += "consecutive radial.";
+        case RandomRadial:
+            message += "random radial.";
     }
 
     message += "\n\tCollision radius is";
@@ -36,12 +42,24 @@ void FillingConfig::setCollisionRadius(int radius) {
     collisionRadius = radius;
 }
 
-void FillingConfig::setPerimeterFillingToRandom() {
-    isPerimeterFilledRandomly = true;
+void FillingConfig::setInitialFillingMethod(FillingMethod method) {
+    fillingMethod = method;
 }
 
-void FillingConfig::setPerimeterFillingToConsecutive() {
-    isPerimeterFilledRandomly = false;
+void FillingConfig::setInitialFillingMethodToRandomPerimeter() {
+    fillingMethod = RandomPerimeter;
+}
+
+void FillingConfig::setInitialFillingMethodToConsecutivePerimeter() {
+    fillingMethod = ConsecutivePerimeter;
+}
+
+void FillingConfig::setInitialFillingMethodToRandomRadial() {
+    fillingMethod = RandomRadial;
+}
+
+void FillingConfig::setInitialFillingMethodToConsecutiveRadial() {
+    fillingMethod = ConsecutiveRadial;
 }
 
 void FillingConfig::setRepulsion(double repulsionCoefficient) {
@@ -52,12 +70,16 @@ void FillingConfig::setStepLength(int step) {
     stepLength = step;
 }
 
+void FillingConfig::setMinimalStepLength(int step) {
+    minimalStepLength = step;
+}
+
 void FillingConfig::setPrintRadius(int radius) {
     printRadius = radius;
 }
 
-bool FillingConfig::getPerimeterFillingMode() const {
-    return isPerimeterFilledRandomly;
+bool FillingConfig::getInitialFillingMethod() const {
+    return fillingMethod;
 }
 
 int FillingConfig::getCollisionRadius() const {
@@ -72,8 +94,40 @@ int FillingConfig::getStepLength() const {
     return stepLength;
 }
 
+int FillingConfig::getMinimalStepLength() const {
+    return minimalStepLength;
+}
+
 int FillingConfig::getPrintRadius() const {
     return printRadius;
+}
+
+ConfigOptions stringToConfig(std::string stringOption) {
+    static std::unordered_map<std::string, ConfigOptions> const mapping = {
+            {"InitialFillingMethod", ConfigOptions::InitialFillingMethod},
+            {"CollisionRadius", ConfigOptions::CollisionRadius},
+            {"StepLength", ConfigOptions::StepLength},
+            {"PrintRadius", ConfigOptions::PrintRadius},
+            {"Repulsion", ConfigOptions::Repulsion},
+            {"MinimalStepLength", ConfigOptions::MinimalStepLength}
+    };
+    auto it = mapping.find(stringOption);
+    if (it != mapping.end()) {
+        return it -> second;
+    }
+}
+
+FillingMethod stringToMethod(std::string stringOption) {
+    static std::unordered_map<std::string, FillingMethod> const mapping = {
+            {"ConsecutivePerimeter", FillingMethod::ConsecutivePerimeter},
+            {"RandomPerimeter", FillingMethod::RandomPerimeter},
+            {"ConsecutiveRadial", FillingMethod::ConsecutiveRadial},
+            {"RandomRadial", FillingMethod::RandomRadial}
+    };
+    auto it = mapping.find(stringOption);
+    if (it != mapping.end()) {
+        return it -> second;
+    }
 }
 
 
@@ -83,25 +137,21 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
                    [](unsigned char c){ return std::tolower(c); });
     std::string value = line[1];
 
-    if (parameterName == "isfillingmoderandom") {
-        if (std::stoi(value) == 1) {
-            setPerimeterFillingToRandom();
-        }
-        else if (std::stoi(value) == 0) {
-            setPerimeterFillingToConsecutive();
-        }
-    }
-    else if (parameterName == "collisionradius") {
-        setCollisionRadius(std::stoi(value));
-    }
-    else if (parameterName == "steplength") {
-        setStepLength(std::stoi(value));
-    }
-    else if (parameterName == "printradius") {
-        setPrintRadius(std::stoi(value));
-    }
-    else if (parameterName == "repulsion") {
-        setRepulsion(std::stod(value));
+    ConfigOptions option = stringToConfig(parameterName);
+
+    switch (option) {
+        case InitialFillingMethod:
+            setInitialFillingMethod(stringToMethod(value));
+        case CollisionRadius:
+            setCollisionRadius(std::stoi(value));
+        case StepLength:
+            setStepLength(std::stoi(value));
+        case PrintRadius:
+            setPrintRadius(std::stoi(value));
+        case Repulsion:
+            setRepulsion(std::stod(value));
+        case MinimalStepLength:
+            setMinimalStepLength(std::stoi(value));
     }
 }
 
@@ -121,3 +171,16 @@ FillingConfig::FillingConfig(std::string &configPath) {
         readLineOfConfig(row);
     }
 }
+
+FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,
+                             int newCollisionRadius, int newMinimalStepLength,
+                             double newRepulsion, int newStepLength, int newPrintRadius)
+                             {
+    fillingMethod = newPerimeterFillingMethod;
+    collisionRadius = newCollisionRadius;
+    minimalStepLength = newMinimalStepLength;
+    repulsion = newRepulsion;
+    stepLength = newStepLength;
+    printRadius = newPrintRadius;
+}
+
