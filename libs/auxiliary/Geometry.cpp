@@ -35,8 +35,8 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<int> &EdgeFirst,
     }
 }
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointFirst,
-                                                 const std::valarray<int> pointSecond, int radius) {
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
+                                                 const std::valarray<int> &pointSecond, int radius) {
     std::valarray<int> connectingVector = pointSecond - pointFirst;
     double norm = sqrt(connectingVector[0] * connectingVector[0] + connectingVector[1] * connectingVector[1]);
     std::valarray<int> perpendicularVector = {(int) trunc(connectingVector[1] / norm * (radius + 1)),
@@ -47,10 +47,10 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointF
     std::valarray<int> thirdEdge = pointSecond - perpendicularVector;
     std::valarray<int> fourthEdge = pointFirst - perpendicularVector;
 
-    int xMin = min({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<int>());
-    int xMax = max({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<int>());
-    int yMax = max({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<int>());
-    int yMin = min({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<int>());
+    int xMin = min({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>());
+    int xMax = max({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>());
+    int yMax = max({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<>());
+    int yMin = min({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<>());
 
     std::vector<std::valarray<int>> pointsToFill;
 
@@ -79,17 +79,17 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> pointF
 }
 
 
-std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius) {
-    std::vector<std::valarray<int>> pointsToFill;
-    for (int i = -radius; i <= radius; i++) {
-        for (int j = -radius; j <= radius; j++) {
-            if (i * i + j * j <= radius * radius) {
-                pointsToFill.push_back({point[0] + i, point[1] + j});
-            }
-        }
-    }
-    return pointsToFill;
-}
+//std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius) {
+//    std::vector<std::valarray<int>> pointsToFill;
+//    for (int i = -radius; i <= radius; i++) {
+//        for (int j = -radius; j <= radius; j++) {
+//            if (i * i + j * j <= radius * radius) {
+//                pointsToFill.push_back({point[0] + i, point[1] + j});
+//            }
+//        }
+//    }
+//    return pointsToFill;
+//}
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius) {
     std::vector<std::valarray<int>> pointsInCircle;

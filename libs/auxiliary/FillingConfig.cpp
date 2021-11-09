@@ -20,12 +20,16 @@ void FillingConfig::printConfig() {
     switch (fillingMethod) {
         case ConsecutivePerimeter:
             message += "consecutive perimeter.";
+            break;
         case RandomPerimeter:
             message += "random perimeter.";
+            break;
         case ConsecutiveRadial:
             message += "consecutive radial.";
+            break;
         case RandomRadial:
             message += "random radial.";
+            break;
     }
 
     message += "\n\tCollision radius is";
@@ -78,7 +82,7 @@ void FillingConfig::setPrintRadius(int radius) {
     printRadius = radius;
 }
 
-bool FillingConfig::getInitialFillingMethod() const {
+FillingMethod FillingConfig::getInitialFillingMethod() const {
     return fillingMethod;
 }
 
@@ -104,12 +108,13 @@ int FillingConfig::getPrintRadius() const {
 
 ConfigOptions stringToConfig(std::string stringOption) {
     static std::unordered_map<std::string, ConfigOptions> const mapping = {
-            {"InitialFillingMethod", ConfigOptions::InitialFillingMethod},
-            {"CollisionRadius",      ConfigOptions::CollisionRadius},
-            {"StepLength",           ConfigOptions::StepLength},
-            {"PrintRadius",          ConfigOptions::PrintRadius},
-            {"Repulsion",            ConfigOptions::Repulsion},
-            {"MinimalStepLength",    ConfigOptions::MinimalStepLength}
+            {"InitialFillingMethod",   ConfigOptions::InitialFillingMethod},
+            {"IsInitialFillingRandom", ConfigOptions::IsInitialFillingRandom},
+            {"CollisionRadius",        ConfigOptions::CollisionRadius},
+            {"StepLength",             ConfigOptions::StepLength},
+            {"PrintRadius",            ConfigOptions::PrintRadius},
+            {"Repulsion",              ConfigOptions::Repulsion},
+            {"MinimalStepLength",      ConfigOptions::MinimalStepLength}
     };
     auto it = mapping.find(stringOption);
     if (it != mapping.end()) {
@@ -142,16 +147,22 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
     switch (option) {
         case InitialFillingMethod:
             setInitialFillingMethod(stringToMethod(value));
+            break;
         case CollisionRadius:
             setCollisionRadius(std::stoi(value));
+            break;
         case StepLength:
             setStepLength(std::stoi(value));
+            break;
         case PrintRadius:
             setPrintRadius(std::stoi(value));
+            break;
         case Repulsion:
             setRepulsion(std::stod(value));
+            break;
         case MinimalStepLength:
             setMinimalStepLength(std::stoi(value));
+            break;
     }
 }
 

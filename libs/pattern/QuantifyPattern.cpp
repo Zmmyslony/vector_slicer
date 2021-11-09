@@ -65,14 +65,7 @@ double QuantifyPattern::calculateDirectorDisagreement() {
                                                   pow(pattern.desiredPattern.yFieldPreferred[i][j], 2));
                 double xDirectionAgreement = pattern.xFieldFilled[i][j] * pattern.desiredPattern.xFieldPreferred[i][j];
                 double yDirectionAgreement = pattern.yFieldFilled[i][j] * pattern.desiredPattern.yFieldPreferred[i][j];
-                if (desiredDirectorNorm == 0) {
-//                    printf("Warning: %i, %i- Desired director norm equal to 0. Dimensions %i, %i. \n",
-//                           i, j, pattern.desiredPattern.dimensions[0], pattern.desiredPattern.dimensions[1]);
-                } else if (filledDirectorNorm == 0) {
-//                    printf("Warning: %i, %i-  Filled director norm equal to 0. Dimensions %i, %i.\n", i, j,
-//                           pattern.desiredPattern.dimensions[0], pattern.desiredPattern.dimensions[1]);
-
-                } else {
+                if (desiredDirectorNorm != 0 && filledDirectorNorm != 0) {
                     directorAgreement +=
                             abs(xDirectionAgreement + yDirectionAgreement) / (filledDirectorNorm * desiredDirectorNorm);
                     numberOfFilledElements++;

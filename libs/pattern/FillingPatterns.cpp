@@ -14,11 +14,11 @@ bool tryGeneratingNewPath(FilledPattern &pattern) {
     } else {
         Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions,
                                                                   pattern.desiredPattern.preferredDirection(
-                                                                          startingPoint.positions, pattern.stepLength));
+                                                                          startingPoint.positions, pattern.config.getStepLength()));
         Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions,
                                                                     -pattern.desiredPattern.preferredDirection(
                                                                             startingPoint.positions,
-                                                                            pattern.stepLength));
+                                                                            pattern.config.getStepLength()));
 
         Path newPath(newPathForward, newPathBackwards);
 

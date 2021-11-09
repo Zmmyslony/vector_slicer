@@ -10,17 +10,14 @@
 #include <valarray>
 #include <algorithm>
 
-bool isOnTheLeftSideOfCorner(std::valarray<int> point, std::valarray<int> cornerFirst,
-                             std::valarray<int> cornerSecond);
-
 bool isInRectangle(std::valarray<int> &point, std::valarray<int> &cornerFirst,
                    std::valarray<int> &cornerSecond, std::valarray<int> &cornerThird,
                    std::valarray<int> &cornerFourth);
 
-std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> pointFirst,
-                                                 std::valarray<int> pointSecond, int radius);
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
+                                                 const std::valarray<int> &pointSecond, int radius);
 
-std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius);
+//std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius);
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius);
 

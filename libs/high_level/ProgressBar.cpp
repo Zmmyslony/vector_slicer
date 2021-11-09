@@ -7,7 +7,7 @@
 
 void showProgress(double progress) {
     int barWidth = 70;
-    int pos = barWidth * progress;
+    int pos = (int)(barWidth * progress);
     std::cout << "\r[";
     for (int i = 0; i < barWidth; ++i) {
         if (i <= pos) {

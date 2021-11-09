@@ -113,6 +113,6 @@ void generatePrintPatternMultithreading(std::string &directorPath, int minSeed, 
     double bestDisagreement = disagreements[bestSeed];
 
     printf("\n%i seeds from %i to %i were tested. Seed %i had the lowest disagreement of %.2f\n",
-           maxSeed - minSeed + 1, minSeed, maxSeed, bestSeed, bestDisagreement);
-    generateAndExportPrintPattern(directorPath, desiredPattern, bestSeed);
+           maxSeed - minSeed + 1, minSeed, maxSeed, bestSeed + minSeed, bestDisagreement);
+    generateAndExportPrintPattern(directorPath, desiredPattern, bestSeed + minSeed);
 }

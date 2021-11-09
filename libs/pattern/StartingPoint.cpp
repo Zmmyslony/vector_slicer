@@ -32,15 +32,22 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
         if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
                             pattern.collisionList, positions, pattern.desiredPattern.dimensions)) {
             isStartingPointFound = true;
+            return;
         }
     }
+    tries = MAX_RANDOM_SEARCH_TRIES;
 }
 
 
 std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     while (!isStartingPointFound) {
         if (tries < MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
-            findStartPointRandomly(pattern);
+            if (pattern.isFillingMethodRandom) {
+                findStartPointRandomly(pattern);
+            }
+            else {
+                findStartPointConsecutively(pattern);
+            }
         } else if (tries == MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
             tries = 0;
             unsigned int previousNumberOfFillablePoints = pattern.pointsToFill.size();
