@@ -5,14 +5,21 @@
 #include "DesiredPattern.h"
 #include "../auxiliary/TableReading.h"
 #include "../auxiliary/SimpleMathOperations.h"
-
+#include "../auxiliary/PerimeterChecking.h"
+#include "../auxiliary/ValarrayOperations.h"
 
 DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,
                                std::string &yVectorFieldFilename) :
         shapeMatrix(readFileToTableInt(shapeFilename)),
         xFieldPreferred(readFileToTableDouble(xVectorFieldFilename)),
         yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)),
-        dimensions(getTableDimensions(shapeFilename)) {}
+        dimensions(getTableDimensions(shapeFilename)) {
+    perimeterList = findSortedPerimeters(shapeMatrix, dimensions);
+//    printArray(perimeterList);
+}
+
+
+
 
 
 std::valarray<int> DesiredPattern::preferredDirection(std::valarray<int> position, int distance) {

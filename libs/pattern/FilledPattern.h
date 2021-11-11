@@ -43,6 +43,12 @@ class FilledPattern {
     std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint, std::valarray<int> &previousDirection,
                                                 std::vector<std::valarray<int>> &perimeterList);
 
+    std::valarray<int> getNewPointOnEdge(const std::valarray<int>& currentPoint, const std::valarray<int>& previousDirection);
+
+    std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint,
+                                                std::valarray<int> &previousDirection,
+                                                int distance);
+
     std::vector<std::valarray<int>> findPerimeterOfTheShape();
 
     std::vector<std::valarray<int>> findLineThroughShape();
@@ -52,6 +58,9 @@ class FilledPattern {
     std::mt19937 randomEngine;
     std::uniform_int_distribution<unsigned int> distribution;
 
+    std::valarray<double> getDirector(const std::valarray<int> &positions);
+
+    std::vector<std::valarray<int>> getSpacedPerimeter(const double &distance);
 public:
     FillingConfig config;
     bool isFillingMethodRandom = true;

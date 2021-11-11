@@ -11,6 +11,7 @@
 class DesiredPattern {
 public:
     std::valarray<int> dimensions;
+    std::vector<std::valarray<int>> perimeterList;
     std::vector<std::vector<int>> shapeMatrix;
     std::vector<std::vector<double>> xFieldPreferred;
     std::vector<std::vector<double>> yFieldPreferred;

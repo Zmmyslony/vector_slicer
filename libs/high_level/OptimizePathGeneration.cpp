@@ -15,5 +15,6 @@ FillingConfig findBestConfig(const std::string &directorPath, int threads, int i
     FilledPattern pattern(desiredPattern, initialConfig, seed);
     fillWithPaths(pattern);
     QuantifyPattern patternAgreement(pattern);
+    return initialConfig;
 }
 

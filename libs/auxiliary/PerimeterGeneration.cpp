@@ -17,6 +17,7 @@ std::vector<std::valarray<int>> generatePerimeterList(int radius) {
     return perimeterList;
 }
 
+
 //std::vector<std::valarray<int>> generateAreaList(int radius) {
 //    std::vector<std::valarray<int>> areaList;
 //    for (int i = -radius; i <= radius; i++) {

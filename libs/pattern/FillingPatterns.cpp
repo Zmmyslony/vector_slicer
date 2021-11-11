@@ -3,18 +3,18 @@
 //
 
 #include "FillingPatterns.h"
-#include "StartingPoint.h"
 #include <iostream>
 
-bool tryGeneratingNewPath(FilledPattern &pattern) {
-    StartingPoint startingPoint;
+bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint) {
+    startingPoint.refresh();
     std::valarray<int> startingCoordinates = startingPoint.findStartPoint(pattern);
     if (startingPoint.positions[0] == -1 || startingPoint.positions[1] == -1) {
         return false;
     } else {
         Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions,
                                                                   pattern.desiredPattern.preferredDirection(
-                                                                          startingPoint.positions, pattern.config.getStepLength()));
+                                                                          startingPoint.positions,
+                                                                          pattern.config.getStepLength()));
         Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions,
                                                                     -pattern.desiredPattern.preferredDirection(
                                                                             startingPoint.positions,
@@ -33,7 +33,8 @@ bool tryGeneratingNewPath(FilledPattern &pattern) {
 
 void fillWithPaths(FilledPattern &pattern) {
     bool isThereAnySpotFillable = true;
+    StartingPoint startingPoint;
     while (isThereAnySpotFillable) {
-        isThereAnySpotFillable = tryGeneratingNewPath(pattern);
+        isThereAnySpotFillable = tryGeneratingNewPath(pattern, startingPoint);
     }
 }

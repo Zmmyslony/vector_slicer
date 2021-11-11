@@ -13,12 +13,13 @@ class StartingPoint {
     bool isStartingPointFound = false;
     bool areThereFillablePointsRemaining = true;
     int tries;
+    int previouslyFoundPoint = 0;
 
 public:
     explicit StartingPoint();
 
     std::valarray<int> positions;
-
+    void refresh();
     void findStartPointConsecutively(FilledPattern &pattern);
 
     void findStartPointRandomly(FilledPattern &pattern);

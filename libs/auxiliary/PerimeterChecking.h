@@ -18,6 +18,13 @@ bool isPerimeterFree(std::vector<std::vector<int>> &filledTable, std::vector<std
                      std::vector<std::valarray<int>> &perimeterList, std::valarray<int> &startPositions,
                      std::valarray<int> &sizes);
 
-bool isOnEdge(std::vector<std::vector<int>> &shapeTable, std::valarray<int> &startPositions, std::valarray<int> &sizes);
+bool isOnEdge(const std::vector<std::vector<int>> &shapeTable, const std::valarray<int> &startPositions,
+              const std::valarray<int> &sizes);
+
+std::vector<std::valarray<int>>
+findAllPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::valarray<int> &sizes);
+
+std::vector<std::valarray<int>>
+findSortedPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::valarray<int> &sizes);
 
 #endif //VECTOR_SLICER_PERIMETERCHECKING_H

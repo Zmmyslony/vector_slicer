@@ -4,6 +4,8 @@
 
 #include "ValarrayOperations.h"
 #include "ValarrayConversion.h"
+#include <stdexcept>
+#include <iostream>
 
 double generalNorm(const std::valarray<double> &array, const double &exponent) {
     double sum = 0;
@@ -31,4 +33,54 @@ std::valarray<double> normalize(const std::valarray<double> &array) {
 
 std::valarray<double> normalize(const std::valarray<int> &array) {
     return normalize(itodArray(array));
+}
+
+double dot(const std::valarray<double> &array1, const std::valarray<double> &array2) {
+    double dotProduct = 0;
+    if (array1.size() != array2.size()) {
+        throw std::invalid_argument("Dot: Dotted array are of different size.\n");
+    }
+    for (int i = 0; i < array1.size(); i++) {
+        dotProduct += array1[i] * array2[i];
+    }
+    return dotProduct;
+}
+
+double dot(const std::valarray<int> &array1, const std::valarray<int> &array2) {
+    return dot(itodArray(array1), itodArray(array2));
+}
+
+std::valarray<double> perpendicular(std::valarray<double> vector) {
+    if (vector.size() != 2) {
+        throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
+    }
+    return std::valarray<double>({-vector[1], vector[0]});
+}
+
+
+std::valarray<int> perpendicular(std::valarray<int> vector) {
+    return dtoiArray(perpendicular(itodArray(vector)));
+}
+
+
+void printArray(const std::vector<std::valarray<int>> &array) {
+    for (auto &row: array) {
+        std::cout << "(";
+        for (auto &element: row) {
+            std::cout << element << ", ";
+        }
+        std::cout << "), ";
+    }
+    std::cout << std::endl;
+}
+
+void printArray(const std::vector<std::valarray<double>> &array) {
+    for (auto &row: array) {
+        std::cout << "(";
+        for (auto &element: row) {
+            std::cout << element << ", ";
+        }
+        std::cout << "), ";
+    }
+    std::cout << std::endl;
 }

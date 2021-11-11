@@ -27,11 +27,13 @@ void StartingPoint::findStartPointRandomly(FilledPattern &pattern) {
 
 
 void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
-    for (int i = 0; i < pattern.pointsToFill.size(); i++) {
+    for (int i = previouslyFoundPoint; i < pattern.pointsToFill.size(); i++) {
         positions = pattern.pointsToFill[i];
-        if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
+        if (pattern.desiredPattern.shapeMatrix[positions[0]][positions[1]] &&
+            isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
                             pattern.collisionList, positions, pattern.desiredPattern.dimensions)) {
             isStartingPointFound = true;
+            previouslyFoundPoint = i;
             return;
         }
     }
@@ -39,28 +41,36 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 }
 
 
+//TODO Make this function clearer
+
 std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     while (!isStartingPointFound) {
         if (tries < MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
             if (pattern.isFillingMethodRandom) {
                 findStartPointRandomly(pattern);
-            }
-            else {
+            } else {
                 findStartPointConsecutively(pattern);
             }
         } else if (tries == MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
             tries = 0;
+            previouslyFoundPoint = 0;
             unsigned int previousNumberOfFillablePoints = pattern.pointsToFill.size();
             pattern.findRemainingFillablePoints();
             areThereFillablePointsRemaining = !pattern.pointsToFill.empty();
             if (previousNumberOfFillablePoints == pattern.pointsToFill.size()) {
                 positions = {-1, -1};
-                isStartingPointFound = true;
+                return positions;
             }
         } else {
             positions = {-1, -1};
-            isStartingPointFound = true;
+            return positions;
         }
     }
     return positions;
+}
+
+void StartingPoint::refresh() {
+    tries = 0;
+    isStartingPointFound = false;
+    areThereFillablePointsRemaining = true;
 }
