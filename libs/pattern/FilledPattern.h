@@ -77,7 +77,7 @@ public:
 
     FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength);
 
-    FilledPattern(DesiredPattern desiredPattern, FillingConfig config, int seed);
+    FilledPattern(DesiredPattern desiredPattern, FillingConfig config, unsigned int seed);
 
     void addNewPath(Path &newPath);
 

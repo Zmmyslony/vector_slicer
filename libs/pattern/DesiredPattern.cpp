@@ -15,7 +15,6 @@ DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorF
         yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)),
         dimensions(getTableDimensions(shapeFilename)) {
     perimeterList = findSortedPerimeters(shapeMatrix, dimensions);
-//    printArray(perimeterList);
 }
 
 

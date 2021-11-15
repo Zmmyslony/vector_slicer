@@ -18,15 +18,13 @@
 #include "../auxiliary/ValarrayOperations.h"
 
 
-FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength,
-                             unsigned int seed) :
+FilledPattern::FilledPattern(DesiredPattern desiredPattern, FillingConfig config, unsigned int seed) :
         desiredPattern(desiredPattern),
         numberOfTimesFilled(desiredPattern.dimensions[0], std::vector<int>(desiredPattern.dimensions[1])),
         xFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
         yFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
-        collisionList(generatePerimeterList(collisionRadius)),
-        config(FillingConfig(RandomPerimeter, collisionRadius, stepLength, 1.0, stepLength, printRadius)) {
-
+        config(config) {
+    collisionList = generatePerimeterList(config.getCollisionRadius());
     randomEngine = std::mt19937(seed);
     pointsInCircle = findPointsInCircle(config.getPrintRadius());
     pointsToFill = findInitialStartingPoints(config.getInitialFillingMethod());
@@ -34,71 +32,86 @@ FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int
     distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
 }
 
+//FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength,
+//                             unsigned int seed) :
+//        desiredPattern(desiredPattern),
+//        numberOfTimesFilled(desiredPattern.dimensions[0], std::vector<int>(desiredPattern.dimensions[1])),
+//        xFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
+//        yFieldFilled(desiredPattern.dimensions[0], std::vector<double>(desiredPattern.dimensions[1])),
+//        config(FillingConfig(RandomRadial, collisionRadius, stepLength, 1.0, stepLength, printRadius)) {
+//
+//    collisionList = generatePerimeterList(config.getCollisionRadius());
+//    randomEngine = std::mt19937(seed);
+//    pointsInCircle = findPointsInCircle(config.getPrintRadius());
+//    pointsToFill = findInitialStartingPoints(config.getInitialFillingMethod());
+//    unsigned int numberOfFillablePoints = pointsToFill.size();
+//    distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
+//}
 
-FilledPattern::FilledPattern(DesiredPattern desiredPattern, FillingConfig config, int seed) :
-        desiredPattern(std::move(desiredPattern)),
-        config(config) {
-    randomEngine = std::mt19937(seed);
+FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength,
+                             unsigned int seed) :
+        FilledPattern(std::move(desiredPattern),
+                      FillingConfig(RandomRadial, collisionRadius, stepLength, 1.0, stepLength, printRadius),
+                      std::move(seed)) {
 }
-
 
 FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength) :
         FilledPattern::FilledPattern(std::move(desiredPattern), printRadius, collisionRadius, stepLength, 0) {}
 
 
-std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
-    std::vector<std::valarray<int>> perimeterList;
-    for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
-        for (int j = 0; j < desiredPattern.dimensions[1]; j++) {
-            std::valarray<int> currentPos = {i, j};
-            if (isOnEdge(desiredPattern.shapeMatrix, currentPos, desiredPattern.dimensions)) {
-                return (currentPos);
-            }
-        }
-    }
-    return {-1, -1};
-}
-
-std::valarray<int> FilledPattern::findNextPointOnPerimeter(std::valarray<int> &currentPoint,
-                                                           std::valarray<int> &previousDirection,
-                                                           std::vector<std::valarray<int>> &perimeterList) {
-    for (auto &displacement: perimeterList) {
-        std::valarray<int> newPoint = currentPoint + displacement;
-        if (0 <= newPoint[0] && newPoint[0] < desiredPattern.dimensions[0] &&
-            0 <= newPoint[1] && newPoint[1] < desiredPattern.dimensions[1]) {
-            double direction = dot(previousDirection, displacement);
-            if (direction >= 0 && isOnEdge(desiredPattern.shapeMatrix, newPoint, desiredPattern.dimensions)) {
-                return newPoint;
-            }
-        }
-    }
-    return currentPoint;
-}
-
-
-std::vector<std::valarray<int>> FilledPattern::findPerimeterOfTheShape() {
-    std::vector<std::valarray<int>> listOfPerimeters;
-    std::valarray<int> firstPointOnPerimeter = findFirstPointOnPerimeter();
-    listOfPerimeters.push_back(firstPointOnPerimeter);
-
-    std::valarray<int> previousDirection = {1, 0};
-    std::vector<std::valarray<int>> perimeterSlightlyLargerThanPrint = generatePerimeterList(
-            2 * config.getPrintRadius());
-
-    std::valarray<int> previousPoint = firstPointOnPerimeter;
-    std::valarray<int> currentPoint = findNextPointOnPerimeter(firstPointOnPerimeter, previousDirection,
-                                                               perimeterSlightlyLargerThanPrint);
-
-
-    listOfPerimeters.push_back(currentPoint);
-    while (norm(itodArray(firstPointOnPerimeter - currentPoint)) > config.getPrintRadius()) {
-        previousDirection = currentPoint - previousPoint;
-        previousPoint = currentPoint;
-        currentPoint = findNextPointOnPerimeter(currentPoint, previousDirection, perimeterSlightlyLargerThanPrint);
-        listOfPerimeters.push_back(currentPoint);
-    }
-    return listOfPerimeters;
-}
+//std::valarray<int> FilledPattern::findFirstPointOnPerimeter() {
+//    std::vector<std::valarray<int>> perimeterList;
+//    for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
+//        for (int j = 0; j < desiredPattern.dimensions[1]; j++) {
+//            std::valarray<int> currentPos = {i, j};
+//            if (isOnEdge(desiredPattern.shapeMatrix, currentPos, desiredPattern.dimensions)) {
+//                return (currentPos);
+//            }
+//        }
+//    }
+//    return {-1, -1};
+//}
+//
+//std::valarray<int> FilledPattern::findNextPointOnPerimeter(std::valarray<int> &currentPoint,
+//                                                           std::valarray<int> &previousDirection,
+//                                                           std::vector<std::valarray<int>> &perimeterList) {
+//    for (auto &displacement: perimeterList) {
+//        std::valarray<int> newPoint = currentPoint + displacement;
+//        if (0 <= newPoint[0] && newPoint[0] < desiredPattern.dimensions[0] &&
+//            0 <= newPoint[1] && newPoint[1] < desiredPattern.dimensions[1]) {
+//            double direction = dot(previousDirection, displacement);
+//            if (direction >= 0 && isOnEdge(desiredPattern.shapeMatrix, newPoint, desiredPattern.dimensions)) {
+//                return newPoint;
+//            }
+//        }
+//    }
+//    return currentPoint;
+//}
+//
+//
+//std::vector<std::valarray<int>> FilledPattern::findPerimeterOfTheShape() {
+//    std::vector<std::valarray<int>> listOfPerimeters;
+//    std::valarray<int> firstPointOnPerimeter = findFirstPointOnPerimeter();
+//    listOfPerimeters.push_back(firstPointOnPerimeter);
+//
+//    std::valarray<int> previousDirection = {1, 0};
+//    std::vector<std::valarray<int>> perimeterSlightlyLargerThanPrint = generatePerimeterList(
+//            2 * config.getPrintRadius());
+//
+//    std::valarray<int> previousPoint = firstPointOnPerimeter;
+//    std::valarray<int> currentPoint = findNextPointOnPerimeter(firstPointOnPerimeter, previousDirection,
+//                                                               perimeterSlightlyLargerThanPrint);
+//
+//
+//    listOfPerimeters.push_back(currentPoint);
+//    while (norm(itodArray(firstPointOnPerimeter - currentPoint)) > config.getPrintRadius()) {
+//        previousDirection = currentPoint - previousPoint;
+//        previousPoint = currentPoint;
+//        currentPoint = findNextPointOnPerimeter(currentPoint, previousDirection, perimeterSlightlyLargerThanPrint);
+//        listOfPerimeters.push_back(currentPoint);
+//    }
+//    return listOfPerimeters;
+//}
 
 
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {

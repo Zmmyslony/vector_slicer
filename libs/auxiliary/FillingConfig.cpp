@@ -42,46 +42,6 @@ void FillingConfig::printConfig() {
     std::cout << message;
 }
 
-void FillingConfig::setCollisionRadius(int radius) {
-    collisionRadius = radius;
-}
-
-void FillingConfig::setInitialFillingMethod(FillingMethod method) {
-    fillingMethod = method;
-}
-
-void FillingConfig::setInitialFillingMethodToRandomPerimeter() {
-    fillingMethod = RandomPerimeter;
-}
-
-void FillingConfig::setInitialFillingMethodToConsecutivePerimeter() {
-    fillingMethod = ConsecutivePerimeter;
-}
-
-void FillingConfig::setInitialFillingMethodToRandomRadial() {
-    fillingMethod = RandomRadial;
-}
-
-void FillingConfig::setInitialFillingMethodToConsecutiveRadial() {
-    fillingMethod = ConsecutiveRadial;
-}
-
-void FillingConfig::setRepulsion(double repulsionCoefficient) {
-    repulsion = repulsionCoefficient;
-}
-
-void FillingConfig::setStepLength(int step) {
-    stepLength = step;
-}
-
-void FillingConfig::setMinimalStepLength(int step) {
-    minimalStepLength = step;
-}
-
-void FillingConfig::setPrintRadius(int radius) {
-    printRadius = radius;
-}
-
 FillingMethod FillingConfig::getInitialFillingMethod() const {
     return fillingMethod;
 }
@@ -108,13 +68,12 @@ int FillingConfig::getPrintRadius() const {
 
 ConfigOptions stringToConfig(std::string stringOption) {
     static std::unordered_map<std::string, ConfigOptions> const mapping = {
-            {"InitialFillingMethod",   ConfigOptions::InitialFillingMethod},
-            {"IsInitialFillingRandom", ConfigOptions::IsInitialFillingRandom},
-            {"CollisionRadius",        ConfigOptions::CollisionRadius},
-            {"StepLength",             ConfigOptions::StepLength},
-            {"PrintRadius",            ConfigOptions::PrintRadius},
-            {"Repulsion",              ConfigOptions::Repulsion},
-            {"MinimalStepLength",      ConfigOptions::MinimalStepLength}
+            {"InitialFillingMethod", ConfigOptions::InitialFillingMethod},
+            {"CollisionRadius",      ConfigOptions::CollisionRadius},
+            {"StepLength",           ConfigOptions::StepLength},
+            {"PrintRadius",          ConfigOptions::PrintRadius},
+            {"Repulsion",            ConfigOptions::Repulsion},
+            {"MinimalStepLength",    ConfigOptions::MinimalStepLength}
     };
     auto it = mapping.find(stringOption);
     if (it != mapping.end()) {
@@ -136,6 +95,30 @@ FillingMethod stringToMethod(std::string stringOption) {
 }
 
 
+void FillingConfig::setConfigOption(ConfigOptions option, std::string value) {
+    switch (option) {
+        case InitialFillingMethod:
+            fillingMethod = stringToMethod(value);
+            break;
+        case CollisionRadius:
+            collisionRadius = std::stoi(value);
+            break;
+        case StepLength:
+            stepLength = std::stoi(value);
+            break;
+        case PrintRadius:
+            printRadius = std::stoi(value);
+            break;
+        case Repulsion:
+            repulsion = std::stod(value);
+            break;
+        case MinimalStepLength:
+            minimalStepLength = std::stoi(value);
+            break;
+    }
+}
+
+
 void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
     std::string parameterName = line[0];
     std::transform(parameterName.begin(), parameterName.end(), parameterName.begin(),
@@ -143,28 +126,32 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
     std::string value = line[1];
 
     ConfigOptions option = stringToConfig(parameterName);
-
-    switch (option) {
-        case InitialFillingMethod:
-            setInitialFillingMethod(stringToMethod(value));
-            break;
-        case CollisionRadius:
-            setCollisionRadius(std::stoi(value));
-            break;
-        case StepLength:
-            setStepLength(std::stoi(value));
-            break;
-        case PrintRadius:
-            setPrintRadius(std::stoi(value));
-            break;
-        case Repulsion:
-            setRepulsion(std::stod(value));
-            break;
-        case MinimalStepLength:
-            setMinimalStepLength(std::stoi(value));
-            break;
-    }
+    setConfigOption(option, value);
 }
+
+
+//auto FillingConfig::getConfigOption(ConfigOptions option) {
+//    switch (option){
+//        case InitialFillingMethod:
+//            return fillingMethod;
+//            break;
+//        case CollisionRadius:
+//            return collisionRadius;
+//            break;
+//        case StepLength:
+//            return stepLength;
+//            break;
+//        case PrintRadius:
+//            return printRadius ;
+//            break;
+//        case Repulsion:
+//            return repulsion;
+//            break;
+//        case MinimalStepLength:
+//            return minimalStepLength;
+//            break;
+//    }
+//}
 
 
 FillingConfig::FillingConfig(std::string &configPath) {

@@ -12,8 +12,7 @@ enum FillingMethod {
     ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial
 };
 enum ConfigOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, MinimalStepLength,
-    IsInitialFillingRandom
+    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, MinimalStepLength
 };
 
 
@@ -29,26 +28,7 @@ class FillingConfig {
 
 public:
     void printConfig();
-
-    void setInitialFillingMethod(FillingMethod method);
-
-    void setCollisionRadius(int radius);
-
-    void setRepulsion(double repulsionCoefficient);
-
-    void setStepLength(int step);
-
-    void setMinimalStepLength(int step);
-
-    void setPrintRadius(int radius);
-
-    void setInitialFillingMethodToRandomPerimeter();
-
-    void setInitialFillingMethodToConsecutivePerimeter();
-
-    void setInitialFillingMethodToRandomRadial();
-
-    void setInitialFillingMethodToConsecutiveRadial();
+    void setConfigOption(ConfigOptions option, std::string value);
 
     FillingMethod getInitialFillingMethod() const;
 
@@ -68,6 +48,9 @@ public:
     FillingConfig(FillingMethod newPerimeterFillingMethod, int newCollisionRadius,
                   int newMinimalStepLength, double newRepulsion, int newStepLength,
                   int newPrintRadius);
+
+
+//    auto getConfigOption(ConfigOptions option);
 };
 
 

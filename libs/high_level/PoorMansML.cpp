@@ -4,6 +4,12 @@
 
 #include "PoorMansML.h"
 
-//std::vector<FillingConfig> listOfConfigs(FillingConfig initialConfig, ConfigOptions option) {
+//std::vector<FillingConfig>
+//generateListOfConfigs(FillingConfig initialConfig, ConfigOptions option, double stepValue, int rangeOfConfigs) {
+//    std::vector<FillingConfig> newSetOfConfigs;
+//
+//}
+//
+//FillingConfig findBestConfig(const std::vector<FillingConfig> &listOfConfigs) {
 //
 //}
