@@ -8,6 +8,10 @@
 #include <valarray>
 #include <vector>
 
+std::valarray<double> itodArray(const std::valarray<int> &intArray);
+
+std::valarray<int> dtoiArray(const std::valarray<double> &doubleArray);
+
 double generalNorm(const std::valarray<double> &array, const double &exponent);
 
 double norm(const std::valarray<double> &array);

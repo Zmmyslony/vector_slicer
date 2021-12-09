@@ -7,6 +7,22 @@
 #include <stdexcept>
 #include <iostream>
 
+std::valarray<double> itodArray(const std::valarray<int> &intArray) {
+    std::valarray<double> doubleArray(intArray.size());
+    for (int i = 0; i < intArray.size(); i++) {
+        doubleArray[i] = (double) intArray[i];
+    }
+    return doubleArray;
+}
+
+std::valarray<int> dtoiArray(const std::valarray<double> &doubleArray) {
+    std::valarray<int> intArray(doubleArray.size());
+    for (int i = 0; i < doubleArray.size(); i++) {
+        intArray[i] = lround(doubleArray[i]);
+    }
+    return intArray;
+}
+
 double generalNorm(const std::valarray<double> &array, const double &exponent) {
     double sum = 0;
     for (auto &element: array) {
