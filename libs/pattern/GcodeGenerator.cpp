@@ -4,7 +4,6 @@
 
 #include "GcodeGenerator.h"
 #include "../auxiliary/ValarrayOperations.h"
-#include "../auxiliary/ValarrayConversion.h"
 #include <iostream>
 #include <fstream>
 
@@ -45,7 +44,7 @@ GcodeGenerator::GcodeGenerator(FilledPattern pattern) :
 
 
 void GcodeGenerator::startGeneratingPrintPathsFrom(std::valarray<int> startingPoint) {
-    std::valarray<int> currentPoint = startingPoint;
+    std::valarray<int> currentPoint = std::move(startingPoint);
     std::vector<std::valarray<int>> localStartAndEndPositions = startAndEndPositions;
     orderingOfPaths.clear();
     isPathInCorrectDirection.clear();
@@ -118,7 +117,7 @@ std::valarray<int> GcodeGenerator::findBestStartingPoints() {
 }
 
 
-void GcodeGenerator::exportToPath(std::string filename) {
+void GcodeGenerator::exportToPath(const std::string &filename) {
     std::ofstream file(filename);
     if (file.is_open()) {
         file << header << "\n";

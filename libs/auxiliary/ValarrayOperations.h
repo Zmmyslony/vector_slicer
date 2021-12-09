@@ -30,7 +30,7 @@ double dot(const std::valarray<int> &array1, const std::valarray<int> &array2);
 
 std::valarray<double> perpendicular(std::valarray<double> vector);
 
-std::valarray<int> perpendicular(std::valarray<int> vector);
+std::valarray<int> perpendicular(const std::valarray<int> &vector);
 
 void printArray(const std::vector<std::valarray<int>> &array);
 

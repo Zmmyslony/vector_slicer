@@ -19,7 +19,7 @@
 
 //#include "mpi.h"
 
-FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern desiredPattern, int seed) {
+FilledPattern generateAPrintPattern(const std::string &directorPath, const DesiredPattern &desiredPattern, int seed) {
     FilledPattern pattern = openFilledPatternFromDirectoryAndPattern(directorPath, desiredPattern, seed);
     fillWithPaths(pattern);
 
@@ -49,7 +49,7 @@ void generateAndExportPrintPattern(const std::string &directorPath, const Desire
 }
 
 
-void checkSeed(DesiredPattern desiredPattern, std::string directorPath, int seed, int &bestSeed,
+void checkSeed(const DesiredPattern &desiredPattern, const std::string &directorPath, int seed, int &bestSeed,
                double &bestDisagreement) {
     FilledPattern testPattern = generateAPrintPattern(directorPath, desiredPattern, seed);
     QuantifyPattern patternAgreement(testPattern);
@@ -88,7 +88,7 @@ void generatePrintPattern(std::string &directorPath, int minSeed, int maxSeed) {
 
 
 unsigned int indexOfSmallestElement(std::vector<double> agreementArray) {
-    std::vector<double>::iterator it = std::min_element(std::begin(agreementArray), std::end(agreementArray));
+    auto it = std::min_element(std::begin(agreementArray), std::end(agreementArray));
     return std::distance(std::begin(agreementArray), it);
 }
 

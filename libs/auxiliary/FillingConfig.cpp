@@ -5,7 +5,6 @@
 #include "FillingConfig.h"
 
 #include <algorithm>
-#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
@@ -186,7 +185,6 @@ FillingConfig::FillingConfig(std::string &configPath) {
         }
         readLineOfConfig(row);
     }
-//    printConfig();
 }
 
 FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,

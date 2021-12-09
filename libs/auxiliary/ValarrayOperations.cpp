@@ -3,7 +3,6 @@
 //
 
 #include "ValarrayOperations.h"
-#include "ValarrayConversion.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -74,7 +73,7 @@ std::valarray<double> perpendicular(std::valarray<double> vector) {
 }
 
 
-std::valarray<int> perpendicular(std::valarray<int> vector) {
+std::valarray<int> perpendicular(const std::valarray<int> &vector) {
     return dtoiArray(perpendicular(itodArray(vector)));
 }
 

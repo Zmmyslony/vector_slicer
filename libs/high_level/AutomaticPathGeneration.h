@@ -7,7 +7,7 @@
 
 #include "../pattern/FilledPattern.h"
 
-FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern desiredPattern, int seed);
+FilledPattern generateAPrintPattern(const std::string &directorPath, const DesiredPattern &desiredPattern, int seed);
 
 void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed);
 

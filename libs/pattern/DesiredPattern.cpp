@@ -7,7 +7,6 @@
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/PerimeterChecking.h"
 #include "../auxiliary/ValarrayOperations.h"
-#include "../auxiliary/ValarrayConversion.h"
 
 DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,
                                std::string &yVectorFieldFilename) :

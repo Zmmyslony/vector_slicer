@@ -61,10 +61,10 @@ public:
     std::vector<std::valarray<int>> collisionList;
     std::vector<std::vector<int>> numberOfTimesFilled;
 
-    FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength,
+    FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength,
                   unsigned int seed);
 
-    FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength);
+    FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength);
 
     FilledPattern(const DesiredPattern &newDesiredPattern, FillingConfig newConfig);
 

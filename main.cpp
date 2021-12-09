@@ -27,7 +27,7 @@ int main() {
     allPatterns = {radial};
     for (auto &patternType: allPatterns) {
 //        generatePrintPatternMultithreading(patternType, 1, 10, 12);
-        findBestConfig(patternType, 1, 10, 12);
+        findBestConfig(patternType, 1, 50, 12);
     }
     return 0;
 }

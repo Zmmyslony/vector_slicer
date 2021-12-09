@@ -28,7 +28,7 @@ class GcodeGenerator {
 public:
     explicit GcodeGenerator(FilledPattern pattern);
 
-    void exportToPath(std::string gcodePath);
+    void exportToPath(const std::string &filename);
 
     std::valarray<int> findBestStartingPoints();
 };

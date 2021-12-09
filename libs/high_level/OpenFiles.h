@@ -18,8 +18,8 @@ FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath, u
 std::vector<int> readConfigTable(const std::string &configPath);
 
 FilledPattern
-openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern, unsigned int seed);
+openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern, unsigned int seed);
 
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern);
+FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern);
 
 #endif //VECTOR_SLICER_OPENFILES_H

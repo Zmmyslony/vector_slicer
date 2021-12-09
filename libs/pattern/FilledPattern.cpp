@@ -14,7 +14,6 @@
 #include "../auxiliary/PerimeterGeneration.h"
 #include "../auxiliary/PerimeterChecking.h"
 #include "../auxiliary/SimpleMathOperations.h"
-#include "../auxiliary/ValarrayConversion.h"
 #include "../auxiliary/ValarrayOperations.h"
 
 
@@ -36,15 +35,14 @@ FilledPattern::FilledPattern(const DesiredPattern &newDesiredPattern, FillingCon
 }
 
 
-FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength,
+FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength,
                              unsigned int seed) :
-        FilledPattern(std::move(desiredPattern),
-                      FillingConfig(RandomPerimeter, collisionRadius, 2 * printRadius, 1.0, stepLength, printRadius,
+        FilledPattern(desiredPattern,FillingConfig(RandomPerimeter, collisionRadius, 2 * printRadius, 1.0, stepLength, printRadius,
                                     seed)) {
 }
 
-FilledPattern::FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength) :
-        FilledPattern::FilledPattern(std::move(desiredPattern), printRadius, collisionRadius, stepLength, 0) {}
+FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength) :
+        FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) {}
 
 
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {

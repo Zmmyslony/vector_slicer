@@ -54,13 +54,13 @@ FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath) {
 }
 
 FilledPattern
-openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern, unsigned int seed) {
+openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern, unsigned int seed) {
     std::string configPath = directoryPath + "\\config.txt";
     std::vector<int> config = readConfigTable(configPath);
     FilledPattern filledPattern(pattern, config[0], config[1], config[2], seed);
     return filledPattern;
 }
 
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, DesiredPattern &pattern) {
+FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern) {
     return openFilledPatternFromDirectoryAndPattern(directoryPath, pattern, 0);
 }
