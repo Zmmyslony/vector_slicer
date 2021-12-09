@@ -21,6 +21,9 @@ public:
     std::valarray<int> preferredDirection(std::valarray<int> position, int distance);
 
     std::valarray<double> preferredDirection(std::valarray<double> position, int distance);
+
+    bool isInShape(const std::valarray<int> &position);
+    bool isInShape(const std::valarray<double> &position);
 };
 
 

@@ -38,19 +38,6 @@ class FilledPattern {
 
     std::vector<std::valarray<int>> findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints);
 
-    std::valarray<int> findFirstPointOnPerimeter();
-
-    std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint, std::valarray<int> &previousDirection,
-                                                std::vector<std::valarray<int>> &perimeterList);
-
-    std::valarray<int> getNewPointOnEdge(const std::valarray<int>& currentPoint, const std::valarray<int>& previousDirection);
-
-    std::valarray<int> findNextPointOnPerimeter(std::valarray<int> &currentPoint,
-                                                std::valarray<int> &previousDirection,
-                                                int distance);
-
-    std::vector<std::valarray<int>> findPerimeterOfTheShape();
-
     std::vector<std::valarray<int>> findLineThroughShape();
 
     std::vector<std::valarray<int>> findInitialStartingPoints(FillingMethod method);
@@ -60,7 +47,9 @@ class FilledPattern {
 
     std::valarray<double> getDirector(const std::valarray<int> &positions);
 
-    std::vector<std::valarray<int>> getSpacedPerimeter(const double &distance);
+    std::vector<std::valarray<int>>
+    getSpacedLine(const double &distance, const std::vector<std::valarray<int>> &line);
+
 public:
     FillingConfig config;
     bool isFillingMethodRandom = true;
@@ -77,7 +66,7 @@ public:
 
     FilledPattern(DesiredPattern desiredPattern, int printRadius, int collisionRadius, int stepLength);
 
-    FilledPattern(DesiredPattern desiredPattern, FillingConfig config, unsigned int seed);
+    FilledPattern(const DesiredPattern &newDesiredPattern, FillingConfig newConfig);
 
     void addNewPath(Path &newPath);
 
@@ -92,6 +81,8 @@ public:
     unsigned int getNewElement();
 
     void exportToDirectory(std::string &directory) const;
+
+    std::vector<std::valarray<int>> findDualLine(const std::valarray<int> &start);
 };
 
 

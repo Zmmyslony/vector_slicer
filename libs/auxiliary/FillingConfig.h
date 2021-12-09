@@ -12,7 +12,7 @@ enum FillingMethod {
     ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial
 };
 enum ConfigOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, MinimalStepLength
+    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed
 };
 
 
@@ -21,14 +21,16 @@ class FillingConfig {
     int collisionRadius;
     double repulsion;
     int stepLength;
-    int minimalStepLength;
+    int startingPointSeparation;
     int printRadius;
+    unsigned int seed;
 
     void readLineOfConfig(std::vector<std::string> line);
 
 public:
     void printConfig();
-    void setConfigOption(ConfigOptions option, std::string value);
+
+    void setConfigOption(const ConfigOptions &option, const std::string &value);
 
     FillingMethod getInitialFillingMethod() const;
 
@@ -38,19 +40,21 @@ public:
 
     int getStepLength() const;
 
-    int getMinimalStepLength() const;
+    int getStartingPointSeparation() const;
 
     int getPrintRadius() const;
+
+    unsigned int getSeed() const;
 
 
     explicit FillingConfig(std::string &configPath);
 
     FillingConfig(FillingMethod newPerimeterFillingMethod, int newCollisionRadius,
-                  int newMinimalStepLength, double newRepulsion, int newStepLength,
-                  int newPrintRadius);
+                  int newStartPointSeparation, double newRepulsion, int newStepLength,
+                  int newPrintRadius, unsigned int seed);
 
 
-//    auto getConfigOption(ConfigOptions option);
+    std::string getConfigOption(ConfigOptions option);
 };
 
 

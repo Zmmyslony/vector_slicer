@@ -29,7 +29,6 @@ FilledPattern generateAPrintPattern(std::string directorPath, DesiredPattern des
 
 void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed) {
     std::string resultsDirectory = directorPath + R"(\results\)";
-//    std::string patternDirectory = directorPath + R"(\results\seed_)" + std::to_string(seed);
     std::string patternDirectory = directorPath + R"(\results\seed_best)";
     CreateDirectory(resultsDirectory.c_str(), nullptr);
     CreateDirectory(patternDirectory.c_str(), nullptr);

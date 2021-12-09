@@ -7,6 +7,7 @@
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/PerimeterChecking.h"
 #include "../auxiliary/ValarrayOperations.h"
+#include "../auxiliary/ValarrayConversion.h"
 
 DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,
                                std::string &yVectorFieldFilename) :
@@ -53,4 +54,14 @@ std::valarray<double> DesiredPattern::preferredDirection(std::valarray<double> p
                                      yFieldPreferred[xPosition - 1][yPosition]};
     }
     return std::valarray<double>{xField, yField};
+}
+
+
+bool DesiredPattern::isInShape(const std::valarray<int> &position) {
+    return shapeMatrix[position[0]][position[1]];
+}
+
+
+bool DesiredPattern::isInShape(const std::valarray<double> &position) {
+    return isInShape(dtoiArray(position));
 }
