@@ -37,11 +37,13 @@ FilledPattern::FilledPattern(const DesiredPattern &newDesiredPattern, FillingCon
 
 FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength,
                              unsigned int seed) :
-        FilledPattern(desiredPattern,FillingConfig(RandomPerimeter, collisionRadius, 2 * printRadius, 1.0, stepLength, printRadius,
+        FilledPattern(desiredPattern,
+                      FillingConfig(RandomPerimeter, collisionRadius, 2 * printRadius, 1.0, stepLength, printRadius,
                                     seed)) {
 }
 
-FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength) :
+FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength)
+        :
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) {}
 
 
@@ -68,6 +70,7 @@ FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>>
             fillablePointsList.push_back(point);
         }
     }
+//    std::cout << "Number of remaining fillable points: " << listOfPoints.size() << std::endl;
     return fillablePointsList;
 }
 
@@ -142,6 +145,12 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
                                                    desiredPattern.dimensions, config.getRepulsion());
     newPositions -= repulsion;
     newCoordinates = dtoiArray(newPositions);
+    std::valarray<double> realStep = newStep - repulsion;
+
+    if (newCoordinates[0] == currentCoordinates[0] && newCoordinates[1] == currentCoordinates[1] ||
+        dot(realStep, previousStep) <= 0 || norm(realStep) <= 2) {
+        return false;
+    }
 
     if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList, newCoordinates,
                         desiredPattern.dimensions)) {
@@ -152,6 +161,15 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
         currentPath.addPoint(newCoordinates);
 
         newStep = getNewStep(newPositions, length, newStep);
+
+//        std::cout << std::endl;
+//        std::cout << "\tCurrent position: " << positions[0] << ", " << positions[1] << std::endl;
+//        std::cout << "\tCurrent step: " << previousStep[0] << ", " << previousStep[1] << std::endl;
+//        std::cout << "\tCurrent length: " << length << std::endl;
+//        std::cout << "\tNew step: " << newStep[0] << ", " << newStep[1] << std::endl;
+//        std::cout << "\tRepulsion: " << repulsion[0] << ", " << repulsion[1] << std::endl;
+//        std::cout << "\tNew position: " << newPositions[0] << ", " << newPositions[1] << std::endl;
+
         positions = newPositions;
         return true;
     }
@@ -189,7 +207,6 @@ void FilledPattern::addNewPath(Path &newPath) {
 }
 
 unsigned int FilledPattern::getNewElement() {
-
     return distribution(randomEngine);
 }
 
@@ -318,7 +335,7 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
         case RandomRadial:
             randomX = rand() % desiredPattern.dimensions[0];
             randomY = rand() % desiredPattern.dimensions[1];
-            while(!desiredPattern.shapeMatrix[randomX][randomY]) {
+            while (!desiredPattern.shapeMatrix[randomX][randomY]) {
                 randomX = rand() % desiredPattern.dimensions[0];
                 randomY = rand() % desiredPattern.dimensions[1];
             }
@@ -329,7 +346,7 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
         case ConsecutiveRadial:
             randomX = rand() % desiredPattern.dimensions[0];
             randomY = rand() % desiredPattern.dimensions[1];
-            while(!desiredPattern.shapeMatrix[randomX][randomY]) {
+            while (!desiredPattern.shapeMatrix[randomX][randomY]) {
                 randomX = rand() % desiredPattern.dimensions[0];
                 randomY = rand() % desiredPattern.dimensions[1];
             }

@@ -28,7 +28,8 @@ void OptimizedFilling::fillWithPatterns(const DesiredPattern &desiredPattern) {
     FilledPattern pattern(desiredPattern, config);
     fillWithPaths(pattern);
     QuantifyPattern patternAgreement(pattern);
-    disagreement = patternAgreement.calculateCorrectness(3, 1, 10, 1);
+//    config.printConfig();
+    disagreement = patternAgreement.calculateCorrectness(5, 4, 1000, 1, 1, 2, 2, 2);
 }
 
 
@@ -61,11 +62,12 @@ std::vector<FillingConfig> iterateOverFillingMethod(const DesiredPattern &desire
 
 
 std::vector<FillingConfig> iterateOverRepulsion(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                                double increment, int numberOfConfigs) {
+                                                double delta, int numberOfConfigs) {
     std::vector<FillingConfig> listOfConfigs;
+    double increment = delta / numberOfConfigs;
     double initialRepulsion = initialConfig.getRepulsion();
-    for (int i = 0; i <= numberOfConfigs; i++) {
-        double newRepulsion = initialRepulsion + (i - (double) numberOfConfigs / 2) * increment;
+    for (int i = -numberOfConfigs; i <= numberOfConfigs; i++) {
+        double newRepulsion = initialRepulsion + i * increment;
         initialConfig.setConfigOption(Repulsion, std::to_string(newRepulsion));
         listOfConfigs.push_back(initialConfig);
     }
@@ -74,12 +76,12 @@ std::vector<FillingConfig> iterateOverRepulsion(const DesiredPattern &desiredPat
 
 std::vector<FillingConfig>
 iterateOverStartingDistance(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                            double increment, int numberOfConfigs) {
+                            double delta, int numberOfConfigs) {
     std::vector<FillingConfig> listOfConfigs;
+    double increment = delta / numberOfConfigs;
     double initialStartingPointSeparation = initialConfig.getStartingPointSeparation();
-    for (int i = 0; i <= numberOfConfigs; i++) {
-        double newStartingPointSeparation =
-                initialStartingPointSeparation + (i - (double) numberOfConfigs / 2) * increment;
+    for (int i = -numberOfConfigs; i <= numberOfConfigs; i++) {
+        double newStartingPointSeparation = initialStartingPointSeparation + i * increment;
         initialConfig.setConfigOption(StartingPointSeparation, std::to_string(newStartingPointSeparation));
         listOfConfigs.push_back(initialConfig);
     }
@@ -88,12 +90,12 @@ iterateOverStartingDistance(const DesiredPattern &desiredPattern, FillingConfig 
 
 
 std::vector<FillingConfig> iterateOverCollisionRadius(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                                      int increment, int numberOfConfigs) {
+                                                      double delta, int numberOfConfigs) {
     std::vector<FillingConfig> listOfConfigs;
-    int initialCollisionRadius = initialConfig.getCollisionRadius();
-    for (int i = 0; i <= numberOfConfigs; i++) {
-
-        int newCollisionRadius = initialCollisionRadius + (int) (i - (double) numberOfConfigs / 2) * increment;
+    double increment = delta / numberOfConfigs;
+    double initialCollisionRadius = initialConfig.getCollisionRadius();
+    for (int i = -numberOfConfigs; i <= numberOfConfigs; i++) {
+        double newCollisionRadius = initialCollisionRadius + i * increment;
         if (newCollisionRadius > 0) {
             initialConfig.setConfigOption(CollisionRadius, std::to_string(newCollisionRadius));
             listOfConfigs.push_back(initialConfig);
@@ -111,6 +113,22 @@ std::vector<FillingConfig> iterateOverSeeds(const DesiredPattern &desiredPattern
         listOfConfigs.push_back(initialConfig);
     }
     return listOfConfigs;
+}
+
+
+std::vector<FillingConfig>
+generateConfigWithSeeds(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &configList,
+                        int minSeed, int maxSeed) {
+    std::vector<FillingConfig> configsToTest;
+    for (auto &configMethod: configList) {
+        std::vector<FillingConfig> configsWithDifferentSeeds = iterateOverSeeds(desiredPattern, configMethod, minSeed,
+                                                                                maxSeed);
+        for (auto &configSeed: configsWithDifferentSeeds) {
+            configsToTest.push_back(configSeed);
+
+        }
+    }
+    return configsToTest;
 }
 
 
@@ -142,84 +160,88 @@ calculateFillsAndFindTheBestOne(const DesiredPattern &desiredPattern, const std:
 #pragma omp parallel for
     for (int i = 0; i < listOfConfigs.size(); i++) {
         filledPatterns[i].fillWithPatterns(desiredPattern);
+        std::cout.flush();
     }
 
     OptimizedFilling bestFill = selectBestFilling(filledPatterns);
     FillingConfig bestConfig = bestFill.getConfig();
     bestConfig.printConfig();
-    printf("Lowest disagreement %.2f.\n", bestFill.getDisagreement());
-    std::cout.flush();
+    printf("Disagreement %.3f.", bestFill.getDisagreement());
+    std::cout << std::endl << std::endl;
 
     return bestFill;
 }
 
 
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &configList,
-                 int minSeed, int maxSeed) {
-    std::vector<FillingConfig> configsToTest;
-    for (auto &configMethod: configList) {
-        std::vector<FillingConfig> configsWithDifferentSeeds = iterateOverSeeds(desiredPattern, configMethod, minSeed,
-                                                                                maxSeed);
-        for (auto &configSeed: configsWithDifferentSeeds) {
-            configsToTest.push_back(configSeed);
+FillingConfig findBestConfigForSeeds(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &configList,
+                                     int minSeed, int maxSeed, int threads) {
+    std::vector<FillingConfig> configsToTest = generateConfigWithSeeds(desiredPattern, configList, minSeed, maxSeed);
 
-        }
-    }
-    return configsToTest;
+    OptimizedFilling bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
+    FillingConfig bestConfig = bestFill.getConfig();
+    return bestConfig;
 }
 
+
+FillingConfig findBestRepulsion(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
+                                int minSeed, int maxSeed, int threads, double delta, int numberOfConfigs) {
+    std::cout << "Optimizing over repulsion." << std::endl;
+    std::vector<FillingConfig> configList = iterateOverRepulsion(desiredPattern, initialConfig, delta,
+                                                                 numberOfConfigs);
+
+    return findBestConfigForSeeds(desiredPattern, configList, minSeed, maxSeed, threads);
+}
+
+
+FillingConfig findBestCollisionRadius(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
+                                      int minSeed, int maxSeed, int threads, double delta, int numberOfConfigs) {
+    std::cout << "Optimizing over collision radius." << std::endl;
+    std::vector<FillingConfig> configList = iterateOverCollisionRadius(desiredPattern, initialConfig, delta,
+                                                                       numberOfConfigs);
+
+    return findBestConfigForSeeds(desiredPattern, configList, minSeed, maxSeed, threads);
+}
+
+
+FillingConfig findBestStartingDistance(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
+                                       int minSeed, int maxSeed, int threads, double delta, int numberOfConfigs) {
+    std::cout << "Optimizing over starting point separation." << std::endl;
+    std::vector<FillingConfig> configList = iterateOverStartingDistance(desiredPattern, initialConfig, delta,
+                                                                        numberOfConfigs);
+
+    return findBestConfigForSeeds(desiredPattern, configList, minSeed, maxSeed, threads);
+}
 
 
 OptimizedFilling findBestFillingMethod(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
                                        int minSeed, int maxSeed, int threads) {
 
-//    std::vector<FillingConfig> configsWithDifferentMethods = iterateOverFillingMethod(desiredPattern, initialConfig);
-
     initialConfig.setConfigOption(Repulsion, "0.5");
-    std::vector<FillingConfig> configsWithDifferentRepulsion = iterateOverRepulsion(desiredPattern, initialConfig, 0.1,
-                                                                                    10);
-    std::vector<FillingConfig> configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentRepulsion, minSeed,
-                                                                maxSeed);
+    FillingConfig bestConfig = initialConfig;
+    bestConfig.setConfigOption(InitialFillingMethod, "RandomRadial");
 
-    OptimizedFilling bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    FillingConfig bestRepulsionConfig = bestFill.getConfig();
-    std::vector<FillingConfig> configsWithDifferentCollisionRadius = iterateOverCollisionRadius(desiredPattern,
-                                                                                                bestRepulsionConfig, 1,
-                                                                                                3);
-    configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentCollisionRadius, minSeed, maxSeed);
+//    bestConfig.setConfigOption(StartingPointSeparation, "18");
+//    bestConfig.setConfigOption(Repulsion, "1.25");
+//    bestConfig.setConfigOption(CollisionRadius, "3");
+//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, 4, maxSeed, threads, 0.00, 1);
 
-    bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    FillingConfig bestCollisionConfig = bestFill.getConfig();
-    std::vector<FillingConfig> configsWithDifferentStartingDistance = iterateOverStartingDistance(desiredPattern,
-                                                                                                  bestCollisionConfig,
-                                                                                                  1, 5);
-    configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentStartingDistance, minSeed, maxSeed);
+    bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 8, 6);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 1, 8);
+    bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 4);
 
-    bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    FillingConfig bestStartingConfig = bestFill.getConfig();
+    bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 6);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.5, 8);
+    bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 4);
 
-    configsWithDifferentRepulsion = iterateOverRepulsion(desiredPattern, bestStartingConfig, 0.02,
-                                                                                    10);
-    configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentRepulsion, minSeed,
-                                                                maxSeed);
+    bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 6);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.25, 8);
+    bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 1, 4);
 
-    bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    bestRepulsionConfig = bestFill.getConfig();
-    configsWithDifferentCollisionRadius = iterateOverCollisionRadius(desiredPattern,
-                                                                                                bestRepulsionConfig, 1,
-                                                                                                3);
-    configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentCollisionRadius, minSeed, maxSeed);
+    std::cout << "Finding the best seed." << std::endl;
+    bestConfig = findBestConfigForSeeds(desiredPattern, {bestConfig}, minSeed, 10 * maxSeed, threads);
 
-    bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    bestCollisionConfig = bestFill.getConfig();
-    configsWithDifferentStartingDistance = iterateOverStartingDistance(desiredPattern,
-                                                                                                  bestCollisionConfig,
-                                                                                                  1, 5);
-    configsToTest = iterateOverSeeds(desiredPattern, configsWithDifferentStartingDistance, minSeed, maxSeed);
-
-    bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-
+    OptimizedFilling bestFill(bestConfig);
+    bestFill.fillWithPatterns(desiredPattern);
     return bestFill;
 }
 

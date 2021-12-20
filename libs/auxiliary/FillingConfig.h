@@ -18,11 +18,11 @@ enum ConfigOptions {
 
 class FillingConfig {
     FillingMethod fillingMethod;
-    int collisionRadius;
+    double collisionRadius;
     double repulsion;
     int stepLength;
-    int startingPointSeparation;
-    int printRadius;
+    double startingPointSeparation;
+    double printRadius;
     unsigned int seed;
 
     void readLineOfConfig(std::vector<std::string> line);
@@ -34,15 +34,15 @@ public:
 
     FillingMethod getInitialFillingMethod() const;
 
-    int getCollisionRadius() const;
+    double getCollisionRadius() const;
 
     double getRepulsion() const;
 
     int getStepLength() const;
 
-    int getStartingPointSeparation() const;
+    double getStartingPointSeparation() const;
 
-    int getPrintRadius() const;
+    double getPrintRadius() const;
 
     unsigned int getSeed() const;
 

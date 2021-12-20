@@ -15,9 +15,11 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<int> &cornerFirst,
                    std::valarray<int> &cornerFourth);
 
 std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
-                                                 const std::valarray<int> &pointSecond, int radius);
+                                                 const std::valarray<int> &pointSecond, double radius);
 
 //std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius);
+
+std::vector<std::valarray<int>> findPointsInCircle(double radius);
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius);
 

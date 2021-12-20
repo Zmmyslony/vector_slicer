@@ -6,17 +6,26 @@
 #include "ValarrayOperations.h"
 
 
-std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
-                                std::vector<std::valarray<int>> &checkedArea,
-                                std::valarray<int> &startPositions,
-                                std::valarray<int> &sizes, double repulsionCoefficient) {
+bool isInRange(std::valarray<int> position, std::valarray<int> dimensions) {
+    return (0 <= position[0] && position[0] < dimensions[0] && 0 <= position[1] && position[1] < dimensions[1]);
+}
+
+
+bool isEmpty(std::valarray<int> position, const std::vector<std::vector<int>> &table) {
+    return (table[position[0]][position[1]] == 0);
+}
+
+
+std::valarray<double>
+getRepulsion(std::vector<std::vector<int>> &filledTable, std::vector<std::valarray<int>> &checkedArea,
+             std::valarray<int> &startPositions, std::valarray<int> &sizes, double repulsionCoefficient) {
 
     std::valarray<double> attraction = {0, 0};
     int numberOfEmptySpots = 0;
     for (auto &direction: checkedArea) {
         std::valarray<int> positionsNew = direction + startPositions;
-        if (0 <= positionsNew[0] && positionsNew[0] < sizes[0] && 0 <= positionsNew[1] && positionsNew[1] < sizes[1]) {
-            if (filledTable[positionsNew[0]][positionsNew[1]] == 0) {
+        if (isInRange(positionsNew, sizes)) {
+            if (isEmpty(positionsNew, filledTable)) {
                 attraction += itodArray(direction);
                 numberOfEmptySpots++;
             }
@@ -27,15 +36,15 @@ std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
 }
 
 bool isPerimeterFree(std::vector<std::vector<int>> &filledTable, std::vector<std::vector<int>> &shapeTable,
-                     std::vector<std::valarray<int>> &perimeterList,
-                     std::valarray<int> &startPositions, std::valarray<int> &sizes) {
+                     std::vector<std::valarray<int>> &perimeterList, std::valarray<int> &startPositions,
+                     std::valarray<int> &sizes) {
     if (shapeTable[startPositions[0]][startPositions[1]] == 0) {
         return false;
     }
     for (auto &perimeter: perimeterList) {
         std::valarray<int> positionsNew = perimeter + startPositions;
-        if (0 <= positionsNew[0] && positionsNew[0] < sizes[0] && 0 <= positionsNew[1] && positionsNew[1] < sizes[1]) {
-            if (filledTable[positionsNew[0]][positionsNew[1]] > 0) {
+        if (isInRange(positionsNew, sizes)) {
+            if (!isEmpty(positionsNew, filledTable)) {
                 return false;
             }
         }
@@ -62,8 +71,8 @@ isOnEdge(const std::vector<std::vector<int>> &shapeTable, const std::valarray<in
 
     for (auto &neighbour: listOfNearestNeighbours) {
         std::valarray<int> positionsNew = neighbour + startPositions;
-        if (0 <= positionsNew[0] && positionsNew[0] < sizes[0] && 0 <= positionsNew[1] && positionsNew[1] < sizes[1]) {
-            if (shapeTable[positionsNew[0]][positionsNew[1]] == 0) {
+        if (isInRange(positionsNew, sizes)) {
+            if (isEmpty(positionsNew, shapeTable)) {
                 return true;
             }
         }

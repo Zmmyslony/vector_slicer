@@ -8,6 +8,6 @@
 #include <valarray>
 #include <vector>
 
-std::vector<std::valarray<int>> generatePerimeterList(int radius);
+std::vector<std::valarray<int>> generatePerimeterList(double radius);
 
 #endif //VECTOR_SLICER_PERIMETERGENERATION_H

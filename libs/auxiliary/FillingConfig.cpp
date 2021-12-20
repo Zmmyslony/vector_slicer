@@ -9,51 +9,40 @@
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
+#include <iomanip>
 
 
 void FillingConfig::printConfig() {
-    std::string message;
-    message += "Current configuration:";
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2);
 
-    message += "\n\tPerimeter filling is ";
+    stream << "\tCurrent configuration:" << std::endl;
+
+    stream << "\t\tPerimeter filling is ";
     switch (fillingMethod) {
         case ConsecutivePerimeter:
-            message += "consecutive perimeter.";
+            stream << "consecutive perimeter.";
             break;
         case RandomPerimeter:
-            message += "random perimeter.";
+            stream << "random perimeter.";
             break;
         case ConsecutiveRadial:
-            message += "consecutive radial.";
+            stream << "consecutive radial.";
             break;
         case RandomRadial:
-            message += "random radial.";
+            stream << "random radial.";
             break;
     }
+    stream << std::endl;
 
-    message += "\n\tCollision radius is ";
-    message += std::to_string(collisionRadius);
-    message += ".";
+    stream << "\t\tCollision radius is " << collisionRadius << "." << std::endl;
+    stream << "\t\tRepulsion is " << repulsion << "." << std::endl;
+    stream << "\t\tPrint radius is " << printRadius << "." << std::endl;
+    stream << "\t\tStarting point separation is " << startingPointSeparation << "." << std::endl;
+    stream << "\t\tSeed is " << seed << "." << std::endl;
+    stream << "\t\tStep length is " << stepLength << "." << std::endl;
 
-    message += "\n\tRepulsion is ";
-    message += std::to_string(repulsion);
-    message += ".";
-
-    message += "\n\tPrint radius is ";
-    message += std::to_string(printRadius);
-    message += ".";
-
-    message += "\n\tStarting point separation is ";
-    message += std::to_string(startingPointSeparation);
-    message += ".";
-
-    message += "\n\tSeed is ";
-    message += std::to_string(seed);
-    message += ".";
-
-    message += "\n\tStep length is ";
-    message += std::to_string(stepLength);
-    message += ".\n";
+    std::string message = stream.str();
     std::cout << message;
 }
 
@@ -61,7 +50,7 @@ FillingMethod FillingConfig::getInitialFillingMethod() const {
     return fillingMethod;
 }
 
-int FillingConfig::getCollisionRadius() const {
+double FillingConfig::getCollisionRadius() const {
     return collisionRadius;
 }
 
@@ -73,7 +62,7 @@ int FillingConfig::getStepLength() const {
     return stepLength;
 }
 
-int FillingConfig::getStartingPointSeparation() const {
+double FillingConfig::getStartingPointSeparation() const {
     return startingPointSeparation;
 }
 
@@ -100,7 +89,7 @@ unsigned int FillingConfig::getSeed() const {
     return seed;
 }
 
-int FillingConfig::getPrintRadius() const {
+double FillingConfig::getPrintRadius() const {
     return printRadius;
 }
 
@@ -141,13 +130,13 @@ void FillingConfig::setConfigOption(const ConfigOptions &option, const std::stri
             fillingMethod = stringToMethod(value);
             break;
         case CollisionRadius:
-            collisionRadius = std::stoi(value);
+            collisionRadius = std::stod(value);
             break;
         case StepLength:
             stepLength = std::stoi(value);
             break;
         case PrintRadius:
-            printRadius = std::stoi(value);
+            printRadius = std::stod(value);
             break;
         case Repulsion:
             repulsion = std::stod(value);
