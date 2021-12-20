@@ -11,7 +11,7 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint) 
     if (startingPoint.positions[0] == -1 || startingPoint.positions[1] == -1) {
         return false;
     } else {
-        Path newPathForward = pattern.generateNewPathForDirection(startingPoint.positions,
+        Path newPathForwards = pattern.generateNewPathForDirection(startingPoint.positions,
                                                                   pattern.desiredPattern.preferredDirection(
                                                                           startingPoint.positions,
                                                                           pattern.config.getStepLength()));
@@ -20,10 +20,14 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint) 
                                                                             startingPoint.positions,
                                                                             pattern.config.getStepLength()));
 
-        Path newPath(newPathForward, newPathBackwards);
+        Path newPath(newPathForwards, newPathBackwards);
 
         if (newPath.getSize() == 1) {
             pattern.fillPointsInCircle(newPath.sequenceOfPositions[0]);
+        }
+        else {
+            pattern.fillPointsInHalfCircle(newPath.first(), newPath.second());
+            pattern.fillPointsInHalfCircle(newPath.last(), newPath.previousToLast());
         }
 
         pattern.addNewPath(newPath);

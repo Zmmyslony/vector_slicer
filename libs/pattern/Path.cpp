@@ -34,8 +34,16 @@ std::valarray<int> Path::first() {
     return sequenceOfPositions[0];
 }
 
+std::valarray<int> Path::second() {
+    return sequenceOfPositions[1];
+}
+
 std::valarray<int> Path::last() {
     return sequenceOfPositions.back();
+}
+
+std::valarray<int> Path::previousToLast() {
+    return sequenceOfPositions[sequenceOfPositions.size() - 2];
 }
 
 double Path::getLength() {

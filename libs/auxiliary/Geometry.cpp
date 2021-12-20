@@ -6,6 +6,7 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
+#include <iostream>
 #include "ValarrayOperations.h"
 
 
@@ -19,6 +20,7 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> EdgeF
         return false;
     }
 }
+
 
 bool isInRectangle(std::valarray<int> &point, std::valarray<double> &EdgeFirst,
                    std::valarray<double> &EdgeSecond, std::valarray<double> &EdgeThird,
@@ -35,18 +37,20 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<double> &EdgeFirst,
     }
 }
 
+
 std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
                                                  const std::valarray<int> &pointSecond, double radius) {
     std::valarray<double> pointFirstDouble = itodArray(pointFirst);
     std::valarray<double> pointSecondDouble = itodArray(pointSecond);
-    std::valarray<double> connectingVector = normalize(pointSecondDouble - pointFirstDouble);
 
+    std::valarray<double> connectingVector = normalize(pointSecondDouble - pointFirstDouble);
     std::valarray<double> perpendicularVector = {connectingVector[1] * radius, -connectingVector[0] * radius};
 
     std::valarray<double> firstEdge = pointFirstDouble + perpendicularVector - 0.5 * connectingVector;
     std::valarray<double> secondEdge = pointSecondDouble + perpendicularVector;
     std::valarray<double> thirdEdge = pointSecondDouble - perpendicularVector;
     std::valarray<double> fourthEdge = pointFirstDouble - perpendicularVector - 0.5 * connectingVector;
+
 
     int xMin = (int)min({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>());
     int xMax = (int)max({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>()) + 1;
@@ -80,18 +84,6 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point
 }
 
 
-//std::vector<std::valarray<int>> findPointsToFill(std::valarray<int> point, int radius) {
-//    std::vector<std::valarray<int>> pointsToFill;
-//    for (int i = -radius; i <= radius; i++) {
-//        for (int j = -radius; j <= radius; j++) {
-//            if (i * i + j * j <= radius * radius) {
-//                pointsToFill.push_back({point[0] + i, point[1] + j});
-//            }
-//        }
-//    }
-//    return pointsToFill;
-//}
-
 std::vector<std::valarray<int>> findPointsInCircle(double radius) {
     std::vector<std::valarray<int>> pointsInCircle;
     int range = (int)radius + 1;
@@ -105,6 +97,38 @@ std::vector<std::valarray<int>> findPointsInCircle(double radius) {
     return pointsInCircle;
 }
 
+
+std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &lastPoint,
+                                               const std::valarray<int> &previousPoint, double radius) {
+    std::valarray<double> lastPointDouble = itodArray(lastPoint);
+    std::valarray<double> pointSecondDouble = itodArray(previousPoint);
+
+    std::valarray<double> connectingVector = normalize(pointSecondDouble - lastPointDouble);
+    std::valarray<double> perpendicularVector = {connectingVector[1] * radius, -connectingVector[0] * radius};
+
+    std::valarray<double> firstCorner = perpendicularVector - 0.5 * connectingVector;
+    std::valarray<double> secondCorner = -perpendicularVector - 0.5 * connectingVector;
+
+    std::vector<std::valarray<int>> pointsToFill;
+
+    int intRadius = (int)radius + 1;
+    for (int xDisplacement = -intRadius; xDisplacement < intRadius; xDisplacement++) {
+        for (int yDisplacement = -intRadius; yDisplacement < intRadius; yDisplacement++) {
+            std::valarray<int> displacement = {xDisplacement, yDisplacement};
+            double distance = norm(displacement);
+
+            bool isOnCorrectSide = isOnTheLeftSideOfEdge(displacement, firstCorner, secondCorner);
+//            std::cout << radius << "\t" << distance << "\t" << isOnCorrectSide << std::endl;
+
+            if (distance <= radius && isOnCorrectSide) {
+                pointsToFill.push_back(displacement + lastPoint);
+            }
+        }
+    }
+    return pointsToFill;
+}
+
+
 std::vector<std::valarray<int>> findPointsInCircle(int radius) {
-    return findPointsInCircle((double) radius);
+    return findPointsInCircle((double)radius);
 }

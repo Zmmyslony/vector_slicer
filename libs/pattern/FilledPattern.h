@@ -50,6 +50,15 @@ class FilledPattern {
     std::vector<std::valarray<int>>
     getSpacedLine(const double &distance, const std::vector<std::valarray<int>> &line);
 
+    std::valarray<int> findPointInShape();
+
+    std::vector<std::valarray<int>> findDualLine(const std::valarray<int> &start);
+
+    std::valarray<double> getDirector(const std::valarray<double> &positions);
+
+    std::vector<std::valarray<int>>
+    findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previousDualDirector);
+
 public:
     FillingConfig config;
     bool isFillingMethodRandom = true;
@@ -82,7 +91,8 @@ public:
 
     void exportToDirectory(std::string &directory) const;
 
-    std::vector<std::valarray<int>> findDualLine(const std::valarray<int> &start);
+
+    void fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint);
 };
 
 

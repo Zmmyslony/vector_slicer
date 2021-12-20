@@ -24,10 +24,10 @@ int main() {
     std::string spiral = mainDirectory + R"(\spiral, r = 0.5 cm)";
 
     std::vector<std::string> allPatterns = {radial, azimuthal, spiral, diagonal, linear};
-    allPatterns = {azimuthal};
+//    allPatterns = {azimuthal};
     for (auto &patternType: allPatterns) {
 //        generatePrintPatternMultithreading(patternType, 1, 10, 12);
-        findBestConfig(patternType, 1, 15, 12);
+        findBestConfig(patternType, 1, 25, 12);
     }
     return 0;
 }

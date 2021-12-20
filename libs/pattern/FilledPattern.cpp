@@ -42,6 +42,7 @@ FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadi
                                     seed)) {
 }
 
+
 FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength)
         :
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) {}
@@ -61,6 +62,7 @@ std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     return newPointsToFill;
 }
 
+
 std::vector<std::valarray<int>>
 FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints) {
     std::vector<std::valarray<int>> fillablePointsList;
@@ -70,9 +72,9 @@ FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>>
             fillablePointsList.push_back(point);
         }
     }
-//    std::cout << "Number of remaining fillable points: " << listOfPoints.size() << std::endl;
     return fillablePointsList;
 }
+
 
 void FilledPattern::findRemainingFillablePoints() {
     if (isPerimeterSearchOn) {
@@ -89,6 +91,7 @@ void FilledPattern::findRemainingFillablePoints() {
     distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
 }
 
+
 std::valarray<double> normalizeDirection(const std::valarray<int> &previousStep) {
     std::valarray<double> normalizedDirection = normalize(previousStep);
     if (previousStep[0] > 0 || previousStep[0] == 0 && previousStep[1] > 0) {
@@ -98,11 +101,13 @@ std::valarray<double> normalizeDirection(const std::valarray<int> &previousStep)
     }
 }
 
+
 void FilledPattern::fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalizedDirection) {
     numberOfTimesFilled[point[0]][point[1]] += 1;
     xFieldFilled[point[0]][point[1]] += normalizedDirection[0];
     yFieldFilled[point[0]][point[1]] += normalizedDirection[1];
 }
+
 
 void FilledPattern::fillPointsFromList(const std::vector<std::valarray<int>> &listOfPoints,
                                        const std::valarray<int> &direction) {
@@ -111,6 +116,7 @@ void FilledPattern::fillPointsFromList(const std::vector<std::valarray<int>> &li
         fillPoint(point, normalizedDirection);
     }
 }
+
 
 void FilledPattern::fillPointsFromDisplacement(const std::valarray<int> &startingPosition,
                                                const std::vector<std::valarray<int>> &listOfDisplacements,
@@ -125,6 +131,7 @@ void FilledPattern::fillPointsFromDisplacement(const std::valarray<int> &startin
     }
 }
 
+
 std::valarray<double> FilledPattern::getNewStep(std::valarray<double> &positions, int &length,
                                                 std::valarray<double> &previousMove) {
     std::valarray<double> newMove = desiredPattern.preferredDirection(positions, length);
@@ -134,6 +141,7 @@ std::valarray<double> FilledPattern::getNewStep(std::valarray<double> &positions
     }
     return newMove;
 }
+
 
 bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray<double> &positions,
                                                 std::valarray<double> &previousStep, int length) {
@@ -161,15 +169,6 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
         currentPath.addPoint(newCoordinates);
 
         newStep = getNewStep(newPositions, length, newStep);
-
-//        std::cout << std::endl;
-//        std::cout << "\tCurrent position: " << positions[0] << ", " << positions[1] << std::endl;
-//        std::cout << "\tCurrent step: " << previousStep[0] << ", " << previousStep[1] << std::endl;
-//        std::cout << "\tCurrent length: " << length << std::endl;
-//        std::cout << "\tNew step: " << newStep[0] << ", " << newStep[1] << std::endl;
-//        std::cout << "\tRepulsion: " << repulsion[0] << ", " << repulsion[1] << std::endl;
-//        std::cout << "\tNew position: " << newPositions[0] << ", " << newPositions[1] << std::endl;
-
         positions = newPositions;
         return true;
     }
@@ -191,6 +190,11 @@ void FilledPattern::fillPointsInCircle(std::valarray<int> &startingCoordinates) 
     fillPointsFromDisplacement(startingCoordinates, pointsInCircle, {1, 0});
 }
 
+void FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint) {
+    std::vector<std::valarray<int>> halfCirclePoints = findHalfCircle(lastPoint, previousPoint, config.getPrintRadius());
+    fillPointsFromList(halfCirclePoints, previousPoint - lastPoint);
+}
+
 void FilledPattern::exportToDirectory(std::string &directory) const {
     std::string filledFilename = directory + "\\number_of_times_filled.csv";
     std::string xFieldFilename = directory + "\\x_field.csv";
@@ -208,48 +212,6 @@ void FilledPattern::addNewPath(Path &newPath) {
 
 unsigned int FilledPattern::getNewElement() {
     return distribution(randomEngine);
-}
-
-
-std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
-    std::vector<std::valarray<int>> pointsInDualLineForward;
-    std::vector<std::valarray<int>> pointsInDualLineBackward;
-
-    std::valarray<double> realCoordinates = itodArray(start);
-    std::valarray<double> initialStep = perpendicular(desiredPattern.preferredDirection(realCoordinates, 1));
-    std::valarray<double> previousStep = initialStep;
-    while (desiredPattern.isInShape(realCoordinates)) {
-        pointsInDualLineForward.push_back(dtoiArray(realCoordinates));
-        std::valarray<double> newStep = perpendicular(desiredPattern.preferredDirection(realCoordinates, 1));
-        if (dot(newStep, previousStep) < 0) {
-            newStep *= -1;
-        }
-        realCoordinates += newStep;
-        previousStep = newStep;
-    }
-
-    realCoordinates = itodArray(start);
-    previousStep = -initialStep;
-    while (desiredPattern.isInShape(realCoordinates)) {
-        pointsInDualLineBackward.push_back(dtoiArray(realCoordinates));
-        std::valarray<double> newStep = perpendicular(desiredPattern.preferredDirection(realCoordinates, 1));
-        if (dot(newStep, previousStep) < 0) {
-            newStep *= -1;
-        }
-        realCoordinates += newStep;
-        previousStep = newStep;
-    }
-
-
-    std::reverse(pointsInDualLineBackward.begin(), pointsInDualLineBackward.end());
-    if (!pointsInDualLineBackward.empty()) {
-        pointsInDualLineBackward.pop_back();
-    }
-    std::vector<std::valarray<int>> dualLine = pointsInDualLineBackward;
-    dualLine.reserve(pointsInDualLineBackward.size() + pointsInDualLineForward.size());
-    dualLine.insert(dualLine.end(), pointsInDualLineForward.begin(), pointsInDualLineForward.end());
-
-    return dualLine;
 }
 
 
@@ -288,14 +250,74 @@ std::valarray<double> FilledPattern::getDirector(const std::valarray<int> &posit
 }
 
 
+std::valarray<double> FilledPattern::getDirector(const std::valarray<double> &positions) {
+    int xBase = (int) positions[0];
+    int yBase = (int) positions[1];
+    double xFraction = positions[0] - floor(positions[0]);
+    double yFraction = positions[1] - floor(positions[1]);
+
+    std::valarray<double> director = {0, 0};
+    director += xFraction * yFraction * getDirector(std::valarray<int>{xBase, yBase});
+    director += (1 - xFraction) * yFraction * getDirector(std::valarray<int>{xBase + 1, yBase});
+    director += (1 - xFraction) * (1 - yFraction) * getDirector(std::valarray<int>{xBase + 1, yBase + 1});
+    director += xFraction * (1 - yFraction) * getDirector(std::valarray<int>{xBase, yBase + 1});
+
+    return director;
+}
+
+
 std::valarray<double> doubleDirector(const std::valarray<double> &director) {
     return normalize(perpendicular(director));
 }
 
 
 std::vector<std::valarray<int>>
+FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previousDualDirector) {
+    std::vector<std::valarray<int>> line;
+    while (desiredPattern.isInShape(coordinates)) {
+        line.push_back(dtoiArray(coordinates));
+        std::valarray<double> director = getDirector(coordinates);
+        std::valarray<double> dualDirector = doubleDirector(director);
+        if (dot(dualDirector, previousDualDirector) < 0) {
+            dualDirector *= -1;
+        }
+        coordinates += dualDirector;
+        previousDualDirector = dualDirector;
+    }
+    return line;
+}
+
+std::vector<std::valarray<int>>
+stitchTwoVectors(std::vector<std::valarray<int>> backwardsVector, std::vector<std::valarray<int>> forwardsVector) {
+    std::reverse(backwardsVector.begin(), backwardsVector.end());
+    if (!backwardsVector.empty()) {
+        backwardsVector.pop_back();
+    }
+    std::vector<std::valarray<int>> dualLine = backwardsVector;
+    dualLine.reserve(backwardsVector.size() + forwardsVector.size());
+    dualLine.insert(dualLine.end(), forwardsVector.begin(), forwardsVector.end());
+    return dualLine;
+}
+
+
+std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
+    std::valarray<double> realCoordinates = itodArray(start);
+    std::valarray<double> previousDirector = getDirector(realCoordinates);
+    std::valarray<double> initialDualDirector = doubleDirector(previousDirector);
+
+    std::vector<std::valarray<int>> pointsInDualLineForward;
+    std::vector<std::valarray<int>> pointsInDualLineBackward;
+
+    pointsInDualLineForward = findDualLineOneDirection(realCoordinates, initialDualDirector);
+    pointsInDualLineBackward = findDualLineOneDirection(realCoordinates, -initialDualDirector);
+
+    return stitchTwoVectors(pointsInDualLineBackward, pointsInDualLineForward);;
+}
+
+
+std::vector<std::valarray<int>>
 FilledPattern::getSpacedLine(const double &distance, const std::vector<std::valarray<int>> &line) {
-    std::vector<std::valarray<int>> reshuffledStartingPoints = reshuffle(desiredPattern.perimeterList, randomEngine);
+    std::vector<std::valarray<int>> reshuffledStartingPoints = reshuffle(line, randomEngine);
 
     std::valarray<int> previousPosition = reshuffledStartingPoints[0];
     std::valarray<double> previousDirector = getDirector(previousPosition);
@@ -316,11 +338,24 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
     return separatedStartingPoints;
 }
 
+
+std::valarray<int> FilledPattern::findPointInShape() {
+    std::uniform_int_distribution<int> xDistribution(0, desiredPattern.dimensions[0] - 1);
+    std::uniform_int_distribution<int> yDistribution(0, desiredPattern.dimensions[1] - 1);
+
+    int xStart = xDistribution(randomEngine);
+    int yStart = yDistribution(randomEngine);
+    while (!desiredPattern.shapeMatrix[xStart][yStart]) {
+        xStart = xDistribution(randomEngine);
+        yStart = yDistribution(randomEngine);
+    }
+    return std::valarray<int>{xStart, yStart};
+}
+
+
 std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(FillingMethod method) {
     std::vector<std::valarray<int>> startingPoints;
     std::vector<std::valarray<int>> tempStartingPoints;
-    int randomX;
-    int randomY;
     std::vector<std::valarray<int>> dualLine;
 
     switch (method) {
@@ -333,26 +368,13 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
             isFillingMethodRandom = false;
             break;
         case RandomRadial:
-            randomX = rand() % desiredPattern.dimensions[0];
-            randomY = rand() % desiredPattern.dimensions[1];
-            while (!desiredPattern.shapeMatrix[randomX][randomY]) {
-                randomX = rand() % desiredPattern.dimensions[0];
-                randomY = rand() % desiredPattern.dimensions[1];
-            }
-            dualLine = findDualLine({randomX, randomY});
+            dualLine = findDualLine(findPointInShape());
             startingPoints = getSpacedLine(config.getStartingPointSeparation(), dualLine);
             isFillingMethodRandom = true;
             break;
         case ConsecutiveRadial:
-            randomX = rand() % desiredPattern.dimensions[0];
-            randomY = rand() % desiredPattern.dimensions[1];
-            while (!desiredPattern.shapeMatrix[randomX][randomY]) {
-                randomX = rand() % desiredPattern.dimensions[0];
-                randomY = rand() % desiredPattern.dimensions[1];
-            }
-            dualLine = findDualLine({randomX, randomY});
+            dualLine = findDualLine(findPointInShape());
             startingPoints = getSpacedLine(config.getStartingPointSeparation(), dualLine);
-//            startingPoints = reshuffle(findLineThroughShape(), randomEngine);
             isFillingMethodRandom = false;
             break;
     }
