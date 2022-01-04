@@ -1,14 +1,15 @@
 #include <iostream>
-#include "./libs/high_level/AutomaticPathGeneration.h"
 #include "./libs/high_level/OptimizedFilling.h"
 
-double VERSION = 0.3;
+double VERSION = 0.4;
 // Best seed out of 200: 193
 
-std::string mainDirectory = R"(C:\Work\Cambridge\printer\Vector Slicer Patterns)";
+
 
 
 int main() {
+    const std::string mainDirectory = R"(C:\Work\Cambridge\printer\Vector Slicer Patterns)";
+
     printf("\n\tVector slicer version %.1f.", VERSION);
 
 //    std::string radial = mainDirectory + R"(\radial, r = 1 cm)";
@@ -22,9 +23,10 @@ int main() {
     std::string diagonal = mainDirectory + R"(\diagonal, 1x0.5 cm)";
     std::string linear = mainDirectory + R"(\linear, 1x0.5 cm)";
     std::string spiral = mainDirectory + R"(\spiral, r = 0.5 cm)";
+    std::string newSpiral = mainDirectory + R"(\new spiral, r = 0.5 cm)";
 
     std::vector<std::string> allPatterns = {radial, azimuthal, spiral, diagonal, linear};
-//    allPatterns = {azimuthal};
+    allPatterns = {newSpiral};
     for (auto &patternType: allPatterns) {
 //        generatePrintPatternMultithreading(patternType, 1, 10, 12);
         findBestConfig(patternType, 1, 25, 12);

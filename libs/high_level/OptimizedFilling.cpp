@@ -1,19 +1,21 @@
 //
-// Created by zmmys on 05/11/2021.
+// Created by Michał Zmyślony on 05/11/2021.
 //
 
-#include "AutomaticPathGeneration.h"
+//#include "AutomaticPathGeneration.h"
+
 #include "OpenFiles.h"
 #include "OptimizedFilling.h"
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/QuantifyPattern.h"
 
+
 #include <iostream>
 #include <omp.h>
 #include <utility>
 #include <vector>
+#include <windows.h>
 
-//TODO make an iteration algorithm where we optimize for EACH filling method for a while, choose the best, and continue optimizing the best one
 
 OptimizedFilling::OptimizedFilling(FillingConfig desiredConfig) :
         config(desiredConfig),
@@ -24,8 +26,16 @@ void OptimizedFilling::fillWithPatterns(const DesiredPattern &desiredPattern) {
     FilledPattern pattern(desiredPattern, config);
     fillWithPaths(pattern);
     QuantifyPattern patternAgreement(pattern);
-//    config.printConfig();
     disagreement = patternAgreement.calculateCorrectness(5, 4, 1000, 1, 1, 2, 2, 2);
+}
+
+
+void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed) {
+    std::string resultsDirectory = directorPath + R"(\results\)";
+    std::string patternDirectory = directorPath + R"(\results\seed_best)";
+    CreateDirectory(resultsDirectory.c_str(), nullptr);
+    CreateDirectory(patternDirectory.c_str(), nullptr);
+    pattern.exportToDirectory(patternDirectory);
 }
 
 
@@ -243,15 +253,15 @@ OptimizedFilling findBestFillingMethod(const DesiredPattern &desiredPattern, Fil
 //    bestConfig = findBestRepulsion(desiredPattern, bestConfig, 4, maxSeed, threads, 0.00, 1);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 8, 6);
-    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.5, 4);
+//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.5, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 4);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 6);
-    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.25, 4);
+//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.25, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 4);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 6);
-    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.125, 4);
+//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.125, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 1, 4);
 
     std::cout << "Finding the best seed." << std::endl;

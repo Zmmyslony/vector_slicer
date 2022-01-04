@@ -8,7 +8,6 @@
 #include <fstream>
 #include <sstream>
 
-//TODO rewrite to valarray
 
 std::vector<std::vector<double>> readFileToTableDouble(std::string &filename) {
     std::string line;

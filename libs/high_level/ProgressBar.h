@@ -1,5 +1,5 @@
 //
-// Created by zmmys on 04/11/2021.
+// Created by Michał Zmyślony on 04/11/2021.
 //
 
 #ifndef VECTOR_SLICER_PROGRESSBAR_H

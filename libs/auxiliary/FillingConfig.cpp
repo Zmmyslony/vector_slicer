@@ -1,5 +1,5 @@
 //
-// Created by zmmys on 05/11/2021.
+// Created by Michał Zmyślony on 05/11/2021.
 //
 
 #include "FillingConfig.h"
@@ -175,6 +175,7 @@ FillingConfig::FillingConfig(std::string &configPath) {
         readLineOfConfig(row);
     }
 }
+
 
 FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,
                              int newCollisionRadius, int newStartingPointSeparation,

@@ -6,7 +6,6 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
-#include <iostream>
 #include "ValarrayOperations.h"
 
 
@@ -118,7 +117,6 @@ std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &lastPoi
             double distance = norm(displacement);
 
             bool isOnCorrectSide = isOnTheLeftSideOfEdge(displacement, firstCorner, secondCorner);
-//            std::cout << radius << "\t" << distance << "\t" << isOnCorrectSide << std::endl;
 
             if (distance <= radius && isOnCorrectSide) {
                 pointsToFill.push_back(displacement + lastPoint);

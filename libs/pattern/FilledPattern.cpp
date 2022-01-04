@@ -149,8 +149,12 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
     std::valarray<double> newStep = getNewStep(positions, length, previousStep);
     std::valarray<double> newPositions = positions + newStep;
     std::valarray<int> newCoordinates = dtoiArray(newPositions);
-    std::valarray<double> repulsion = getRepulsion(numberOfTimesFilled, pointsInCircle, newCoordinates,
-                                                   desiredPattern.dimensions, config.getRepulsion());
+    std::valarray<double> repulsion = {0, 0};
+    if (config.getRepulsion() != 0) {
+        repulsion = getRepulsion(numberOfTimesFilled, pointsInCircle, newCoordinates,
+                                 desiredPattern.dimensions, config.getRepulsion());
+    }
+
     newPositions -= repulsion;
     newCoordinates = dtoiArray(newPositions);
     std::valarray<double> realStep = newStep - repulsion;
@@ -222,7 +226,7 @@ std::vector<std::valarray<int>> FilledPattern::findLineThroughShape() {
     int yCoordinateOfPreviousPoint = 0;
     for (int yCoordinate = 0; yCoordinate < desiredPattern.dimensions[1]; yCoordinate++) {
         std::valarray<int> currentCoordinates = {xCoordinate, yCoordinate};
-        if (desiredPattern.isInShape(currentCoordinates) > 0 &&
+        if (desiredPattern.isInShape(currentCoordinates) &&
             yCoordinate - yCoordinateOfPreviousPoint >= config.getPrintRadius()) {
 
             yCoordinateOfPreviousPoint = yCoordinate;
@@ -311,7 +315,7 @@ std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<
     pointsInDualLineForward = findDualLineOneDirection(realCoordinates, initialDualDirector);
     pointsInDualLineBackward = findDualLineOneDirection(realCoordinates, -initialDualDirector);
 
-    return stitchTwoVectors(pointsInDualLineBackward, pointsInDualLineForward);;
+    return stitchTwoVectors(pointsInDualLineBackward, pointsInDualLineForward);
 }
 
 

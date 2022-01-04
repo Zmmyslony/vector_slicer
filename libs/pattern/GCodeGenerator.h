@@ -10,12 +10,11 @@
 #include "Path.h"
 #include "FilledPattern.h"
 #include <string>
+#include "../auxiliary/GCodeFile.h"
 
-class GcodeGenerator {
+class GCodeGenerator {
     std::vector<Path> sequenceOfPaths;
-    std::string header;
-    std::string footer;
-    std::string printPathsGcode;
+    GCodeFile gCodeFile;
 
     std::vector<std::valarray<int>> startAndEndPositions;
     std::vector<int> orderingOfPaths;
@@ -26,11 +25,11 @@ class GcodeGenerator {
     void startGeneratingPrintPathsFrom(std::valarray<int> startingPoint);
 
 public:
-    explicit GcodeGenerator(FilledPattern pattern);
+    explicit GCodeGenerator(FilledPattern pattern);
 
     void exportToPath(const std::string &filename);
 
-    std::valarray<int> findBestStartingPoints();
+    std::valarray<int> findBestStartingPoints(const std::valarray<int> &dimensions);
 };
 
 

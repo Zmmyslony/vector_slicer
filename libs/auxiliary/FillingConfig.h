@@ -1,5 +1,5 @@
 //
-// Created by zmmys on 05/11/2021.
+// Created by Michał Zmyślony on 05/11/2021.
 //
 
 #ifndef VECTOR_SLICER_FILLINGCONFIG_H
