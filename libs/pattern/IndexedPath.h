@@ -29,8 +29,8 @@ public:
     const std::valarray<int> &getStartCoordinates() const;
 
 public:
-    IndexedPath(int index, bool isPathReversed, const std::valarray<int> &startCoordinates,
-                const std::valarray<int> &endCoordinates);
+    IndexedPath(int index, bool isPathReversed, std::valarray<int> startCoordinates,
+                std::valarray<int> endCoordinates);
 
     IndexedPath();
 };

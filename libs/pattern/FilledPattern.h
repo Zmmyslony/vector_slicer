@@ -38,7 +38,7 @@ class FilledPattern {
 
     std::vector<std::valarray<int>> findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints);
 
-    std::vector<std::valarray<int>> findLineThroughShape();
+//    std::vector<std::valarray<int>> findLineThroughShape();
 
     std::vector<std::valarray<int>> findInitialStartingPoints(FillingMethod method);
 

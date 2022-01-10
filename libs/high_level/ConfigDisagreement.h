@@ -2,8 +2,8 @@
 // Created by Michał Zmyślony on 05/11/2021.
 //
 
-#ifndef VECTOR_SLICER_OPTIMIZEDFILLING_H
-#define VECTOR_SLICER_OPTIMIZEDFILLING_H
+#ifndef VECTOR_SLICER_CONFIGDISAGREEMENT_H
+#define VECTOR_SLICER_CONFIGDISAGREEMENT_H
 
 #include "../auxiliary/FillingConfig.h"
 #include "../pattern/FilledPattern.h"
@@ -14,7 +14,7 @@ void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, i
 
 void recalculateBestConfig(const std::string &directorPath);
 
-class OptimizedFilling {
+class ConfigDisagreement {
     FillingConfig config;
     double disagreement;
 
@@ -27,8 +27,8 @@ public:
 
     double getDisagreement() const;
 
-    explicit OptimizedFilling(FillingConfig config);
+    explicit ConfigDisagreement(FillingConfig config);
 };
 
 
-#endif //VECTOR_SLICER_OPTIMIZEDFILLING_H
+#endif //VECTOR_SLICER_CONFIGDISAGREEMENT_H

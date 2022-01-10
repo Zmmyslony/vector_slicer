@@ -69,12 +69,6 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
 
 void export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &gridOfCoordinates, const std::string &path,
                           const std::string &suffix) {
-//    for (auto &row: gridOfCoordinates) {
-//        for (auto &element: row) {
-//            printf("(%d, %d)", element[0], element[1]);
-//            std::cout << std::endl;
-//        }
-//    }
     std::vector<std::vector<int>> xTable = indexTable(gridOfCoordinates, 0);
     std::vector<std::vector<int>> yTable = indexTable(gridOfCoordinates, 1);
 
@@ -83,8 +77,6 @@ void export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &gr
 
     exportVectorTableToFile(xTable, xFilename);
     exportVectorTableToFile(yTable, yFilename);
-
-    std::cout << xFilename << std::endl;
 }
 
 
@@ -131,3 +123,4 @@ std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const std::str
     std::vector<std::vector<std::valarray<int>>> mergedTables = mergeTwoTables(xTable, yTable);
     return mergedTables;
 }
+

@@ -5,12 +5,13 @@
 #include "IndexedPath.h"
 #include "../auxiliary/ValarrayOperations.h"
 #include <iostream>
+#include <utility>
 
 
-
-IndexedPath::IndexedPath(int index, bool isPathReversed, const std::valarray<int> &startCoordinates,
-                         const std::valarray<int> &endCoordinates) : index(
-        index), reversedPath(isPathReversed), startCoordinates(startCoordinates), endCoordinates(endCoordinates) {}
+IndexedPath::IndexedPath(int index, bool isPathReversed, std::valarray<int> startCoordinates,
+                         std::valarray<int> endCoordinates) : index(
+        index), reversedPath(isPathReversed), startCoordinates(std::move(startCoordinates)),
+                                                              endCoordinates(std::move(endCoordinates)) {}
 
 int IndexedPath::getIndex() const {
     return index;
@@ -165,7 +166,6 @@ std::vector<std::vector<std::valarray<int>>> pathToVector(const std::vector<Path
     }
     return resultingVector;
 }
-
 
 
 std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &filledPattern, int startingPointNumber) {

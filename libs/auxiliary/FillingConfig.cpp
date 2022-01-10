@@ -130,7 +130,10 @@ void FillingConfig::setConfigOption(const ConfigOptions &option, const std::stri
             fillingMethod = stringToMethod(value);
             break;
         case CollisionRadius:
-            collisionRadius = std::stod(value);
+            if (std::stod(value) > 0) {
+                collisionRadius = std::stod(value);
+            }
+            else collisionRadius = 0;
             break;
         case StepLength:
             stepLength = std::stoi(value);

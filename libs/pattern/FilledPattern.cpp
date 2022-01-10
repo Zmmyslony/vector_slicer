@@ -48,6 +48,8 @@ FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadi
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) {}
 
 
+
+
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     std::vector<std::valarray<int>> newPointsToFill;
     for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
@@ -220,23 +222,23 @@ unsigned int FilledPattern::getNewElement() {
     return distribution(randomEngine);
 }
 
-
-std::vector<std::valarray<int>> FilledPattern::findLineThroughShape() {
-    std::vector<std::valarray<int>> listOfStartingPoints;
-
-    int xCoordinate = desiredPattern.dimensions[0] / 2;
-    int yCoordinateOfPreviousPoint = 0;
-    for (int yCoordinate = 0; yCoordinate < desiredPattern.dimensions[1]; yCoordinate++) {
-        std::valarray<int> currentCoordinates = {xCoordinate, yCoordinate};
-        if (desiredPattern.isInShape(currentCoordinates) &&
-            yCoordinate - yCoordinateOfPreviousPoint >= config.getPrintRadius()) {
-
-            yCoordinateOfPreviousPoint = yCoordinate;
-            listOfStartingPoints.push_back(currentCoordinates);
-        }
-    }
-    return listOfStartingPoints;
-}
+//
+//std::vector<std::valarray<int>> FilledPattern::findLineThroughShape() {
+//    std::vector<std::valarray<int>> listOfStartingPoints;
+//
+//    int xCoordinate = desiredPattern.dimensions[0] / 2;
+//    int yCoordinateOfPreviousPoint = 0;
+//    for (int yCoordinate = 0; yCoordinate < desiredPattern.dimensions[1]; yCoordinate++) {
+//        std::valarray<int> currentCoordinates = {xCoordinate, yCoordinate};
+//        if (desiredPattern.isInShape(currentCoordinates) &&
+//            yCoordinate - yCoordinateOfPreviousPoint >= config.getPrintRadius()) {
+//
+//            yCoordinateOfPreviousPoint = yCoordinate;
+//            listOfStartingPoints.push_back(currentCoordinates);
+//        }
+//    }
+//    return listOfStartingPoints;
+//}
 
 
 std::vector<std::valarray<int>> reshuffle(std::vector<std::valarray<int>> initialVector, std::mt19937 randomEngine) {

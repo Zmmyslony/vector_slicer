@@ -24,7 +24,7 @@ public:
 
     unsigned int getSize() const;
 
-    double getLength();
+//    double getLength();
 
     std::valarray<int> previousToLast();
 
