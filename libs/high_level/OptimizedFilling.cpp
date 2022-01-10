@@ -8,7 +8,8 @@
 #include "OptimizedFilling.h"
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/QuantifyPattern.h"
-
+#include "../pattern/IndexedPath.h"
+#include "../auxiliary/Exporting.h"
 
 #include <iostream>
 #include <omp.h>
@@ -30,12 +31,17 @@ void OptimizedFilling::fillWithPatterns(const DesiredPattern &desiredPattern) {
 }
 
 
-void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed) {
+void exportPatternToDirectory(FilledPattern pattern, const std::string &directorPath) {
     std::string resultsDirectory = directorPath + R"(\results\)";
-    std::string patternDirectory = directorPath + R"(\results\seed_best)";
+    std::string patternDirectory = directorPath + R"(\results)";
     CreateDirectory(resultsDirectory.c_str(), nullptr);
     CreateDirectory(patternDirectory.c_str(), nullptr);
     pattern.exportToDirectory(patternDirectory);
+
+    std::vector<std::vector<std::valarray<int>>> sortedPaths = getSortedPaths(pattern, 5);
+    export3DVectorToFile(sortedPaths, resultsDirectory, "best_paths");
+//    PathFillingOrder pathFillingOrder(pattern);
+//    pathFillingOrder.generateBestFillingOrderAndExportToPath(patternDirectory);
 }
 
 
@@ -242,26 +248,18 @@ FillingConfig findBestStartingDistance(const DesiredPattern &desiredPattern, Fil
 
 OptimizedFilling findBestFillingMethod(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
                                        int minSeed, int maxSeed, int threads) {
-
-//    initialConfig.setConfigOption(Repulsion, "0.5");
     FillingConfig bestConfig = initialConfig;
-//    bestConfig.setConfigOption(InitialFillingMethod, "RandomRadial");
-
-//    bestConfig.setConfigOption(StartingPointSeparation, "18");
-//    bestConfig.setConfigOption(Repulsion, "1.25");
-//    bestConfig.setConfigOption(CollisionRadius, "3");
-//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, 4, maxSeed, threads, 0.00, 1);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 8, 6);
-//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.5, 4);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.5, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 4);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 4, 6);
-//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.25, 4);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.25, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 4);
 
     bestConfig = findBestStartingDistance(desiredPattern, bestConfig, minSeed, maxSeed, threads, 2, 6);
-//    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.125, 4);
+    bestConfig = findBestRepulsion(desiredPattern, bestConfig, minSeed, maxSeed, threads, 0.125, 4);
     bestConfig = findBestCollisionRadius(desiredPattern, bestConfig, minSeed, maxSeed, threads, 1, 4);
 
     std::cout << "Finding the best seed." << std::endl;
@@ -282,7 +280,24 @@ void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, i
     FillingConfig initialConfig(configPath);
 
     OptimizedFilling bestFilling = findBestFillingMethod(desiredPattern, initialConfig, minSeed, maxSeed, threads);
+    FillingConfig bestConfig = bestFilling.getConfig();
+    bestConfig.exportConfig(directorPath);
 
-    exportPatternToDirectory(bestFilling.getPattern(desiredPattern), directorPath, 0);
+    exportPatternToDirectory(bestFilling.getPattern(desiredPattern), directorPath);
     printf("Multi-thread execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
+}
+
+
+void recalculateBestConfig(const std::string &directorPath) {
+    time_t startTime = clock();
+    std::cout << "\n\nCurrent directory: " << directorPath << std::endl;
+    DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
+    std::string configPath = directorPath + R"(\results\best_config.txt)";
+    FillingConfig config(configPath);
+
+    OptimizedFilling filling(config);
+    filling.fillWithPatterns(desiredPattern);
+
+    exportPatternToDirectory(filling.getPattern(desiredPattern), directorPath);
+    printf("Execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
 }

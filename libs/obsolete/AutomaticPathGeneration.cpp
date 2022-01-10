@@ -14,7 +14,7 @@
 //
 //#include "../pattern/FillingPatterns.h"
 //#include "../pattern/QuantifyPattern.h"
-//#include "../pattern/GCodeGenerator.h"
+//#include "../pattern/PathFillingOrder.h"
 //
 //
 ////#include "mpi.h"
@@ -29,7 +29,7 @@
 //
 //void exportPatternToDirectory(const FilledPattern &pattern, const std::string &directorPath, const int &seed) {
 //    std::string resultsDirectory = directorPath + R"(\results\)";
-//    std::string patternDirectory = directorPath + R"(\results\seed_best)";
+//    std::string patternDirectory = directorPath + R"(\results)";
 //    CreateDirectory(resultsDirectory.c_str(), nullptr);
 //    CreateDirectory(patternDirectory.c_str(), nullptr);
 //    pattern.exportToDirectory(patternDirectory);
@@ -37,7 +37,7 @@
 //
 //
 //void findBestPath(FilledPattern &pattern) {
-//    GCodeGenerator gcodeBase(pattern);
+//    PathFillingOrder gcodeBase(pattern);
 //    gcodeBase.findBestStartingPoints();
 //}
 //

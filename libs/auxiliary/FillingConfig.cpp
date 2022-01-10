@@ -188,3 +188,34 @@ FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,
     printRadius = newPrintRadius;
     seed = newSeed;
 }
+
+void FillingConfig::exportConfig(const std::string &directory) {
+    std::string filename = directory + R"(\results\best_config.txt)";
+    std::ofstream file(filename);
+
+    if (file.is_open()) {
+        file << "FillingMethod ";
+        switch (fillingMethod) {
+            case ConsecutivePerimeter:
+                file << "ConsecutivePerimeter";
+                break;
+            case RandomPerimeter:
+                file << "RandomPerimeter";
+                break;
+            case ConsecutiveRadial:
+                file << "ConsecutiveRadial";
+                break;
+            case RandomRadial:
+                file << "RandomRadial";
+                break;
+        }
+        file << std::endl;
+        file << "CollisionRadius " << collisionRadius << std::endl;
+        file << "StartingPointSeparation " << startingPointSeparation << std::endl;
+        file << "Repulsion " << repulsion << std::endl;
+        file << "StepLength " << stepLength << std::endl;
+        file << "PrintRadius " << printRadius << std::endl;
+        file << "Seed " << seed << std::endl;
+        file.close();
+    }
+}

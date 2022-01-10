@@ -55,6 +55,8 @@ public:
 
 
     std::string getConfigOption(ConfigOptions option);
+
+    void exportConfig(const std::string &directory);
 };
 
 

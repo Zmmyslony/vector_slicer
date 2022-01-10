@@ -42,6 +42,7 @@ class GCodeFile {
 
 public:
     GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient);
+
     explicit GCodeFile();
 
     void init(int hotendTemperature, int bedTemperature, double cleanLength);
@@ -60,11 +61,20 @@ public:
 
     void extrude(const std::valarray<double> &xy);
 
-    void printPath(const Path &path, const std::valarray<double> &positionOffset, double gridDistance);
+    void printPath(const std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
 
     std::string getText();
 
+    void printPattern(const std::vector<std::vector<std::valarray<int>>> &sortedSequenceOfPaths, const std::valarray<double> &positionOffset,
+                      double gridDistance);
+
+    void exportToFile(const std::string &path);
+
+    void addComment(const std::string &comment);
 };
+
+void generateGCode(const std::string &baseDirectory, int temperature, double cleaningDistance,
+                   const std::valarray<double> &positionOffset, double gridDistance);
 
 
 #endif //VECTOR_SLICER_GCODEFILE_H

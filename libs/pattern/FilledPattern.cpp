@@ -184,8 +184,14 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &startingCoor
     Path newPath(startingCoordinates);
     std::valarray<double> currentPositions = itodArray(startingCoordinates);
     std::valarray<double> currentStep = itodArray(startingStep);
+
+//    printf("Starting coordinates: %.2f, %.2f", currentPositions[0], currentPositions[1]);
+//    std::cout << std::endl;
     for (int length = config.getStepLength(); length >= config.getPrintRadius(); length--) {
-        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {}
+        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {
+//            printf("\tCurrent coordinates: %.2f, %.2f", currentPositions[0], currentPositions[1]);
+//            std::cout << std::endl;
+        }
     }
     return newPath;
 }
@@ -270,8 +276,8 @@ std::valarray<double> FilledPattern::getDirector(const std::valarray<double> &po
 }
 
 
-std::valarray<double> doubleDirector(const std::valarray<double> &director) {
-    return normalize(perpendicular(director));
+std::valarray<double> normalizedDualVector(const std::valarray<double> &vector) {
+    return normalize(perpendicular(vector));
 }
 
 
@@ -281,7 +287,7 @@ FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates, std::
     while (desiredPattern.isInShape(coordinates)) {
         line.push_back(dtoiArray(coordinates));
         std::valarray<double> director = getDirector(coordinates);
-        std::valarray<double> dualDirector = doubleDirector(director);
+        std::valarray<double> dualDirector = normalizedDualVector(director);
         if (dot(dualDirector, previousDualDirector) < 0) {
             dualDirector *= -1;
         }
@@ -307,7 +313,7 @@ stitchTwoVectors(std::vector<std::valarray<int>> backwardsVector, std::vector<st
 std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
     std::valarray<double> realCoordinates = itodArray(start);
     std::valarray<double> previousDirector = getDirector(realCoordinates);
-    std::valarray<double> initialDualDirector = doubleDirector(previousDirector);
+    std::valarray<double> initialDualDirector = normalizedDualVector(previousDirector);
 
     std::vector<std::valarray<int>> pointsInDualLineForward;
     std::vector<std::valarray<int>> pointsInDualLineBackward;
@@ -325,7 +331,7 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
 
     std::valarray<int> previousPosition = reshuffledStartingPoints[0];
     std::valarray<double> previousDirector = getDirector(previousPosition);
-    std::valarray<double> previousDoubleDirector = doubleDirector(previousDirector);
+    std::valarray<double> previousDoubleDirector = normalizedDualVector(previousDirector);
 
     std::vector<std::valarray<int>> separatedStartingPoints;
     separatedStartingPoints.push_back(previousPosition);
@@ -335,7 +341,7 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
         if (currentDistance > distance) {
             previousPosition = currentPosition;
             previousDirector = getDirector(currentPosition);
-            previousDoubleDirector = doubleDirector(previousDirector);
+            previousDoubleDirector = normalizedDualVector(previousDirector);
             separatedStartingPoints.push_back(previousPosition);
         }
     }

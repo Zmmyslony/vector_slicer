@@ -12,6 +12,8 @@
 
 void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, int threads);
 
+void recalculateBestConfig(const std::string &directorPath);
+
 class OptimizedFilling {
     FillingConfig config;
     double disagreement;
@@ -27,5 +29,6 @@ public:
 
     explicit OptimizedFilling(FillingConfig config);
 };
+
 
 #endif //VECTOR_SLICER_OPTIMIZEDFILLING_H

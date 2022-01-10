@@ -1,9 +1,8 @@
 #include <iostream>
 #include "./libs/high_level/OptimizedFilling.h"
+#include "./libs/auxiliary/GCodeFile.h"
 
-double VERSION = 0.4;
-// Best seed out of 200: 193
-
+double VERSION = 0.5;
 
 
 
@@ -26,10 +25,12 @@ int main() {
     std::string newSpiral = mainDirectory + R"(\new spiral, r = 0.5 cm)";
 
     std::vector<std::string> allPatterns = {radial, azimuthal, spiral, diagonal, linear};
-    allPatterns = {newSpiral};
+//    allPatterns = {linear};
+
     for (auto &patternType: allPatterns) {
-//        generatePrintPatternMultithreading(patternType, 1, 10, 12);
-        findBestConfig(patternType, 1, 25, 12);
+//        findBestConfig(patternType, 1, 100, 12);
+        recalculateBestConfig(patternType);
+        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.015);
     }
     return 0;
 }
