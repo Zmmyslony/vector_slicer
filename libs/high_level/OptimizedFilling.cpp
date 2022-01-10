@@ -40,8 +40,6 @@ void exportPatternToDirectory(FilledPattern pattern, const std::string &director
 
     std::vector<std::vector<std::valarray<int>>> sortedPaths = getSortedPaths(pattern, 5);
     export3DVectorToFile(sortedPaths, resultsDirectory, "best_paths");
-//    PathFillingOrder pathFillingOrder(pattern);
-//    pathFillingOrder.generateBestFillingOrderAndExportToPath(patternDirectory);
 }
 
 

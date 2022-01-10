@@ -4,6 +4,7 @@
 
 #include "IndexedPath.h"
 #include "../auxiliary/ValarrayOperations.h"
+#include <iostream>
 
 
 
@@ -99,7 +100,7 @@ sortIndexedPaths(std::vector<IndexedPath> indexedPaths, const std::valarray<int>
 double getMoveDistance(const std::vector<IndexedPath> &sortedPaths) {
     double distance = 0;
     for (int i = 1; i < sortedPaths.size(); i++) {
-        distance += distanceBetweenPaths(sortedPaths[0], sortedPaths[1]);
+        distance += distanceBetweenPaths(sortedPaths[i - 1], sortedPaths[i]);
     }
     return distance;
 }
@@ -130,7 +131,7 @@ std::vector<std::valarray<int>> generateStartingPoints(const std::valarray<int> 
         startingPoints.push_back({(int) (xStep * step), 0});
         startingPoints.push_back({dimensions[0], (int) (yStep * step)});
         startingPoints.push_back({dimensions[0] - (int) (xStep * step), dimensions[1]});
-        startingPoints.push_back({dimensions[0], dimensions[1] - (int) (yStep * step)});
+        startingPoints.push_back({0, dimensions[1] - (int) (yStep * step)});
     }
     return startingPoints;
 }

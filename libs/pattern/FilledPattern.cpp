@@ -174,6 +174,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
 
         newStep = getNewStep(newPositions, length, newStep);
         positions = newPositions;
+        previousStep = newStep;
         return true;
     }
     return false;
@@ -185,13 +186,8 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &startingCoor
     std::valarray<double> currentPositions = itodArray(startingCoordinates);
     std::valarray<double> currentStep = itodArray(startingStep);
 
-//    printf("Starting coordinates: %.2f, %.2f", currentPositions[0], currentPositions[1]);
-//    std::cout << std::endl;
     for (int length = config.getStepLength(); length >= config.getPrintRadius(); length--) {
-        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {
-//            printf("\tCurrent coordinates: %.2f, %.2f", currentPositions[0], currentPositions[1]);
-//            std::cout << std::endl;
-        }
+        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) { }
     }
     return newPath;
 }
