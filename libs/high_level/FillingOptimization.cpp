@@ -2,6 +2,7 @@
 // Created by Michał Zmyślony on 10/01/2022.
 //
 
+#include "../../ExecutionConfig.h"
 #include "FillingOptimization.h"
 #include "ConfigGeneration.h"
 #include <omp.h>
@@ -45,6 +46,64 @@ ConfigDisagreement selectBestFilling(const std::vector<ConfigDisagreement> &fill
 }
 
 
+bool areConfigsTheSame(const ConfigDisagreement &firstConfig, const ConfigDisagreement &secondConfig) {
+    FillingConfig first = firstConfig.getConfig();
+    FillingConfig second = secondConfig.getConfig();
+    return areFillingConfigsTheSame(first, second);
+}
+
+
+std::vector<std::vector<ConfigDisagreement>> groupConfigsWithDifferentSeeds(std::vector<ConfigDisagreement> filledPatterns) {
+    std::vector<std::vector<ConfigDisagreement>> groupedConfigs;
+    while (!filledPatterns.empty()) {
+        ConfigDisagreement currentConfig = filledPatterns.back();
+        filledPatterns.pop_back();
+        bool wasConfigAdded = false;
+        for (auto &configGroup: groupedConfigs) {
+            if (areConfigsTheSame(currentConfig, configGroup[0])) {
+                configGroup.push_back(currentConfig);
+                wasConfigAdded = true;
+            }
+        }
+
+        if (!wasConfigAdded) {
+            std::vector<ConfigDisagreement> newGroup = {currentConfig};
+            groupedConfigs.push_back(newGroup);
+        }
+    }
+    return groupedConfigs;
+}
+
+
+double getMedianDisagreement(const std::vector<ConfigDisagreement> &configGroup) {
+    std::vector<double> disagreementVector;
+    for (auto &config: configGroup) {
+        disagreementVector.emplace_back(config.getDisagreement());
+    }
+    std::sort(disagreementVector.begin(), disagreementVector.end());
+    return disagreementVector[disagreementVector.size() / 2];
+}
+
+std::vector<double> getMedianDisagreement(const std::vector<std::vector<ConfigDisagreement>> &groupsOfConfigs) {
+    std::vector<double> medianDisagreement;
+    for (auto &configGroup: groupsOfConfigs) {
+        medianDisagreement.push_back(getMedianDisagreement(configGroup));
+    }
+    return medianDisagreement;
+}
+
+
+ConfigDisagreement selectBestFillingMedian(const std::vector<ConfigDisagreement> &filledPatterns) {
+    std::vector<std::vector<ConfigDisagreement>> configGroups = groupConfigsWithDifferentSeeds(filledPatterns);
+    std::vector<double> medianDisagreements = getMedianDisagreement(configGroups);
+    int minElementIndex = std::min_element(medianDisagreements.begin(), medianDisagreements.end()) - medianDisagreements.begin();
+
+    std::vector<ConfigDisagreement> bestGroup = configGroups[minElementIndex];
+//    return bestGroup[bestGroup.size() / 2];
+    return selectBestFilling(bestGroup);
+}
+//
+
 ConfigDisagreement
 calculateFillsAndFindTheBestOne(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &listOfConfigs,
                                 int threads) {
@@ -61,8 +120,16 @@ calculateFillsAndFindTheBestOne(const DesiredPattern &desiredPattern, const std:
         std::cout.flush();
     }
 
-    ConfigDisagreement bestFill = selectBestFilling(filledPatterns);
+    ConfigDisagreement bestFill = selectBestFillingMedian(filledPatterns);
     return bestFill;
+}
+
+
+FillingConfig selectBestConfig(const DesiredPattern &desiredPattern, std::vector<FillingConfig> &configs, int threads) {
+    ConfigDisagreement bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configs, threads);
+    printf("\tDisagreement %.3f.", bestFill.getDisagreement());
+    std::cout << std::endl;
+    return bestFill.getConfig();
 }
 
 
@@ -73,13 +140,12 @@ findBestFillingForSeeds(const DesiredPattern &desiredPattern, const std::vector<
     std::cout << "Optimizing over " << type << ". " << std::endl;
 
     std::vector<FillingConfig> configsToTest = iterateOverSeeds(desiredPattern, configList, minSeed, maxSeed);
-    ConfigDisagreement bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configsToTest, threads);
-    FillingConfig config = bestFill.getConfig();
+    FillingConfig bestConfig = selectBestConfig(desiredPattern, configsToTest, threads);
+
     std::cout << "\tInitial value: " << stod(initialValue) << ". Optimized value: "
-              << stod(config.getConfigOption(optimizedOption)) << std::endl;
-    printf("\tDisagreement %.3f.", bestFill.getDisagreement());
-    std::cout << std::endl << std::endl;
-    return config;
+              << stod(bestConfig.getConfigOption(optimizedOption)) << std::endl << std::endl;
+
+    return bestConfig;
 }
 
 
@@ -101,6 +167,9 @@ void FillingOptimization::optimizeCollisionRadius(double delta, int steps) {
 }
 
 void FillingOptimization::optimizeStartingDistance(double delta, int steps) {
+    if (steps > delta) {
+        steps = (int)delta;
+    }
     optimizeOption(delta, steps, StartingPointSeparation, "starting point separation");
 }
 
@@ -108,17 +177,17 @@ const FillingConfig &FillingOptimization::getBestConfig() const {
     return bestConfig;
 }
 
+
 void FillingOptimization::optimizeSeeds(int multiplier) {
     std::cout << "Finding the best seed." << std::endl;
     std::vector<FillingConfig> configs = iterateOverSeeds(desiredPattern, bestConfig, minSeed, maxSeed * multiplier);
-    ConfigDisagreement bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configs, threads);
-    bestConfig = bestFill.getConfig();
-    printf("\tDisagreement %.3f.", bestFill.getDisagreement());
-    std::cout << std::endl << std::endl;
+    bestConfig = selectBestConfig(desiredPattern, configs, threads);
+    std::cout << std::endl;
 }
 
-ConfigDisagreement findBestFillingMethod(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                         int minSeed, int maxSeed, int threads) {
+
+ConfigDisagreement configurationOptimizer(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
+                                          int minSeed, int maxSeed, int threads) {
     FillingOptimization optimization(desiredPattern, initialConfig, minSeed, maxSeed, threads);
 
     optimization.optimizeStartingDistance(8, 8);
@@ -143,6 +212,21 @@ ConfigDisagreement findBestFillingMethod(const DesiredPattern &desiredPattern, F
 }
 
 
+ConfigDisagreement
+seedOptimizer(const DesiredPattern &desiredPattern, FillingConfig initialConfig, int minSeed, int maxSeed,
+              int threads) {
+    FillingOptimization optimization(desiredPattern, initialConfig, minSeed, maxSeed, threads);
+
+    optimization.optimizeSeeds(1);
+
+    ConfigDisagreement bestFill(optimization.getBestConfig());
+    bestFill.fillWithPatterns(desiredPattern);
+    FillingConfig bestConfig = optimization.getBestConfig();
+    bestConfig.printConfig();
+    return bestFill;
+}
+
+
 void exportPatternToDirectory(FilledPattern pattern, const std::string &directorPath) {
     std::string resultsDirectory = directorPath + R"(\results\)";
     std::string patternDirectory = directorPath + R"(\results)";
@@ -150,24 +234,35 @@ void exportPatternToDirectory(FilledPattern pattern, const std::string &director
     CreateDirectory(patternDirectory.c_str(), nullptr);
     pattern.exportToDirectory(patternDirectory);
 
-    std::vector<std::vector<std::valarray<int>>> sortedPaths = getSortedPaths(pattern, 5);
+    std::vector<std::vector<std::valarray<int>>> sortedPaths = getSortedPaths(pattern, startingPointNumber);
     export3DVectorToFile(sortedPaths, resultsDirectory, "best_paths");
 }
 
 
-void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, int threads) {
+void generalFinder(const std::string &directorPath, int minSeed, int maxSeed, int threads,
+                   ConfigDisagreement (*optimizer)(const DesiredPattern &, FillingConfig, int, int, int)) {
     time_t startTime = clock();
     std::cout << "\n\nCurrent directory: " << directorPath << std::endl;
     DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
     std::string configPath = directorPath + "\\config.txt";
     FillingConfig initialConfig(configPath);
 
-    ConfigDisagreement bestFilling = findBestFillingMethod(desiredPattern, initialConfig, minSeed, maxSeed, threads);
+    ConfigDisagreement bestFilling = optimizer(desiredPattern, initialConfig, minSeed, maxSeed, threads);
     FillingConfig bestConfig = bestFilling.getConfig();
     bestConfig.exportConfig(directorPath);
 
     exportPatternToDirectory(bestFilling.getPattern(desiredPattern), directorPath);
     printf("Multi-thread execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
+}
+
+
+void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, int threads) {
+    generalFinder(directorPath, minSeed, maxSeed, threads, &configurationOptimizer);
+}
+
+
+void findBestSeed(const std::string &directorPath, int minSeed, int maxSeed, int threads) {
+    generalFinder(directorPath, minSeed, maxSeed, threads, &seedOptimizer);
 }
 
 

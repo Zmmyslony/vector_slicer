@@ -59,5 +59,6 @@ public:
     void exportConfig(const std::string &directory);
 };
 
+bool areFillingConfigsTheSame(FillingConfig &firstConfig, FillingConfig &secondConfig);
 
 #endif //VECTOR_SLICER_FILLINGCONFIG_H

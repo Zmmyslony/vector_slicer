@@ -37,5 +37,6 @@ public:
     void optimizeSeeds(int multiplier);
 };
 
+void findBestSeed(const std::string &directorPath, int minSeed, int maxSeed, int threads);
 
 #endif //VECTOR_SLICER_FILLINGOPTIMIZATION_H

@@ -4,18 +4,6 @@
 
 #include "ConfigGeneration.h"
 
-//std::vector<FillingConfig> iterateOverFillingMethod(const DesiredPattern &desiredPattern, FillingConfig initialConfig) {
-//    std::vector<FillingConfig> listOfConfigs;
-//    std::vector<std::string> allFillingMethods = {"RandomRadial", "ConsecutiveRadial", "RandomPerimeter",
-//                                                  "ConsecutivePerimeter"};
-//    initialConfig.setConfigOption(Repulsion, std::to_string(0));
-//    for (auto &fillingMethod: allFillingMethods) {
-//        initialConfig.setConfigOption(InitialFillingMethod, fillingMethod);
-//        listOfConfigs.push_back(initialConfig);
-//    }
-//    return listOfConfigs;
-//}
-
 
 std::vector<FillingConfig> iterateOverOption(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
                                              double delta, int numberOfConfigs, ConfigOptions option) {
@@ -56,3 +44,4 @@ iterateOverSeeds(const DesiredPattern &desiredPattern, const std::vector<Filling
     }
     return configsToTest;
 }
+

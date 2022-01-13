@@ -222,3 +222,29 @@ void FillingConfig::exportConfig(const std::string &directory) {
         file.close();
     }
 }
+
+
+bool isConfigOptionTheSame(ConfigOptions option, FillingConfig &firstConfig, FillingConfig &secondConfig) {
+    if (firstConfig.getConfigOption(option) == secondConfig.getConfigOption(option)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+bool areFillingConfigsTheSame(FillingConfig &firstConfig, FillingConfig &secondConfig) {
+    bool repulsion = isConfigOptionTheSame(Repulsion, firstConfig, secondConfig);
+    bool collisionRadius = isConfigOptionTheSame(CollisionRadius, firstConfig, secondConfig);
+    bool startingPointSeparation = isConfigOptionTheSame(StartingPointSeparation, firstConfig, secondConfig);
+    bool stepLength = isConfigOptionTheSame(StepLength, firstConfig, secondConfig);
+    bool printRadius = isConfigOptionTheSame(PrintRadius, firstConfig, secondConfig);
+
+    if (repulsion && collisionRadius && startingPointSeparation && stepLength && printRadius) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
