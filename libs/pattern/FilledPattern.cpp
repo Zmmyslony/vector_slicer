@@ -11,8 +11,7 @@
 
 #include "../auxiliary/Exporting.h"
 #include "../auxiliary/Geometry.h"
-#include "../auxiliary/PerimeterGeneration.h"
-#include "../auxiliary/PerimeterChecking.h"
+#include "../auxiliary/Perimeter.h"
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/ValarrayOperations.h"
 

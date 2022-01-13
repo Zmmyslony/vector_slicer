@@ -3,7 +3,7 @@
 //
 
 #include "StartingPoint.h"
-#include "../auxiliary/PerimeterChecking.h"
+#include "../auxiliary/Perimeter.h"
 #include <iostream>
 
 

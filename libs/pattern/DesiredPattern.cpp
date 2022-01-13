@@ -5,7 +5,7 @@
 #include "DesiredPattern.h"
 #include "../auxiliary/TableReading.h"
 #include "../auxiliary/SimpleMathOperations.h"
-#include "../auxiliary/PerimeterChecking.h"
+#include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
 
 DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,

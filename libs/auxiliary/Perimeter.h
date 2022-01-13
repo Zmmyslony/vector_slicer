@@ -2,12 +2,14 @@
 // Created by Michał Zmyślony on 27/09/2021.
 //
 
-#ifndef VECTOR_SLICER_PERIMETERCHECKING_H
-#define VECTOR_SLICER_PERIMETERCHECKING_H
+#ifndef VECTOR_SLICER_PERIMETER_H
+#define VECTOR_SLICER_PERIMETER_H
 
 #include <vector>
 #include <tuple>
 #include <valarray>
+
+std::vector<std::valarray<int>> generatePerimeterList(double radius);
 
 std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
                                    std::vector<std::valarray<int>> &checkedArea,
@@ -27,4 +29,4 @@ findAllPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::v
 std::vector<std::valarray<int>>
 findSortedPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::valarray<int> &sizes);
 
-#endif //VECTOR_SLICER_PERIMETERCHECKING_H
+#endif //VECTOR_SLICER_PERIMETER_H
