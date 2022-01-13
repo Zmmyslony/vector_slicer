@@ -3,7 +3,6 @@
 //
 
 #include "Path.h"
-//#include "../auxiliary/ValarrayOperations.h"
 
 void Path::addPoint(std::valarray<int> &positions) {
     sequenceOfPositions.push_back(positions);

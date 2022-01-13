@@ -7,7 +7,7 @@
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/QuantifyPattern.h"
 
-#include <iostream>
+//#include <iostream>
 #include <vector>
 
 ConfigDisagreement::ConfigDisagreement(FillingConfig desiredConfig) :

@@ -30,7 +30,7 @@ int main() {
     allPatterns = {azimuthal};
 
     for (auto &patternType: allPatterns) {
-        findBestConfig(patternType, 1, 25, 12);
+        findBestConfig(patternType, 1, 10, 12);
 //        findBestSeed(patternType, 1, 200, 12);
 //        recalculateBestConfig(patternType);
 

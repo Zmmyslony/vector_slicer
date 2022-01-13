@@ -15,11 +15,19 @@ class StartingPoint {
     int tries;
     int previouslyFoundPoint = 0;
 
+    void updateListOfPoints(FilledPattern &pattern);
+
+    void lookForAPoint(FilledPattern &pattern);
+
+    void trySearchingForAPoint(FilledPattern &pattern);
+
 public:
     explicit StartingPoint();
 
     std::valarray<int> positions;
+
     void refresh();
+
     void findStartPointConsecutively(FilledPattern &pattern);
 
     void findStartPointRandomly(FilledPattern &pattern);

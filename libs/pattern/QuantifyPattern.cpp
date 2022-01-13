@@ -7,7 +7,7 @@
 #include <cmath>
 #include <iostream>
 
-QuantifyPattern::QuantifyPattern(FilledPattern pattern) :
+QuantifyPattern::QuantifyPattern(FilledPattern pattern):
         pattern(std::move(pattern)) {
     emptySpots = calculateEmptySpots();
     averageOverlap = calculateAverageOverlap();

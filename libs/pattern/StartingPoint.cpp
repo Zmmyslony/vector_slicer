@@ -41,27 +41,42 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 }
 
 
-//TODO Make this function clearer
+void StartingPoint::lookForAPoint(FilledPattern &pattern) {
+    if (pattern.isFillingMethodRandom) {
+        findStartPointRandomly(pattern);
+    } else {
+        findStartPointConsecutively(pattern);
+    }
+}
+
+
+void StartingPoint::updateListOfPoints(FilledPattern &pattern) {
+    tries = 0;
+    previouslyFoundPoint = 0;
+    unsigned int previousNumberOfFillablePoints = pattern.pointsToFill.size();
+    pattern.findRemainingFillablePoints();
+    areThereFillablePointsRemaining = !pattern.pointsToFill.empty();
+    if (previousNumberOfFillablePoints == pattern.pointsToFill.size()) {
+        areThereFillablePointsRemaining = false;
+    }
+}
+
+
+void StartingPoint::trySearchingForAPoint(FilledPattern &pattern) {
+    if (tries < MAX_RANDOM_SEARCH_TRIES) {
+        lookForAPoint(pattern);
+    } else if (tries == MAX_RANDOM_SEARCH_TRIES) {
+        updateListOfPoints(pattern);
+    }
+}
+
 
 std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     while (!isStartingPointFound) {
-        if (tries < MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
-            if (pattern.isFillingMethodRandom) {
-                findStartPointRandomly(pattern);
-            } else {
-                findStartPointConsecutively(pattern);
-            }
-        } else if (tries == MAX_RANDOM_SEARCH_TRIES && areThereFillablePointsRemaining) {
-            tries = 0;
-            previouslyFoundPoint = 0;
-            unsigned int previousNumberOfFillablePoints = pattern.pointsToFill.size();
-            pattern.findRemainingFillablePoints();
-            areThereFillablePointsRemaining = !pattern.pointsToFill.empty();
-            if (previousNumberOfFillablePoints == pattern.pointsToFill.size()) {
-                positions = {-1, -1};
-                return positions;
-            }
-        } else {
+        if (areThereFillablePointsRemaining) {
+            trySearchingForAPoint(pattern);
+        }
+        else {
             positions = {-1, -1};
             return positions;
         }
