@@ -27,10 +27,10 @@ int main() {
 
     std::string symmetricPositive = mainDirectory + R"(\symmetricPositive, 2x0.6 cm)";
     std::string symmetricPositiveLarger = mainDirectory + R"(\symmetricPositive, 4x1.2 cm)";
-//    allPatterns = {azimuthal};
+    allPatterns = {azimuthal};
 
     for (auto &patternType: allPatterns) {
-        findBestConfig(patternType, 1, 10, 12);
+        findBestConfig(patternType, 1, 25, 12);
 //        findBestSeed(patternType, 1, 200, 12);
 //        recalculateBestConfig(patternType);
 

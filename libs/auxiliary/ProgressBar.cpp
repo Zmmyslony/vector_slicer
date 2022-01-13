@@ -6,7 +6,7 @@
 #include <iostream>
 
 void showProgress(double progress) {
-    int barWidth = 70;
+    int barWidth = 20;
     int pos = (int)(barWidth * progress);
     std::cout << "\r[";
     for (int i = 0; i < barWidth; ++i) {
@@ -16,7 +16,7 @@ void showProgress(double progress) {
             std::cout << " ";
         }
     }
-    std::cout << "] " << int(progress * 100.0) << " %";
+    std::cout << "] " << int(progress * 100.0) << "%";
     std::cout.flush();
 }
 

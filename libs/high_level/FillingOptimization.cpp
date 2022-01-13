@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <iostream>
 #include <utility>
+#include "../auxiliary/ProgressBar.h"
 
 
 #include "OpenFiles.h"
@@ -146,10 +147,15 @@ std::vector<ConfigDisagreement>
 calculateFills(const DesiredPattern &desiredPattern, std::vector<ConfigDisagreement> fillingConfigs,
                int threads) {
     omp_set_num_threads(threads);
+    int progress = 0;
+    int totalNumberOfSteps = fillingConfigs.size();
 #pragma omp parallel for
     for (int i = 0; i < fillingConfigs.size(); i++) {
         fillingConfigs[i].fillWithPatterns(desiredPattern);
+        progress++;
+        showProgress(progress, totalNumberOfSteps);
     }
+    std::cout << "\r";
     return fillingConfigs;
 }
 
