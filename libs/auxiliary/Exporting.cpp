@@ -56,8 +56,10 @@ void exportVectorTableToFile(const std::vector<std::vector<double>> &table, std:
 std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::valarray<int>>> &gridOfCoordinates,
                                                 int index) {
     std::vector<std::vector<int>> table;
+    table.reserve(gridOfCoordinates.size());
     for (auto &row: gridOfCoordinates) {
         std::vector<int> newRow;
+        newRow.reserve(row.size());
         for (auto &element: row) {
             newRow.push_back(element[index]);
         }

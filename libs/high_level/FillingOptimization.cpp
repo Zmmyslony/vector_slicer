@@ -53,7 +53,8 @@ bool areConfigsTheSame(const ConfigDisagreement &firstConfig, const ConfigDisagr
 }
 
 
-std::vector<std::vector<ConfigDisagreement>> groupConfigsWithDifferentSeeds(std::vector<ConfigDisagreement> filledPatterns) {
+std::vector<std::vector<ConfigDisagreement>>
+groupConfigsWithDifferentSeeds(std::vector<ConfigDisagreement> filledPatterns) {
     std::vector<std::vector<ConfigDisagreement>> groupedConfigs;
     while (!filledPatterns.empty()) {
         ConfigDisagreement currentConfig = filledPatterns.back();
@@ -75,8 +76,31 @@ std::vector<std::vector<ConfigDisagreement>> groupConfigsWithDifferentSeeds(std:
 }
 
 
+struct lessThanKey {
+    inline bool operator() (const ConfigDisagreement &disagreement, const ConfigDisagreement &otherDisagreement) {
+        return (disagreement.getDisagreement() < otherDisagreement.getDisagreement());
+    }
+};
+
+
+std::vector<ConfigDisagreement> sortDisagreements(std::vector<ConfigDisagreement> configGroup) {
+    std::sort(configGroup.begin(), configGroup.end(), lessThanKey());
+    return configGroup;
+}
+
+std::vector<std::vector<ConfigDisagreement>> sortDisagreements(const std::vector<std::vector<ConfigDisagreement>> &configGroups) {
+    std::vector<std::vector<ConfigDisagreement>> sortedConfigs;
+    sortedConfigs.reserve(configGroups.size());
+    for (auto &configGroup: configGroups) {
+        sortedConfigs.emplace_back(sortDisagreements(configGroup));
+    }
+    return sortedConfigs;
+}
+
+
 double getMedianDisagreement(const std::vector<ConfigDisagreement> &configGroup) {
     std::vector<double> disagreementVector;
+    disagreementVector.reserve(configGroup.size());
     for (auto &config: configGroup) {
         disagreementVector.emplace_back(config.getDisagreement());
     }
@@ -84,10 +108,12 @@ double getMedianDisagreement(const std::vector<ConfigDisagreement> &configGroup)
     return disagreementVector[disagreementVector.size() / 2];
 }
 
+
 std::vector<double> getMedianDisagreement(const std::vector<std::vector<ConfigDisagreement>> &groupsOfConfigs) {
     std::vector<double> medianDisagreement;
+    medianDisagreement.reserve(groupsOfConfigs.size());
     for (auto &configGroup: groupsOfConfigs) {
-        medianDisagreement.push_back(getMedianDisagreement(configGroup));
+        medianDisagreement.emplace_back(getMedianDisagreement(configGroup));
     }
     return medianDisagreement;
 }
@@ -95,41 +121,68 @@ std::vector<double> getMedianDisagreement(const std::vector<std::vector<ConfigDi
 
 ConfigDisagreement selectBestFillingMedian(const std::vector<ConfigDisagreement> &filledPatterns) {
     std::vector<std::vector<ConfigDisagreement>> configGroups = groupConfigsWithDifferentSeeds(filledPatterns);
-    std::vector<double> medianDisagreements = getMedianDisagreement(configGroups);
-    int minElementIndex = std::min_element(medianDisagreements.begin(), medianDisagreements.end()) - medianDisagreements.begin();
+    std::vector<std::vector<ConfigDisagreement>> sortedConfigGroups = sortDisagreements(configGroups);
+    std::vector<double> medianDisagreements = getMedianDisagreement(sortedConfigGroups);
 
-    std::vector<ConfigDisagreement> bestGroup = configGroups[minElementIndex];
-//    return bestGroup[bestGroup.size() / 2];
-    return selectBestFilling(bestGroup);
+    int minElementIndex =
+            std::min_element(medianDisagreements.begin(), medianDisagreements.end()) - medianDisagreements.begin();
+
+    std::vector<ConfigDisagreement> bestGroup = sortedConfigGroups[minElementIndex];
+    return bestGroup[bestGroup.size() / 2];
 }
-//
 
-ConfigDisagreement
-calculateFillsAndFindTheBestOne(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &listOfConfigs,
-                                int threads) {
-    std::vector<ConfigDisagreement> filledPatterns;
 
-    for (auto &config: listOfConfigs) {
-        filledPatterns.emplace_back(config);
+std::vector<ConfigDisagreement> configDisagreementFromConfigs(const std::vector<FillingConfig> &configs) {
+    std::vector<ConfigDisagreement> fillingConfigs;
+    fillingConfigs.reserve(configs.size());
+    for (auto &config: configs) {
+        fillingConfigs.emplace_back(config);
     }
+    return fillingConfigs;
+}
 
+
+std::vector<ConfigDisagreement>
+calculateFills(const DesiredPattern &desiredPattern, std::vector<ConfigDisagreement> fillingConfigs,
+               int threads) {
     omp_set_num_threads(threads);
 #pragma omp parallel for
-    for (int i = 0; i < listOfConfigs.size(); i++) {
-        filledPatterns[i].fillWithPatterns(desiredPattern);
-        std::cout.flush();
+    for (int i = 0; i < fillingConfigs.size(); i++) {
+        fillingConfigs[i].fillWithPatterns(desiredPattern);
     }
-
-    ConfigDisagreement bestFill = selectBestFillingMedian(filledPatterns);
-    return bestFill;
+    return fillingConfigs;
 }
 
 
-FillingConfig selectBestConfig(const DesiredPattern &desiredPattern, std::vector<FillingConfig> &configs, int threads) {
-    ConfigDisagreement bestFill = calculateFillsAndFindTheBestOne(desiredPattern, configs, threads);
+std::vector<ConfigDisagreement>
+fillConfigs(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &listOfConfigs,
+            int threads) {
+    std::vector<ConfigDisagreement> configsToTest = configDisagreementFromConfigs(listOfConfigs);
+    std::vector<ConfigDisagreement> filledConfigs = calculateFills(desiredPattern, configsToTest, threads);
+    return filledConfigs;
+}
+
+
+FillingConfig
+selectBestConfigMethod(const DesiredPattern &desiredPattern, std::vector<FillingConfig> &configs, int threads,
+                       ConfigDisagreement (*selectionMethod)(const std::vector<ConfigDisagreement> &)) {
+    std::vector<ConfigDisagreement> filledConfigs = fillConfigs(desiredPattern, configs, threads);
+    ConfigDisagreement bestFill = selectionMethod(filledConfigs);
     printf("\tDisagreement %.3f.", bestFill.getDisagreement());
     std::cout << std::endl;
     return bestFill.getConfig();
+}
+
+
+FillingConfig
+selectBestConfigMedian(const DesiredPattern &desiredPattern, std::vector<FillingConfig> &configs, int threads) {
+    return selectBestConfigMethod(desiredPattern, configs, threads, &selectBestFillingMedian);
+}
+
+
+FillingConfig
+selectBestConfigSingle(const DesiredPattern &desiredPattern, std::vector<FillingConfig> &configs, int threads) {
+    return selectBestConfigMethod(desiredPattern, configs, threads, &selectBestFilling);
 }
 
 
@@ -140,7 +193,7 @@ findBestFillingForSeeds(const DesiredPattern &desiredPattern, const std::vector<
     std::cout << "Optimizing over " << type << ". " << std::endl;
 
     std::vector<FillingConfig> configsToTest = iterateOverSeeds(desiredPattern, configList, minSeed, maxSeed);
-    FillingConfig bestConfig = selectBestConfig(desiredPattern, configsToTest, threads);
+    FillingConfig bestConfig = selectBestConfigMedian(desiredPattern, configsToTest, threads);
 
     std::cout << "\tInitial value: " << stod(initialValue) << ". Optimized value: "
               << stod(bestConfig.getConfigOption(optimizedOption)) << std::endl << std::endl;
@@ -168,7 +221,7 @@ void FillingOptimization::optimizeCollisionRadius(double delta, int steps) {
 
 void FillingOptimization::optimizeStartingDistance(double delta, int steps) {
     if (steps > delta) {
-        steps = (int)delta;
+        steps = (int) delta;
     }
     optimizeOption(delta, steps, StartingPointSeparation, "starting point separation");
 }
@@ -181,7 +234,7 @@ const FillingConfig &FillingOptimization::getBestConfig() const {
 void FillingOptimization::optimizeSeeds(int multiplier) {
     std::cout << "Finding the best seed." << std::endl;
     std::vector<FillingConfig> configs = iterateOverSeeds(desiredPattern, bestConfig, minSeed, maxSeed * multiplier);
-    bestConfig = selectBestConfig(desiredPattern, configs, threads);
+    bestConfig = selectBestConfigSingle(desiredPattern, configs, threads);
     std::cout << std::endl;
 }
 

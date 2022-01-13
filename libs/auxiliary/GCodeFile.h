@@ -61,7 +61,7 @@ public:
 
     void extrude(const std::valarray<double> &xy);
 
-    void printPath(const std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
+    void printPath(std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
 
     std::string getText();
 

@@ -18,13 +18,13 @@ DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorF
 }
 
 
-std::valarray<int> DesiredPattern::preferredDirection(std::valarray<int> position, int distance) {
+std::valarray<int> DesiredPattern::preferredDirection(const std::valarray<int> &position, int distance) {
     return std::valarray<int>{roundUp(distance * xFieldPreferred[position[0]][position[1]]),
                               roundUp(distance * yFieldPreferred[position[0]][position[1]])};
 }
 
 
-std::valarray<double> DesiredPattern::preferredDirection(std::valarray<double> position, int distance) {
+std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<double> &position, int distance) {
     double xPositionFraction = decimalPart(position[0]);
     double yPositionFraction = decimalPart(position[1]);
     unsigned int xPosition = (int) floor(position[0]);

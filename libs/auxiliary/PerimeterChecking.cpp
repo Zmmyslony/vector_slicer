@@ -6,12 +6,12 @@
 #include "ValarrayOperations.h"
 
 
-bool isInRange(std::valarray<int> position, std::valarray<int> dimensions) {
+bool isInRange(const std::valarray<int> &position, const std::valarray<int> &dimensions) {
     return (0 <= position[0] && position[0] < dimensions[0] && 0 <= position[1] && position[1] < dimensions[1]);
 }
 
 
-bool isEmpty(std::valarray<int> position, const std::vector<std::vector<int>> &table) {
+bool isEmpty(const std::valarray<int> &position, const std::vector<std::vector<int>> &table) {
     return (table[position[0]][position[1]] == 0);
 }
 
@@ -35,9 +35,9 @@ getRepulsion(std::vector<std::vector<int>> &filledTable, std::vector<std::valarr
     return -repulsionCoefficient * attraction / numberOfEmptySpots;
 }
 
-bool isPerimeterFree(std::vector<std::vector<int>> &filledTable, std::vector<std::vector<int>> &shapeTable,
-                     std::vector<std::valarray<int>> &perimeterList, std::valarray<int> &startPositions,
-                     std::valarray<int> &sizes) {
+bool isPerimeterFree(const std::vector<std::vector<int>> &filledTable, const std::vector<std::vector<int>> &shapeTable,
+                     const std::vector<std::valarray<int>> &perimeterList, const std::valarray<int> &startPositions,
+                     const std::valarray<int> &sizes) {
     if (shapeTable[startPositions[0]][startPositions[1]] == 0) {
         return false;
     }

@@ -36,9 +36,8 @@ class FilledPattern {
 
     void fillPoint(const std::valarray<int> &point, const std::valarray<double> &previousStep);
 
-    std::vector<std::valarray<int>> findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints);
-
-//    std::vector<std::valarray<int>> findLineThroughShape();
+    std::vector<std::valarray<int>> findRemainingFillablePointsInList(
+            std::vector<std::valarray<int>> &listOfPoints) const;
 
     std::vector<std::valarray<int>> findInitialStartingPoints(FillingMethod method);
 
@@ -81,7 +80,7 @@ public:
 
     void findRemainingFillablePoints();
 
-    void fillPointsInCircle(std::valarray<int> &startingCoordinates);
+    void fillPointsInCircle(const std::valarray<int> &startingCoordinates);
 
     Path generateNewPathForDirection(std::valarray<int> &startingCoordinates, const std::valarray<int> &startingStep);
 
@@ -89,7 +88,7 @@ public:
 
     unsigned int getNewElement();
 
-    void exportToDirectory(std::string &directory) const;
+    void exportToDirectory(const std::string &directory) const;
 
 
     void fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint);

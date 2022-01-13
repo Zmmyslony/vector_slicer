@@ -153,7 +153,7 @@ sortedSequenceOfPaths(const std::vector<Path> &paths, const std::vector<IndexedP
 }
 
 
-std::vector<IndexedPath> indexPaths(FilledPattern &filledPattern) {
+std::vector<IndexedPath> indexPaths(FilledPattern filledPattern) {
     std::vector<Path> sequenceOfPaths = filledPattern.getSequenceOfPaths();
     return indexPaths(sequenceOfPaths);
 }
@@ -161,6 +161,7 @@ std::vector<IndexedPath> indexPaths(FilledPattern &filledPattern) {
 
 std::vector<std::vector<std::valarray<int>>> pathToVector(const std::vector<Path> &path) {
     std::vector<std::vector<std::valarray<int>>> resultingVector;
+    resultingVector.reserve(path.size());
     for (auto &element: path) {
         resultingVector.push_back(element.sequenceOfPositions);
     }

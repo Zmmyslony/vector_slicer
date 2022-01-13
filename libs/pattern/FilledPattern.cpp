@@ -66,7 +66,7 @@ std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
 
 
 std::vector<std::valarray<int>>
-FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> listOfPoints) {
+FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> &listOfPoints) const {
     std::vector<std::valarray<int>> fillablePointsList;
     for (auto &point: listOfPoints) {
         if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList,
@@ -194,7 +194,7 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &startingCoor
     return newPath;
 }
 
-void FilledPattern::fillPointsInCircle(std::valarray<int> &startingCoordinates) {
+void FilledPattern::fillPointsInCircle(const std::valarray<int> &startingCoordinates) {
     fillPointsFromDisplacement(startingCoordinates, pointsInCircle, {1, 0});
 }
 
@@ -203,7 +203,7 @@ void FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &lastPoint, 
     fillPointsFromList(halfCirclePoints, previousPoint - lastPoint);
 }
 
-void FilledPattern::exportToDirectory(std::string &directory) const {
+void FilledPattern::exportToDirectory(const std::string &directory) const {
     std::string filledFilename = directory + "\\number_of_times_filled.csv";
     std::string xFieldFilename = directory + "\\x_field.csv";
     std::string yFieldFilename = directory + "\\y_field.csv";
@@ -222,26 +222,8 @@ unsigned int FilledPattern::getNewElement() {
     return distribution(randomEngine);
 }
 
-//
-//std::vector<std::valarray<int>> FilledPattern::findLineThroughShape() {
-//    std::vector<std::valarray<int>> listOfStartingPoints;
-//
-//    int xCoordinate = desiredPattern.dimensions[0] / 2;
-//    int yCoordinateOfPreviousPoint = 0;
-//    for (int yCoordinate = 0; yCoordinate < desiredPattern.dimensions[1]; yCoordinate++) {
-//        std::valarray<int> currentCoordinates = {xCoordinate, yCoordinate};
-//        if (desiredPattern.isInShape(currentCoordinates) &&
-//            yCoordinate - yCoordinateOfPreviousPoint >= config.getPrintRadius()) {
-//
-//            yCoordinateOfPreviousPoint = yCoordinate;
-//            listOfStartingPoints.push_back(currentCoordinates);
-//        }
-//    }
-//    return listOfStartingPoints;
-//}
 
-
-std::vector<std::valarray<int>> reshuffle(std::vector<std::valarray<int>> initialVector, std::mt19937 randomEngine) {
+std::vector<std::valarray<int>> reshuffle(const std::vector<std::valarray<int>> &initialVector, std::mt19937 &randomEngine) {
     std::vector<std::valarray<int>> newVector(initialVector.size());
     std::uniform_int_distribution<unsigned int> distribution(0, initialVector.size() - 1);
     unsigned int elementsToPush = distribution(randomEngine);
