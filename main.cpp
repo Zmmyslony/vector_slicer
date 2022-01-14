@@ -1,8 +1,7 @@
 #include "./libs/high_level/FillingOptimization.h"
 #include "./libs/auxiliary/GCodeFile.h"
 
-double VERSION = 0.5;
-
+double VERSION = 0.6;
 
 
 int main() {
@@ -38,4 +37,3 @@ int main() {
     }
     return 0;
 }
-// 0.456 fir symmetricPositiveLarger

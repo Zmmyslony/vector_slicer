@@ -107,6 +107,9 @@ ConfigOptions stringToConfig(const std::string &stringOption) {
     if (it != mapping.end()) {
         return it->second;
     }
+    else {
+        std::cout << "Unrecognised ConfigOption." << std::endl;
+    }
 }
 
 
@@ -120,6 +123,9 @@ FillingMethod stringToMethod(const std::string &stringOption) {
     auto it = mapping.find(stringOption);
     if (it != mapping.end()) {
         return it->second;
+    }
+    else {
+        std::cout << "Unrecognised FillingMethod." << std::endl;
     }
 }
 

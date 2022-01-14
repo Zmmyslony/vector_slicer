@@ -61,4 +61,6 @@ public:
 
 bool areFillingConfigsTheSame(FillingConfig &firstConfig, FillingConfig &secondConfig);
 
+ConfigOptions stringToConfig(const std::string &stringOption);
+
 #endif //VECTOR_SLICER_FILLINGCONFIG_H
