@@ -32,7 +32,6 @@ public:
     double
     calculateCorrectness(double emptySpotWeight, double overlapWeight, double directorWeight, double pathWeight) const;
 
-    void printResults() const;
 
 };
 

@@ -4,7 +4,6 @@
 
 #include "IndexedPath.h"
 #include "../auxiliary/ValarrayOperations.h"
-#include <iostream>
 #include <utility>
 
 
@@ -171,7 +170,7 @@ std::vector<std::vector<std::valarray<int>>> pathToVector(const std::vector<Path
 
 std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &filledPattern, int startingPointNumber) {
     std::vector<IndexedPath> unsortedIndices = indexPaths(filledPattern);
-    std::valarray<int> dimensions = filledPattern.desiredPattern.dimensions;
+    std::valarray<int> dimensions = filledPattern.desiredPattern.getDimensions();
 
     std::vector<std::valarray<int>> startingPoints = generateStartingPoints(dimensions, startingPointNumber);
     std::vector<IndexedPath> sortedIndices = findBestSortingOfPathsFromStartingPoints(unsortedIndices, startingPoints);

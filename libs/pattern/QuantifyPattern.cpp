@@ -5,7 +5,6 @@
 #include "QuantifyPattern.h"
 #include <utility>
 #include <cmath>
-#include <iostream>
 
 QuantifyPattern::QuantifyPattern(FilledPattern pattern):
         pattern(std::move(pattern)) {
@@ -17,13 +16,13 @@ QuantifyPattern::QuantifyPattern(FilledPattern pattern):
 
 double QuantifyPattern::calculateEmptySpots() {
     int numberOfEmptySpots = 0;
-    int xSize = pattern.desiredPattern.dimensions[0];
-    int ySize = pattern.desiredPattern.dimensions[1];
+    int xSize = pattern.desiredPattern.getDimensions()[0];
+    int ySize = pattern.desiredPattern.getDimensions()[1];
     int numberOfElements = 0;
 
     for (int i = 0; i < xSize; i++) {
         for (int j = 0; j < ySize; j++) {
-            if (pattern.desiredPattern.shapeMatrix[i][j] == 1) {
+            if (pattern.desiredPattern.getShapeMatrix()[i][j] == 1) {
                 numberOfElements++;
                 if (pattern.numberOfTimesFilled[i][j] == 0) {
                     numberOfEmptySpots++;
@@ -36,14 +35,14 @@ double QuantifyPattern::calculateEmptySpots() {
 
 double QuantifyPattern::calculateAverageOverlap() {
     int numberOfFilledTimes = 0;
-    int xSize = pattern.desiredPattern.dimensions[0];
-    int ySize = pattern.desiredPattern.dimensions[1];
+    int xSize = pattern.desiredPattern.getDimensions()[0];
+    int ySize = pattern.desiredPattern.getDimensions()[1];
     int numberOfElements = 0;
 
     for (int i = 0; i < xSize; i++) {
         for (int j = 0; j < ySize; j++) {
             numberOfFilledTimes += pattern.numberOfTimesFilled[i][j];
-            numberOfElements += pattern.desiredPattern.shapeMatrix[i][j];
+            numberOfElements += pattern.desiredPattern.getShapeMatrix()[i][j];
         }
     }
     return (double) numberOfFilledTimes / (double) numberOfElements - 1 + emptySpots;
@@ -52,8 +51,8 @@ double QuantifyPattern::calculateAverageOverlap() {
 
 double QuantifyPattern::calculateDirectorDisagreement() {
     double directorAgreement = 0;
-    int xSize = pattern.desiredPattern.dimensions[0];
-    int ySize = pattern.desiredPattern.dimensions[1];
+    int xSize = pattern.desiredPattern.getDimensions()[0];
+    int ySize = pattern.desiredPattern.getDimensions()[1];
     int numberOfFilledElements = 0;
 
     for (int i = 0; i < xSize; i++) {
@@ -61,10 +60,10 @@ double QuantifyPattern::calculateDirectorDisagreement() {
             if (pattern.numberOfTimesFilled[i][j] > 0) {
                 double filledDirectorNorm = sqrt(
                         pow(pattern.xFieldFilled[i][j], 2) + pow(pattern.yFieldFilled[i][j], 2));
-                double desiredDirectorNorm = sqrt(pow(pattern.desiredPattern.xFieldPreferred[i][j], 2) +
-                                                  pow(pattern.desiredPattern.yFieldPreferred[i][j], 2));
-                double xDirectionAgreement = pattern.xFieldFilled[i][j] * pattern.desiredPattern.xFieldPreferred[i][j];
-                double yDirectionAgreement = pattern.yFieldFilled[i][j] * pattern.desiredPattern.yFieldPreferred[i][j];
+                double desiredDirectorNorm = sqrt(pow(pattern.desiredPattern.getXFieldPreferred()[i][j], 2) +
+                                                  pow(pattern.desiredPattern.getYFieldPreferred()[i][j], 2));
+                double xDirectionAgreement = pattern.xFieldFilled[i][j] * pattern.desiredPattern.getXFieldPreferred()[i][j];
+                double yDirectionAgreement = pattern.yFieldFilled[i][j] * pattern.desiredPattern.getYFieldPreferred()[i][j];
                 if (desiredDirectorNorm != 0 && filledDirectorNorm != 0) {
                     directorAgreement +=
                             abs(xDirectionAgreement + yDirectionAgreement) / (filledDirectorNorm * desiredDirectorNorm);
@@ -79,8 +78,8 @@ double QuantifyPattern::calculateDirectorDisagreement() {
 
 double QuantifyPattern::calculateNumberOfPaths() {
     unsigned int paths = pattern.getSequenceOfPaths().size();
-    auto perimeterLength = (unsigned int) fmax(pattern.desiredPattern.dimensions[0],
-                                               pattern.desiredPattern.dimensions[1]);
+    auto perimeterLength = (unsigned int) fmax(pattern.desiredPattern.getDimensions()[0],
+                                               pattern.desiredPattern.getDimensions()[1]);
     return (double) paths / (double) perimeterLength;
 }
 
@@ -97,7 +96,3 @@ double QuantifyPattern::calculateCorrectness(double emptySpotWeight, double over
     return calculateCorrectness(emptySpotWeight, overlapWeight, directorWeight, pathWeight, 1, 1, 1, 1);
 }
 
-void QuantifyPattern::printResults() const {
-    printf("Agreement:\n\tEmpty spots: \t%.3f, \n\tOverlap: \t%.3f, \n\tDirector: \t%.3f \n\tPaths: \t\t%.3f.\n",
-           emptySpots, averageOverlap, directorDisagreement, numberOfPaths);
-}

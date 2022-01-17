@@ -19,12 +19,12 @@
 FilledPattern::FilledPattern(const DesiredPattern &newDesiredPattern, FillingConfig newConfig) :
         desiredPattern(newDesiredPattern),
         config(newConfig) {
-    numberOfTimesFilled = std::vector<std::vector<int>>(newDesiredPattern.dimensions[0],
-                                                        std::vector<int>(newDesiredPattern.dimensions[1]));
-    xFieldFilled = std::vector<std::vector<double>>(newDesiredPattern.dimensions[0],
-                                                    std::vector<double>(newDesiredPattern.dimensions[1]));
-    yFieldFilled = std::vector<std::vector<double>>(newDesiredPattern.dimensions[0],
-                                                    std::vector<double>(newDesiredPattern.dimensions[1]));
+    numberOfTimesFilled = std::vector<std::vector<int>>(newDesiredPattern.getDimensions()[0],
+                                                        std::vector<int>(newDesiredPattern.getDimensions()[1]));
+    xFieldFilled = std::vector<std::vector<double>>(newDesiredPattern.getDimensions()[0],
+                                                    std::vector<double>(newDesiredPattern.getDimensions()[1]));
+    yFieldFilled = std::vector<std::vector<double>>(newDesiredPattern.getDimensions()[0],
+                                                    std::vector<double>(newDesiredPattern.getDimensions()[1]));
     collisionList = generatePerimeterList(config.getCollisionRadius());
     randomEngine = std::mt19937(config.getSeed());
     pointsInCircle = findPointsInCircle(config.getPrintRadius());
@@ -51,11 +51,11 @@ FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadi
 
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     std::vector<std::valarray<int>> newPointsToFill;
-    for (int i = 0; i < desiredPattern.dimensions[0]; i++) {
-        for (int j = 0; j < desiredPattern.dimensions[1]; j++) {
+    for (int i = 0; i < desiredPattern.getDimensions()[0]; i++) {
+        for (int j = 0; j < desiredPattern.getDimensions()[1]; j++) {
             std::valarray<int> currentPos = {i, j};
-            if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList,
-                                currentPos, desiredPattern.dimensions)) {
+            if (isPerimeterFree(numberOfTimesFilled, desiredPattern.getShapeMatrix(), collisionList,
+                                currentPos, desiredPattern.getDimensions())) {
                 newPointsToFill.push_back(currentPos);
             }
         }
@@ -68,8 +68,8 @@ std::vector<std::valarray<int>>
 FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>> &listOfPoints) const {
     std::vector<std::valarray<int>> fillablePointsList;
     for (auto &point: listOfPoints) {
-        if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList,
-                            point, desiredPattern.dimensions)) {
+        if (isPerimeterFree(numberOfTimesFilled, desiredPattern.getShapeMatrix(), collisionList,
+                            point, desiredPattern.getDimensions())) {
             fillablePointsList.push_back(point);
         }
     }
@@ -125,8 +125,8 @@ void FilledPattern::fillPointsFromDisplacement(const std::valarray<int> &startin
     std::valarray<double> normalizedDirection = normalizeDirection(previousStep);
     for (auto &displacement: listOfDisplacements) {
         std::valarray<int> point = startingPosition + displacement;
-        if (point[0] >= 0 && point[0] < desiredPattern.dimensions[0] && point[1] >= 0 &&
-            point[1] < desiredPattern.dimensions[1]) {
+        if (point[0] >= 0 && point[0] < desiredPattern.getDimensions()[0] && point[1] >= 0 &&
+            point[1] < desiredPattern.getDimensions()[1]) {
             fillPoint(point, normalizedDirection);
         }
     }
@@ -153,7 +153,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
     std::valarray<double> repulsion = {0, 0};
     if (config.getRepulsion() != 0) {
         repulsion = getRepulsion(numberOfTimesFilled, pointsInCircle, newCoordinates,
-                                 desiredPattern.dimensions, config.getRepulsion());
+                                 desiredPattern.getDimensions(), config.getRepulsion());
     }
 
     newPositions -= repulsion;
@@ -165,8 +165,8 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &currentPath, std::valarray
         return false;
     }
 
-    if (isPerimeterFree(numberOfTimesFilled, desiredPattern.shapeMatrix, collisionList, newCoordinates,
-                        desiredPattern.dimensions)) {
+    if (isPerimeterFree(numberOfTimesFilled, desiredPattern.getShapeMatrix(), collisionList, newCoordinates,
+                        desiredPattern.getDimensions())) {
         std::vector<std::valarray<int>> currentPointsToFill = findPointsToFill(currentCoordinates, newCoordinates,
                                                                                config.getPrintRadius());
         std::valarray<int> newStepInt = newCoordinates - currentCoordinates;
@@ -234,8 +234,8 @@ std::vector<std::valarray<int>> reshuffle(const std::vector<std::valarray<int>> 
 
 
 std::valarray<double> FilledPattern::getDirector(const std::valarray<int> &positions) {
-    return std::valarray<double>({desiredPattern.xFieldPreferred[positions[0]][positions[1]],
-                                  desiredPattern.yFieldPreferred[positions[0]][positions[1]]});
+    return std::valarray<double>({desiredPattern.getXFieldPreferred()[positions[0]][positions[1]],
+                                  desiredPattern.getYFieldPreferred()[positions[0]][positions[1]]});
 }
 
 
@@ -329,12 +329,12 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
 
 
 std::valarray<int> FilledPattern::findPointInShape() {
-    std::uniform_int_distribution<int> xDistribution(0, desiredPattern.dimensions[0] - 1);
-    std::uniform_int_distribution<int> yDistribution(0, desiredPattern.dimensions[1] - 1);
+    std::uniform_int_distribution<int> xDistribution(0, desiredPattern.getDimensions()[0] - 1);
+    std::uniform_int_distribution<int> yDistribution(0, desiredPattern.getDimensions()[1] - 1);
 
     int xStart = xDistribution(randomEngine);
     int yStart = yDistribution(randomEngine);
-    while (!desiredPattern.shapeMatrix[xStart][yStart]) {
+    while (!desiredPattern.getShapeMatrix()[xStart][yStart]) {
         xStart = xDistribution(randomEngine);
         yStart = yDistribution(randomEngine);
     }
@@ -349,11 +349,11 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
 
     switch (method) {
         case RandomPerimeter:
-            startingPoints = getSpacedLine(config.getStartingPointSeparation(), desiredPattern.perimeterList);
+            startingPoints = getSpacedLine(config.getStartingPointSeparation(), desiredPattern.getPerimeterList());
             isFillingMethodRandom = true;
             break;
         case ConsecutivePerimeter:
-            startingPoints = getSpacedLine(config.getStartingPointSeparation(), desiredPattern.perimeterList);
+            startingPoints = getSpacedLine(config.getStartingPointSeparation(), desiredPattern.getPerimeterList());
             isFillingMethodRandom = false;
             break;
         case RandomRadial:

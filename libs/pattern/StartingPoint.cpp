@@ -4,7 +4,6 @@
 
 #include "StartingPoint.h"
 #include "../auxiliary/Perimeter.h"
-#include <iostream>
 
 
 int const MAX_RANDOM_SEARCH_TRIES = 100;
@@ -19,8 +18,8 @@ void StartingPoint::findStartPointRandomly(FilledPattern &pattern) {
     unsigned int element = pattern.getNewElement();
     positions = pattern.pointsToFill[element];
 
-    if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
-                        pattern.collisionList, positions, pattern.desiredPattern.dimensions)) {
+    if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.getShapeMatrix(),
+                        pattern.collisionList, positions, pattern.desiredPattern.getDimensions())) {
         isStartingPointFound = true;
     }
 }
@@ -29,9 +28,9 @@ void StartingPoint::findStartPointRandomly(FilledPattern &pattern) {
 void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
     for (int i = previouslyFoundPoint; i < pattern.pointsToFill.size(); i++) {
         positions = pattern.pointsToFill[i];
-        if (pattern.desiredPattern.shapeMatrix[positions[0]][positions[1]] &&
-            isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.shapeMatrix,
-                            pattern.collisionList, positions, pattern.desiredPattern.dimensions)) {
+        if (pattern.desiredPattern.getShapeMatrix()[positions[0]][positions[1]] &&
+            isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.getShapeMatrix(),
+                            pattern.collisionList, positions, pattern.desiredPattern.getDimensions())) {
             isStartingPointFound = true;
             previouslyFoundPoint = i;
             return;

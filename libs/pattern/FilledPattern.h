@@ -63,7 +63,7 @@ public:
     bool isFillingMethodRandom = true;
     std::vector<std::vector<double>> xFieldFilled;
     std::vector<std::vector<double>> yFieldFilled;
-    DesiredPattern desiredPattern;
+    const DesiredPattern &desiredPattern;
 
     std::vector<std::valarray<int>> pointsToFill;
     std::vector<std::valarray<int>> collisionList;

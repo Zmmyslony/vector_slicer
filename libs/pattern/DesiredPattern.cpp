@@ -18,13 +18,13 @@ DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorF
 }
 
 
-std::valarray<int> DesiredPattern::preferredDirection(const std::valarray<int> &position, int distance) {
+std::valarray<int> DesiredPattern::preferredDirection(const std::valarray<int> &position, int distance) const {
     return std::valarray<int>{roundUp(distance * xFieldPreferred[position[0]][position[1]]),
                               roundUp(distance * yFieldPreferred[position[0]][position[1]])};
 }
 
 
-std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<double> &position, int distance) {
+std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<double> &position, int distance) const {
     double xPositionFraction = decimalPart(position[0]);
     double yPositionFraction = decimalPart(position[1]);
     unsigned int xPosition = (int) floor(position[0]);
@@ -49,11 +49,31 @@ std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<dou
 }
 
 
-bool DesiredPattern::isInShape(const std::valarray<int> &position) {
+bool DesiredPattern::isInShape(const std::valarray<int> &position) const {
     return shapeMatrix[position[0]][position[1]];
 }
 
 
-bool DesiredPattern::isInShape(const std::valarray<double> &position) {
+bool DesiredPattern::isInShape(const std::valarray<double> &position) const {
     return isInShape(dtoiArray(position));
+}
+
+const std::valarray<int> &DesiredPattern::getDimensions() const {
+    return dimensions;
+}
+
+const std::vector<std::valarray<int>> &DesiredPattern::getPerimeterList() const {
+    return perimeterList;
+}
+
+const std::vector<std::vector<int>> &DesiredPattern::getShapeMatrix() const {
+    return shapeMatrix;
+}
+
+const std::vector<std::vector<double>> &DesiredPattern::getXFieldPreferred() const {
+    return xFieldPreferred;
+}
+
+const std::vector<std::vector<double>> &DesiredPattern::getYFieldPreferred() const {
+    return yFieldPreferred;
 }

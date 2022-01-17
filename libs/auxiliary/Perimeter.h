@@ -13,8 +13,8 @@ std::vector<std::valarray<int>> generatePerimeterList(double radius);
 
 std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
                                    std::vector<std::valarray<int>> &checkedArea,
-                                   std::valarray<int> &startPositions,
-                                   std::valarray<int> &sizes, double repulsionCoefficient);
+                                   const std::valarray<int> &startPositions,
+                                   const std::valarray<int> &sizes, double repulsionCoefficient);
 
 bool isPerimeterFree(const std::vector<std::vector<int>> &filledTable, const std::vector<std::vector<int>> &shapeTable,
                      const std::vector<std::valarray<int>> &perimeterList, const std::valarray<int> &startPositions,

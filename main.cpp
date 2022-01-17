@@ -26,7 +26,9 @@ int main() {
 
     std::string symmetricPositive = mainDirectory + R"(\symmetricPositive, 2x0.6 cm)";
     std::string symmetricPositiveLarger = mainDirectory + R"(\symmetricPositive, 4x1.2 cm)";
-    allPatterns = {azimuthal};
+    std::string diagonalTeethed = mainDirectory + R"(\diagonal teethed, 1x0.5 cm)";
+    std::string test = mainDirectory + R"(\test)";
+    allPatterns = {test};
 
     for (auto &patternType: allPatterns) {
         findBestConfig(patternType, 1, 10, 12);

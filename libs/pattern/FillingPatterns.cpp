@@ -3,7 +3,7 @@
 //
 
 #include "FillingPatterns.h"
-#include <iostream>
+
 
 bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint) {
     startingPoint.refresh();
