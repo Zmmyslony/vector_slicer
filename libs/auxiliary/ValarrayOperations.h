@@ -36,4 +36,6 @@ void printArray(const std::vector<std::valarray<int>> &array);
 
 void printArray(const std::vector<std::valarray<double>> &array);
 
+std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uintArray);
+
 #endif //VECTOR_SLICER_VALARRAYOPERATIONS_H

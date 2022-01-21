@@ -9,7 +9,7 @@
 #include <sstream>
 
 
-std::vector<std::vector<double>> readFileToTableDouble(std::string &filename) {
+std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename) {
     std::string line;
     std::ifstream file(filename);
     std::vector<std::vector<double>> table;
@@ -66,7 +66,7 @@ std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> 
 //    return uintTable;
 //}
 
-std::vector<std::vector<int>> readFileToTableInt(std::string &filename) {
+std::vector<std::vector<int>> readFileToTableInt(const std::string &filename) {
     std::vector<std::vector<double>> doubleTable = readFileToTableDouble(filename);
     return (tableDoubleToInt(doubleTable));
 }

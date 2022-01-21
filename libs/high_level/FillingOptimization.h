@@ -39,4 +39,6 @@ public:
 
 void findBestSeed(const std::string &directorPath, int minSeed, int maxSeed, int threads);
 
+void exportPatternToDirectory(FilledPattern pattern, const std::string &directorPath);
+
 #endif //VECTOR_SLICER_FILLINGOPTIMIZATION_H

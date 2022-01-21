@@ -4,16 +4,27 @@
 
 #include "StartingPoint.h"
 #include "../auxiliary/Perimeter.h"
+#include "../auxiliary/ValarrayOperations.h"
+#include <iostream>
 
-
-int const MAX_RANDOM_SEARCH_TRIES = 100;
+int const MAX_RANDOM_SEARCH_TRIES = 1000;
 
 StartingPoint::StartingPoint() :
         tries(0) {
 }
 
+void StartingPoint::findStartPointTotallyRandomly(FilledPattern &pattern) {
+    tries++;
+    positions = pattern.findPointInShape();
 
-void StartingPoint::findStartPointRandomly(FilledPattern &pattern) {
+    if (isPerimeterFree(pattern.numberOfTimesFilled, pattern.desiredPattern.getShapeMatrix(),
+                        pattern.collisionList, positions, pattern.desiredPattern.getDimensions())) {
+        isStartingPointFound = true;
+    }
+}
+
+
+void StartingPoint::findStartPointSemiRandomly(FilledPattern &pattern) {
     tries++;
     unsigned int element = pattern.getNewElement();
     positions = pattern.pointsToFill[element];
@@ -41,8 +52,11 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 
 
 void StartingPoint::lookForAPoint(FilledPattern &pattern) {
-    if (pattern.isFillingMethodRandom) {
-        findStartPointRandomly(pattern);
+    if (pattern.searchStage == TotallyRandomPointSelection) {
+        findStartPointTotallyRandomly(pattern);
+    }
+    else if (pattern.isFillingMethodRandom) {
+        findStartPointSemiRandomly(pattern);
     } else {
         findStartPointConsecutively(pattern);
     }
@@ -52,11 +66,16 @@ void StartingPoint::lookForAPoint(FilledPattern &pattern) {
 void StartingPoint::updateListOfPoints(FilledPattern &pattern) {
     tries = 0;
     previouslyFoundPoint = 0;
+    areThereFillablePointsRemaining = true;
+
     unsigned int previousNumberOfFillablePoints = pattern.pointsToFill.size();
-    pattern.findRemainingFillablePoints();
-    areThereFillablePointsRemaining = !pattern.pointsToFill.empty();
-    if (previousNumberOfFillablePoints == pattern.pointsToFill.size()) {
-        areThereFillablePointsRemaining = false;
+    pattern.updateSearchStageAndFillablePoints();
+
+    if (pattern.searchStage != TotallyRandomPointSelection) {
+        areThereFillablePointsRemaining = !pattern.pointsToFill.empty();
+        if (previousNumberOfFillablePoints == pattern.pointsToFill.size()) {
+            areThereFillablePointsRemaining = false;
+        }
     }
 }
 
@@ -82,6 +101,7 @@ std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     }
     return positions;
 }
+
 
 void StartingPoint::refresh() {
     tries = 0;

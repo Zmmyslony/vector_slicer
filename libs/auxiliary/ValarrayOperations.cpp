@@ -99,3 +99,11 @@ void printArray(const std::vector<std::valarray<double>> &array) {
     }
     std::cout << std::endl;
 }
+
+std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uintArray) {
+    std::valarray<int> intArray(uintArray.size());
+    for (int i = 0; i < uintArray.size(); i++) {
+        intArray[i] = lround(uintArray[i]);
+    }
+    return intArray;
+}

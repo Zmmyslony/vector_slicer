@@ -7,4 +7,6 @@
 
 #include "FillingOptimization.h"
 
+void generalFinderString(const std::string &directorPath, int minSeed, int maxSeed, int threads,
+                         const std::string &optimizerPath);
 #endif //VECTOR_SLICER_READINGFROMOUTSIDE_H

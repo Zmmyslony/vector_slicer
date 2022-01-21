@@ -28,9 +28,12 @@ FilledPattern::FilledPattern(const DesiredPattern &newDesiredPattern, FillingCon
     collisionList = generatePerimeterList(config.getCollisionRadius());
     randomEngine = std::mt19937(config.getSeed());
     pointsInCircle = findPointsInCircle(config.getPrintRadius());
+    xDistribution = std::uniform_int_distribution<int>(0, desiredPattern.getDimensions()[0] - 1);
+    yDistribution = std::uniform_int_distribution<int>(0, desiredPattern.getDimensions()[1] - 1);
     pointsToFill = findInitialStartingPoints(config.getInitialFillingMethod());
     unsigned int numberOfFillablePoints = pointsToFill.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
+
 }
 
 
@@ -47,8 +50,6 @@ FilledPattern::FilledPattern(const DesiredPattern &desiredPattern, int printRadi
         FilledPattern::FilledPattern(desiredPattern, printRadius, collisionRadius, stepLength, 0) {}
 
 
-
-
 std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
     std::vector<std::valarray<int>> newPointsToFill;
     for (int i = 0; i < desiredPattern.getDimensions()[0]; i++) {
@@ -56,7 +57,7 @@ std::vector<std::valarray<int>> FilledPattern::findAllFillablePoints() {
             std::valarray<int> currentPos = {i, j};
             if (isPerimeterFree(numberOfTimesFilled, desiredPattern.getShapeMatrix(), collisionList,
                                 currentPos, desiredPattern.getDimensions())) {
-                newPointsToFill.push_back(currentPos);
+                newPointsToFill.emplace_back(currentPos);
             }
         }
     }
@@ -77,17 +78,23 @@ FilledPattern::findRemainingFillablePointsInList(std::vector<std::valarray<int>>
 }
 
 
-void FilledPattern::findRemainingFillablePoints() {
-    if (isPerimeterSearchOn) {
-        pointsToFill = findRemainingFillablePointsInList(pointsToFill);
-
-        if (pointsToFill.empty()) {
-            isPerimeterSearchOn = false;
+void FilledPattern::updateSearchStageAndFillablePoints() {
+    switch (searchStage) {
+        case PerimeterSearch:
+            pointsToFill = findRemainingFillablePointsInList(pointsToFill);
+            if (pointsToFill.empty()) {
+                searchStage = TotallyRandomPointSelection;
+            }
+            break;
+        case TotallyRandomPointSelection:
             pointsToFill = findAllFillablePoints();
-        }
-    } else {
-        pointsToFill = findRemainingFillablePointsInList(pointsToFill);
+            searchStage = EmptySpotRandomSelection;
+            break;
+        case EmptySpotRandomSelection:
+            pointsToFill = findRemainingFillablePointsInList(pointsToFill);
+            break;
     }
+
     unsigned int numberOfFillablePoints = pointsToFill.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, numberOfFillablePoints - 1);
 }
@@ -188,7 +195,7 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &startingCoor
     std::valarray<double> currentStep = itodArray(startingStep);
 
     for (int length = config.getStepLength(); length >= config.getPrintRadius(); length--) {
-        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) { }
+        while (tryGeneratingPathWithLength(newPath, currentPositions, currentStep, length)) {}
     }
     return newPath;
 }
@@ -197,8 +204,10 @@ void FilledPattern::fillPointsInCircle(const std::valarray<int> &startingCoordin
     fillPointsFromDisplacement(startingCoordinates, pointsInCircle, {1, 0});
 }
 
-void FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint) {
-    std::vector<std::valarray<int>> halfCirclePoints = findHalfCircle(lastPoint, previousPoint, config.getPrintRadius());
+void
+FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint) {
+    std::vector<std::valarray<int>> halfCirclePoints = findHalfCircle(lastPoint, previousPoint,
+                                                                      config.getPrintRadius());
     fillPointsFromList(halfCirclePoints, previousPoint - lastPoint);
 }
 
@@ -222,7 +231,8 @@ unsigned int FilledPattern::getNewElement() {
 }
 
 
-std::vector<std::valarray<int>> reshuffle(const std::vector<std::valarray<int>> &initialVector, std::mt19937 &randomEngine) {
+std::vector<std::valarray<int>>
+reshuffle(const std::vector<std::valarray<int>> &initialVector, std::mt19937 &randomEngine) {
     std::vector<std::valarray<int>> newVector(initialVector.size());
     std::uniform_int_distribution<unsigned int> distribution(0, initialVector.size() - 1);
     unsigned int elementsToPush = distribution(randomEngine);
@@ -329,9 +339,6 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
 
 
 std::valarray<int> FilledPattern::findPointInShape() {
-    std::uniform_int_distribution<int> xDistribution(0, desiredPattern.getDimensions()[0] - 1);
-    std::uniform_int_distribution<int> yDistribution(0, desiredPattern.getDimensions()[1] - 1);
-
     int xStart = xDistribution(randomEngine);
     int yStart = yDistribution(randomEngine);
     while (!desiredPattern.getShapeMatrix()[xStart][yStart]) {
@@ -369,6 +376,7 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
     }
     return startingPoints;
 }
+
 
 
 #pragma clang diagnostic pop

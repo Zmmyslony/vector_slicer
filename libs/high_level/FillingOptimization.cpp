@@ -106,7 +106,7 @@ double getMedianDisagreement(const std::vector<ConfigDisagreement> &configGroup)
         disagreementVector.emplace_back(config.getDisagreement());
     }
     std::sort(disagreementVector.begin(), disagreementVector.end());
-    return disagreementVector[disagreementVector.size() / 2];
+    return disagreementVector[disagreementVector.size() * 1 / 4 - 1];
 }
 
 
@@ -129,7 +129,7 @@ ConfigDisagreement selectBestFillingMedian(const std::vector<ConfigDisagreement>
             std::min_element(medianDisagreements.begin(), medianDisagreements.end()) - medianDisagreements.begin();
 
     std::vector<ConfigDisagreement> bestGroup = sortedConfigGroups[minElementIndex];
-    return bestGroup[bestGroup.size() / 2];
+    return bestGroup[bestGroup.size() * 1 / 4 - 1];
 }
 
 
@@ -151,6 +151,7 @@ calculateFills(const DesiredPattern &desiredPattern, std::vector<ConfigDisagreem
     int totalNumberOfSteps = fillingConfigs.size();
 #pragma omp parallel for
     for (int i = 0; i < fillingConfigs.size(); i++) {
+//        showProgress(progress, totalNumberOfSteps);
         fillingConfigs[i].fillWithPatterns(desiredPattern);
         progress++;
         showProgress(progress, totalNumberOfSteps);

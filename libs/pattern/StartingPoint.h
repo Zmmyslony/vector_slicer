@@ -21,16 +21,18 @@ class StartingPoint {
 
     void trySearchingForAPoint(FilledPattern &pattern);
 
-public:
-    explicit StartingPoint();
-
-    std::valarray<int> positions;
-
-    void refresh();
+    void findStartPointTotallyRandomly(FilledPattern &pattern);
 
     void findStartPointConsecutively(FilledPattern &pattern);
 
-    void findStartPointRandomly(FilledPattern &pattern);
+    void findStartPointSemiRandomly(FilledPattern &pattern);
+
+public:
+    explicit StartingPoint();
+
+    void refresh();
+
+    std::valarray<int> positions;
 
     std::valarray<int> findStartPoint(FilledPattern &pattern);
 };
