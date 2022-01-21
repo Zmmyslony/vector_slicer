@@ -24,7 +24,10 @@ std::vector<std::string> getPatterns(const std::string &listOfPatternsPath) {
     std::fstream file(listOfPatternsPath);
 
     while (std::getline(file, line)) {
-        patterns.push_back(line);
+        if (line.find("ignore") != std::string::npos) {}
+        else {
+            patterns.push_back(line);
+        }
     }
     return patterns;
 }
