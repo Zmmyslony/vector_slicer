@@ -54,7 +54,7 @@ void exportVectorTableToFile(const std::vector<std::vector<double>> &table, std:
 
 
 std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::valarray<int>>> &gridOfCoordinates,
-                                                int index) {
+                                         int index) {
     std::vector<std::vector<int>> table;
     table.reserve(gridOfCoordinates.size());
     for (auto &row: gridOfCoordinates) {
@@ -69,8 +69,9 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
 }
 
 
-void export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &gridOfCoordinates, const std::string &path,
-                          const std::string &suffix) {
+void
+export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &gridOfCoordinates, const std::string &path,
+                     const std::string &suffix) {
     std::vector<std::vector<int>> xTable = indexTable(gridOfCoordinates, 0);
     std::vector<std::vector<int>> yTable = indexTable(gridOfCoordinates, 1);
 
@@ -89,10 +90,10 @@ std::vector<std::vector<int>> importTableInt(const std::string &filename) {
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream line_stream(line);
+        std::stringstream lineStream(line);
         std::vector<int> row;
 
-        while (std::getline(line_stream, element, ',')) {
+        while (std::getline(lineStream, element, ',')) {
             row.push_back(stoi(element));
         }
         table.push_back(row);

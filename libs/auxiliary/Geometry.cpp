@@ -9,10 +9,10 @@
 #include "ValarrayOperations.h"
 
 
-bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> EdgeFirst,
-                           std::valarray<double> EdgeSecond) {
-    int sign = (int) ((EdgeSecond[0] - EdgeFirst[0]) * (point[1] - EdgeFirst[1]) -
-                      (point[0] - EdgeFirst[0]) * (EdgeSecond[1] - EdgeFirst[1]));
+bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edgeFirst,
+                           std::valarray<double> edgeSecond) {
+    int sign = (int) ((edgeSecond[0] - edgeFirst[0]) * (point[1] - edgeFirst[1]) -
+                      (point[0] - edgeFirst[0]) * (edgeSecond[1] - edgeFirst[1]));
     if (sign > 0) {
         return true;
     } else {
@@ -21,13 +21,13 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> EdgeF
 }
 
 
-bool isInRectangle(std::valarray<int> &point, std::valarray<double> &EdgeFirst,
-                   std::valarray<double> &EdgeSecond, std::valarray<double> &EdgeThird,
-                   std::valarray<double> &EdgeFourth) {
-    bool isOnLeftOfFirstEdge = isOnTheLeftSideOfEdge(point, EdgeFirst, EdgeSecond);
-    bool isOnLeftOfSecondEdge = isOnTheLeftSideOfEdge(point, EdgeSecond, EdgeThird);
-    bool isOnLeftOfThirdEdge = isOnTheLeftSideOfEdge(point, EdgeThird, EdgeFourth);
-    bool isOnLeftOfFourthEdge = isOnTheLeftSideOfEdge(point, EdgeFourth, EdgeFirst);
+bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edgeFirst,
+                   std::valarray<double> &edgeSecond, std::valarray<double> &edgeThird,
+                   std::valarray<double> &edgeFourth) {
+    bool isOnLeftOfFirstEdge = isOnTheLeftSideOfEdge(point, edgeFirst, edgeSecond);
+    bool isOnLeftOfSecondEdge = isOnTheLeftSideOfEdge(point, edgeSecond, edgeThird);
+    bool isOnLeftOfThirdEdge = isOnTheLeftSideOfEdge(point, edgeThird, edgeFourth);
+    bool isOnLeftOfFourthEdge = isOnTheLeftSideOfEdge(point, edgeFourth, edgeFirst);
 
     if (isOnLeftOfFirstEdge && isOnLeftOfSecondEdge && isOnLeftOfThirdEdge && isOnLeftOfFourthEdge) {
         return true;

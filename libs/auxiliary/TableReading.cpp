@@ -89,9 +89,9 @@ std::valarray<int> getTableDimensions(std::string &filename) {
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream line_stream(line);
+        std::stringstream lineStream(line);
         if (size[0] == 0) {
-            while (std::getline(line_stream, element, ',')) {
+            while (std::getline(lineStream, element, ',')) {
                 size[1]++;
             }
         }

@@ -175,10 +175,10 @@ FillingConfig::FillingConfig(std::string &configPath) {
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream line_stream(line);
+        std::stringstream lineStream(line);
         std::vector<std::string> row;
 
-        while (std::getline(line_stream, element, ' ')) {
+        while (std::getline(lineStream, element, ' ')) {
             row.push_back(element);
         }
         readLineOfConfig(row);

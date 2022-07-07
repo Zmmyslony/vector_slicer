@@ -3,6 +3,7 @@
 //
 
 #include "ConfigGeneration.h"
+#include <iostream>
 
 
 std::vector<FillingConfig> iterateOverOption(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
@@ -12,8 +13,13 @@ std::vector<FillingConfig> iterateOverOption(const DesiredPattern &desiredPatter
     double initialValue = stod(initialConfig.getConfigOption(option));
     for (int i = -numberOfConfigs; i <= numberOfConfigs; i++) {
         double newValue = initialValue + i * increment;
-        initialConfig.setConfigOption(option, std::to_string(newValue));
-        listOfConfigs.push_back(initialConfig);
+        // TODO fix this condition to omit errors. Collision radius has to smaller than the print radius and greater
+        // than zero so that the algorithm can work.
+        if (option != CollisionRadius || newValue < initialConfig.getPrintRadius() && newValue > 0) {
+
+            initialConfig.setConfigOption(option, std::to_string(newValue));
+            listOfConfigs.push_back(initialConfig);
+        }
     }
     return listOfConfigs;
 }

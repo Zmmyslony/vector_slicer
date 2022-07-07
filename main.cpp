@@ -7,7 +7,7 @@
 #include "./libs/high_level/ReadingFromOutside.h"
 #include "./libs/auxiliary/TableReading.h"
 
-double VERSION = 1.0;
+const double VERSION = 1.0;
 
 std::string getExePath() {
     char buffer[MAX_PATH];

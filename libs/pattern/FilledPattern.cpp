@@ -378,5 +378,4 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(Filling
 }
 
 
-
 #pragma clang diagnostic pop
