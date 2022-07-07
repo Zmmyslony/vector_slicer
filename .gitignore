@@ -2,3 +2,4 @@ cmake-build-release/
 cmake-build-debug/
 /libs/obsolete/
 /cmake-build-minsizerel/
+./idea
