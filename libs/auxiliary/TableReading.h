@@ -17,5 +17,6 @@ std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
 
 std::valarray<int> getTableDimensions(std::string &filename);
 
+std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table);
 
 #endif //VECTOR_SLICER_TABLEREADING_H

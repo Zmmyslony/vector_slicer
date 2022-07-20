@@ -40,6 +40,13 @@ class GCodeFile {
 
     void resetPositionOfFilament();
 
+    void generalCommand(const std::vector<char> &commands, const std::vector<bool> &isInt,
+                        const std::vector<double> &values);
+
+    void generalCommand(const char &command, double value);
+
+    void generalCommand(const char &command, int value);
+
 public:
     GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient);
 
@@ -61,6 +68,12 @@ public:
 
     void extrude(const std::valarray<double> &xy);
 
+    void extrudeHyrel(const std::valarray<double> &xy);
+
+    void defineToolHeight(unsigned int toolNumber, double height);
+
+    void defineToolOffset(unsigned int toolNumber, const std::vector<double> &xy);
+
     void printPath(std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
 
     std::string getText();
@@ -71,6 +84,8 @@ public:
     void exportToFile(const std::string &path);
 
     void addComment(const std::string &comment);
+
+    void setCurrentCoordinatesToZero();
 };
 
 void generateGCode(const std::string &baseDirectory, int temperature, double cleaningDistance,

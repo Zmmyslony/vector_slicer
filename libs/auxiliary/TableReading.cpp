@@ -7,19 +7,23 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cassert>
 
 
 std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename) {
     std::string line;
     std::ifstream file(filename);
+    if (!file) {
+        std::cout << "Error reading " << filename;
+    }
     std::vector<std::vector<double>> table;
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream line_stream(line);
+        std::stringstream lineStream(line);
         std::vector<double> row;
 
-        while (std::getline(line_stream, element, ',')) {
+        while (std::getline(lineStream, element, ',')) {
             row.push_back(std::stod(element));
         }
         table.push_back(row);
@@ -40,31 +44,6 @@ std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> 
     return intTable;
 }
 
-//std::vector<std::vector<bool>> tableDoubleToBool(std::vector<std::vector<double>> &doubleTable) {
-//    std::vector<std::vector<bool>> boolTable;
-//    for (auto & row : doubleTable) {
-//        std::vector<bool> boolRow;
-//        boolRow.reserve(row.size());
-//        for (auto & element : row) {
-//            boolRow.push_back( (bool) element);
-//        }
-//        boolTable.push_back(boolRow);
-//    }
-//    return boolTable;
-//}
-
-//std::vector<std::vector<unsigned int>> tableDoubleToUint(std::vector<std::vector<double>> &doubleTable) {
-//    std::vector<std::vector<unsigned int>> uintTable;
-//    for (auto & row : doubleTable) {
-//        std::vector<unsigned int> uintRow;
-//        uintRow.reserve(row.size());
-//        for (auto & element : row) {
-//            uintRow.push_back((unsigned int) element);
-//        }
-//        uintTable.push_back(uintRow);
-//    }
-//    return uintTable;
-//}
 
 std::vector<std::vector<int>> readFileToTableInt(const std::string &filename) {
     std::vector<std::vector<double>> doubleTable = readFileToTableDouble(filename);
@@ -97,6 +76,13 @@ std::valarray<int> getTableDimensions(std::string &filename) {
         }
         size[0]++;
     }
+    return size;
+}
+
+
+std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table) {
+    std::valarray<int> size;
+    size = {(int)table.size(), (int)table[0].size()};
     return size;
 }
 

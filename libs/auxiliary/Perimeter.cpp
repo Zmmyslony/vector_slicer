@@ -4,6 +4,7 @@
 
 #include "Perimeter.h"
 #include "ValarrayOperations.h"
+#include <iostream>
 
 std::vector<std::valarray<int>> generatePerimeterList(double radius) {
     std::vector<std::valarray<int>> perimeterList;

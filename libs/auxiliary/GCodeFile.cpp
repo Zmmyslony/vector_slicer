@@ -17,25 +17,52 @@ void GCodeFile::generalCommand(int number, const std::string &suffix) {
     bodyStream << "G" << commandNumber.str() << " " << suffix + "\n";
 }
 
+void GCodeFile::generalCommand(const std::vector<char> &commands, const std::vector<bool> &isInt,
+                               const std::vector<double> &values) {
+    if (commands.size() == values.size() && commands.size() == isInt.size()) {
+        for (int i = 0; i < commands.size(); i++) {
+            if (isInt[i]) {
+                bodyStream << commands[i] << std::to_string(int(values[i])) << " ";
+            } else {
+                bodyStream << commands[i] << std::to_string(values[i]) << " ";
+            }
+        }
+        bodyStream << "\n";
+    }
+}
+
+void GCodeFile::generalCommand(const char &command, double value) {
+    generalCommand({command}, {false}, {value});
+}
+
+void GCodeFile::generalCommand(const char &command, int value) {
+    generalCommand({command}, {true}, {(double) value});
+}
+
 void GCodeFile::setRelativePositioning() {
-    bodyStream << "G91\n";
+//    bodyStream << "G91\n";
+    generalCommand('G', 91);
 }
 
 void GCodeFile::setAbsolutePositioning() {
-    bodyStream << "G90\n";
+//    bodyStream << "G90\n";
+    generalCommand('G', 90);
 }
 
 void GCodeFile::autoHome() {
-    bodyStream << "G28\n";
+//    bodyStream << "G28\n";
+    generalCommand('G', 28);
     positions = {0, 0, 0};
 }
 
 void GCodeFile::levelBed() {
-    bodyStream << "G29\n";
+//    bodyStream << "G29\n";
+    generalCommand('G', 29);
 }
 
 void GCodeFile::setTemperatureHotend(int temperature) {
-    bodyStream << "M109 S" << temperature << "\n";
+//    bodyStream << "M109 S" << temperature << "\n";
+    generalCommand({'M', 'S'}, {true, true}, {109, (double) temperature});
 }
 
 void GCodeFile::setTemperatureHotendGradual(int temperature) {
@@ -45,21 +72,25 @@ void GCodeFile::setTemperatureHotendGradual(int temperature) {
 }
 
 void GCodeFile::setTemperatureBed(int temperature) {
-    bodyStream << "M190 S" << temperature << "\n";
+//    bodyStream << "M190 S" << temperature << "\n";
+    generalCommand({'M', 'S'}, {true, true}, {190, (double) temperature});
 }
 
 void GCodeFile::turnMotorsOff() {
-    bodyStream << "M84\n";
+//    bodyStream << "M84\n";
+    generalCommand('M', 84);
 }
 
 void GCodeFile::movePlanar(const std::valarray<double> &xy) {
-    bodyStream << "G0 X" << xy[0] << " Y" << xy[1] << " F" << moveSpeed << "\n";
+//    bodyStream << "G0 X" << xy[0] << " Y" << xy[1] << " F" << moveSpeed << "\n";
+    generalCommand({'G', 'X', 'Y', 'F'}, {true, false, false, true}, {0, xy[0], xy[1], (double) moveSpeed});
     positions[0] = xy[0];
     positions[1] = xy[1];
 }
 
 void GCodeFile::moveVertical(double z) {
-    bodyStream << "G0 Z" << z << " F" << moveSpeed / VERTICAL_MOVE_SLOWDOWN << "\n";
+//    bodyStream << "G0 Z" << z << " F" << moveSpeed / VERTICAL_MOVE_SLOWDOWN << "\n";
+    generalCommand({'G', 'Z', 'F'}, {true, false, true}, {0, z, (double) moveSpeed / VERTICAL_MOVE_SLOWDOWN});
     positions[2] = z;
 }
 
@@ -69,7 +100,8 @@ void GCodeFile::moveVerticalRelative(double deltaZ) {
 }
 
 void GCodeFile::move(double x, double y, double z) {
-    bodyStream << "G0 X" << x << " Y" << y << " Z" << z << " F" << moveSpeed << "\n";
+//    bodyStream << "G0 X" << x << " Y" << y << " Z" << z << " F" << moveSpeed << "\n";
+    generalCommand({'G', 'X', 'Y', 'Z', 'F'}, {true, false, false, false, true}, {0, x, y, z, (double) moveSpeed});
     positions = {x, y, z};
 }
 
@@ -81,12 +113,61 @@ void GCodeFile::extrude(const std::valarray<double> &xy) {
     bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E" << extrusionValue << "\n";
 }
 
+void GCodeFile::extrudeHyrel(const std::valarray<double> &xy) {
+    positions[0] = xy[0];
+    positions[1] = xy[1];
+//    bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E1" << "\n";
+    generalCommand({'G', 'X', 'Y', 'F', 'E'}, {true, false, false, true, true},
+                   {0, xy[0], xy[1], (double) moveSpeed, 1});
+}
+
+void GCodeFile::setCurrentCoordinatesToZero() {
+    generalCommand({'G', 'X', 'Y', 'Z'}, {true, false, false, false}, {92, 0, 0, 0});
+}
+
 void GCodeFile::resetPositionOfFilament() {
-    bodyStream << "G92 0" << "\n";
+    bodyStream << "G92 E0" << "\n";
 }
 
 void GCodeFile::addComment(const std::string &comment) {
-    bodyStream << ";" << comment << "\n";
+    bodyStream << "; " << comment << "\n";
+}
+
+std::string toolNumberString(unsigned int toolNumber) {
+    const unsigned int maxToolNumber = 5;
+    if (toolNumber >= maxToolNumber) {
+        std::cout << "Gcode writing -> tool number: max value: "
+                  << maxToolNumber - 1 << ", used value: " << toolNumber << "\n";
+        return "";
+    } else {
+        return "T1" + std::to_string(toolNumber + 1);
+    }
+}
+
+
+void GCodeFile::defineToolHeight(unsigned int registerNumber, double height) {
+// TODO Obtain max tool numbers from a new class of Printer -> Hyrel and automate retrieving maximal values
+    const double maxHeight = 120;
+    if (0 > height || height > maxHeight) {
+        std::cout << "Gcode writing -> defineToolHeight -> tool height: max value "
+                  << maxHeight << ", used value " << height << "\n";
+    } else {
+        bodyStream << "M660 H" << registerNumber << " Z" << height << "\n";
+    }
+}
+
+void GCodeFile::defineToolOffset(unsigned int toolNumber, const std::vector<double> &xy) {
+    const double xMax = 200;
+    const double yMax = 200;
+    if (0 > xy[0] || xy[0] > xMax) {
+        std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
+                  << xMax << ", used value " << xy[0] << "\n";
+    } else if (0 > xy[1] || xy[1] > yMax) {
+        std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
+                  << yMax << ", used value " << xy[1] << "\n";
+    } else {
+        bodyStream << "M6 " << toolNumberString(toolNumber) << " X" << xy[0] << " Y" << xy[1] << "\n";
+    }
 }
 
 
@@ -94,7 +175,6 @@ GCodeFile::GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient)
         moveSpeed(moveSpeed),
         printSpeed(printSpeed),
         extrusionCoefficient(extrusionCoefficient) {
-
 }
 
 GCodeFile::GCodeFile() :

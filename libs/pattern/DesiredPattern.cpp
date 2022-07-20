@@ -7,13 +7,15 @@
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
+#include <iostream>
 
 DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,
                                std::string &yVectorFieldFilename) :
         shapeMatrix(readFileToTableInt(shapeFilename)),
         xFieldPreferred(readFileToTableDouble(xVectorFieldFilename)),
-        yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)),
-        dimensions(getTableDimensions(shapeFilename)) {
+        yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)) {
+//        dimensions(getTableDimensions(shapeFilename)) {
+    dimensions = getTableDimensions(shapeMatrix);
     perimeterList = findSortedPerimeters(shapeMatrix, dimensions);
 }
 
