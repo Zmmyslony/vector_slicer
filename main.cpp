@@ -6,6 +6,7 @@
 #include <fstream>
 #include "./libs/high_level/ReadingFromOutside.h"
 #include "./libs/auxiliary/TableReading.h"
+#include "./libs/auxiliary/Hyrel.h"
 
 const double VERSION = 1.0;
 
@@ -39,27 +40,29 @@ std::vector<int> readConfig(const std::string &filename) {
 
 
 int main() {
-    printf("\n\tVector slicer version %.1f.\n", VERSION);
-    std::string exePath = getExePath();
+    testHeaderAndFooter();
 
-    std::string configPath = exePath + R"(\config.txt)";
-    std::string optimizerPath = exePath + R"(\optimizationSequence.txt)";
-    std::string patternsPath = exePath + R"(\filesToTest.txt)";
-
-    std::vector<int> config = readConfig(configPath);
-    std::vector<std::string> patterns = getPatterns(patternsPath);
-
-
-    printf("\nTested patterns: \n");
-    for (auto &patternType: patterns) {
-        std::cout << "\t" << patternType << std::endl;
-    }
-    printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
-
-    for (auto &patternType: patterns) {
-        generalFinderString(patternType, config[0], config[1], config[2], optimizerPath);
-        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
-    }
+//    printf("\n\tVector slicer version %.1f.\n", VERSION);
+//    std::string exePath = getExePath();
+//
+//    std::string configPath = exePath + R"(\config.txt)";
+//    std::string optimizerPath = exePath + R"(\optimizationSequence.txt)";
+//    std::string patternsPath = exePath + R"(\filesToTest.txt)";
+//
+//    std::vector<int> config = readConfig(configPath);
+//    std::vector<std::string> patterns = getPatterns(patternsPath);
+//
+//
+//    printf("\nTested patterns: \n");
+//    for (auto &patternType: patterns) {
+//        std::cout << "\t" << patternType << std::endl;
+//    }
+//    printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
+//
+//    for (auto &patternType: patterns) {
+//        generalFinderString(patternType, config[0], config[1], config[2], optimizerPath);
+//        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
+//    }
 
 //  const std::string mainDirectory = R"(C:\Work\Cambridge\printer\Vector Slicer Patterns)";
 ////    std::string radial = mainDirectory + R"(\radial, r = 1 cm)";
