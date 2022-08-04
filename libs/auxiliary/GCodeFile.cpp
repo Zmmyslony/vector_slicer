@@ -113,13 +113,7 @@ void GCodeFile::extrude(const std::valarray<double> &xy) {
     bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E" << extrusionValue << "\n";
 }
 
-void GCodeFile::extrudeHyrel(const std::valarray<double> &xy) {
-    positions[0] = xy[0];
-    positions[1] = xy[1];
-//    bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E1" << "\n";
-    generalCommand({'G', 'X', 'Y', 'F', 'E'}, {true, false, false, true, true},
-                   {0, xy[0], xy[1], (double) moveSpeed, 1});
-}
+
 
 void GCodeFile::setCurrentCoordinatesToZero() {
     generalCommand({'G', 'X', 'Y', 'Z'}, {true, false, false, false}, {92, 0, 0, 0});
@@ -131,43 +125,6 @@ void GCodeFile::resetPositionOfFilament() {
 
 void GCodeFile::addComment(const std::string &comment) {
     bodyStream << "; " << comment << "\n";
-}
-
-std::string toolNumberString(unsigned int toolNumber) {
-    const unsigned int maxToolNumber = 5;
-    if (toolNumber >= maxToolNumber) {
-        std::cout << "Gcode writing -> tool number: max value: "
-                  << maxToolNumber - 1 << ", used value: " << toolNumber << "\n";
-        return "";
-    } else {
-        return "T1" + std::to_string(toolNumber + 1);
-    }
-}
-
-
-void GCodeFile::defineToolHeight(unsigned int registerNumber, double height) {
-// TODO Obtain max tool numbers from a new class of Printer -> Hyrel and automate retrieving maximal values
-    const double maxHeight = 120;
-    if (0 > height || height > maxHeight) {
-        std::cout << "Gcode writing -> defineToolHeight -> tool height: max value "
-                  << maxHeight << ", used value " << height << "\n";
-    } else {
-        bodyStream << "M660 H" << registerNumber << " Z" << height << "\n";
-    }
-}
-
-void GCodeFile::defineToolOffset(unsigned int toolNumber, const std::vector<double> &xy) {
-    const double xMax = 200;
-    const double yMax = 200;
-    if (0 > xy[0] || xy[0] > xMax) {
-        std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
-                  << xMax << ", used value " << xy[0] << "\n";
-    } else if (0 > xy[1] || xy[1] > yMax) {
-        std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
-                  << yMax << ", used value " << xy[1] << "\n";
-    } else {
-        bodyStream << "M6 " << toolNumberString(toolNumber) << " X" << xy[0] << " Y" << xy[1] << "\n";
-    }
 }
 
 

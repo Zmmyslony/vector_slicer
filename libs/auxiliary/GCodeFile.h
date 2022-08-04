@@ -68,11 +68,7 @@ public:
 
     void extrude(const std::valarray<double> &xy);
 
-    void extrudeHyrel(const std::valarray<double> &xy);
 
-    void defineToolHeight(unsigned int toolNumber, double height);
-
-    void defineToolOffset(unsigned int toolNumber, const std::vector<double> &xy);
 
     void printPath(std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
 
@@ -86,6 +82,8 @@ public:
     void addComment(const std::string &comment);
 
     void setCurrentCoordinatesToZero();
+
+    friend class Hyrel;
 };
 
 void generateGCode(const std::string &baseDirectory, int temperature, double cleaningDistance,
