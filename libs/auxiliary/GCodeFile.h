@@ -47,17 +47,6 @@ class GCodeFile {
 
     void generalCommand(const char &command, int value);
 
-public:
-    GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient);
-
-    explicit GCodeFile();
-
-    void init(int hotendTemperature, int bedTemperature, double cleanLength);
-
-    void init(int hotendTemperature);
-
-    void shutDown();
-
     void movePlanar(const std::valarray<double> &xy);
 
     void moveVertical(double z);
@@ -68,7 +57,16 @@ public:
 
     void extrude(const std::valarray<double> &xy);
 
+public:
+    GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient);
 
+    explicit GCodeFile();
+
+    void init(int hotendTemperature, int bedTemperature, double cleanLength);
+
+    void init(int hotendTemperature);
+
+    void shutDown();
 
     void printPath(std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
 
