@@ -100,11 +100,12 @@ void Hyrel::clearOffsets() {
 void Hyrel::clean(double cleanLength, int numberOfLines, double nozzleWidth) {
     for (int i = 0; i < numberOfLines; i++) {
         if (i % 2 == 0) {
+            movePlanar({0, i * nozzleWidth});
             extrude({cleanLength, i * nozzleWidth});
-            movePlanar({cleanLength, (i + 1) * nozzleWidth});
+
         } else {
+            movePlanar({cleanLength, i * nozzleWidth});
             extrude({0, i * nozzleWidth});
-            movePlanar({0, (i + 1) * nozzleWidth});
         }
     }
 }
