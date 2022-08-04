@@ -40,28 +40,26 @@ void GCodeFile::generalCommand(const char &command, int value) {
 }
 
 void GCodeFile::setRelativePositioning() {
-//    bodyStream << "G91\n";
     generalCommand('G', 91);
 }
 
 void GCodeFile::setAbsolutePositioning() {
-//    bodyStream << "G90\n";
     generalCommand('G', 90);
 }
 
 void GCodeFile::autoHome() {
-//    bodyStream << "G28\n";
+    setRelativePositioning();
+    moveVertical(10);
+    setAbsolutePositioning();
     generalCommand('G', 28);
     positions = {0, 0, 0};
 }
 
 void GCodeFile::levelBed() {
-//    bodyStream << "G29\n";
     generalCommand('G', 29);
 }
 
 void GCodeFile::setTemperatureHotend(int temperature) {
-//    bodyStream << "M109 S" << temperature << "\n";
     generalCommand({'M', 'S'}, {true, true}, {109, (double) temperature});
 }
 
@@ -72,24 +70,20 @@ void GCodeFile::setTemperatureHotendGradual(int temperature) {
 }
 
 void GCodeFile::setTemperatureBed(int temperature) {
-//    bodyStream << "M190 S" << temperature << "\n";
     generalCommand({'M', 'S'}, {true, true}, {190, (double) temperature});
 }
 
 void GCodeFile::turnMotorsOff() {
-//    bodyStream << "M84\n";
     generalCommand('M', 84);
 }
 
 void GCodeFile::movePlanar(const std::valarray<double> &xy) {
-//    bodyStream << "G0 X" << xy[0] << " Y" << xy[1] << " F" << moveSpeed << "\n";
     generalCommand({'G', 'X', 'Y', 'F'}, {true, false, false, true}, {0, xy[0], xy[1], (double) moveSpeed});
     positions[0] = xy[0];
     positions[1] = xy[1];
 }
 
 void GCodeFile::moveVertical(double z) {
-//    bodyStream << "G0 Z" << z << " F" << moveSpeed / VERTICAL_MOVE_SLOWDOWN << "\n";
     generalCommand({'G', 'Z', 'F'}, {true, false, true}, {0, z, (double) moveSpeed / VERTICAL_MOVE_SLOWDOWN});
     positions[2] = z;
 }
@@ -100,7 +94,6 @@ void GCodeFile::moveVerticalRelative(double deltaZ) {
 }
 
 void GCodeFile::move(double x, double y, double z) {
-//    bodyStream << "G0 X" << x << " Y" << y << " Z" << z << " F" << moveSpeed << "\n";
     generalCommand({'G', 'X', 'Y', 'Z', 'F'}, {true, false, false, false, true}, {0, x, y, z, (double) moveSpeed});
     positions = {x, y, z};
 }

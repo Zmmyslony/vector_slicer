@@ -47,21 +47,24 @@ void Hyrel::defineHeightOffset(unsigned int registerNumber, double height) {
     }
 }
 
-void Hyrel::defineToolOffset(unsigned int toolNumber, const std::vector<double> &xy, unsigned int offsetRegister) {
-    const double xMax = 200;
-    const double yMax = 200;
-    if (0 > xy[0] || xy[0] > xMax) {
+void Hyrel::defineToolOffset(unsigned int toolNumber, const std::vector<double> &xyz, unsigned int offsetRegister) {
+    const double X_MAX = 200;
+    const double Y_MAX = 200;
+    const double Z_MAX = 120;
+    if (0 > xyz[0] || xyz[0] > X_MAX) {
         std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
-                  << xMax << ", used value " << xy[0] << "\n";
-    } else if (0 > xy[1] || xy[1] > yMax) {
-        std::cout << "Gcode writing -> defineToolOffset -> tool x coordinate: max value "
-                  << yMax << ", used value " << xy[1] << "\n";
+                  << X_MAX << ", used value " << xyz[0] << "\n";
+    } else if (0 > xyz[1] || xyz[1] > Y_MAX) {
+        std::cout << "Gcode writing -> defineToolOffset -> tool y coordinate: max value "
+                  << Y_MAX << ", used value " << xyz[1] << "\n";
+    } else if (0 > xyz[2] || xyz[2] > Z_MAX) {
+        std::cout << "Gcode writing -> defineToolOffset -> tool z coordinate: max value "
+                  << Z_MAX << ", used value " << xyz[2] << "\n";
     } else {
         generalCommand(
-                {'M', 'T', 'O', 'X', 'Y'},
+                {'M', 'T', 'O', 'X', 'Y', 'Z'},
                 {true, true, true, false, false},
-                {6, (double) toolNumberVariable(toolNumber), (double) offsetRegister, xy[0], xy[1]});
-//        bodyStream << "M6 " << toolNumberString(toolNumber) << " X" << xy[0] << " Y" << xy[1] << "\n";
+                {6, (double) toolNumberVariable(toolNumber), (double) offsetRegister, xyz[0], xyz[1], xyz[2]});
     }
 }
 
@@ -70,19 +73,56 @@ void Hyrel::extrudeHyrel(const std::valarray<double> &xy) {
     positions[1] = xy[1];
 //    bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E1" << "\n";
     generalCommand({'G', 'X', 'Y', 'F', 'E'}, {true, false, false, true, true},
-                   {0, xy[0], xy[1], (double) moveSpeed, 1});
+                   {0, xy[0], xy[1], (double)moveSpeed, 1});
 }
 
-void Hyrel::initHyrel(int hotendTemperature, int bedTemperature, double cleanLength, double nozzleWidth,
-                      double layerHeight, int toolNumber, double zOffset, double xOffset, double yOffset) {
+void Hyrel::configureFlow(double nozzleWidth, double layerHeight, double flowMultiplier, int pulses, int tool) {
+    generalCommand({'G', 'W', 'Z', 'S', 'P', 'T'}, {true, false, false, false, true, true},
+                   {221, nozzleWidth, layerHeight, flowMultiplier, (double) pulses, (double) tool});
+}
+
+void Hyrel::setUnitsToMillimetres() {
+    generalCommand('G', 21);
+}
+
+void Hyrel::turnMotorsOff() {
+    generalCommand('M', 18);
+}
+
+void Hyrel::signalFinshedPrint() {
+    generalCommand('M', 30);
+}
+
+void Hyrel::clearOffsets() {
+    generalCommand('G', 53);
+}
+
+void Hyrel::init(int hotendTemperature, int bedTemperature, double cleanLength, double nozzleWidth,
+                 double layerHeight, int toolNumber, double zOffset, double xOffset, double yOffset,
+                 double flowMultiplier) {
+    const int HEIGHT_OFFSET_REGISTER = 1;
+    const int POSITION_OFFSET_REGISTER = 0;
+    const int KRA2_PULSES_PER_MICROLITRE = 1297;
+
+    setUnitsToMillimetres();
+    setAbsolutePositioning();
+    clearOffsets();
+
     autoHome();
-    defineHeightOffset(1, zOffset);
-    defineToolOffset(toolNumber, {xOffset, yOffset}, 0);
+    defineToolOffset(toolNumber, {xOffset, yOffset, zOffset}, POSITION_OFFSET_REGISTER);
 
     selectTool(toolNumber);
     setTemperatureHotend(bedTemperature);
     setTemperatureBed(bedTemperature);
 
-
+    configureFlow(nozzleWidth, layerHeight, flowMultiplier, KRA2_PULSES_PER_MICROLITRE, toolNumber);
 }
 
+void Hyrel::shutDown() {
+    setTemperatureBed(0);
+    setTemperatureHotend(0);
+
+    autoHome();
+    turnMotorsOff();
+    signalFinshedPrint();
+}
