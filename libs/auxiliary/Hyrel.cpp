@@ -68,12 +68,12 @@ void Hyrel::defineToolOffset(unsigned int toolNumber, const std::vector<double> 
     }
 }
 
-void Hyrel::extrudeHyrel(const std::valarray<double> &xy) {
+void Hyrel::extrude(const std::valarray<double> &xy) {
     positions[0] = xy[0];
     positions[1] = xy[1];
 //    bodyStream << "G1 X" << xy[0] << " Y" << xy[1] << " F" << printSpeed << " E1" << "\n";
     generalCommand({'G', 'X', 'Y', 'F', 'E'}, {true, false, false, true, true},
-                   {0, xy[0], xy[1], (double)moveSpeed, 1});
+                   {0, xy[0], xy[1], (double) moveSpeed, 1});
 }
 
 void Hyrel::configureFlow(double nozzleWidth, double layerHeight, double flowMultiplier, int pulses, int tool) {
@@ -97,12 +97,24 @@ void Hyrel::clearOffsets() {
     generalCommand('G', 53);
 }
 
+void Hyrel::clean(double cleanLength, int numberOfLines, double nozzleWidth) {
+    for (int i = 0; i < numberOfLines; i++) {
+        if (i % 2 == 0) {
+            extrude({cleanLength, i * nozzleWidth});
+            movePlanar({cleanLength, (i + 1) * nozzleWidth});
+        } else {
+            extrude({0, i * nozzleWidth});
+            movePlanar({0, (i + 1) * nozzleWidth});
+        }
+    }
+}
+
 void Hyrel::init(int hotendTemperature, int bedTemperature, double cleanLength, double nozzleWidth,
-                 double layerHeight, int toolNumber, double zOffset, double xOffset, double yOffset,
-                 double flowMultiplier) {
+                 double layerHeight, int toolNumber, double zOffset, double xOffset, double yOffset) {
     const int HEIGHT_OFFSET_REGISTER = 1;
     const int POSITION_OFFSET_REGISTER = 0;
     const int KRA2_PULSES_PER_MICROLITRE = 1297;
+    const int CLEANING_LINES = 4;
 
     setUnitsToMillimetres();
     setAbsolutePositioning();
@@ -115,7 +127,8 @@ void Hyrel::init(int hotendTemperature, int bedTemperature, double cleanLength, 
     setTemperatureHotend(bedTemperature);
     setTemperatureBed(bedTemperature);
 
-    configureFlow(nozzleWidth, layerHeight, flowMultiplier, KRA2_PULSES_PER_MICROLITRE, toolNumber);
+    configureFlow(nozzleWidth, layerHeight, extrusionCoefficient, KRA2_PULSES_PER_MICROLITRE, toolNumber);
+    clean(cleanLength, CLEANING_LINES, nozzleWidth);
 }
 
 void Hyrel::shutDown() {
@@ -125,4 +138,14 @@ void Hyrel::shutDown() {
     autoHome();
     turnMotorsOff();
     signalFinshedPrint();
+}
+
+Hyrel::Hyrel(int moveSpeed, int printSpeed, double extrusionCoefficient) : GCodeFile(moveSpeed, printSpeed,
+                                                                                     extrusionCoefficient) {}
+
+void testHeaderAndFooter() {
+    Hyrel hyrel(600, 100, 1);
+    hyrel.init(20, 0, 30, 0.335, 0.16, 1, 50, 30, 30);
+    hyrel.shutDown();
+    std::cout << hyrel.getText();
 }
