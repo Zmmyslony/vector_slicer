@@ -124,7 +124,7 @@ void Hyrel::init(int hotendTemperature, int bedTemperature, double cleanLength, 
     defineToolOffset(toolNumber, {xOffset, yOffset, zOffset}, POSITION_OFFSET_REGISTER);
 
     selectTool(toolNumber);
-    setTemperatureHotend(bedTemperature);
+    setTemperatureHotend(hotendTemperature);
     setTemperatureBed(bedTemperature);
 
     configureFlow(nozzleWidth, layerHeight, extrusionCoefficient, KRA2_PULSES_PER_MICROLITRE, toolNumber);
