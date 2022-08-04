@@ -22,9 +22,9 @@ void GCodeFile::generalCommand(const std::vector<char> &commands, const std::vec
     if (commands.size() == values.size() && commands.size() == isInt.size()) {
         for (int i = 0; i < commands.size(); i++) {
             if (isInt[i]) {
-                bodyStream << commands[i] << std::to_string(int(values[i])) << " ";
+                bodyStream << commands[i] << int(values[i]) << " ";
             } else {
-                bodyStream << commands[i] << std::to_string(values[i]) << " ";
+                bodyStream << commands[i] << std::fixed << values[i] << " ";
             }
         }
         bodyStream << "\n";
@@ -125,6 +125,7 @@ GCodeFile::GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient)
         moveSpeed(moveSpeed),
         printSpeed(printSpeed),
         extrusionCoefficient(extrusionCoefficient) {
+    bodyStream.precision(3);
 }
 
 GCodeFile::GCodeFile() :
