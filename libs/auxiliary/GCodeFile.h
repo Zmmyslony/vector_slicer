@@ -57,6 +57,10 @@ class GCodeFile {
 
     void extrude(const std::valarray<double> &xy);
 
+    void
+    generalCommand(const std::vector<char> &commands, const std::vector<bool> &isInt, const std::vector<double> &values,
+                   const std::string &comment);
+
 public:
     GCodeFile(int moveSpeed, int printSpeed, double extrusionCoefficient);
 
@@ -68,7 +72,7 @@ public:
 
     void shutDown();
 
-    void printPath(std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset, double gridDistance);
+    void printPath(const std::vector<std::valarray<int>>& path, const std::valarray<double> &positionOffset, double gridDistance);
 
     std::string getText();
 
@@ -80,6 +84,8 @@ public:
     void addComment(const std::string &comment);
 
     void setCurrentCoordinatesToZero();
+
+    void addBreak();
 
     friend class Hyrel;
 };

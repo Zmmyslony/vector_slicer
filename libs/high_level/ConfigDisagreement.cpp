@@ -28,9 +28,8 @@ void ConfigDisagreement::fillWithPatterns(const DesiredPattern &desiredPattern) 
 //    disagreement = patternAgreement.calculateCorrectness(10, 0.2, 10000, 10,
 //                                                         1, 1, 2,
 //                                                         2);
-    disagreement = patternAgreement.calculateCorrectness(100, 0.2, 1000, 10,
-                                                         1, 1, 2,
-                                                         2);
+    disagreement = patternAgreement.calculateCorrectness(10, 2, 1000, 10,
+                                                         1, 1, 2,2);
 
 }
 

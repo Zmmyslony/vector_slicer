@@ -20,7 +20,7 @@ class Hyrel : public GCodeFile {
 
     void configureFlow(double nozzleWidth, double layerHeight, double flowMultiplier, int pulses, int tool);
 
-    void signalFinshedPrint();
+    void signalFinishedPrint();
 
     void clearOffsets();
 
@@ -35,6 +35,15 @@ public:
     void shutDown();
 
     Hyrel(int moveSpeed, int printSpeed, double extrusionCoefficient);
+
+    void
+    printPath(const std::vector<std::valarray<int>>& path, const std::valarray<double> &positionOffset,
+              double gridDistance);
+
+    void printPattern(const std::vector<std::vector<std::valarray<int>>> &sortedSequenceOfPaths,
+                      const std::valarray<double> &positionOffset, double gridDistance);
+
+    void exportToFile(const std::string &path);
 };
 
 void testHeaderAndFooter();

@@ -29,6 +29,23 @@ void GCodeFile::generalCommand(const std::vector<char> &commands, const std::vec
         }
         bodyStream << "\n";
     }
+    else {
+        addComment("\t\tSYNTAX ERROR");
+    }
+}
+
+void GCodeFile::generalCommand(const std::vector<char> &commands, const std::vector<bool> &isInt,
+                               const std::vector<double> &values, const std::string& comment) {
+    if (commands.size() == values.size() && commands.size() == isInt.size()) {
+        for (int i = 0; i < commands.size(); i++) {
+            if (isInt[i]) {
+                bodyStream << commands[i] << int(values[i]) << " ";
+            } else {
+                bodyStream << commands[i] << std::fixed << values[i] << " ";
+            }
+        }
+        bodyStream << "\t;" << comment << "\n";
+    }
 }
 
 void GCodeFile::generalCommand(const char &command, double value) {
@@ -40,14 +57,17 @@ void GCodeFile::generalCommand(const char &command, int value) {
 }
 
 void GCodeFile::setRelativePositioning() {
+//    addComment("Setting relative positioning");
     generalCommand('G', 91);
 }
 
 void GCodeFile::setAbsolutePositioning() {
+//    addComment("Setting absolute positioning");
     generalCommand('G', 90);
 }
 
 void GCodeFile::autoHome() {
+    addComment("Auto homing");
     setRelativePositioning();
     moveVertical(10);
     setAbsolutePositioning();
@@ -56,10 +76,12 @@ void GCodeFile::autoHome() {
 }
 
 void GCodeFile::levelBed() {
+    addComment("Levelling the bed");
     generalCommand('G', 29);
 }
 
 void GCodeFile::setTemperatureHotend(int temperature) {
+    addComment("Setting hotend temperature");
     generalCommand({'M', 'S'}, {true, true}, {109, (double) temperature});
 }
 
@@ -70,10 +92,12 @@ void GCodeFile::setTemperatureHotendGradual(int temperature) {
 }
 
 void GCodeFile::setTemperatureBed(int temperature) {
+    addComment("Setting bed temperature");
     generalCommand({'M', 'S'}, {true, true}, {190, (double) temperature});
 }
 
 void GCodeFile::turnMotorsOff() {
+    addComment("Turning motors off");
     generalCommand('M', 84);
 }
 
@@ -109,6 +133,7 @@ void GCodeFile::extrude(const std::valarray<double> &xy) {
 
 
 void GCodeFile::setCurrentCoordinatesToZero() {
+    addComment("Setting current coordinates as new zero");
     generalCommand({'G', 'X', 'Y', 'Z'}, {true, false, false, false}, {92, 0, 0, 0});
 }
 
@@ -163,7 +188,7 @@ std::string GCodeFile::getText() {
     return bodyStream.str();
 }
 
-void GCodeFile::printPath(const std::vector<std::valarray<int>> path, const std::valarray<double> &positionOffset,
+void GCodeFile::printPath(const std::vector<std::valarray<int>>& path, const std::valarray<double> &positionOffset,
                           double gridDistance) {
 
     addComment("Moving up.");
@@ -194,6 +219,10 @@ void GCodeFile::exportToFile(const std::string &path) {
 
     file << getText();
     file.close();
+}
+
+void GCodeFile::addBreak() {
+    bodyStream << "\n";
 }
 
 
