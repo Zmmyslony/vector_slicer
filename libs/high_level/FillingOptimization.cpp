@@ -1,25 +1,23 @@
 //
 // Created by Michał Zmyślony on 10/01/2022.
 //
-
-#include "../../ExecutionConfig.h"
-#include "FillingOptimization.h"
-#include "ConfigGeneration.h"
 #include <omp.h>
 #include <iostream>
 #include <utility>
-#include "../auxiliary/ProgressBar.h"
+#include <cfloat>
+#include <vector>
+#include <boost/filesystem.hpp>
 
-
+#include "FillingOptimization.h"
+#include "ConfigGeneration.h"
 #include "OpenFiles.h"
+
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/IndexedPath.h"
 #include "../auxiliary/Exporting.h"
+#include "../auxiliary/ProgressBar.h"
 
-#include <cfloat>
-#include <vector>
-//#include <windows.h>
-#include <boost/filesystem.hpp>
+#include "../../ExecutionConfig.h"
 
 namespace fs = boost::filesystem;
 
