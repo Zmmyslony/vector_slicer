@@ -5,6 +5,7 @@
 #include "IndexedPath.h"
 #include "../auxiliary/ValarrayOperations.h"
 #include <utility>
+#include <cfloat>
 
 
 IndexedPath::IndexedPath(int index, bool isPathReversed, std::valarray<int> startCoordinates,

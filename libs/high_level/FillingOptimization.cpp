@@ -16,8 +16,12 @@
 #include "../pattern/IndexedPath.h"
 #include "../auxiliary/Exporting.h"
 
+#include <cfloat>
 #include <vector>
-#include <windows.h>
+//#include <windows.h>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 FillingOptimization::FillingOptimization(DesiredPattern desiredPattern, const FillingConfig &initialConfig, int minSeed,
                                          int maxSeed, int threads) :
@@ -290,8 +294,15 @@ seedOptimizer(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
 void exportPatternToDirectory(FilledPattern pattern, const std::string &directorPath) {
     std::string resultsDirectory = directorPath + R"(\results\)";
     std::string patternDirectory = directorPath + R"(\results)";
-    CreateDirectory(resultsDirectory.c_str(), nullptr);
-    CreateDirectory(patternDirectory.c_str(), nullptr);
+
+    if (!fs::exists(resultsDirectory)) {
+        fs::create_directory(resultsDirectory);
+    }
+    if (!fs::exists(patternDirectory)) {
+        fs::create_directory(patternDirectory);
+    }
+//    CreateDirectory(resultsDirectory.c_str(), nullptr);
+//    CreateDirectory(patternDirectory.c_str(), nullptr);
     pattern.exportToDirectory(patternDirectory);
 
     std::vector<std::vector<std::valarray<int>>> sortedPaths = getSortedPaths(pattern, startingPointNumber);

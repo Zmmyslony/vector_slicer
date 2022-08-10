@@ -7,6 +7,7 @@
 #include <valarray>
 #include <algorithm>
 #include "ValarrayOperations.h"
+#include <cfloat>
 
 
 bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edgeFirst,
@@ -37,6 +38,27 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edgeFirst,
 }
 
 
+double minValue(const std::vector<double> &values) {
+    double minValue = DBL_MAX;
+    for (auto &currentValue : values) {
+        if (currentValue < minValue) {
+            minValue = currentValue;
+        }
+    }
+    return minValue;
+}
+
+double maxValue(const std::vector<double> &values) {
+    double maxValue = DBL_MIN;
+    for (auto &currentValue : values) {
+        if (currentValue > maxValue) {
+            maxValue = currentValue;
+        }
+    }
+    return maxValue;
+}
+
+
 std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
                                                  const std::valarray<int> &pointSecond, double radius) {
     std::valarray<double> pointFirstDouble = itodArray(pointFirst);
@@ -51,10 +73,10 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point
     std::valarray<double> fourthEdge = pointFirstDouble - perpendicularVector - 0.5 * connectingVector;
 
 
-    int xMin = (int)min({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>());
-    int xMax = (int)max({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}, std::less<>()) + 1;
-    int yMax = (int)max({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<>()) + 1;
-    int yMin = (int)min({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}, std::less<>());
+    int xMin = (int)minValue({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]});
+    int xMax = (int)maxValue({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}) + 1;
+    int yMax = (int)maxValue({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}) + 1;
+    int yMin = (int)minValue({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]});
 
     std::vector<std::valarray<int>> pointsToFill;
 

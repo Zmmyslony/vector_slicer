@@ -9,6 +9,7 @@
 
 //#include <iostream>
 #include <vector>
+#include <cfloat>
 
 ConfigDisagreement::ConfigDisagreement(FillingConfig desiredConfig) :
         config(desiredConfig),

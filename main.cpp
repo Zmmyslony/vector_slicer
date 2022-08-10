@@ -1,23 +1,15 @@
-#include "./libs/high_level/FillingOptimization.h"
 #include "./libs/auxiliary/GCodeFile.h"
-#include <Windows.h>
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include "./libs/high_level/ReadingFromOutside.h"
 #include "./libs/auxiliary/TableReading.h"
-#include "./libs/auxiliary/Hyrel.h"
+
+namespace fs = boost::filesystem;
 
 const double VERSION = 1.0;
-
-std::string getExePath() {
-    char buffer[MAX_PATH];
-    GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-    const std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-    std::string exePath = std::string(buffer).substr(0, pos);
-    return exePath;
-}
-
 
 std::vector<std::string> getPatterns(const std::string &listOfPatternsPath) {
     std::vector<std::string> patterns;
@@ -40,29 +32,31 @@ std::vector<int> readConfig(const std::string &filename) {
 
 
 int main() {
-    testHeaderAndFooter();
 
-//    printf("\n\tVector slicer version %.1f.\n", VERSION);
+    printf("\n\tVector slicer version %.1f.\n", VERSION);
 //    std::string exePath = getExePath();
-//
+    fs::path exePath = boost::dll::program_location().parent_path();
+    fs::path configPath = exePath / "config.txt";
+    fs::path optimizerPath = exePath / "optimizationSequence.txt";
+    fs::path patternsPath = exePath / "filesToTest.txt";
+
 //    std::string configPath = exePath + R"(\config.txt)";
 //    std::string optimizerPath = exePath + R"(\optimizationSequence.txt)";
 //    std::string patternsPath = exePath + R"(\filesToTest.txt)";
 //
-//    std::vector<int> config = readConfig(configPath);
-//    std::vector<std::string> patterns = getPatterns(patternsPath);
-//
-//
-//    printf("\nTested patterns: \n");
-//    for (auto &patternType: patterns) {
-//        std::cout << "\t" << patternType << std::endl;
-//    }
-//    printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
-//
-//    for (auto &patternType: patterns) {
-//        generalFinderString(patternType, config[0], config[1], config[2], optimizerPath);
-//        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
-//    }
+    std::vector<int> config = readConfig(configPath.string());
+    std::vector<std::string> patterns = getPatterns(patternsPath.string());
+
+    printf("\nTested patterns: \n");
+    for (auto &patternType: patterns) {
+        std::cout << "\t" << patternType << std::endl;
+    }
+    printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
+
+    for (auto &patternType: patterns) {
+        generalFinderString(patternType, config[0], config[1], config[2], optimizerPath.string());
+        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
+    }
 
 //  const std::string mainDirectory = R"(C:\Work\Cambridge\printer\Vector Slicer Patterns)";
 ////    std::string radial = mainDirectory + R"(\radial, r = 1 cm)";
