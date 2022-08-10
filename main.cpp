@@ -32,7 +32,6 @@ std::vector<int> readConfig(const std::string &filename) {
 
 
 int main() {
-
     printf("\n\tVector slicer version %.1f.\n", VERSION);
 //    std::string exePath = getExePath();
     fs::path exePath = boost::dll::program_location().parent_path();
