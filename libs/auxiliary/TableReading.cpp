@@ -9,12 +9,11 @@
 #include <sstream>
 #include <cassert>
 
-
 std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename) {
     std::string line;
     std::ifstream file(filename);
-    if (!file) {
-        std::cout << "Error reading " << filename;
+    if (file.fail()) {
+        std::cout << "File \"" << filename << "\" does not exist!" << std::endl;
     }
     std::vector<std::vector<double>> table;
 
