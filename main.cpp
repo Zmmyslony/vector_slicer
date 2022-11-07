@@ -27,24 +27,21 @@ std::vector<std::string> getPatterns(const std::string &listOfPatternsPath) {
 
 std::vector<int> readConfig(const std::string &filename) {
     std::vector<std::vector<int>> table = readFileToTableInt(filename);
-    return table[0];
+    std::vector<int> configRow = table[0];
+    return configRow;
 }
 
 
 int main() {
     printf("\n\tVector slicer version %.1f.\n", VERSION);
-//    std::string exePath = getExePath();
-    fs::path exePath = boost::dll::program_location().parent_path();
-    fs::path configPath = exePath / "config.txt";
-    fs::path optimizerPath = exePath / "optimizationSequence.txt";
-    fs::path patternsPath = exePath / "filesToTest.txt";
+    fs::path cwd = boost::dll::program_location().parent_path();
+    fs::path results = cwd.parent_path() / "results";
+    fs::path config_path = results / "config.txt";
+    fs::path optimizer_path = results / "optimizationSequence.txt";
+    fs::path patterns_path = results / "filesToTest.txt";
 
-//    std::string configPath = exePath + R"(\config.txt)";
-//    std::string optimizerPath = exePath + R"(\optimizationSequence.txt)";
-//    std::string patternsPath = exePath + R"(\filesToTest.txt)";
-//
-    std::vector<int> config = readConfig(configPath.string());
-    std::vector<std::string> patterns = getPatterns(patternsPath.string());
+    std::vector<int> config = readConfig(config_path.string());
+    std::vector<std::string> patterns = getPatterns(patterns_path.string());
 
     printf("\nTested patterns: \n");
     for (auto &patternType: patterns) {
@@ -53,39 +50,11 @@ int main() {
     printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
 
     for (auto &patternType: patterns) {
-        generalFinderString(patternType, config[0], config[1], config[2], optimizerPath.string());
-        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
+        generalFinderString(patternType, config[0], config[1], config[2], optimizer_path.string());
+//        recalculateBestConfig(patternType);
+//        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
     }
 
-//  const std::string mainDirectory = R"(C:\Work\Cambridge\printer\Vector Slicer Patterns)";
-////    std::string radial = mainDirectory + R"(\radial, r = 1 cm)";
-////    std::string azimuthal = mainDirectory + R"(\azimuthal, r = 1 cm)";
-////    std::string diagonal = mainDirectory + R"(\diagonal, 2x1 cm)";
-////    std::string linear = mainDirectory + R"(\linear, 2x1 cm)";
-////    std::string spiral = mainDirectory + R"(\spiral, r = 1 cm)";
-//
-//    std::string radial = mainDirectory + R"(\radial, r = 0.5 cm)";
-//    std::string azimuthal = mainDirectory + R"(\azimuthal, r = 0.5 cm)";
-//    std::string diagonal = mainDirectory + R"(\diagonal, 1x0.5 cm)";
-//    std::string linear = mainDirectory + R"(\linear, 1x0.5 cm)";
-//    std::string spiral = mainDirectory + R"(\spiral, r = 0.5 cm)";
-//    std::string newSpiral = mainDirectory + R"(\new spiral, r = 0.5 cm)";
-//
-//
-//    std::vector<std::string> allPatterns = {radial, azimuthal, diagonal, linear};
-//
-//    std::string symmetricPositive = mainDirectory + R"(\symmetricPositive, 2x0.6 cm)";
-//    std::string symmetricPositiveLarger = mainDirectory + R"(\symmetricPositive, 4x1.2 cm)";
-//    std::string diagonalTeethed = mainDirectory + R"(\diagonal teethed, 1x0.5 cm)";
-//    std::string test = mainDirectory + R"(\test)";
-//    allPatterns = {linear};
-//
-//    for (auto &patternType: allPatterns) {
-//        findBestConfig(patternType, 1, 1, 12);
-////        findBestSeed(patternType, 1, 200, 12);
-////        recalculateBestConfig(patternType);
-//
-//        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
-//    }
+
     return 0;
 }

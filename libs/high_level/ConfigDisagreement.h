@@ -12,7 +12,7 @@
 
 void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, int threads);
 
-void recalculateBestConfig(const std::string &directorPath);
+void recalculateBestConfig(const std::string &director_path);
 
 class ConfigDisagreement {
     FillingConfig config;

@@ -1,0 +1,10 @@
+StartingPointSeparation,4,4
+Repulsion,4,0.5
+CollisionRadius,4,4
+StartingPointSeparation,2,2
+Repulsion,4,0.25
+CollisionRadius,4,2
+StartingPointSeparation,2,2
+Repulsion,4,0.125
+CollisionRadius,4,1
+Seed,10

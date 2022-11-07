@@ -335,16 +335,16 @@ void findBestSeed(const std::string &directorPath, int minSeed, int maxSeed, int
 }
 
 
-void recalculateBestConfig(const std::string &directorPath) {
-    time_t startTime = clock();
-    std::cout << "\n\nCurrent directory: " << directorPath << std::endl;
-    DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
-    std::string configPath = directorPath + R"(\results\best_config.txt)";
-    FillingConfig config(configPath);
+void recalculateBestConfig(const std::string &director_path) {
+    time_t start_time = clock();
+    std::cout << "\n\nCurrent directory: " << director_path << std::endl;
+    DesiredPattern desired_pattern = openPatternFromDirectory(director_path);
+    std::string config_path = director_path + R"(\results\best_config.txt)";
+    FillingConfig config(config_path);
 
     ConfigDisagreement filling(config);
-    filling.fillWithPatterns(desiredPattern);
+    filling.fillWithPatterns(desired_pattern);
 
-    exportPatternToDirectory(filling.getPattern(desiredPattern), directorPath);
-    printf("Execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
+    exportPatternToDirectory(filling.getPattern(desired_pattern), director_path);
+    printf("Execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
 }

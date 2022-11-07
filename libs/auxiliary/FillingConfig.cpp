@@ -108,7 +108,7 @@ ConfigOptions stringToConfig(const std::string &stringOption) {
         return it->second;
     }
     else {
-        std::cout << "Unrecognised ConfigOption." << std::endl;
+        std::cout << "Unrecognised ConfigOption: " << stringOption << std::endl;
     }
 }
 
@@ -125,7 +125,7 @@ FillingMethod stringToMethod(const std::string &stringOption) {
         return it->second;
     }
     else {
-        std::cout << "Unrecognised FillingMethod." << std::endl;
+        std::cout << "Unrecognised FillingMethod:" << stringOption <<  std::endl;
     }
 }
 
@@ -203,7 +203,7 @@ void FillingConfig::exportConfig(const std::string &directory) {
     std::ofstream file(filename);
 
     if (file.is_open()) {
-        file << "FillingMethod ";
+        file << "InitialFillingMethod ";
         switch (fillingMethod) {
             case ConsecutivePerimeter:
                 file << "ConsecutivePerimeter";
