@@ -22,11 +22,11 @@
 
 #include "FillingOptimization.h"
 #include "ConfigGeneration.h"
-#include "OpenFiles.h"
+#include "../importing_and_exporting/OpenFiles.h"
 
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/IndexedPath.h"
-#include "../auxiliary/Exporting.h"
+#include "../importing_and_exporting/Exporting.h"
 #include "../auxiliary/ProgressBar.h"
 
 #include "../../ExecutionConfig.h"

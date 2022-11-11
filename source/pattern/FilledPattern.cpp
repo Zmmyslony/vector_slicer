@@ -21,7 +21,7 @@
 
 #include "FilledPattern.h"
 
-#include "../auxiliary/Exporting.h"
+#include "../importing_and_exporting/Exporting.h"
 #include "../auxiliary/Geometry.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/SimpleMathOperations.h"

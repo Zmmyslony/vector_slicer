@@ -15,8 +15,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "./source/high_level/ReadingFromOutside.h"
-#include "./source/auxiliary/TableReading.h"
+#include "source/importing_and_exporting/ReadingFromOutside.h"
+#include "source/importing_and_exporting/TableReading.h"
 
 namespace fs = boost::filesystem;
 

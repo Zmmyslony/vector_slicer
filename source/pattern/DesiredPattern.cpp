@@ -15,7 +15,7 @@
 //
 
 #include "DesiredPattern.h"
-#include "../auxiliary/TableReading.h"
+#include "../importing_and_exporting/TableReading.h"
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"

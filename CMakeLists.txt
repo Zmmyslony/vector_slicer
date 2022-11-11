@@ -16,8 +16,8 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(Vector_Slicer main.cpp
         source/auxiliary/SimpleMathOperations.cpp
         source/auxiliary/SimpleMathOperations.h
-        source/auxiliary/TableReading.cpp
-        source/auxiliary/TableReading.h
+        source/importing_and_exporting/TableReading.cpp
+        source/importing_and_exporting/TableReading.h
         source/pattern/FilledPattern.cpp
         source/pattern/FilledPattern.h
         source/pattern/DesiredPattern.cpp
@@ -30,14 +30,14 @@ add_executable(Vector_Slicer main.cpp
         source/auxiliary/Geometry.h
         source/pattern/StartingPoint.cpp
         source/pattern/StartingPoint.h
-        source/high_level/OpenFiles.cpp
-        source/high_level/OpenFiles.h
+        source/importing_and_exporting/OpenFiles.cpp
+        source/importing_and_exporting/OpenFiles.h
         source/pattern/FillingPatterns.cpp
         source/pattern/FillingPatterns.h
         source/pattern/QuantifyPattern.cpp
         source/pattern/QuantifyPattern.h
-        source/auxiliary/Exporting.h
-        source/auxiliary/Exporting.cpp
+        source/importing_and_exporting/Exporting.h
+        source/importing_and_exporting/Exporting.cpp
         source/auxiliary/ValarrayOperations.cpp
         source/auxiliary/ValarrayOperations.h
         source/auxiliary/ProgressBar.cpp
@@ -53,8 +53,8 @@ add_executable(Vector_Slicer main.cpp
         source/high_level/ConfigGeneration.cpp
         source/high_level/ConfigGeneration.h
         ExecutionConfig.h
-        source/high_level/ReadingFromOutside.cpp
-        source/high_level/ReadingFromOutside.h)
+        source/importing_and_exporting/ReadingFromOutside.cpp
+        source/importing_and_exporting/ReadingFromOutside.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
