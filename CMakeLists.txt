@@ -46,8 +46,6 @@ add_executable(Vector_Slicer main.cpp
         source/auxiliary/FillingConfig.h
         source/high_level/ConfigDisagreement.cpp
         source/high_level/ConfigDisagreement.h
-        source/auxiliary/GCodeFile.cpp
-        source/auxiliary/GCodeFile.h
         source/pattern/IndexedPath.cpp
         source/pattern/IndexedPath.h
         source/high_level/FillingOptimization.cpp

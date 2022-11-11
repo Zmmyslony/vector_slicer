@@ -10,14 +10,13 @@
 //
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-#include "./libs/auxiliary/GCodeFile.h"
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "./libs/high_level/ReadingFromOutside.h"
-#include "./libs/auxiliary/TableReading.h"
+#include "./source/high_level/ReadingFromOutside.h"
+#include "./source/auxiliary/TableReading.h"
 
 namespace fs = boost::filesystem;
 

@@ -22,7 +22,6 @@
 //#include "Path.h"
 //#include "FilledPattern.h"
 //#include <string>
-//#include "../auxiliary/GCodeFile.h"
 //
 //class PathFillingOrder {
 //    std::vector<Path> sequenceOfPaths;
