@@ -98,7 +98,7 @@ ConfigDisagreement configurationOptimizer(const DesiredPattern &desired_pattern,
 void generalFinderString(const fs::path &pattern_directory, int min_seed, int max_seed, int threads,
                          const std::string &optimizer_path) {
     time_t start_time = clock();
-    std::cout << "\n\nCurrent directory: " << pattern_directory << std::endl;
+    std::cout << "\n\nCurrent directory: " << fs::absolute(pattern_directory) << std::endl;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_directory);
     fs::path config_path = pattern_directory / "config.txt";
     FillingConfig initial_config(config_path);
