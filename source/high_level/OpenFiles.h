@@ -18,20 +18,25 @@
 #define VECTOR_SLICER_OPENFILES_H
 
 #include "../pattern/FilledPattern.h"
+
 #include <string>
 #include <vector>
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
 
-DesiredPattern openPatternFromDirectory(const std::string &directoryPath);
+namespace fs = boost::filesystem;
 
-FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath);
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path);
 
-FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath, unsigned int seed);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path);
 
-std::vector<int> readConfigTable(const std::string &configPath);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed);
+
+std::vector<int> readConfigTable(const fs::path &config_path);
 
 FilledPattern
-openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern, unsigned int seed);
+openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern, unsigned int seed);
 
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern);
+FilledPattern openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern);
 
 #endif //VECTOR_SLICER_OPENFILES_H

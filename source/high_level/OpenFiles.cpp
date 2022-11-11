@@ -19,60 +19,62 @@
 #include <fstream>
 #include <sstream>
 
-std::vector<int> readConfigTable(const std::string &configPath) {
+
+std::vector<int> readConfigTable(const fs::path &config_path) {
     std::string line;
-    std::ifstream file(configPath);
+    std::ifstream file(config_path.string());
     std::vector<std::vector<std::string>> table;
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream lineStream(line);
+        std::stringstream line_stream(line);
         std::vector<std::string> row;
 
-        while (std::getline(lineStream, element, ',')) {
+        while (std::getline(line_stream, element, ',')) {
             row.push_back(element);
         }
         table.push_back(row);
     }
 
-    std::vector<int> configVariables;
-    configVariables.push_back(std::stoi(table[0][1]));
-    configVariables.push_back(std::stoi(table[1][1]));
-    configVariables.push_back(std::stoi(table[2][1]));
-    return configVariables;
+    std::vector<int> config_variables;
+    config_variables.push_back(std::stoi(table[0][1]));
+    config_variables.push_back(std::stoi(table[1][1]));
+    config_variables.push_back(std::stoi(table[2][1]));
+    return config_variables;
 }
 
-DesiredPattern openPatternFromDirectory(const std::string &directoryPath) {
-    std::string shapePath = directoryPath + "\\shape.csv";
-    std::string xFieldPath = directoryPath + "\\xField.csv";
-    std::string yFieldPath = directoryPath + "\\yField.csv";
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path) {
+    fs::path shape_path = directory_path / "shape.csv";
+    fs::path theta_field_path = directory_path / "thetaField.csv";
+    fs::path x_field_path = directory_path / "xField.csv";
+    fs::path y_field_path = directory_path / "yField.csv";
 
-    DesiredPattern desiredPattern(shapePath, xFieldPath, yFieldPath);
-    return desiredPattern;
+    DesiredPattern desired_pattern(shape_path.string(), x_field_path.string(), y_field_path.string());
+    return desired_pattern;
 }
 
 
-FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath, unsigned int seed) {
-    DesiredPattern desiredPattern = openPatternFromDirectory(directoryPath);
-    std::string configPath = directoryPath + "\\config.txt";
-    std::vector<int> config = readConfigTable(configPath);
-    FilledPattern pattern(desiredPattern, config[0], config[1], config[2], seed);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed) {
+    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path);
+    fs::path config_path = directory_path / "config.txt";
+    std::vector<int> config = readConfigTable(config_path);
+    FilledPattern pattern(desired_pattern, config[0], config[1], config[2], seed);
     return pattern;
 }
 
 
-FilledPattern openFilledPatternFromDirectory(const std::string &directoryPath) {
-    return openFilledPatternFromDirectory(directoryPath, 0);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path) {
+    return openFilledPatternFromDirectory(directory_path, 0);
 }
 
 FilledPattern
-openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern, unsigned int seed) {
-    std::string configPath = directoryPath + "\\config.txt";
-    std::vector<int> config = readConfigTable(configPath);
-    FilledPattern filledPattern(pattern, config[0], config[1], config[2], seed);
-    return filledPattern;
+openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern, unsigned int seed) {
+    fs::path config_path = directory_path / "config.txt";
+    std::vector<int> config = readConfigTable(config_path);
+    FilledPattern filled_pattern(pattern, config[0], config[1], config[2], seed);
+    return filled_pattern;
 }
 
-FilledPattern openFilledPatternFromDirectoryAndPattern(const std::string &directoryPath, const DesiredPattern &pattern) {
-    return openFilledPatternFromDirectoryAndPattern(directoryPath, pattern, 0);
+FilledPattern openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern) {
+    return openFilledPatternFromDirectoryAndPattern(directory_path, pattern, 0);
 }

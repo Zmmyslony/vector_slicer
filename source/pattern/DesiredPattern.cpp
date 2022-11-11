@@ -21,8 +21,8 @@
 #include "../auxiliary/ValarrayOperations.h"
 #include <iostream>
 
-DesiredPattern::DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename,
-                               std::string &yVectorFieldFilename) :
+DesiredPattern::DesiredPattern(std::string shapeFilename, std::string xVectorFieldFilename,
+                               std::string yVectorFieldFilename) :
         shapeMatrix(readFileToTableInt(shapeFilename)),
         xFieldPreferred(readFileToTableDouble(xVectorFieldFilename)),
         yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)) {

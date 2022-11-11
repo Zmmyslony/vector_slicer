@@ -38,7 +38,7 @@ public:
 
     const std::vector<std::vector<double>> &getYFieldPreferred() const;
 
-    DesiredPattern(std::string &shapeFilename, std::string &xVectorFieldFilename, std::string &yVectorFieldFilename);
+    DesiredPattern(std::string shapeFilename, std::string xVectorFieldFilename, std::string yVectorFieldFilename);
 
     std::valarray<int> preferredDirection(const std::valarray<int> &position, int distance) const;
 
