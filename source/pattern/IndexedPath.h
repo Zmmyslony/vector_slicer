@@ -26,14 +26,14 @@
 
 class IndexedPath {
 private:
-    bool reversedPath;
-    std::valarray<int> startCoordinates;
-    std::valarray<int> endCoordinates;
+    bool reversed_path;
+    std::valarray<int> start_coordinates;
+    std::valarray<int> end_coordinates;
     int index;
-    int xMin = INT_MAX;
-    int xMax = INT_MIN;
-    int yMin = INT_MAX;
-    int yMax = INT_MIN;
+    int x_min = INT_MAX;
+    int x_max = INT_MIN;
+    int y_min = INT_MAX;
+    int y_max = INT_MIN;
     double angle = DBL_MAX;
 
 public:
@@ -56,15 +56,15 @@ public:
 
     double getAngle() const;
 
-    IndexedPath(int index, bool isPathReversed, std::valarray<int> startCoordinates,
-                std::valarray<int> endCoordinates);
+    IndexedPath(int index, bool is_path_reversed, std::valarray<int> start_coordinates,
+                std::valarray<int> end_coordinates);
 
-    IndexedPath(int index, bool isPathReversed, const std::vector<std::valarray<int>> &path,
+    IndexedPath(int index, bool is_path_reversed, const std::vector<std::valarray<int>> &path,
                 const std::valarray<int> &dimensions);
 
     IndexedPath();
 };
 
-std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &filledPattern, int startingPointNumber);
+std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &filled_pattern, int starting_point_number);
 
 #endif //VECTOR_SLICER_INDEXEDPATH_H

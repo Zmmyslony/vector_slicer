@@ -31,10 +31,10 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream lineStream(line);
+        std::stringstream line_stream(line);
         std::vector<double> row;
 
-        while (std::getline(lineStream, element, ',')) {
+        while (std::getline(line_stream, element, ',')) {
             row.push_back(std::stod(element));
         }
         table.push_back(row);
@@ -42,23 +42,23 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
     return table;
 }
 
-std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &doubleTable) {
-    std::vector<std::vector<int>> intTable;
-    for (auto &row: doubleTable) {
-        std::vector<int> intRow;
-        intRow.reserve(row.size());
+std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table) {
+    std::vector<std::vector<int>> int_table;
+    for (auto &row: double_table) {
+        std::vector<int> int_row;
+        int_row.reserve(row.size());
         for (auto &element: row) {
-            intRow.push_back((int) element);
+            int_row.push_back((int) element);
         }
-        intTable.push_back(intRow);
+        int_table.push_back(int_row);
     }
-    return intTable;
+    return int_table;
 }
 
 
 std::vector<std::vector<int>> readFileToTableInt(const std::string &filename) {
-    std::vector<std::vector<double>> doubleTable = readFileToTableDouble(filename);
-    return (tableDoubleToInt(doubleTable));
+    std::vector<std::vector<double>> double_table = readFileToTableDouble(filename);
+    return (tableDoubleToInt(double_table));
 }
 
 //std::vector<std::vector<bool>> readFileToTableBool(std::string &filename) {
@@ -79,9 +79,9 @@ std::valarray<int> getTableDimensions(std::string &filename) {
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream lineStream(line);
+        std::stringstream line_stream(line);
         if (size[0] == 0) {
-            while (std::getline(lineStream, element, ',')) {
+            while (std::getline(line_stream, element, ',')) {
                 size[1]++;
             }
         }

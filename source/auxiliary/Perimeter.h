@@ -23,22 +23,22 @@
 
 std::vector<std::valarray<int>> generatePerimeterList(double radius);
 
-std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filledTable,
-                                   std::vector<std::valarray<int>> &checkedArea,
-                                   const std::valarray<int> &startPositions,
-                                   const std::valarray<int> &sizes, double repulsionCoefficient);
+std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filled_table,
+                                   std::vector<std::valarray<int>> &checked_area,
+                                   const std::valarray<int> &start_positions,
+                                   const std::valarray<int> &sizes, double repulsion_coefficient);
 
-bool isPerimeterFree(const std::vector<std::vector<int>> &filledTable, const std::vector<std::vector<int>> &shapeTable,
-                     const std::vector<std::valarray<int>> &perimeterList, const std::valarray<int> &startPositions,
+bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
+                     const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
                      const std::valarray<int> &sizes);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shapeTable, const std::valarray<int> &startPositions,
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const std::valarray<int> &start_positions,
               const std::valarray<int> &sizes);
 
 std::vector<std::valarray<int>>
-findAllPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::valarray<int> &sizes);
+findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
 
 std::vector<std::valarray<int>>
-findSortedPerimeters(const std::vector<std::vector<int>> &shapeMatrix, const std::valarray<int> &sizes);
+findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
 
 #endif //VECTOR_SLICER_PERIMETER_H

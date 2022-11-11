@@ -19,6 +19,6 @@
 
 #include "FillingOptimization.h"
 
-void generalFinderString(const std::string &directorPath, int minSeed, int maxSeed, int threads,
-                         const std::string &optimizerPath);
+void generalFinderString(const fs::path &pattern_directory, int min_seed, int max_seed, int threads,
+                         const std::string &optimizer_path);
 #endif //VECTOR_SLICER_READINGFROMOUTSIDE_H

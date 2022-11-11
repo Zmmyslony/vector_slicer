@@ -20,9 +20,9 @@
 #include <valarray>
 #include <vector>
 
-std::valarray<double> itodArray(const std::valarray<int> &intArray);
+std::valarray<double> itodArray(const std::valarray<int> &int_array);
 
-std::valarray<int> dtoiArray(const std::valarray<double> &doubleArray);
+std::valarray<int> dtoiArray(const std::valarray<double> &double_array);
 
 double generalNorm(const std::valarray<double> &array, const double &exponent);
 
@@ -36,9 +36,9 @@ std::valarray<double> normalize(const std::valarray<double> &array);
 
 std::valarray<double> normalize(const std::valarray<int> &array);
 
-double dot(const std::valarray<double> &array1, const std::valarray<double> &array2);
+double dot(const std::valarray<double> &array_first, const std::valarray<double> &array_second);
 
-double dot(const std::valarray<int> &array1, const std::valarray<int> &array2);
+double dot(const std::valarray<int> &array_first, const std::valarray<int> &array_second);
 
 std::valarray<double> perpendicular(std::valarray<double> vector);
 
@@ -48,6 +48,6 @@ void printArray(const std::vector<std::valarray<int>> &array);
 
 void printArray(const std::vector<std::valarray<double>> &array);
 
-std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uintArray);
+std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uint_array);
 
 #endif //VECTOR_SLICER_VALARRAYOPERATIONS_H

@@ -22,14 +22,14 @@
 
 
 std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &configList, int minSeed,
-                 int maxSeed);
+iterateOverSeeds(const DesiredPattern &desired_pattern, const std::vector<FillingConfig> &config_list, int min_seed,
+                 int max_seed);
 
 std::vector<FillingConfig>
-iterateOverOption(const DesiredPattern &desiredPattern, FillingConfig initialConfig, double delta, int numberOfConfigs,
-                  ConfigOptions option);
+iterateOverOption(const DesiredPattern &desired_pattern, FillingConfig initial_config, double delta, int number_of_configs,
+                  configOptions option);
 
 std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desiredPattern, FillingConfig initialConfig, int minSeed, int maxSeed);
+iterateOverSeeds(const DesiredPattern &desired_pattern, FillingConfig initial_config, int min_seed, int max_seed);
 
 #endif //VECTOR_SLICER_CONFIGGENERATION_H

@@ -21,50 +21,50 @@
 #include "../auxiliary/ValarrayOperations.h"
 #include <iostream>
 
-DesiredPattern::DesiredPattern(std::string shapeFilename, std::string xVectorFieldFilename,
-                               std::string yVectorFieldFilename) :
-        shapeMatrix(readFileToTableInt(shapeFilename)),
-        xFieldPreferred(readFileToTableDouble(xVectorFieldFilename)),
-        yFieldPreferred(readFileToTableDouble(yVectorFieldFilename)) {
-//        dimensions(getTableDimensions(shapeFilename)) {
-    dimensions = getTableDimensions(shapeMatrix);
-    perimeterList = findSortedPerimeters(shapeMatrix, dimensions);
+DesiredPattern::DesiredPattern(std::string shape_filename, std::string x_vector_field_filename,
+                               std::string y_vector_field_filename) :
+        shape_matrix(readFileToTableInt(shape_filename)),
+        x_field_preferred(readFileToTableDouble(x_vector_field_filename)),
+        y_field_preferred(readFileToTableDouble(y_vector_field_filename)) {
+//        dimensions(getTableDimensions(shape_filename)) {
+    dimensions = getTableDimensions(shape_matrix);
+    perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
 }
 
 
 std::valarray<int> DesiredPattern::preferredDirection(const std::valarray<int> &position, int distance) const {
-    return std::valarray<int>{roundUp(distance * xFieldPreferred[position[0]][position[1]]),
-                              roundUp(distance * yFieldPreferred[position[0]][position[1]])};
+    return std::valarray<int>{roundUp(distance * x_field_preferred[position[0]][position[1]]),
+                              roundUp(distance * y_field_preferred[position[0]][position[1]])};
 }
 
 
 std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<double> &position, int distance) const {
-    double xPositionFraction = decimalPart(position[0]);
-    double yPositionFraction = decimalPart(position[1]);
-    unsigned int xPosition = (int) floor(position[0]);
-    unsigned int yPosition = (int) floor(position[1]);
-    double xField = (xPositionFraction * yPositionFraction * xFieldPreferred[xPosition][yPosition] +
-                     (1 - xPositionFraction) * yPositionFraction * xFieldPreferred[xPosition + 1][yPosition] +
-                     (1 - xPositionFraction) * (1 - yPositionFraction) * xFieldPreferred[xPosition + 1][yPosition + 1] +
-                     xPositionFraction * (1 - yPositionFraction) * xFieldPreferred[xPosition][yPosition + 1]);
+    double x_position_fraction = decimalPart(position[0]);
+    double y_position_fraction = decimalPart(position[1]);
+    unsigned int x_position = (int) floor(position[0]);
+    unsigned int y_position = (int) floor(position[1]);
+    double x_field = (x_position_fraction * y_position_fraction * x_field_preferred[x_position][y_position] +
+                      (1 - x_position_fraction) * y_position_fraction * x_field_preferred[x_position + 1][y_position] +
+                      (1 - x_position_fraction) * (1 - y_position_fraction) * x_field_preferred[x_position + 1][y_position + 1] +
+                      x_position_fraction * (1 - y_position_fraction) * x_field_preferred[x_position][y_position + 1]);
 
-    double yField = (xPositionFraction * yPositionFraction * yFieldPreferred[xPosition][yPosition] +
-                     (1 - xPositionFraction) * yPositionFraction * yFieldPreferred[xPosition + 1][yPosition] +
-                     (1 - xPositionFraction) * (1 - yPositionFraction) * yFieldPreferred[xPosition + 1][yPosition + 1] +
-                     xPositionFraction * (1 - yPositionFraction) * yFieldPreferred[xPosition][yPosition + 1]);
+    double y_field = (x_position_fraction * y_position_fraction * y_field_preferred[x_position][y_position] +
+                      (1 - x_position_fraction) * y_position_fraction * y_field_preferred[x_position + 1][y_position] +
+                      (1 - x_position_fraction) * (1 - y_position_fraction) * y_field_preferred[x_position + 1][y_position + 1] +
+                      x_position_fraction * (1 - y_position_fraction) * y_field_preferred[x_position][y_position + 1]);
 
-    if (xField == 0 && yField == 0) {
-        return std::valarray<double>{xFieldPreferred[xPosition - 1][yPosition],
-                                     yFieldPreferred[xPosition - 1][yPosition]};
+    if (x_field == 0 && y_field == 0) {
+        return std::valarray<double>{x_field_preferred[x_position - 1][y_position],
+                                     y_field_preferred[x_position - 1][y_position]};
     }
-    std::valarray<double> newStep = {xField, yField};
-    newStep = distance * normalize(newStep);
-    return newStep;
+    std::valarray<double> new_step = {x_field, y_field};
+    new_step = distance * normalize(new_step);
+    return new_step;
 }
 
 
 bool DesiredPattern::isInShape(const std::valarray<int> &position) const {
-    return shapeMatrix[position[0]][position[1]];
+    return shape_matrix[position[0]][position[1]];
 }
 
 
@@ -77,17 +77,17 @@ const std::valarray<int> &DesiredPattern::getDimensions() const {
 }
 
 const std::vector<std::valarray<int>> &DesiredPattern::getPerimeterList() const {
-    return perimeterList;
+    return perimeter_list;
 }
 
 const std::vector<std::vector<int>> &DesiredPattern::getShapeMatrix() const {
-    return shapeMatrix;
+    return shape_matrix;
 }
 
 const std::vector<std::vector<double>> &DesiredPattern::getXFieldPreferred() const {
-    return xFieldPreferred;
+    return x_field_preferred;
 }
 
 const std::vector<std::vector<double>> &DesiredPattern::getYFieldPreferred() const {
-    return yFieldPreferred;
+    return y_field_preferred;
 }

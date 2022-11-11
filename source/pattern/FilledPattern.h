@@ -23,41 +23,41 @@
 #include <string>
 #include <random>
 
-enum PointSearchStage {PerimeterSearch, TotallyRandomPointSelection, EmptySpotRandomSelection};
+enum pointSearchStage {PerimeterSearch, TotallyRandomPointSelection, EmptySpotRandomSelection};
 
 class FilledPattern {
 //    bool isPerimeterSearchOn = true;
 
-    std::vector<Path> sequenceOfPaths;
-    std::vector<std::valarray<int>> pointsInCircle;
+    std::vector<Path> sequence_of_paths;
+    std::vector<std::valarray<int>> points_in_circle;
 
     void
-    fillPointsFromList(const std::vector<std::valarray<int>> &listOfPoints, const std::valarray<int> &direction);
+    fillPointsFromList(const std::vector<std::valarray<int>> &list_of_points, const std::valarray<int> &direction);
 
-    void fillPointsFromDisplacement(const std::valarray<int> &startingPosition,
-                                    const std::vector<std::valarray<int>> &listOfDisplacements,
-                                    const std::valarray<int> &previousStep);
+    void fillPointsFromDisplacement(const std::valarray<int> &starting_position,
+                                    const std::vector<std::valarray<int>> &list_of_displacements,
+                                    const std::valarray<int> &previous_step);
 
     std::vector<std::valarray<int>> findAllFillablePoints();
 
     std::valarray<double>
-    getNewStep(std::valarray<double> &realCoordinates, int &length, std::valarray<double> &previousStep);
+    getNewStep(std::valarray<double> &real_coordinates, int &length, std::valarray<double> &previous_move);
 
     bool
-    tryGeneratingPathWithLength(Path &currentPath, std::valarray<double> &positions, std::valarray<double> &newStep,
+    tryGeneratingPathWithLength(Path &current_path, std::valarray<double> &positions, std::valarray<double> &previous_step,
                                 int length);
 
-    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &previousStep);
+    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction);
 
     std::vector<std::valarray<int>> findRemainingFillablePointsInList(
-            std::vector<std::valarray<int>> &listOfPoints) const;
+            std::vector<std::valarray<int>> &list_of_points) const;
 
-    std::vector<std::valarray<int>> findInitialStartingPoints(FillingMethod method);
+    std::vector<std::valarray<int>> findInitialStartingPoints(fillingMethod method);
 
-    std::mt19937 randomEngine;
+    std::mt19937 random_engine;
     std::uniform_int_distribution<unsigned int> distribution;
-    std::uniform_int_distribution<int> xDistribution;
-    std::uniform_int_distribution<int> yDistribution;
+    std::uniform_int_distribution<int> x_distribution;
+    std::uniform_int_distribution<int> y_distribution;
 
     std::valarray<double> getDirector(const std::valarray<int> &positions);
 
@@ -69,42 +69,42 @@ class FilledPattern {
     std::valarray<double> getDirector(const std::valarray<double> &positions);
 
     std::vector<std::valarray<int>>
-    findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previousDualDirector);
+    findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previous_dual_director);
 
 public:
     FillingConfig config;
-    bool isFillingMethodRandom = true;
-    std::vector<std::vector<double>> xFieldFilled;
-    std::vector<std::vector<double>> yFieldFilled;
-    const DesiredPattern &desiredPattern;
+    bool is_filling_method_random = true;
+    std::vector<std::vector<double>> x_field_filled;
+    std::vector<std::vector<double>> y_field_filled;
+    const DesiredPattern &desired_pattern;
 
-    std::vector<std::valarray<int>> pointsToFill;
-    std::vector<std::valarray<int>> collisionList;
-    std::vector<std::vector<int>> numberOfTimesFilled;
-    PointSearchStage searchStage = PerimeterSearch;
+    std::vector<std::valarray<int>> points_to_fill;
+    std::vector<std::valarray<int>> collision_list;
+    std::vector<std::vector<int>> number_of_times_filled;
+    pointSearchStage search_stage = PerimeterSearch;
 
-    FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength,
+    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
                   unsigned int seed);
 
-    FilledPattern(const DesiredPattern &desiredPattern, int printRadius, int collisionRadius, int stepLength);
+    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
-    FilledPattern(const DesiredPattern &newDesiredPattern, FillingConfig newConfig);
+    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
 
-    void addNewPath(Path &newPath);
+    void addNewPath(Path &new_path);
 
     void updateSearchStageAndFillablePoints();
 
-    void fillPointsInCircle(const std::valarray<int> &startingCoordinates);
+    void fillPointsInCircle(const std::valarray<int> &starting_coordinates);
 
-    Path generateNewPathForDirection(std::valarray<int> &startingCoordinates, const std::valarray<int> &startingStep);
+    Path generateNewPathForDirection(std::valarray<int> &starting_coordinates, const std::valarray<int> &starting_step);
 
     std::vector<Path> getSequenceOfPaths();
 
     unsigned int getNewElement();
 
-    void exportToDirectory(const std::string &directory) const;
+    void exportToDirectory(const fs::path &directory) const;
 
-    void fillPointsInHalfCircle(const std::valarray<int> &lastPoint, const std::valarray<int> &previousPoint);
+    void fillPointsInHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point);
 
     std::valarray<int> findPointInShape();
 };

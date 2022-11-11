@@ -22,11 +22,11 @@
 
 class Path {
 public:
-    std::vector<std::valarray<int>> sequenceOfPositions;
+    std::vector<std::valarray<int>> sequence_of_positions;
 
-    explicit Path(std::valarray<int> &startingPosition);
+    explicit Path(std::valarray<int> &starting_positions);
 
-    Path(Path forwardPath, Path backwardPath);
+    Path(Path forward_path, Path backward_path);
 
     void addPoint(std::valarray<int> &positions);
 

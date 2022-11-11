@@ -17,39 +17,39 @@
 #include "FillingPatterns.h"
 
 
-bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint) {
-    startingPoint.refresh();
-    std::valarray<int> startingCoordinates = startingPoint.findStartPoint(pattern);
-    if (startingPoint.positions[0] == -1 || startingPoint.positions[1] == -1) {
+bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point) {
+    starting_point.refresh();
+    std::valarray<int> starting_coordinates = starting_point.findStartPoint(pattern);
+    if (starting_point.positions[0] == -1 || starting_point.positions[1] == -1) {
         return false;
     } else {
-        Path newPathForwards = pattern.generateNewPathForDirection(startingPoint.positions,
-                                                                   pattern.desiredPattern.preferredDirection(
-                                                                           startingPoint.positions,
+        Path new_path_forwards = pattern.generateNewPathForDirection(starting_point.positions,
+                                                                     pattern.desired_pattern.preferredDirection(
+                                                                           starting_point.positions,
                                                                            pattern.config.getStepLength()));
-        Path newPathBackwards = pattern.generateNewPathForDirection(startingPoint.positions,
-                                                                    -pattern.desiredPattern.preferredDirection(
-                                                                            startingPoint.positions,
+        Path new_path_backwards = pattern.generateNewPathForDirection(starting_point.positions,
+                                                                      -pattern.desired_pattern.preferredDirection(
+                                                                            starting_point.positions,
                                                                             pattern.config.getStepLength()));
 
-        Path newPath(newPathForwards, newPathBackwards);
+        Path new_path(new_path_forwards, new_path_backwards);
 
-        if (newPath.getSize() == 1) {
-            pattern.fillPointsInCircle(newPath.sequenceOfPositions[0]);
+        if (new_path.getSize() == 1) {
+            pattern.fillPointsInCircle(new_path.sequence_of_positions[0]);
         } else {
-            pattern.fillPointsInHalfCircle(newPath.first(), newPath.second());
-            pattern.fillPointsInHalfCircle(newPath.last(), newPath.previousToLast());
+            pattern.fillPointsInHalfCircle(new_path.first(), new_path.second());
+            pattern.fillPointsInHalfCircle(new_path.last(), new_path.previousToLast());
         }
 
-        pattern.addNewPath(newPath);
+        pattern.addNewPath(new_path);
         return true;
     }
 }
 
 void fillWithPaths(FilledPattern &pattern) {
-    bool isThereAnySpotFillable = true;
-    StartingPoint startingPoint;
-    while (isThereAnySpotFillable) {
-        isThereAnySpotFillable = tryGeneratingNewPath(pattern, startingPoint);
+    bool is_there_any_spot_fillable = true;
+    StartingPoint starting_point;
+    while (is_there_any_spot_fillable) {
+        is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
     }
 }

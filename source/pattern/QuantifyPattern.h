@@ -21,10 +21,10 @@
 
 class QuantifyPattern {
     FilledPattern pattern;
-    double emptySpots = 0;
-    double averageOverlap = 0;
-    double directorDisagreement = 0;
-    double numberOfPaths = 0;
+    double empty_spots = 0;
+    double average_overlap = 0;
+    double director_disagreement = 0;
+    double number_of_paths = 0;
 
     double calculateEmptySpots();
 
@@ -37,12 +37,12 @@ class QuantifyPattern {
 public:
     explicit QuantifyPattern(FilledPattern pattern);
 
-    double calculateCorrectness(double emptySpotWeight, double overlapWeight, double directorWeight, double pathWeight,
-                                double emptySpotExponent, double overLapExponent, double directorExponent,
-                                double pathExponent) const;
+    double calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight,
+                                double empty_spot_exponent, double over_lap_exponent, double director_exponent,
+                                double path_exponent) const;
 
     double
-    calculateCorrectness(double emptySpotWeight, double overlapWeight, double directorWeight, double pathWeight) const;
+    calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight) const;
 
 
 };

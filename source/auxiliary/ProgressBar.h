@@ -19,6 +19,6 @@
 
 void showProgress(double progress);
 
-void showProgress(int currentStep, int maxStep);
+void showProgress(int current_step, int max_step);
 
 #endif //VECTOR_SLICER_PROGRESSBAR_H

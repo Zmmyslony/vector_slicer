@@ -22,9 +22,9 @@
 #include "../pattern/DesiredPattern.h"
 #include <string>
 
-void findBestConfig(const std::string &directorPath, int minSeed, int maxSeed, int threads);
+void findBestConfig(const fs::path &pattern_path, int min_seed, int max_seed, int threads);
 
-void recalculateBestConfig(const std::string &director_path);
+void recalculateBestConfig(const fs::path &pattern_path);
 
 class ConfigDisagreement {
     FillingConfig config;
@@ -33,13 +33,13 @@ class ConfigDisagreement {
 public:
     const FillingConfig &getConfig() const;
 
-    FilledPattern getPattern(const DesiredPattern &desiredPattern) const;
+    FilledPattern getPattern(const DesiredPattern &desired_pattern) const;
 
-    void fillWithPatterns(const DesiredPattern &desiredPattern);
+    void fillWithPatterns(const DesiredPattern &desired_pattern);
 
     double getDisagreement() const;
 
-    explicit ConfigDisagreement(FillingConfig config);
+    explicit ConfigDisagreement(FillingConfig desired_config);
 };
 
 

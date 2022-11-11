@@ -22,14 +22,14 @@
 #include <valarray>
 #include <algorithm>
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
-                                                 const std::valarray<int> &pointSecond, double radius);
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
+                                                 const std::valarray<int> &point_second, double radius);
 
 std::vector<std::valarray<int>> findPointsInCircle(double radius);
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius);
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &lastPoint,
-                                               const std::valarray<int> &previousPoint, double radius);
+std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
+                                               const std::valarray<int> &previous_point, double radius);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

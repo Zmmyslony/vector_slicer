@@ -22,10 +22,10 @@
 #include <cfloat>
 
 
-bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edgeFirst,
-                           std::valarray<double> edgeSecond) {
-    int sign = (int) ((edgeSecond[0] - edgeFirst[0]) * (point[1] - edgeFirst[1]) -
-                      (point[0] - edgeFirst[0]) * (edgeSecond[1] - edgeFirst[1]));
+bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edge_first,
+                           std::valarray<double> edge_second) {
+    int sign = (int) ((edge_second[0] - edge_first[0]) * (point[1] - edge_first[1]) -
+                      (point[0] - edge_first[0]) * (edge_second[1] - edge_first[1]));
     if (sign > 0) {
         return true;
     } else {
@@ -34,15 +34,15 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edgeF
 }
 
 
-bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edgeFirst,
-                   std::valarray<double> &edgeSecond, std::valarray<double> &edgeThird,
-                   std::valarray<double> &edgeFourth) {
-    bool isOnLeftOfFirstEdge = isOnTheLeftSideOfEdge(point, edgeFirst, edgeSecond);
-    bool isOnLeftOfSecondEdge = isOnTheLeftSideOfEdge(point, edgeSecond, edgeThird);
-    bool isOnLeftOfThirdEdge = isOnTheLeftSideOfEdge(point, edgeThird, edgeFourth);
-    bool isOnLeftOfFourthEdge = isOnTheLeftSideOfEdge(point, edgeFourth, edgeFirst);
+bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edge_first,
+                   std::valarray<double> &edge_second, std::valarray<double> &edge_third,
+                   std::valarray<double> &edge_fourth) {
+    bool is_on_left_of_first_edge = isOnTheLeftSideOfEdge(point, edge_first, edge_second);
+    bool is_on_left_of_second_edge = isOnTheLeftSideOfEdge(point, edge_second, edge_third);
+    bool is_on_left_of_third_edge = isOnTheLeftSideOfEdge(point, edge_third, edge_fourth);
+    bool is_on_left_of_fourth_edge = isOnTheLeftSideOfEdge(point, edge_fourth, edge_first);
 
-    if (isOnLeftOfFirstEdge && isOnLeftOfSecondEdge && isOnLeftOfThirdEdge && isOnLeftOfFourthEdge) {
+    if (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge && is_on_left_of_fourth_edge) {
         return true;
     } else {
         return false;
@@ -51,113 +51,113 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edgeFirst,
 
 
 double minValue(const std::vector<double> &values) {
-    double minValue = DBL_MAX;
-    for (auto &currentValue : values) {
-        if (currentValue < minValue) {
-            minValue = currentValue;
+    double min_value = DBL_MAX;
+    for (auto &current_value : values) {
+        if (current_value < min_value) {
+            min_value = current_value;
         }
     }
-    return minValue;
+    return min_value;
 }
 
 double maxValue(const std::vector<double> &values) {
-    double maxValue = DBL_MIN;
-    for (auto &currentValue : values) {
-        if (currentValue > maxValue) {
-            maxValue = currentValue;
+    double max_value = DBL_MIN;
+    for (auto &current_value : values) {
+        if (current_value > max_value) {
+            max_value = current_value;
         }
     }
-    return maxValue;
+    return max_value;
 }
 
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &pointFirst,
-                                                 const std::valarray<int> &pointSecond, double radius) {
-    std::valarray<double> pointFirstDouble = itodArray(pointFirst);
-    std::valarray<double> pointSecondDouble = itodArray(pointSecond);
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
+                                                 const std::valarray<int> &point_second, double radius) {
+    std::valarray<double> point_first_double = itodArray(point_first);
+    std::valarray<double> point_second_double = itodArray(point_second);
 
-    std::valarray<double> connectingVector = normalize(pointSecondDouble - pointFirstDouble);
-    std::valarray<double> perpendicularVector = {connectingVector[1] * radius, -connectingVector[0] * radius};
+    std::valarray<double> connecting_vector = normalize(point_second_double - point_first_double);
+    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
 
-    std::valarray<double> firstEdge = pointFirstDouble + perpendicularVector - 0.5 * connectingVector;
-    std::valarray<double> secondEdge = pointSecondDouble + perpendicularVector;
-    std::valarray<double> thirdEdge = pointSecondDouble - perpendicularVector;
-    std::valarray<double> fourthEdge = pointFirstDouble - perpendicularVector - 0.5 * connectingVector;
+    std::valarray<double> first_edge = point_first_double + perpendicular_vector - 0.5 * connecting_vector;
+    std::valarray<double> second_edge = point_second_double + perpendicular_vector;
+    std::valarray<double> third_edge = point_second_double - perpendicular_vector;
+    std::valarray<double> fourth_edge = point_first_double - perpendicular_vector - 0.5 * connecting_vector;
 
 
-    int xMin = (int)minValue({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]});
-    int xMax = (int)maxValue({firstEdge[0], secondEdge[0], thirdEdge[0], fourthEdge[0]}) + 1;
-    int yMax = (int)maxValue({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]}) + 1;
-    int yMin = (int)minValue({firstEdge[1], secondEdge[1], thirdEdge[1], fourthEdge[1]});
+    int x_min = (int)minValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]});
+    int x_max = (int)maxValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]}) + 1;
+    int y_max = (int)maxValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]}) + 1;
+    int y_min = (int)minValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]});
 
-    std::vector<std::valarray<int>> pointsToFill;
+    std::vector<std::valarray<int>> points_to_fill;
 
-    int yCurr = yMax;
-    for (int xCurr = xMin; xCurr <= xMax; xCurr++) {
-        std::valarray<int> topPoint = {xCurr, yCurr};
-        bool searchingForTopPoint = true;
-        while (searchingForTopPoint) {
-            if (isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) &&
-                topPoint[1] >= yCurr && topPoint[1] <= yMax) {
-                topPoint[1]++;
-            } else if (!isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) &&
-                       topPoint[1] <= yCurr && topPoint[1] >= yMin) {
-                topPoint[1]--;
+    int y_curr = y_max;
+    for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
+        std::valarray<int> top_point = {x_curr, y_curr};
+        bool searching_for_top_point = true;
+        while (searching_for_top_point) {
+            if (isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) &&
+                top_point[1] >= y_curr && top_point[1] <= y_max) {
+                top_point[1]++;
+            } else if (!isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) &&
+                       top_point[1] <= y_curr && top_point[1] >= y_min) {
+                top_point[1]--;
             } else {
-                searchingForTopPoint = false;
+                searching_for_top_point = false;
             }
         }
 
-        while (isInRectangle(topPoint, firstEdge, secondEdge, thirdEdge, fourthEdge) && topPoint[1] >= 0) {
-            pointsToFill.push_back(topPoint);
-            topPoint[1]--;
+        while (isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) && top_point[1] >= 0) {
+            points_to_fill.push_back(top_point);
+            top_point[1]--;
         }
     }
-    return pointsToFill;
+    return points_to_fill;
 }
 
 
 std::vector<std::valarray<int>> findPointsInCircle(double radius) {
-    std::vector<std::valarray<int>> pointsInCircle;
+    std::vector<std::valarray<int>> points_in_circle;
     int range = (int)radius + 1;
     for (int i = -range ; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
             if (i * i + j * j <= radius * radius) {
-                pointsInCircle.push_back({i, j});
+                points_in_circle.push_back({i, j});
             }
         }
     }
-    return pointsInCircle;
+    return points_in_circle;
 }
 
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &lastPoint,
-                                               const std::valarray<int> &previousPoint, double radius) {
-    std::valarray<double> lastPointDouble = itodArray(lastPoint);
-    std::valarray<double> pointSecondDouble = itodArray(previousPoint);
+std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
+                                               const std::valarray<int> &previous_point, double radius) {
+    std::valarray<double> last_point_double = itodArray(last_point);
+    std::valarray<double> point_second_double = itodArray(previous_point);
 
-    std::valarray<double> connectingVector = normalize(pointSecondDouble - lastPointDouble);
-    std::valarray<double> perpendicularVector = {connectingVector[1] * radius, -connectingVector[0] * radius};
+    std::valarray<double> connecting_vector = normalize(point_second_double - last_point_double);
+    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
 
-    std::valarray<double> firstCorner = perpendicularVector - 0.5 * connectingVector;
-    std::valarray<double> secondCorner = -perpendicularVector - 0.5 * connectingVector;
+    std::valarray<double> first_corner = perpendicular_vector - 0.5 * connecting_vector;
+    std::valarray<double> second_corner = -perpendicular_vector - 0.5 * connecting_vector;
 
-    std::vector<std::valarray<int>> pointsToFill;
+    std::vector<std::valarray<int>> points_to_fill;
 
-    int intRadius = (int)radius + 1;
-    for (int xDisplacement = -intRadius; xDisplacement < intRadius; xDisplacement++) {
-        for (int yDisplacement = -intRadius; yDisplacement < intRadius; yDisplacement++) {
-            std::valarray<int> displacement = {xDisplacement, yDisplacement};
+    int int_radius = (int)radius + 1;
+    for (int x_displacement = -int_radius; x_displacement < int_radius; x_displacement++) {
+        for (int y_displacement = -int_radius; y_displacement < int_radius; y_displacement++) {
+            std::valarray<int> displacement = {x_displacement, y_displacement};
             double distance = norm(displacement);
 
-            bool isOnCorrectSide = isOnTheLeftSideOfEdge(displacement, firstCorner, secondCorner);
+            bool is_on_correct_side = isOnTheLeftSideOfEdge(displacement, first_corner, second_corner);
 
-            if (distance <= radius && isOnCorrectSide) {
-                pointsToFill.push_back(displacement + lastPoint);
+            if (distance <= radius && is_on_correct_side) {
+                points_to_fill.push_back(displacement + last_point);
             }
         }
     }
-    return pointsToFill;
+    return points_to_fill;
 }
 
 

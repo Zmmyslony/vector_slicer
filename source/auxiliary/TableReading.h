@@ -23,7 +23,7 @@
 
 std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename);
 
-std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &doubleTable);
+std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table);
 
 std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
 

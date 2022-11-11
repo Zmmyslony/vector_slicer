@@ -19,22 +19,26 @@
 
 #include <string>
 #include <vector>
+#include <boost/filesystem/path.hpp>
 
-enum FillingMethod {
+namespace fs = boost::filesystem;
+
+
+enum fillingMethod {
     ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial
 };
-enum ConfigOptions {
+enum configOptions {
     InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed
 };
 
 
 class FillingConfig {
-    FillingMethod fillingMethod;
-    double collisionRadius;
+    fillingMethod filling_method;
+    double collision_radius;
     double repulsion;
-    int stepLength;
-    double startingPointSeparation;
-    double printRadius;
+    int step_length;
+    double starting_point_separation;
+    double print_radius;
     unsigned int seed;
 
     void readLineOfConfig(std::vector<std::string> line);
@@ -42,9 +46,9 @@ class FillingConfig {
 public:
     void printConfig();
 
-    void setConfigOption(const ConfigOptions &option, const std::string &value);
+    void setConfigOption(const configOptions &option, const std::string &value);
 
-    FillingMethod getInitialFillingMethod() const;
+    fillingMethod getInitialFillingMethod() const;
 
     double getCollisionRadius() const;
 
@@ -59,20 +63,20 @@ public:
     unsigned int getSeed() const;
 
 
-    explicit FillingConfig(std::string &configPath);
+    explicit FillingConfig(fs::path &config_path);
 
-    FillingConfig(FillingMethod newPerimeterFillingMethod, int newCollisionRadius,
-                  int newStartPointSeparation, double newRepulsion, int newStepLength,
-                  int newPrintRadius, unsigned int seed);
+    FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
+                  int new_starting_point_separation, double new_repulsion, int new_step_length,
+                  int new_print_radius, unsigned int new_seed);
 
 
-    std::string getConfigOption(ConfigOptions option);
+    std::string getConfigOption(configOptions option);
 
-    void exportConfig(const std::string &directory);
+    void exportConfig(const fs::path &directory);
 };
 
-bool areFillingConfigsTheSame(FillingConfig &firstConfig, FillingConfig &secondConfig);
+bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config);
 
-ConfigOptions stringToConfig(const std::string &stringOption);
+configOptions stringToConfig(const std::string &string_option);
 
 #endif //VECTOR_SLICER_FILLINGCONFIG_H

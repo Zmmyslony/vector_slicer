@@ -33,7 +33,7 @@ configurationOptimizerFromString(FillingOptimization &optimization, const std::s
     }
 
     if (row.size() == 3) {
-        ConfigOptions option = stringToConfig(row[0]);
+        configOptions option = stringToConfig(row[0]);
         int steps = stoi(row[1]);
         double delta = stod(row[2]);
 
@@ -52,7 +52,7 @@ configurationOptimizerFromString(FillingOptimization &optimization, const std::s
                 return optimization;
         }
     } else if (row.size() == 2) {
-        ConfigOptions option = stringToConfig(row[0]);
+        configOptions option = stringToConfig(row[0]);
         int multiplier = stoi(row[1]);
 
         switch (option) {
@@ -69,9 +69,9 @@ configurationOptimizerFromString(FillingOptimization &optimization, const std::s
 }
 
 
-FillingOptimization optimizeFromFile(FillingOptimization &optimization, const std::string &filepath) {
+FillingOptimization optimizeFromFile(FillingOptimization &optimization, const fs::path &filepath) {
     std::string command;
-    std::fstream file(filepath);
+    std::fstream file(filepath.string());
 
     while (std::getline(file, command)) {
         configurationOptimizerFromString(optimization, command);
@@ -80,35 +80,35 @@ FillingOptimization optimizeFromFile(FillingOptimization &optimization, const st
 }
 
 
-ConfigDisagreement configurationOptimizer(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                          int minSeed, int maxSeed, int threads,
-                                          const std::string &optimizerConfigPath) {
-    FillingOptimization optimization(desiredPattern, initialConfig, minSeed, maxSeed, threads);
+ConfigDisagreement configurationOptimizer(const DesiredPattern &desired_pattern, FillingConfig initial_config,
+                                          int min_seed, int max_seed, int threads,
+                                          const std::string &optimizer_config_path) {
+    FillingOptimization optimization(desired_pattern, initial_config, min_seed, max_seed, threads);
 
-    optimizeFromFile(optimization, optimizerConfigPath);
+    optimizeFromFile(optimization, optimizer_config_path);
 
-    ConfigDisagreement bestFill(optimization.getBestConfig());
-    bestFill.fillWithPatterns(desiredPattern);
-    FillingConfig bestConfig = optimization.getBestConfig();
-    bestConfig.printConfig();
-    return bestFill;
+    ConfigDisagreement best_fill(optimization.getBestConfig());
+    best_fill.fillWithPatterns(desired_pattern);
+    FillingConfig best_config = optimization.getBestConfig();
+    best_config.printConfig();
+    return best_fill;
 }
 
 
-void generalFinderString(const std::string &directorPath, int minSeed, int maxSeed, int threads,
-                         const std::string &optimizerPath) {
-    time_t startTime = clock();
-    std::cout << "\n\nCurrent directory: " << directorPath << std::endl;
-    DesiredPattern desiredPattern = openPatternFromDirectory(directorPath);
-    std::string configPath = directorPath + "\\config.txt";
-    FillingConfig initialConfig(configPath);
+void generalFinderString(const fs::path &pattern_directory, int min_seed, int max_seed, int threads,
+                         const std::string &optimizer_path) {
+    time_t start_time = clock();
+    std::cout << "\n\nCurrent directory: " << pattern_directory << std::endl;
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_directory);
+    fs::path config_path = pattern_directory / "config.txt";
+    FillingConfig initial_config(config_path);
 
-    ConfigDisagreement bestFilling = configurationOptimizer(desiredPattern, initialConfig, minSeed, maxSeed,
-                                                            threads,
-                                                            optimizerPath);
-    FillingConfig bestConfig = bestFilling.getConfig();
-    bestConfig.exportConfig(directorPath);
+    ConfigDisagreement best_filling = configurationOptimizer(desired_pattern, initial_config, min_seed, max_seed,
+                                                             threads,
+                                                             optimizer_path);
+    FillingConfig best_config = best_filling.getConfig();
+    best_config.exportConfig(pattern_directory);
 
-    exportPatternToDirectory(bestFilling.getPattern(desiredPattern), directorPath);
-    printf("Multi-thread execution time %.2f", (double) (clock() - startTime) / CLOCKS_PER_SEC);
+    exportPatternToDirectory(best_filling.getPattern(desired_pattern), pattern_directory);
+    printf("Multi-thread execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
 }

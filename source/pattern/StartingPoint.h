@@ -22,10 +22,10 @@
 
 
 class StartingPoint {
-    bool isStartingPointFound = false;
-    bool areThereFillablePointsRemaining = true;
+    bool is_starting_point_found = false;
+    bool is_there_fillable_points_remaining = true;
     int tries;
-    int previouslyFoundPoint = 0;
+    int previously_found_point = 0;
 
     void updateListOfPoints(FilledPattern &pattern);
 

@@ -22,10 +22,10 @@
 
 class DesiredPattern {
     std::valarray<int> dimensions;
-    std::vector<std::valarray<int>> perimeterList;
-    std::vector<std::vector<int>> shapeMatrix;
-    std::vector<std::vector<double>> xFieldPreferred;
-    std::vector<std::vector<double>> yFieldPreferred;
+    std::vector<std::valarray<int>> perimeter_list;
+    std::vector<std::vector<int>> shape_matrix;
+    std::vector<std::vector<double>> x_field_preferred;
+    std::vector<std::vector<double>> y_field_preferred;
 public:
 
     const std::valarray<int> &getDimensions() const;
@@ -38,7 +38,7 @@ public:
 
     const std::vector<std::vector<double>> &getYFieldPreferred() const;
 
-    DesiredPattern(std::string shapeFilename, std::string xVectorFieldFilename, std::string yVectorFieldFilename);
+    DesiredPattern(std::string shape_filename, std::string x_vector_field_filename, std::string y_vector_field_filename);
 
     std::valarray<int> preferredDirection(const std::valarray<int> &position, int distance) const;
 

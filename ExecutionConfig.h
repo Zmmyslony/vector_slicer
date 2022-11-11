@@ -28,7 +28,7 @@
 //double pathExponent = 2;
 
 // FillingOptimization: number of point on each edge to start filling from
-int startingPointNumber = 5;
+int starting_point_number = 5;
 
 
 #endif //VECTOR_SLICER_EXECUTIONCONFIG_H

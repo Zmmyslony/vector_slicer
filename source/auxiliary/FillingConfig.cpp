@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <iomanip>
+#include <boost/filesystem/path.hpp>
 
 
 void FillingConfig::printConfig() {
@@ -31,7 +32,7 @@ void FillingConfig::printConfig() {
     stream << "\tCurrent configuration:" << std::endl;
 
     stream << "\t\tPerimeter filling is ";
-    switch (fillingMethod) {
+    switch (filling_method) {
         case ConsecutivePerimeter:
             stream << "consecutive perimeter.";
             break;
@@ -47,23 +48,23 @@ void FillingConfig::printConfig() {
     }
     stream << std::endl;
 
-    stream << "\t\tCollision radius is " << collisionRadius << "." << std::endl;
+    stream << "\t\tCollision radius is " << collision_radius << "." << std::endl;
     stream << "\t\tRepulsion is " << repulsion << "." << std::endl;
-    stream << "\t\tPrint radius is " << printRadius << "." << std::endl;
-    stream << "\t\tStarting point separation is " << startingPointSeparation << "." << std::endl;
+    stream << "\t\tPrint radius is " << print_radius << "." << std::endl;
+    stream << "\t\tStarting point separation is " << starting_point_separation << "." << std::endl;
     stream << "\t\tSeed is " << seed << "." << std::endl;
-    stream << "\t\tStep length is " << stepLength << "." << std::endl;
+    stream << "\t\tStep length is " << step_length << "." << std::endl;
 
     std::string message = stream.str();
     std::cout << message;
 }
 
-FillingMethod FillingConfig::getInitialFillingMethod() const {
-    return fillingMethod;
+fillingMethod FillingConfig::getInitialFillingMethod() const {
+    return filling_method;
 }
 
 double FillingConfig::getCollisionRadius() const {
-    return collisionRadius;
+    return collision_radius;
 }
 
 double FillingConfig::getRepulsion() const {
@@ -71,27 +72,27 @@ double FillingConfig::getRepulsion() const {
 }
 
 int FillingConfig::getStepLength() const {
-    return stepLength;
+    return step_length;
 }
 
 double FillingConfig::getStartingPointSeparation() const {
-    return startingPointSeparation;
+    return starting_point_separation;
 }
 
-std::string FillingConfig::getConfigOption(ConfigOptions option) {
+std::string FillingConfig::getConfigOption(configOptions option) {
     switch (option) {
         case InitialFillingMethod:
-            return std::to_string(fillingMethod);
+            return std::to_string(filling_method);
         case CollisionRadius:
-            return std::to_string(collisionRadius);
+            return std::to_string(collision_radius);
         case StepLength:
-            return std::to_string(stepLength);
+            return std::to_string(step_length);
         case PrintRadius:
-            return std::to_string(printRadius);
+            return std::to_string(print_radius);
         case Repulsion:
             return std::to_string(repulsion);
         case StartingPointSeparation:
-            return std::to_string(startingPointSeparation);
+            return std::to_string(starting_point_separation);
         case Seed:
             return std::to_string(seed);
     }
@@ -102,68 +103,68 @@ unsigned int FillingConfig::getSeed() const {
 }
 
 double FillingConfig::getPrintRadius() const {
-    return printRadius;
+    return print_radius;
 }
 
-ConfigOptions stringToConfig(const std::string &stringOption) {
-    static std::unordered_map<std::string, ConfigOptions> const mapping = {
-            {"InitialFillingMethod",    ConfigOptions::InitialFillingMethod},
-            {"CollisionRadius",         ConfigOptions::CollisionRadius},
-            {"StepLength",              ConfigOptions::StepLength},
-            {"PrintRadius",             ConfigOptions::PrintRadius},
-            {"Repulsion",               ConfigOptions::Repulsion},
-            {"StartingPointSeparation", ConfigOptions::StartingPointSeparation},
-            {"Seed",                    ConfigOptions::Seed}
+configOptions stringToConfig(const std::string &string_option) {
+    static std::unordered_map<std::string, configOptions> const mapping = {
+            {"InitialFillingMethod",    configOptions::InitialFillingMethod},
+            {"CollisionRadius",         configOptions::CollisionRadius},
+            {"StepLength",              configOptions::StepLength},
+            {"PrintRadius",             configOptions::PrintRadius},
+            {"Repulsion",               configOptions::Repulsion},
+            {"StartingPointSeparation", configOptions::StartingPointSeparation},
+            {"Seed",                    configOptions::Seed}
     };
-    auto it = mapping.find(stringOption);
+    auto it = mapping.find(string_option);
     if (it != mapping.end()) {
         return it->second;
     }
     else {
-        std::cout << "Unrecognised ConfigOption: " << stringOption << std::endl;
+        std::cout << "Unrecognised ConfigOption: " << string_option << std::endl;
     }
 }
 
 
-FillingMethod stringToMethod(const std::string &stringOption) {
-    static std::unordered_map<std::string, FillingMethod> const mapping = {
-            {"ConsecutivePerimeter", FillingMethod::ConsecutivePerimeter},
-            {"RandomPerimeter",      FillingMethod::RandomPerimeter},
-            {"ConsecutiveRadial",    FillingMethod::ConsecutiveRadial},
-            {"RandomRadial",         FillingMethod::RandomRadial}
+fillingMethod stringToMethod(const std::string &string_option) {
+    static std::unordered_map<std::string, fillingMethod> const mapping = {
+            {"ConsecutivePerimeter", fillingMethod::ConsecutivePerimeter},
+            {"RandomPerimeter",      fillingMethod::RandomPerimeter},
+            {"ConsecutiveRadial",    fillingMethod::ConsecutiveRadial},
+            {"RandomRadial",         fillingMethod::RandomRadial}
     };
-    auto it = mapping.find(stringOption);
+    auto it = mapping.find(string_option);
     if (it != mapping.end()) {
         return it->second;
     }
     else {
-        std::cout << "Unrecognised FillingMethod:" << stringOption <<  std::endl;
+        std::cout << "Unrecognised filling_method:" << string_option << std::endl;
     }
 }
 
 
-void FillingConfig::setConfigOption(const ConfigOptions &option, const std::string &value) {
+void FillingConfig::setConfigOption(const configOptions &option, const std::string &value) {
     switch (option) {
         case InitialFillingMethod:
-            fillingMethod = stringToMethod(value);
+            filling_method = stringToMethod(value);
             break;
         case CollisionRadius:
             if (std::stod(value) > 0) {
-                collisionRadius = std::stod(value);
+                collision_radius = std::stod(value);
             }
-            else collisionRadius = 0;
+            else collision_radius = 0;
             break;
         case StepLength:
-            stepLength = std::stoi(value);
+            step_length = std::stoi(value);
             break;
         case PrintRadius:
-            printRadius = std::stod(value);
+            print_radius = std::stod(value);
             break;
         case Repulsion:
             repulsion = std::stod(value);
             break;
         case StartingPointSeparation:
-            startingPointSeparation = std::stoi(value);
+            starting_point_separation = std::stoi(value);
             break;
         case Seed:
             seed = std::stoi(value);
@@ -174,23 +175,23 @@ void FillingConfig::setConfigOption(const ConfigOptions &option, const std::stri
 
 void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
 
-    std::string parameterName = line[0];
+    std::string parameter_name = line[0];
     std::string value = line[1];
-    ConfigOptions option = stringToConfig(parameterName);
+    configOptions option = stringToConfig(parameter_name);
     setConfigOption(option, value);
 }
 
 
-FillingConfig::FillingConfig(std::string &configPath) {
+FillingConfig::FillingConfig(fs::path &config_path) {
     std::string line;
-    std::ifstream file(configPath);
+    std::ifstream file(config_path.string());
 
     while (std::getline(file, line)) {
         std::string element;
-        std::stringstream lineStream(line);
+        std::stringstream line_stream(line);
         std::vector<std::string> row;
 
-        while (std::getline(lineStream, element, ' ')) {
+        while (std::getline(line_stream, element, ' ')) {
             row.push_back(element);
         }
         readLineOfConfig(row);
@@ -198,25 +199,25 @@ FillingConfig::FillingConfig(std::string &configPath) {
 }
 
 
-FillingConfig::FillingConfig(FillingMethod newPerimeterFillingMethod,
-                             int newCollisionRadius, int newStartingPointSeparation,
-                             double newRepulsion, int newStepLength, int newPrintRadius, unsigned int newSeed) {
-    fillingMethod = newPerimeterFillingMethod;
-    collisionRadius = newCollisionRadius;
-    startingPointSeparation = newStartingPointSeparation;
-    repulsion = newRepulsion;
-    stepLength = newStepLength;
-    printRadius = newPrintRadius;
-    seed = newSeed;
+FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method,
+                             int new_collision_radius, int new_starting_point_separation,
+                             double new_repulsion, int new_step_length, int new_print_radius, unsigned int new_seed) {
+    filling_method = new_perimeter_filling_method;
+    collision_radius = new_collision_radius;
+    starting_point_separation = new_starting_point_separation;
+    repulsion = new_repulsion;
+    step_length = new_step_length;
+    print_radius = new_print_radius;
+    seed = new_seed;
 }
 
-void FillingConfig::exportConfig(const std::string &directory) {
-    std::string filename = directory + R"(\results\best_config.txt)";
-    std::ofstream file(filename);
+void FillingConfig::exportConfig(const fs::path &directory) {
+    fs::path filename = directory / "results" / "best_config.txt";
+    std::ofstream file(filename.string());
 
     if (file.is_open()) {
         file << "InitialFillingMethod ";
-        switch (fillingMethod) {
+        switch (filling_method) {
             case ConsecutivePerimeter:
                 file << "ConsecutivePerimeter";
                 break;
@@ -231,19 +232,19 @@ void FillingConfig::exportConfig(const std::string &directory) {
                 break;
         }
         file << std::endl;
-        file << "CollisionRadius " << collisionRadius << std::endl;
-        file << "StartingPointSeparation " << startingPointSeparation << std::endl;
+        file << "CollisionRadius " << collision_radius << std::endl;
+        file << "StartingPointSeparation " << starting_point_separation << std::endl;
         file << "Repulsion " << repulsion << std::endl;
-        file << "StepLength " << stepLength << std::endl;
-        file << "PrintRadius " << printRadius << std::endl;
+        file << "StepLength " << step_length << std::endl;
+        file << "PrintRadius " << print_radius << std::endl;
         file << "Seed " << seed << std::endl;
         file.close();
     }
 }
 
 
-bool isConfigOptionTheSame(ConfigOptions option, FillingConfig &firstConfig, FillingConfig &secondConfig) {
-    if (firstConfig.getConfigOption(option) == secondConfig.getConfigOption(option)) {
+bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, FillingConfig &second_config) {
+    if (first_config.getConfigOption(option) == second_config.getConfigOption(option)) {
         return true;
     }
     else {
@@ -252,14 +253,14 @@ bool isConfigOptionTheSame(ConfigOptions option, FillingConfig &firstConfig, Fil
 }
 
 
-bool areFillingConfigsTheSame(FillingConfig &firstConfig, FillingConfig &secondConfig) {
-    bool repulsion = isConfigOptionTheSame(Repulsion, firstConfig, secondConfig);
-    bool collisionRadius = isConfigOptionTheSame(CollisionRadius, firstConfig, secondConfig);
-    bool startingPointSeparation = isConfigOptionTheSame(StartingPointSeparation, firstConfig, secondConfig);
-    bool stepLength = isConfigOptionTheSame(StepLength, firstConfig, secondConfig);
-    bool printRadius = isConfigOptionTheSame(PrintRadius, firstConfig, secondConfig);
+bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config) {
+    bool repulsion = isConfigOptionTheSame(Repulsion, first_config, second_config);
+    bool collision_radius = isConfigOptionTheSame(CollisionRadius, first_config, second_config);
+    bool starting_point_separation = isConfigOptionTheSame(StartingPointSeparation, first_config, second_config);
+    bool step_length = isConfigOptionTheSame(StepLength, first_config, second_config);
+    bool print_radius = isConfigOptionTheSame(PrintRadius, first_config, second_config);
 
-    if (repulsion && collisionRadius && startingPointSeparation && stepLength && printRadius) {
+    if (repulsion && collision_radius && starting_point_separation && step_length && print_radius) {
         return true;
     }
     else {

@@ -18,20 +18,20 @@
 #include <stdexcept>
 #include <iostream>
 
-std::valarray<double> itodArray(const std::valarray<int> &intArray) {
-    std::valarray<double> doubleArray(intArray.size());
-    for (int i = 0; i < intArray.size(); i++) {
-        doubleArray[i] = (double) intArray[i];
+std::valarray<double> itodArray(const std::valarray<int> &int_array) {
+    std::valarray<double> double_array(int_array.size());
+    for (int i = 0; i < int_array.size(); i++) {
+        double_array[i] = (double) int_array[i];
     }
-    return doubleArray;
+    return double_array;
 }
 
-std::valarray<int> dtoiArray(const std::valarray<double> &doubleArray) {
-    std::valarray<int> intArray(doubleArray.size());
-    for (int i = 0; i < doubleArray.size(); i++) {
-        intArray[i] = lround(doubleArray[i]);
+std::valarray<int> dtoiArray(const std::valarray<double> &double_array) {
+    std::valarray<int> int_array(double_array.size());
+    for (int i = 0; i < double_array.size(); i++) {
+        int_array[i] = lround(double_array[i]);
     }
-    return intArray;
+    return int_array;
 }
 
 double generalNorm(const std::valarray<double> &array, const double &exponent) {
@@ -62,19 +62,19 @@ std::valarray<double> normalize(const std::valarray<int> &array) {
     return normalize(itodArray(array));
 }
 
-double dot(const std::valarray<double> &array1, const std::valarray<double> &array2) {
-    double dotProduct = 0;
-    if (array1.size() != array2.size()) {
+double dot(const std::valarray<double> &array_first, const std::valarray<double> &array_second) {
+    double dot_product = 0;
+    if (array_first.size() != array_second.size()) {
         throw std::invalid_argument("Dot: Dotted array are of different size.\n");
     }
-    for (int i = 0; i < array1.size(); i++) {
-        dotProduct += array1[i] * array2[i];
+    for (int i = 0; i < array_first.size(); i++) {
+        dot_product += array_first[i] * array_second[i];
     }
-    return dotProduct;
+    return dot_product;
 }
 
-double dot(const std::valarray<int> &array1, const std::valarray<int> &array2) {
-    return dot(itodArray(array1), itodArray(array2));
+double dot(const std::valarray<int> &array_first, const std::valarray<int> &array_second) {
+    return dot(itodArray(array_first), itodArray(array_second));
 }
 
 std::valarray<double> perpendicular(std::valarray<double> vector) {
@@ -112,10 +112,10 @@ void printArray(const std::vector<std::valarray<double>> &array) {
     std::cout << std::endl;
 }
 
-std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uintArray) {
-    std::valarray<int> intArray(uintArray.size());
-    for (int i = 0; i < uintArray.size(); i++) {
-        intArray[i] = lround(uintArray[i]);
+std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uint_array) {
+    std::valarray<int> int_array(uint_array.size());
+    for (int i = 0; i < uint_array.size(); i++) {
+        int_array[i] = lround(uint_array[i]);
     }
-    return intArray;
+    return int_array;
 }

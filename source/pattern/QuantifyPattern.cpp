@@ -20,91 +20,91 @@
 
 QuantifyPattern::QuantifyPattern(FilledPattern pattern):
         pattern(std::move(pattern)) {
-    emptySpots = calculateEmptySpots();
-    averageOverlap = calculateAverageOverlap();
-    directorDisagreement = calculateDirectorDisagreement();
-    numberOfPaths = calculateNumberOfPaths();
+    empty_spots = calculateEmptySpots();
+    average_overlap = calculateAverageOverlap();
+    director_disagreement = calculateDirectorDisagreement();
+    number_of_paths = calculateNumberOfPaths();
 }
 
 double QuantifyPattern::calculateEmptySpots() {
-    int numberOfEmptySpots = 0;
-    int xSize = pattern.desiredPattern.getDimensions()[0];
-    int ySize = pattern.desiredPattern.getDimensions()[1];
-    int numberOfElements = 0;
+    int number_of_empty_spots = 0;
+    int x_size = pattern.desired_pattern.getDimensions()[0];
+    int y_size = pattern.desired_pattern.getDimensions()[1];
+    int number_of_elements = 0;
 
-    for (int i = 0; i < xSize; i++) {
-        for (int j = 0; j < ySize; j++) {
-            if (pattern.desiredPattern.getShapeMatrix()[i][j] == 1) {
-                numberOfElements++;
-                if (pattern.numberOfTimesFilled[i][j] == 0) {
-                    numberOfEmptySpots++;
+    for (int i = 0; i < x_size; i++) {
+        for (int j = 0; j < y_size; j++) {
+            if (pattern.desired_pattern.getShapeMatrix()[i][j] == 1) {
+                number_of_elements++;
+                if (pattern.number_of_times_filled[i][j] == 0) {
+                    number_of_empty_spots++;
                 }
             }
         }
     }
-    return (double) numberOfEmptySpots / (double) numberOfElements;
+    return (double) number_of_empty_spots / (double) number_of_elements;
 }
 
 double QuantifyPattern::calculateAverageOverlap() {
-    int numberOfFilledTimes = 0;
-    int xSize = pattern.desiredPattern.getDimensions()[0];
-    int ySize = pattern.desiredPattern.getDimensions()[1];
-    int numberOfElements = 0;
+    int number_of_filled_times = 0;
+    int x_size = pattern.desired_pattern.getDimensions()[0];
+    int y_size = pattern.desired_pattern.getDimensions()[1];
+    int number_of_elements = 0;
 
-    for (int i = 0; i < xSize; i++) {
-        for (int j = 0; j < ySize; j++) {
-            numberOfFilledTimes += pattern.numberOfTimesFilled[i][j];
-            numberOfElements += pattern.desiredPattern.getShapeMatrix()[i][j];
+    for (int i = 0; i < x_size; i++) {
+        for (int j = 0; j < y_size; j++) {
+            number_of_filled_times += pattern.number_of_times_filled[i][j];
+            number_of_elements += pattern.desired_pattern.getShapeMatrix()[i][j];
         }
     }
-    return (double) numberOfFilledTimes / (double) numberOfElements - 1 + emptySpots;
+    return (double) number_of_filled_times / (double) number_of_elements - 1 + empty_spots;
 }
 
 
 double QuantifyPattern::calculateDirectorDisagreement() {
-    double directorAgreement = 0;
-    int xSize = pattern.desiredPattern.getDimensions()[0];
-    int ySize = pattern.desiredPattern.getDimensions()[1];
-    int numberOfFilledElements = 0;
+    double director_agreement = 0;
+    int x_size = pattern.desired_pattern.getDimensions()[0];
+    int y_size = pattern.desired_pattern.getDimensions()[1];
+    int number_of_filled_elements = 0;
 
-    for (int i = 0; i < xSize; i++) {
-        for (int j = 0; j < ySize; j++) {
-            if (pattern.numberOfTimesFilled[i][j] > 0) {
-                double filledDirectorNorm = sqrt(
-                        pow(pattern.xFieldFilled[i][j], 2) + pow(pattern.yFieldFilled[i][j], 2));
-                double desiredDirectorNorm = sqrt(pow(pattern.desiredPattern.getXFieldPreferred()[i][j], 2) +
-                                                  pow(pattern.desiredPattern.getYFieldPreferred()[i][j], 2));
-                double xDirectionAgreement = pattern.xFieldFilled[i][j] * pattern.desiredPattern.getXFieldPreferred()[i][j];
-                double yDirectionAgreement = pattern.yFieldFilled[i][j] * pattern.desiredPattern.getYFieldPreferred()[i][j];
-                if (desiredDirectorNorm != 0 && filledDirectorNorm != 0) {
-                    directorAgreement +=
-                            abs(xDirectionAgreement + yDirectionAgreement) / (filledDirectorNorm * desiredDirectorNorm);
-                    numberOfFilledElements++;
+    for (int i = 0; i < x_size; i++) {
+        for (int j = 0; j < y_size; j++) {
+            if (pattern.number_of_times_filled[i][j] > 0) {
+                double filled_director_norm = sqrt(
+                        pow(pattern.x_field_filled[i][j], 2) + pow(pattern.y_field_filled[i][j], 2));
+                double desired_director_norm = sqrt(pow(pattern.desired_pattern.getXFieldPreferred()[i][j], 2) +
+                                                    pow(pattern.desired_pattern.getYFieldPreferred()[i][j], 2));
+                double x_direction_agreement = pattern.x_field_filled[i][j] * pattern.desired_pattern.getXFieldPreferred()[i][j];
+                double y_direction_agreement = pattern.y_field_filled[i][j] * pattern.desired_pattern.getYFieldPreferred()[i][j];
+                if (desired_director_norm != 0 && filled_director_norm != 0) {
+                    director_agreement +=
+                            abs(x_direction_agreement + y_direction_agreement) / (filled_director_norm * desired_director_norm);
+                    number_of_filled_elements++;
                 }
             }
         }
     }
-    return 1 - (double) directorAgreement / (double) numberOfFilledElements;
+    return 1 - (double) director_agreement / (double) number_of_filled_elements;
 }
 
 
 double QuantifyPattern::calculateNumberOfPaths() {
     unsigned int paths = pattern.getSequenceOfPaths().size();
-    auto perimeterLength = (unsigned int) fmax(pattern.desiredPattern.getDimensions()[0],
-                                               pattern.desiredPattern.getDimensions()[1]);
-    return (double) paths / (double) perimeterLength;
+    auto perimeter_length = (unsigned int) fmax(pattern.desired_pattern.getDimensions()[0],
+                                                pattern.desired_pattern.getDimensions()[1]);
+    return (double) paths / (double) perimeter_length;
 }
 
-double QuantifyPattern::calculateCorrectness(double emptySpotWeight, double overlapWeight, double directorWeight,
-                                             double pathWeight,
-                                             double emptySpotExponent, double overLapExponent, double directorExponent,
-                                             double pathExponent) const {
-    return emptySpotWeight * pow(emptySpots, emptySpotExponent) + overlapWeight * pow(averageOverlap, overLapExponent) +
-           directorWeight * pow(directorDisagreement, directorExponent) + pathWeight * pow(numberOfPaths, pathExponent);
+double QuantifyPattern::calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight,
+                                             double path_weight,
+                                             double empty_spot_exponent, double over_lap_exponent, double director_exponent,
+                                             double path_exponent) const {
+    return empty_spot_weight * pow(empty_spots, empty_spot_exponent) + overlap_weight * pow(average_overlap, over_lap_exponent) +
+           director_weight * pow(director_disagreement, director_exponent) + path_weight * pow(number_of_paths, path_exponent);
 }
 
-double QuantifyPattern::calculateCorrectness(double emptySpotWeight, double overlapWeight, double directorWeight,
-                                             double pathWeight) const {
-    return calculateCorrectness(emptySpotWeight, overlapWeight, directorWeight, pathWeight, 1, 1, 1, 1);
+double QuantifyPattern::calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight,
+                                             double path_weight) const {
+    return calculateCorrectness(empty_spot_weight, overlap_weight, director_weight, path_weight, 1, 1, 1, 1);
 }
 

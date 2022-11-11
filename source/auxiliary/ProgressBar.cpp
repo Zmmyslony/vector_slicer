@@ -18,10 +18,10 @@
 #include <iostream>
 
 void showProgress(double progress) {
-    int barWidth = 20;
-    int pos = (int)(barWidth * progress);
+    int bar_width = 20;
+    int pos = (int)(bar_width * progress);
     std::cout << "\r[";
-    for (int i = 0; i < barWidth; ++i) {
+    for (int i = 0; i < bar_width; ++i) {
         if (i <= pos) {
             std::cout << "=";
         } else {
@@ -32,6 +32,6 @@ void showProgress(double progress) {
     std::cout.flush();
 }
 
-void showProgress(int currentStep, int maxStep) {
-    showProgress((double) currentStep / (double) maxStep);
+void showProgress(int current_step, int max_step) {
+    showProgress((double) current_step / (double) max_step);
 }

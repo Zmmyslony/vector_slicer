@@ -20,7 +20,7 @@
 #include "FilledPattern.h"
 #include "StartingPoint.h"
 
-bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &startingPoint);
+bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point);
 
 void fillWithPaths(FilledPattern &pattern);
 

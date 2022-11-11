@@ -18,48 +18,48 @@
 #include <iostream>
 
 
-std::vector<FillingConfig> iterateOverOption(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                             double delta, int numberOfConfigs, ConfigOptions option) {
-    std::vector<FillingConfig> listOfConfigs;
-    double increment = delta / numberOfConfigs;
-    double initialValue = stod(initialConfig.getConfigOption(option));
-    for (int i = -numberOfConfigs; i <= numberOfConfigs; i++) {
-        double newValue = initialValue + i * increment;
+std::vector<FillingConfig> iterateOverOption(const DesiredPattern &desired_pattern, FillingConfig initial_config,
+                                             double delta, int number_of_configs, configOptions option) {
+    std::vector<FillingConfig> list_of_configs;
+    double increment = delta / number_of_configs;
+    double initial_value = stod(initial_config.getConfigOption(option));
+    for (int i = -number_of_configs; i <= number_of_configs; i++) {
+        double new_value = initial_value + i * increment;
         // TODO fix this condition to omit errors. Collision radius has to smaller than the print radius and greater
         // than zero so that the algorithm can work.
-        if (option != CollisionRadius || newValue < initialConfig.getPrintRadius() && newValue > 0) {
+        if (option != CollisionRadius || new_value < initial_config.getPrintRadius() && new_value > 0) {
 
-            initialConfig.setConfigOption(option, std::to_string(newValue));
-            listOfConfigs.push_back(initialConfig);
+            initial_config.setConfigOption(option, std::to_string(new_value));
+            list_of_configs.push_back(initial_config);
         }
     }
-    return listOfConfigs;
+    return list_of_configs;
 }
 
 
-std::vector<FillingConfig> iterateOverSeeds(const DesiredPattern &desiredPattern, FillingConfig initialConfig,
-                                            int minSeed, int maxSeed) {
-    std::vector<FillingConfig> listOfConfigs;
-    for (int i = minSeed; i <= maxSeed; i++) {
-        initialConfig.setConfigOption(Seed, std::to_string(i));
-        listOfConfigs.push_back(initialConfig);
+std::vector<FillingConfig> iterateOverSeeds(const DesiredPattern &desired_pattern, FillingConfig initial_config,
+                                            int min_seed, int max_seed) {
+    std::vector<FillingConfig> list_of_configs;
+    for (int i = min_seed; i <= max_seed; i++) {
+        initial_config.setConfigOption(Seed, std::to_string(i));
+        list_of_configs.push_back(initial_config);
     }
-    return listOfConfigs;
+    return list_of_configs;
 }
 
 
 std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desiredPattern, const std::vector<FillingConfig> &configList, int minSeed,
-                 int maxSeed) {
-    std::vector<FillingConfig> configsToTest;
-    for (auto &configMethod: configList) {
-        std::vector<FillingConfig> configsWithDifferentSeeds = iterateOverSeeds(desiredPattern, configMethod, minSeed,
-                                                                                maxSeed);
-        for (auto &configSeed: configsWithDifferentSeeds) {
-            configsToTest.push_back(configSeed);
+iterateOverSeeds(const DesiredPattern &desired_pattern, const std::vector<FillingConfig> &config_list, int min_seed,
+                 int max_seed) {
+    std::vector<FillingConfig> configs_to_test;
+    for (auto &config_method: config_list) {
+        std::vector<FillingConfig> configs_with_different_seeds = iterateOverSeeds(desired_pattern, config_method, min_seed,
+                                                                                   max_seed);
+        for (auto &config_seed: configs_with_different_seeds) {
+            configs_to_test.push_back(config_seed);
 
         }
     }
-    return configsToTest;
+    return configs_to_test;
 }
 

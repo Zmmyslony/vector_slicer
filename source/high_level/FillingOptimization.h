@@ -21,24 +21,24 @@
 
 class FillingOptimization {
     int threads;
-    int minSeed;
-    int maxSeed;
+    int min_seed;
+    int max_seed;
 
-    DesiredPattern desiredPattern;
-    FillingConfig bestConfig;
+    DesiredPattern desired_pattern;
+    FillingConfig best_config;
 public:
     const FillingConfig &getBestConfig() const;
 
 private:
 
-    void optimizeOption(double delta, int steps, ConfigOptions option, const std::string &name);
+    void optimizeOption(double delta, int steps, configOptions option, const std::string &name);
 
 public:
 
-    FillingOptimization(DesiredPattern desiredPattern, const FillingConfig &initialConfig, int minSeed, int maxSeed,
+    FillingOptimization(DesiredPattern desired_pattern, const FillingConfig &initial_config, int min_seed, int max_seed,
                         int threads);
 
-    explicit FillingOptimization(DesiredPattern desiredPattern, const FillingConfig &initialConfig);
+    explicit FillingOptimization(DesiredPattern desired_pattern, const FillingConfig &initial_config);
 
     void optimizeRepulsion(double delta, int steps);
 
@@ -49,8 +49,8 @@ public:
     void optimizeSeeds(int multiplier);
 };
 
-void findBestSeed(const std::string &directorPath, int minSeed, int maxSeed, int threads);
+void findBestSeed(const fs::path &pattern_path, int min_seed, int max_seed, int threads);
 
-void exportPatternToDirectory(FilledPattern pattern, const std::string &directorPath);
+void exportPatternToDirectory(FilledPattern pattern, const boost::filesystem::path &pattern_path);
 
 #endif //VECTOR_SLICER_FILLINGOPTIMIZATION_H

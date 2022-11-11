@@ -22,10 +22,10 @@ namespace fs = boost::filesystem;
 
 const double VERSION = 1.0;
 
-std::vector<std::string> getPatterns(const std::string &listOfPatternsPath) {
+std::vector<std::string> getPatterns(const std::string &list_of_patterns_path) {
     std::vector<std::string> patterns;
     std::string line;
-    std::fstream file(listOfPatternsPath);
+    std::fstream file(list_of_patterns_path);
 
     while (std::getline(file, line)) {
         if (line.find("ignore") != std::string::npos) {}
@@ -38,8 +38,8 @@ std::vector<std::string> getPatterns(const std::string &listOfPatternsPath) {
 
 std::vector<int> readConfig(const std::string &filename) {
     std::vector<std::vector<int>> table = readFileToTableInt(filename);
-    std::vector<int> configRow = table[0];
-    return configRow;
+    std::vector<int> config_row = table[0];
+    return config_row;
 }
 
 
@@ -55,15 +55,15 @@ int main() {
     std::vector<std::string> patterns = getPatterns(patterns_path.string());
 
     printf("\nTested patterns: \n");
-    for (auto &patternType: patterns) {
-        std::cout << "\t" << patternType << std::endl;
+    for (auto &pattern_type: patterns) {
+        std::cout << "\t" << pattern_type << std::endl;
     }
     printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
 
-    for (auto &patternType: patterns) {
-        generalFinderString(patternType, config[0], config[1], config[2], optimizer_path.string());
-//        recalculateBestConfig(patternType);
-//        generateGCode(patternType, 30, 10, std::valarray<double>({0, 10}), 0.020);
+    for (auto &pattern_type: patterns) {
+        generalFinderString(pattern_type, config[0], config[1], config[2], optimizer_path.string());
+//        recalculateBestConfig(pattern_type);
+//        generateGCode(pattern_type, 30, 10, std::valarray<double>({0, 10}), 0.020);
     }
 
 
