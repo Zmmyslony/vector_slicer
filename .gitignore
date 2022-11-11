@@ -1,5 +1,5 @@
 cmake-build-release/
 cmake-build-debug/
-/libs/obsolete/
+/source/obsolete/
 /cmake-build-minsizerel/
 ./idea

@@ -1,8 +1,8 @@
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\radial, r = 1 cm
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\azimuthal, r = 0.5 cm
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\diagonal, 2x1 cm
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\linear, 2x1 cm
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\symmetric gauss curved rectangle
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\symmetric magic angle large
-ignore C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\symmetric gauss curved rectangle
-C:\Users\zmmys\Documents\Work\printer\Vector Slicer Patterns\symmetricPositive, 4x1.2 cm
+ignore ..\patterns\radial, r = 1 cm
+ignore ..\patterns\azimuthal, r = 0.5 cm
+ignore ..\patterns\diagonal, 2x1 cm
+ignore ..\patterns\linear, 2x1 cm
+ignore ..\patterns\symmetric gauss curved rectangle
+ignore ..\patterns\symmetric magic angle large
+ignore ..\patterns\symmetric gauss curved rectangle
+..\patterns\symmetricPositive, 4x1.2 cm
