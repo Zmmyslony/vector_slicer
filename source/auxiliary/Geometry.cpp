@@ -14,7 +14,6 @@
 // Created by Michał Zmyślony on 22/09/2021.
 //
 
-#include <utility>
 #include <vector>
 #include <valarray>
 #include <algorithm>

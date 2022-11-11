@@ -19,7 +19,6 @@
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
-#include <iostream>
 
 DesiredPattern::DesiredPattern(std::string shape_filename, std::string x_vector_field_filename,
                                std::string y_vector_field_filename) :

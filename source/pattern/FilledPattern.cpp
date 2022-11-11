@@ -10,13 +10,13 @@
 //
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cert-msc51-cpp"
 //
 // Created by Michał Zmyślony on 21/09/2021.
 //
 
-#include <iostream>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cert-msc51-cpp"
+
 #include <utility>
 
 #include "FilledPattern.h"

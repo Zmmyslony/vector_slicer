@@ -19,7 +19,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cassert>
+
 
 std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename) {
     std::string line;

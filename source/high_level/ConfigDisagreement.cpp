@@ -19,7 +19,6 @@
 #include "../pattern/FillingPatterns.h"
 #include "../pattern/QuantifyPattern.h"
 
-#include <vector>
 #include <cfloat>
 
 ConfigDisagreement::ConfigDisagreement(FillingConfig desired_config) :
