@@ -25,11 +25,7 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edge_
                            std::valarray<double> edge_second) {
     int sign = (int) ((edge_second[0] - edge_first[0]) * (point[1] - edge_first[1]) -
                       (point[0] - edge_first[0]) * (edge_second[1] - edge_first[1]));
-    if (sign > 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return (sign > 0);
 }
 
 
@@ -41,11 +37,7 @@ bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edge_first,
     bool is_on_left_of_third_edge = isOnTheLeftSideOfEdge(point, edge_third, edge_fourth);
     bool is_on_left_of_fourth_edge = isOnTheLeftSideOfEdge(point, edge_fourth, edge_first);
 
-    if (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge && is_on_left_of_fourth_edge) {
-        return true;
-    } else {
-        return false;
-    }
+    return (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge && is_on_left_of_fourth_edge);
 }
 
 
