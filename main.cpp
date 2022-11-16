@@ -61,9 +61,13 @@ int main() {
     printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
 
     for (auto &pattern_type: patterns) {
-        generalFinderString(pattern_type, config[0], config[1], config[2], optimizer_path.string());
-//        recalculateBestConfig(pattern_type);
-//        generateGCode(pattern_type, 30, 10, std::valarray<double>({0, 10}), 0.020);
+        try {
+            generalFinderString(pattern_type, config[0], config[1], config[2], optimizer_path.string());
+//            recalculateBestConfig(pattern_type);
+        }
+        catch (std::runtime_error &error) {
+            std::cout << error.what() << std::endl;
+        }
     }
 
 
