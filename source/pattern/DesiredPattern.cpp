@@ -15,19 +15,45 @@
 //
 
 #include "DesiredPattern.h"
+
+#include <utility>
 #include "../importing_and_exporting/TableReading.h"
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
 
-DesiredPattern::DesiredPattern(std::string shape_filename, std::string x_vector_field_filename,
-                               std::string y_vector_field_filename) :
-        shape_matrix(readFileToTableInt(shape_filename)),
-        x_field_preferred(readFileToTableDouble(x_vector_field_filename)),
-        y_field_preferred(readFileToTableDouble(y_vector_field_filename)) {
-//        dimensions(getTableDimensions(shape_filename)) {
-    dimensions = getTableDimensions(shape_matrix);
+
+DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
+                               std::vector<std::vector<double>> y_field) :
+        shape_matrix(std::move(shape_field)),
+        x_field_preferred(std::move(x_field)),
+        y_field_preferred(std::move(y_field)),
+        dimensions(getTableDimensions(shape_field)) {
+
     perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
+}
+
+DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
+                               const std::string &y_field_filename) :
+        DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
+                       readFileToTableDouble(y_field_filename)) {}
+
+
+DesiredPattern::DesiredPattern(const std::string& shape_filename, const std::string& theta_field_filename) {
+    std::vector<std::vector<double>> theta_field = readFileToTableDouble(theta_field_filename);
+    std::vector<std::vector<double>> x_field;
+    std::vector<std::vector<double>> y_field;
+    for (const auto& theta_row : theta_field) {
+        std::vector<double> x_row;
+        std::vector<double> y_row;
+        for (const auto &theta : theta_row) {
+            x_row.push_back(cos(theta));
+            y_row.push_back(sin(theta));
+        }
+        x_field.push_back(x_row);
+        y_field.push_back(y_row);
+    }
+    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field);
 }
 
 
@@ -44,12 +70,14 @@ std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<dou
     unsigned int y_position = (int) floor(position[1]);
     double x_field = (x_position_fraction * y_position_fraction * x_field_preferred[x_position][y_position] +
                       (1 - x_position_fraction) * y_position_fraction * x_field_preferred[x_position + 1][y_position] +
-                      (1 - x_position_fraction) * (1 - y_position_fraction) * x_field_preferred[x_position + 1][y_position + 1] +
+                      (1 - x_position_fraction) * (1 - y_position_fraction) *
+                      x_field_preferred[x_position + 1][y_position + 1] +
                       x_position_fraction * (1 - y_position_fraction) * x_field_preferred[x_position][y_position + 1]);
 
     double y_field = (x_position_fraction * y_position_fraction * y_field_preferred[x_position][y_position] +
                       (1 - x_position_fraction) * y_position_fraction * y_field_preferred[x_position + 1][y_position] +
-                      (1 - x_position_fraction) * (1 - y_position_fraction) * y_field_preferred[x_position + 1][y_position + 1] +
+                      (1 - x_position_fraction) * (1 - y_position_fraction) *
+                      y_field_preferred[x_position + 1][y_position + 1] +
                       x_position_fraction * (1 - y_position_fraction) * y_field_preferred[x_position][y_position + 1]);
 
     if (x_field == 0 && y_field == 0) {

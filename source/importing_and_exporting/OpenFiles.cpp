@@ -48,8 +48,17 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path) {
     fs::path x_field_path = directory_path / "xField.csv";
     fs::path y_field_path = directory_path / "yField.csv";
 
-    DesiredPattern desired_pattern(shape_path.string(), x_field_path.string(), y_field_path.string());
-    return desired_pattern;
+    if (!fs::exists(shape_path)) {
+        throw std::runtime_error("Shape matrix does not exist in the searched directory.");
+    }
+
+    if (fs::exists(theta_field_path)) {
+        return {shape_path.string(), theta_field_path.string()};
+    } else if (fs::exists(x_field_path) && fs::exists(y_field_path)) {
+        return {shape_path.string(), x_field_path.string(), y_field_path.string()};
+    } else {
+        throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
+    }
 }
 
 
@@ -67,7 +76,8 @@ FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path) {
 }
 
 FilledPattern
-openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern, unsigned int seed) {
+openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern,
+                                         unsigned int seed) {
     fs::path config_path = directory_path / "config.txt";
     std::vector<int> config = readConfigTable(config_path);
     FilledPattern filled_pattern(pattern, config[0], config[1], config[2], seed);

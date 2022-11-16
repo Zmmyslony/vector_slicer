@@ -2,7 +2,7 @@
 
 ## About
 
-Vector slicer is a program which is used to generate a set of coordinates which create a print
+Vector Slicer is a program which is used to generate a set of coordinates creating a print
 path which at each point tries to follow the preferred direction defined by the vector field (director).
 The slicer was designed to be used for 3D printing of liquid crystal elastomers, in which the
 direction of printing decides the deformation of the material when heated.
