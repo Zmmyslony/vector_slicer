@@ -244,12 +244,7 @@ void FillingConfig::exportConfig(const fs::path &directory) {
 
 
 bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, FillingConfig &second_config) {
-    if (first_config.getConfigOption(option) == second_config.getConfigOption(option)) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return first_config.getConfigOption(option) == second_config.getConfigOption(option);
 }
 
 
