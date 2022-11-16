@@ -249,16 +249,11 @@ bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, Fi
 
 
 bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config) {
-    bool repulsion = isConfigOptionTheSame(Repulsion, first_config, second_config);
-    bool collision_radius = isConfigOptionTheSame(CollisionRadius, first_config, second_config);
-    bool starting_point_separation = isConfigOptionTheSame(StartingPointSeparation, first_config, second_config);
-    bool step_length = isConfigOptionTheSame(StepLength, first_config, second_config);
-    bool print_radius = isConfigOptionTheSame(PrintRadius, first_config, second_config);
-
-    if (repulsion && collision_radius && starting_point_separation && step_length && print_radius) {
-        return true;
+    configOptions all_options[] = {Repulsion, CollisionRadius, StartingPointSeparation, StepLength, PrintRadius};
+    for (auto &option : all_options) {
+        if (!isConfigOptionTheSame(option, first_config, second_config)) {
+            return false;
+        }
     }
-    else {
-        return false;
-    }
+    return true;
 }
