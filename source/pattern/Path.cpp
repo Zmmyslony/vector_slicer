@@ -53,6 +53,6 @@ std::valarray<int> Path::last() {
     return sequence_of_positions.back();
 }
 
-std::valarray<int> Path::previousToLast() {
+std::valarray<int> Path::secondToLast() {
     return sequence_of_positions[sequence_of_positions.size() - 2];
 }

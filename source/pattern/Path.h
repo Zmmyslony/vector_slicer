@@ -36,7 +36,7 @@ public:
 
     unsigned int getSize() const;
 
-    std::valarray<int> previousToLast();
+    std::valarray<int> secondToLast();
 
     std::valarray<int> second();
 };
