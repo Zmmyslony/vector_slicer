@@ -95,10 +95,10 @@ void FilledPattern::updateSearchStageAndFillablePoints() {
         case PerimeterSearch:
             points_to_fill = findRemainingFillablePointsInList(points_to_fill);
             if (points_to_fill.empty()) {
-                search_stage = TotallyRandomPointSelection;
+                search_stage = FullyRandomPointSelection;
             }
             break;
-        case TotallyRandomPointSelection:
+        case FullyRandomPointSelection:
             points_to_fill = findAllFillablePoints();
             search_stage = EmptySpotRandomSelection;
             break;

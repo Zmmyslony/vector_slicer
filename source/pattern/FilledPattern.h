@@ -23,7 +23,7 @@
 #include <string>
 #include <random>
 
-enum pointSearchStage {PerimeterSearch, TotallyRandomPointSelection, EmptySpotRandomSelection};
+enum pointSearchStage {PerimeterSearch, FullyRandomPointSelection, EmptySpotRandomSelection};
 
 class FilledPattern {
 //    bool isPerimeterSearchOn = true;

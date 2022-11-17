@@ -33,7 +33,7 @@ class StartingPoint {
 
     void trySearchingForAPoint(FilledPattern &pattern);
 
-    void findStartPointTotallyRandomly(FilledPattern &pattern);
+    void findStartPointFullyRandomly(FilledPattern &pattern);
 
     void findStartPointConsecutively(FilledPattern &pattern);
 

@@ -25,7 +25,7 @@ StartingPoint::StartingPoint() :
         tries(0) {
 }
 
-void StartingPoint::findStartPointTotallyRandomly(FilledPattern &pattern) {
+void StartingPoint::findStartPointFullyRandomly(FilledPattern &pattern) {
     tries++;
     positions = pattern.findPointInShape();
 
@@ -64,8 +64,8 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 
 
 void StartingPoint::lookForAPoint(FilledPattern &pattern) {
-    if (pattern.search_stage == TotallyRandomPointSelection) {
-        findStartPointTotallyRandomly(pattern);
+    if (pattern.search_stage == FullyRandomPointSelection) {
+        findStartPointFullyRandomly(pattern);
     }
     else if (pattern.is_filling_method_random) {
         findStartPointSemiRandomly(pattern);
@@ -83,7 +83,7 @@ void StartingPoint::updateListOfPoints(FilledPattern &pattern) {
     unsigned int previous_number_of_fillable_points = pattern.points_to_fill.size();
     pattern.updateSearchStageAndFillablePoints();
 
-    if (pattern.search_stage != TotallyRandomPointSelection) {
+    if (pattern.search_stage != FullyRandomPointSelection) {
         is_there_fillable_points_remaining = !pattern.points_to_fill.empty();
         if (previous_number_of_fillable_points == pattern.points_to_fill.size()) {
             is_there_fillable_points_remaining = false;
