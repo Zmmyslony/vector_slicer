@@ -30,14 +30,14 @@ void ConfigDisagreement::fillWithPatterns(const DesiredPattern &desired_pattern)
     FilledPattern pattern(desired_pattern, config);
     fillWithPaths(pattern);
     QuantifyPattern pattern_agreement(pattern);
-//    disagreement = pattern_agreement.calculateCorrectness(10, 2, 1000, 10,
+//    disagreement = pattern_agreement.disagreement(10, 2, 1000, 10,
 //                                                         1, 1, 2, 2);
-//    disagreement = pattern_agreement.calculateCorrectness(10, 2, 10000, 10,
+//    disagreement = pattern_agreement.disagreement(10, 2, 10000, 10,
 //                                                         1, 1, 2, 2);
-//    disagreement = pattern_agreement.calculateCorrectness(10, 0.2, 10000, 10,
+//    disagreement = pattern_agreement.disagreement(10, 0.2, 10000, 10,
 //                                                         1, 1, 2, 2);
-    disagreement = pattern_agreement.calculateCorrectness(10, 8, 100, 10,
-                                                          1, 1, 2, 2);
+    disagreement = pattern_agreement.disagreement(10, 8, 100, 10,
+                                                  1, 1, 2, 2);
 
 }
 
