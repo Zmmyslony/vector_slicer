@@ -34,7 +34,7 @@ public:
 
     std::valarray<int> last();
 
-    unsigned int getSize() const;
+    unsigned int size() const;
 
     std::valarray<int> secondToLast();
 

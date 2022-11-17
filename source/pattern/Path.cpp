@@ -27,16 +27,16 @@ Path::Path(std::valarray<int> &starting_positions) {
 }
 
 
-unsigned int Path::getSize() const {
+unsigned int Path::size() const {
     return sequence_of_positions.size();
 }
 
 
 Path::Path(Path forward_path, Path backward_path) {
-    for (int i = 0; i < backward_path.getSize(); i++) {
-        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.getSize() - i - 1]);
+    for (int i = 0; i < backward_path.size(); i++) {
+        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.size() - i - 1]);
     }
-    for (int i = 1; i < forward_path.getSize(); i++) {
+    for (int i = 1; i < forward_path.size(); i++) {
         sequence_of_positions.push_back(forward_path.sequence_of_positions[i]);
     }
 }
