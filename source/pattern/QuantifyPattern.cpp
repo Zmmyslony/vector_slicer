@@ -18,7 +18,7 @@
 #include <utility>
 #include <cmath>
 
-QuantifyPattern::QuantifyPattern(FilledPattern pattern):
+QuantifyPattern::QuantifyPattern(FilledPattern pattern) :
         pattern(std::move(pattern)) {
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
@@ -74,11 +74,14 @@ double QuantifyPattern::calculateDirectorDisagreement() {
                         pow(pattern.x_field_filled[i][j], 2) + pow(pattern.y_field_filled[i][j], 2));
                 double desired_director_norm = sqrt(pow(pattern.desired_pattern.getXFieldPreferred()[i][j], 2) +
                                                     pow(pattern.desired_pattern.getYFieldPreferred()[i][j], 2));
-                double x_direction_agreement = pattern.x_field_filled[i][j] * pattern.desired_pattern.getXFieldPreferred()[i][j];
-                double y_direction_agreement = pattern.y_field_filled[i][j] * pattern.desired_pattern.getYFieldPreferred()[i][j];
+                double x_direction_agreement =
+                        pattern.x_field_filled[i][j] * pattern.desired_pattern.getXFieldPreferred()[i][j];
+                double y_direction_agreement =
+                        pattern.y_field_filled[i][j] * pattern.desired_pattern.getYFieldPreferred()[i][j];
                 if (desired_director_norm != 0 && filled_director_norm != 0) {
                     director_agreement +=
-                            abs(x_direction_agreement + y_direction_agreement) / (filled_director_norm * desired_director_norm);
+                            abs(x_direction_agreement + y_direction_agreement) /
+                            (filled_director_norm * desired_director_norm);
                     number_of_filled_elements++;
                 }
             }
@@ -95,16 +98,17 @@ double QuantifyPattern::calculateNumberOfPaths() {
     return (double) paths / (double) perimeter_length;
 }
 
-double QuantifyPattern::calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight,
-                                             double path_weight,
-                                             double empty_spot_exponent, double over_lap_exponent, double director_exponent,
-                                             double path_exponent) const {
-    return empty_spot_weight * pow(empty_spots, empty_spot_exponent) + overlap_weight * pow(average_overlap, over_lap_exponent) +
-           director_weight * pow(director_disagreement, director_exponent) + path_weight * pow(number_of_paths, path_exponent);
+double QuantifyPattern::disagreement(double empty_spot_weight, double overlap_weight, double director_weight,
+                                     double path_weight, double empty_spot_exponent, double over_lap_exponent,
+                                     double director_exponent, double path_exponent) const {
+    return empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
+           overlap_weight * pow(average_overlap, over_lap_exponent) +
+           director_weight * pow(director_disagreement, director_exponent) +
+           path_weight * pow(number_of_paths, path_exponent);
 }
 
-double QuantifyPattern::calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight,
-                                             double path_weight) const {
-    return calculateCorrectness(empty_spot_weight, overlap_weight, director_weight, path_weight, 1, 1, 1, 1);
+double QuantifyPattern::disagreement(double empty_spot_weight, double overlap_weight, double director_weight,
+                                     double path_weight) const {
+    return disagreement(empty_spot_weight, overlap_weight, director_weight, path_weight, 1, 1, 1, 1);
 }
 

@@ -37,12 +37,12 @@ class QuantifyPattern {
 public:
     explicit QuantifyPattern(FilledPattern pattern);
 
-    double calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight,
-                                double empty_spot_exponent, double over_lap_exponent, double director_exponent,
-                                double path_exponent) const;
+    double disagreement(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight,
+                        double empty_spot_exponent, double over_lap_exponent, double director_exponent,
+                        double path_exponent) const;
 
     double
-    calculateCorrectness(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight) const;
+    disagreement(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight) const;
 
 
 };
