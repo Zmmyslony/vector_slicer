@@ -19,13 +19,13 @@
 
 #include "DesiredPattern.h"
 #include "Path.h"
-#include "../auxiliary/FillingConfig.h"
+#include "FillingConfig.h"
 #include <string>
 #include <random>
 
 enum pointSearchStage {PerimeterSearch, FullyRandomPointSelection, EmptySpotRandomSelection};
 
-class FilledPattern {
+class FilledPattern : public FillingConfig{
 //    bool isPerimeterSearchOn = true;
 
     std::vector<Path> sequence_of_paths;
@@ -72,7 +72,6 @@ class FilledPattern {
     findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previous_dual_director);
 
 public:
-    FillingConfig config;
     bool is_filling_method_random = true;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;

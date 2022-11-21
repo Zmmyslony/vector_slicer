@@ -23,10 +23,10 @@
 
 std::vector<std::valarray<int>> generatePerimeterList(double radius);
 
-std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filled_table,
-                                   std::vector<std::valarray<int>> &checked_area,
-                                   const std::valarray<int> &start_positions,
-                                   const std::valarray<int> &sizes, double repulsion_coefficient);
+std::valarray<double> getRepulsionValue(std::vector<std::vector<int>> &filled_table,
+                                        std::vector<std::valarray<int>> &checked_area,
+                                        const std::valarray<int> &start_positions,
+                                        const std::valarray<int> &sizes, double repulsion_coefficient);
 
 bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
                      const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,

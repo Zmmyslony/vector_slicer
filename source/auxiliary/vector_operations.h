@@ -11,25 +11,23 @@
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 10/01/2022.
+// Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_CONFIGGENERATION_H
-#define VECTOR_SLICER_CONFIGGENERATION_H
+#ifndef VECTOR_SLICER_VECTOR_OPERATIONS_H
+#define VECTOR_SLICER_VECTOR_OPERATIONS_H
 
-#include "../pattern/FillingConfig.h"
-#include "../pattern/DesiredPattern.h"
+#include <valarray>
+#include <vector>
+
+std::vector<std::valarray<int>>
+stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector);
 
 
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, const std::vector<FillingConfig> &config_list, int min_seed,
-                 int max_seed);
 
-std::vector<FillingConfig>
-iterateOverOption(const DesiredPattern &desired_pattern, FillingConfig initial_config, double delta, int number_of_configs,
-                  configOptions option);
+class VectorOperations {
 
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, FillingConfig initial_config, int min_seed, int max_seed);
+};
 
-#endif //VECTOR_SLICER_CONFIGGENERATION_H
+
+#endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

@@ -26,30 +26,32 @@
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/ValarrayOperations.h"
+#include "../auxiliary/vector_operations.h"
 
 
 FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
         desired_pattern(new_desired_pattern),
-        config(new_config) {
+        FillingConfig(new_config) {
     number_of_times_filled = std::vector<std::vector<int>>(new_desired_pattern.getDimensions()[0],
                                                            std::vector<int>(new_desired_pattern.getDimensions()[1]));
     x_field_filled = std::vector<std::vector<double>>(new_desired_pattern.getDimensions()[0],
                                                       std::vector<double>(new_desired_pattern.getDimensions()[1]));
     y_field_filled = std::vector<std::vector<double>>(new_desired_pattern.getDimensions()[0],
                                                       std::vector<double>(new_desired_pattern.getDimensions()[1]));
-    collision_list = generatePerimeterList(config.getCollisionRadius());
-    random_engine = std::mt19937(config.getSeed());
-    points_in_circle = findPointsInCircle(config.getPrintRadius());
+    collision_list = generatePerimeterList(getCollisionRadius());
+    random_engine = std::mt19937(getSeed());
+    points_in_circle = findPointsInCircle(getPrintRadius());
     x_distribution = std::uniform_int_distribution<int>(0, desired_pattern.getDimensions()[0] - 1);
     y_distribution = std::uniform_int_distribution<int>(0, desired_pattern.getDimensions()[1] - 1);
-    points_to_fill = findInitialStartingPoints(config.getInitialFillingMethod());
+    points_to_fill = findInitialStartingPoints(getInitialFillingMethod());
     unsigned int number_of_fillable_points = points_to_fill.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, number_of_fillable_points - 1);
 
 }
 
 
-FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
+FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius,
+                             int step_length,
                              unsigned int seed) :
         FilledPattern(desired_pattern,
                       FillingConfig(RandomPerimeter, collision_radius, 2 * print_radius, 1.0, step_length, print_radius,
@@ -57,7 +59,8 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
 }
 
 
-FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length)
+FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius,
+                             int step_length)
         :
         FilledPattern::FilledPattern(desired_pattern, print_radius, collision_radius, step_length, 0) {}
 
@@ -170,9 +173,9 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
     std::valarray<double> new_positions = positions + new_step;
     std::valarray<int> new_coordinates = dtoiArray(new_positions);
     std::valarray<double> repulsion = {0, 0};
-    if (config.getRepulsion() != 0) {
-        repulsion = getRepulsion(number_of_times_filled, points_in_circle, new_coordinates,
-                                 desired_pattern.getDimensions(), config.getRepulsion());
+    if (getRepulsion() != 0) {
+        repulsion = getRepulsionValue(number_of_times_filled, points_in_circle, new_coordinates,
+                                      desired_pattern.getDimensions(), getRepulsion());
     }
 
     new_positions -= repulsion;
@@ -187,7 +190,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
     if (isPerimeterFree(number_of_times_filled, desired_pattern.getShapeMatrix(), collision_list, new_coordinates,
                         desired_pattern.getDimensions())) {
         std::vector<std::valarray<int>> current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates,
-                                                                                  config.getPrintRadius());
+                                                                                  getPrintRadius());
         std::valarray<int> new_step_int = new_coordinates - current_coordinates;
         fillPointsFromList(current_points_to_fill, new_step_int);
         current_path.addPoint(new_coordinates);
@@ -206,7 +209,7 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &starting_coo
     std::valarray<double> current_positions = itodArray(starting_coordinates);
     std::valarray<double> current_step = itodArray(starting_step);
 
-    for (int length = config.getStepLength(); length >= config.getPrintRadius(); length--) {
+    for (int length = getStepLength(); length >= getPrintRadius(); length--) {
         while (tryGeneratingPathWithLength(new_path, current_positions, current_step, length)) {}
     }
     return new_path;
@@ -219,7 +222,7 @@ void FilledPattern::fillPointsInCircle(const std::valarray<int> &starting_coordi
 void
 FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point) {
     std::vector<std::valarray<int>> half_circle_points = findHalfCircle(last_point, previous_point,
-                                                                        config.getPrintRadius());
+                                                                        getPrintRadius());
     fillPointsFromList(half_circle_points, previous_point - last_point);
 }
 
@@ -283,7 +286,8 @@ std::valarray<double> normalizedDualVector(const std::valarray<double> &vector) 
 
 
 std::vector<std::valarray<int>>
-FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates, std::valarray<double> previous_dual_director) {
+FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates,
+                                        std::valarray<double> previous_dual_director) {
     std::vector<std::valarray<int>> line;
     while (desired_pattern.isInShape(coordinates)) {
         line.push_back(dtoiArray(coordinates));
@@ -297,19 +301,6 @@ FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates, std::
     }
     return line;
 }
-
-std::vector<std::valarray<int>>
-stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector) {
-    std::reverse(backwards_vector.begin(), backwards_vector.end());
-    if (!backwards_vector.empty()) {
-        backwards_vector.pop_back();
-    }
-    std::vector<std::valarray<int>> dual_line = backwards_vector;
-    dual_line.reserve(backwards_vector.size() + forwards_vector.size());
-    dual_line.insert(dual_line.end(), forwards_vector.begin(), forwards_vector.end());
-    return dual_line;
-}
-
 
 std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
     std::valarray<double> real_coordinates = itodArray(start);
@@ -368,21 +359,21 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(filling
 
     switch (method) {
         case RandomPerimeter:
-            starting_points = getSpacedLine(config.getStartingPointSeparation(), desired_pattern.getPerimeterList());
+            starting_points = getSpacedLine(getStartingPointSeparation(), desired_pattern.getPerimeterList());
             is_filling_method_random = true;
             break;
         case ConsecutivePerimeter:
-            starting_points = getSpacedLine(config.getStartingPointSeparation(), desired_pattern.getPerimeterList());
+            starting_points = getSpacedLine(getStartingPointSeparation(), desired_pattern.getPerimeterList());
             is_filling_method_random = false;
             break;
         case RandomRadial:
             dual_line = findDualLine(findPointInShape());
-            starting_points = getSpacedLine(config.getStartingPointSeparation(), dual_line);
+            starting_points = getSpacedLine(getStartingPointSeparation(), dual_line);
             is_filling_method_random = true;
             break;
         case ConsecutiveRadial:
             dual_line = findDualLine(findPointInShape());
-            starting_points = getSpacedLine(config.getStartingPointSeparation(), dual_line);
+            starting_points = getSpacedLine(getStartingPointSeparation(), dual_line);
             is_filling_method_random = false;
             break;
     }

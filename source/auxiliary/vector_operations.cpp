@@ -11,25 +11,21 @@
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 10/01/2022.
+// Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_CONFIGGENERATION_H
-#define VECTOR_SLICER_CONFIGGENERATION_H
+#include "vector_operations.h"
 
-#include "../pattern/FillingConfig.h"
-#include "../pattern/DesiredPattern.h"
+std::vector<std::valarray<int>>
+stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector) {
+    std::reverse(backwards_vector.begin(), backwards_vector.end());
+    if (!backwards_vector.empty()) {
+        backwards_vector.pop_back();
+    }
+    std::vector<std::valarray<int>> stitched_vector = backwards_vector;
+    stitched_vector.reserve(backwards_vector.size() + forwards_vector.size());
+    stitched_vector.insert(stitched_vector.end(), forwards_vector.begin(), forwards_vector.end());
+    return stitched_vector;
+}
 
 
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, const std::vector<FillingConfig> &config_list, int min_seed,
-                 int max_seed);
-
-std::vector<FillingConfig>
-iterateOverOption(const DesiredPattern &desired_pattern, FillingConfig initial_config, double delta, int number_of_configs,
-                  configOptions option);
-
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, FillingConfig initial_config, int min_seed, int max_seed);
-
-#endif //VECTOR_SLICER_CONFIGGENERATION_H

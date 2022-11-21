@@ -54,8 +54,6 @@ public:
 
     double getRepulsion() const;
 
-    int getStepLength() const;
-
     double getStartingPointSeparation() const;
 
     double getPrintRadius() const;
@@ -73,6 +71,8 @@ public:
     std::string getConfigOption(configOptions option);
 
     void exportConfig(const fs::path &directory);
+
+    int getStepLength() const;
 };
 
 bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config);

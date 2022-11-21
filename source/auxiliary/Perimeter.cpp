@@ -45,8 +45,8 @@ bool isEmpty(const std::valarray<int> &position, const std::vector<std::vector<i
 
 
 std::valarray<double>
-getRepulsion(std::vector<std::vector<int>> &filled_table, std::vector<std::valarray<int>> &checked_area,
-             const std::valarray<int> &start_positions, const std::valarray<int> &sizes, double repulsion_coefficient) {
+getRepulsionValue(std::vector<std::vector<int>> &filled_table, std::vector<std::valarray<int>> &checked_area,
+                  const std::valarray<int> &start_positions, const std::valarray<int> &sizes, double repulsion_coefficient) {
 
     std::valarray<double> attraction = {0, 0};
     int number_of_empty_spots = 0;

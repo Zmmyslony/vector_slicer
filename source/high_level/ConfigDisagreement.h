@@ -17,7 +17,7 @@
 #ifndef VECTOR_SLICER_CONFIGDISAGREEMENT_H
 #define VECTOR_SLICER_CONFIGDISAGREEMENT_H
 
-#include "../auxiliary/FillingConfig.h"
+#include "../pattern/FillingConfig.h"
 #include "../pattern/FilledPattern.h"
 #include "../pattern/DesiredPattern.h"
 #include <string>

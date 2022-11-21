@@ -14,13 +14,12 @@
 // Created by Michał Zmyślony on 29/09/2021.
 //
 
-#ifndef VECTOR_SLICER_QUANTIFYPATTERN_H
-#define VECTOR_SLICER_QUANTIFYPATTERN_H
+#ifndef VECTOR_SLICER_QUANTIFIEDPATTERN_H
+#define VECTOR_SLICER_QUANTIFIEDPATTERN_H
 
 #include "FilledPattern.h"
 
-class QuantifyPattern {
-    FilledPattern pattern;
+class QuantifiedPattern: FilledPattern {
     double empty_spots = 0;
     double average_overlap = 0;
     double director_disagreement = 0;
@@ -35,7 +34,7 @@ class QuantifyPattern {
     double calculateNumberOfPaths();
 
 public:
-    explicit QuantifyPattern(FilledPattern pattern);
+    explicit QuantifiedPattern(FilledPattern pattern);
 
     double disagreement(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight,
                         double empty_spot_exponent, double over_lap_exponent, double director_exponent,
@@ -48,4 +47,4 @@ public:
 };
 
 
-#endif //VECTOR_SLICER_QUANTIFYPATTERN_H
+#endif //VECTOR_SLICER_QUANTIFIEDPATTERN_H

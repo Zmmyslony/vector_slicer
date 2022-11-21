@@ -26,11 +26,11 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point)
         Path new_path_forwards = pattern.generateNewPathForDirection(starting_point.positions,
                                                                      pattern.desired_pattern.preferredDirection(
                                                                            starting_point.positions,
-                                                                           pattern.config.getStepLength()));
+                                                                           pattern.getStepLength()));
         Path new_path_backwards = pattern.generateNewPathForDirection(starting_point.positions,
                                                                       -pattern.desired_pattern.preferredDirection(
                                                                             starting_point.positions,
-                                                                            pattern.config.getStepLength()));
+                                                                            pattern.getStepLength()));
 
         Path new_path(new_path_forwards, new_path_backwards);
 
