@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
+set(version 0.1.1)
 project(Vector_Slicer)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+
+ADD_SUBDIRECTORY(bayesopt)
+include_directories(${PROJECT_SOURCE_DIR}/bayesopt/include)
+SET(EXT_LIBS bayesopt)
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
@@ -34,16 +39,16 @@ add_executable(Vector_Slicer main.cpp
         source/importing_and_exporting/OpenFiles.h
         source/pattern/FillingPatterns.cpp
         source/pattern/FillingPatterns.h
-        source/pattern/QuantifyPattern.cpp
-        source/pattern/QuantifyPattern.h
+        source/pattern/QuantifiedPattern.cpp
+        source/pattern/QuantifiedPattern.h
         source/importing_and_exporting/Exporting.h
         source/importing_and_exporting/Exporting.cpp
         source/auxiliary/ValarrayOperations.cpp
         source/auxiliary/ValarrayOperations.h
         source/auxiliary/ProgressBar.cpp
         source/auxiliary/ProgressBar.h
-        source/auxiliary/FillingConfig.cpp
-        source/auxiliary/FillingConfig.h
+        source/pattern/FillingConfig.cpp
+        source/pattern/FillingConfig.h
         source/high_level/ConfigDisagreement.cpp
         source/high_level/ConfigDisagreement.h
         source/pattern/IndexedPath.cpp
@@ -54,7 +59,7 @@ add_executable(Vector_Slicer main.cpp
         source/high_level/ConfigGeneration.h
         ExecutionConfig.h
         source/importing_and_exporting/ReadingFromOutside.cpp
-        source/importing_and_exporting/ReadingFromOutside.h)
+        source/importing_and_exporting/ReadingFromOutside.h source/high_level/bayesian_optimisation.cpp source/high_level/bayesian_optimisation.h source/auxiliary/vector_operations.cpp source/auxiliary/vector_operations.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
