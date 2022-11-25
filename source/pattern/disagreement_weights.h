@@ -14,28 +14,25 @@
 // Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
-#define VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
-
-#include <bayesopt/bayesopt.hpp>
-
-//class BayesianOptimisation : public bayesopt::ContinuousModel {
-//
-//public:
-//    BayesianOptimisation(bayesopt::Parameters parameters) :
-//            ContinuousModel(3, parameters) {}
-//
-//    double evaluateSample(const vectord &x_in) {
-//        if (x_in.size() != 3) {
-//            std::cout << "WARNING: This only works for 3D inputs." << std::endl
-//                      << "WARNING: Using only first three components." << std::endl;
-//        }
-//
-//    }
-//
-//    bool checkReachability(const vectord &query) { return true; };
-//
-//};
+#ifndef VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H
+#define VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H
 
 
-#endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
+class DisagreementWeights {
+protected:
+    double empty_spot_exponent = 1;
+    double empty_spot_weight = 0;
+    double overlap_weight = 0;
+    double overlap_exponent = 1;
+    double director_weight = 0;
+    double director_exponent = 1;
+    double path_weight = 0;
+    double path_exponent = 1;
+public:
+    DisagreementWeights(double empty_spot_weight, double empty_spot_exponent, double overlap_weight,
+                        double overlap_exponent, double director_weight, double director_exponent, double path_weight,
+                        double path_exponent);
+};
+
+
+#endif //VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H

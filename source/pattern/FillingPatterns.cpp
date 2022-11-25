@@ -24,11 +24,11 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point)
         return false;
     } else {
         Path new_path_forwards = pattern.generateNewPathForDirection(starting_point.positions,
-                                                                     pattern.desired_pattern.preferredDirection(
+                                                                     pattern.desired_pattern.get().preferredDirection(
                                                                            starting_point.positions,
                                                                            pattern.getStepLength()));
         Path new_path_backwards = pattern.generateNewPathForDirection(starting_point.positions,
-                                                                      -pattern.desired_pattern.preferredDirection(
+                                                                      -pattern.desired_pattern.get().preferredDirection(
                                                                             starting_point.positions,
                                                                             pattern.getStepLength()));
 

@@ -1,4 +1,4 @@
-ignore ..\patterns\radial, r = 1 cm
+..\patterns\radial, r = 1 cm
 ignore ..\patterns\azimuthal, r = 0.5 cm
 ignore ..\patterns\diagonal, 2x1 cm
 ignore ..\patterns\linear, 2x1 cm
@@ -6,5 +6,5 @@ ignore ..\patterns\symmetric gauss curved rectangle
 ignore ..\patterns\symmetric magic angle large
 ignore ..\patterns\symmetric gauss curved rectangle
 ignore ..\patterns\symmetricPositive, 4x1.2 cm
-..\patterns\linear, 1x0.3 cm
-..\patterns\linear, 1x0.5 cm
+ignore ..\patterns\linear, 1x0.3 cm
+ignore ..\patterns\linear, 1x0.5 cm

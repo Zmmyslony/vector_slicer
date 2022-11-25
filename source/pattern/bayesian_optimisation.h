@@ -23,14 +23,30 @@
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 14/01/2022.
+// Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_READINGFROMOUTSIDE_H
-#define VECTOR_SLICER_READINGFROMOUTSIDE_H
+#ifndef VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
+#define VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
 
-#include "../high_level/FillingOptimization.h"
+#include "bayesopt/bayesopt.hpp"
+#include <utility>
+#include "QuantifiedConfig.h"
 
-void generalFinderString(const fs::path &pattern_directory, int min_seed, int max_seed, int threads,
-                         const std::string &optimizer_path);
-#endif //VECTOR_SLICER_READINGFROMOUTSIDE_H
+class BayesianOptimisation : public bayesopt::ContinuousModel {
+    QuantifiedConfig problem;
+    int threads;
+    int seeds;
+
+public:
+    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds, bayesopt::Parameters parameters);
+
+    double evaluateSample(const vectord &x_in);
+
+    bool checkReachability(const vectord &query) { return true; };
+
+};
+
+void generalFinder(const fs::path &pattern_path, int seeds, int threads);
+
+#endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H

@@ -23,11 +23,8 @@
 std::vector<std::valarray<int>>
 stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector);
 
+double mean(const std::vector<double> &data);
 
-
-class VectorOperations {
-
-};
 
 
 #endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

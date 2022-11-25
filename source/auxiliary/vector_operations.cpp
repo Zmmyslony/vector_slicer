@@ -14,6 +14,7 @@
 // Created by Michał Zmyślony on 21/11/2022.
 //
 
+#include <numeric>
 #include "vector_operations.h"
 
 std::vector<std::valarray<int>>
@@ -28,4 +29,9 @@ stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<s
     return stitched_vector;
 }
 
+double mean(const std::vector<double> &data) {
+    double sum = std::accumulate(std::begin(data), std::end(data), 0.0);
+    double mean =  sum / data.size();
+    return mean;
+}
 

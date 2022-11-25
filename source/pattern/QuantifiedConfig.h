@@ -14,16 +14,21 @@
 // Created by Michał Zmyślony on 29/09/2021.
 //
 
-#ifndef VECTOR_SLICER_QUANTIFIEDPATTERN_H
-#define VECTOR_SLICER_QUANTIFIEDPATTERN_H
+#ifndef VECTOR_SLICER_QUANTIFIEDCONFIG_H
+#define VECTOR_SLICER_QUANTIFIEDCONFIG_H
 
 #include "FilledPattern.h"
+#include "disagreement_weights.h"
+#include <boost/numeric/ublas/vector.hpp>
 
-class QuantifiedPattern: FilledPattern {
+typedef boost::numeric::ublas::vector<double> vectord;
+
+class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double empty_spots = 0;
     double average_overlap = 0;
     double director_disagreement = 0;
     double number_of_paths = 0;
+    double disagreement = DBL_MAX;
 
     double calculateEmptySpots();
 
@@ -34,17 +39,27 @@ class QuantifiedPattern: FilledPattern {
     double calculateNumberOfPaths();
 
 public:
-    explicit QuantifiedPattern(FilledPattern pattern);
+    QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights);
 
-    double disagreement(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight,
-                        double empty_spot_exponent, double over_lap_exponent, double director_exponent,
-                        double path_exponent) const;
+    QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
+                     DisagreementWeights disagreement_weights);
 
-    double
-    disagreement(double empty_spot_weight, double overlap_weight, double director_weight, double path_weight) const;
+    QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters);
 
+    QuantifiedConfig(QuantifiedConfig &template_config, int seed);
 
+    void evaluate();
+
+    double getDisagreement() const;
+
+    double getDisagreement(int seeds, int threads);
+
+    FilledPattern getFilledPattern();
+
+    DesiredPattern getDesiredPattern();
+
+    FillingConfig getConfig() const;
 };
 
 
-#endif //VECTOR_SLICER_QUANTIFIEDPATTERN_H
+#endif //VECTOR_SLICER_QUANTIFIEDCONFIG_H

@@ -68,11 +68,11 @@ public:
                   int new_print_radius, unsigned int new_seed);
 
 
-    std::string getConfigOption(configOptions option);
-
     void exportConfig(const fs::path &directory);
 
     int getStepLength() const;
+
+    std::string getConfigOption(configOptions option);
 };
 
 bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config);

@@ -283,7 +283,7 @@ std::vector<std::vector<std::valarray<int>>> pathToVector(const std::vector<Path
 
 
 std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &filled_pattern, int starting_point_number) {
-    std::valarray<int> dimensions = filled_pattern.desired_pattern.getDimensions();
+    std::valarray<int> dimensions = filled_pattern.desired_pattern.get().getDimensions();
     std::vector<IndexedPath> unsorted_indices = indexPaths(filled_pattern, dimensions);
 
     std::vector<std::valarray<int>> starting_points = generateStartingPoints(dimensions, starting_point_number);

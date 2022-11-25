@@ -30,6 +30,12 @@ class FilledPattern : public FillingConfig{
 
     std::vector<Path> sequence_of_paths;
     std::vector<std::valarray<int>> points_in_circle;
+    std::mt19937 random_engine;
+    std::uniform_int_distribution<unsigned int> distribution;
+    std::uniform_int_distribution<int> x_distribution;
+    std::uniform_int_distribution<int> y_distribution;
+
+    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction);
 
     void
     fillPointsFromList(const std::vector<std::valarray<int>> &list_of_points, const std::valarray<int> &direction);
@@ -38,28 +44,21 @@ class FilledPattern : public FillingConfig{
                                     const std::vector<std::valarray<int>> &list_of_displacements,
                                     const std::valarray<int> &previous_step);
 
-    std::vector<std::valarray<int>> findAllFillablePoints();
-
-    std::valarray<double>
-    getNewStep(std::valarray<double> &real_coordinates, int &length, std::valarray<double> &previous_move);
-
-    bool
-    tryGeneratingPathWithLength(Path &current_path, std::valarray<double> &positions, std::valarray<double> &previous_step,
-                                int length);
-
-    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction);
+    std::vector<std::valarray<int>> findAllFillablePoints() const;
 
     std::vector<std::valarray<int>> findRemainingFillablePointsInList(
             std::vector<std::valarray<int>> &list_of_points) const;
 
     std::vector<std::valarray<int>> findInitialStartingPoints(fillingMethod method);
 
-    std::mt19937 random_engine;
-    std::uniform_int_distribution<unsigned int> distribution;
-    std::uniform_int_distribution<int> x_distribution;
-    std::uniform_int_distribution<int> y_distribution;
+    std::valarray<double>
+    getNewStep(std::valarray<double> &real_coordinates, int &length, std::valarray<double> &previous_move) const;
 
-    std::valarray<double> getDirector(const std::valarray<int> &positions);
+    bool
+    tryGeneratingPathWithLength(Path &current_path, std::valarray<double> &positions, std::valarray<double> &previous_step,
+                                int length);
+
+    std::valarray<double> getDirector(const std::valarray<int> &positions) const;
 
     std::vector<std::valarray<int>>
     getSpacedLine(const double &distance, const std::vector<std::valarray<int>> &line);
@@ -73,9 +72,9 @@ class FilledPattern : public FillingConfig{
 
 public:
     bool is_filling_method_random = true;
+    std::reference_wrapper<const DesiredPattern> desired_pattern;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
-    const DesiredPattern &desired_pattern;
 
     std::vector<std::valarray<int>> points_to_fill;
     std::vector<std::valarray<int>> collision_list;
