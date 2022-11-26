@@ -101,5 +101,6 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     QuantifiedConfig optimised_pattern(pattern, best_point);
 
     exportPatternToDirectory(optimised_pattern.getFilledPattern(), pattern_path);
+    optimised_pattern.getConfig().exportConfig(pattern_path / "results" / "best_config.txt");
     printf("Multi-thread execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
 }
