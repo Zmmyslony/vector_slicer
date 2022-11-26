@@ -182,7 +182,7 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
 }
 
 
-FillingConfig::FillingConfig(fs::path &config_path) {
+FillingConfig::FillingConfig(const fs::path &config_path) {
     std::string line;
     std::ifstream file(config_path.string());
 

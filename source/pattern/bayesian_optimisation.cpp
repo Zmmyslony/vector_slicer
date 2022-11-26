@@ -77,7 +77,7 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
-    DisagreementWeights default_weights(10, 1, 8, 1, 100, 2, 10, 2);
+    DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
 
     QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
@@ -103,4 +103,23 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     exportPatternToDirectory(optimised_pattern.getFilledPattern(), pattern_path);
     optimised_pattern.getConfig().exportConfig(pattern_path / "results" / "best_config.txt");
     printf("Multi-thread execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
+}
+
+void calculatePattern(const fs::path &pattern_path, const fs::path &config_path) {
+    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
+
+    FillingConfig best_config(config_path);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
+    DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
+
+    QuantifiedConfig pattern(desired_pattern, best_config, default_weights);
+    pattern.evaluate();
+
+    exportPatternToDirectory(pattern.getFilledPattern(), pattern_path);
+    pattern.getConfig().exportConfig(pattern_path / "results" / "best_config.txt");
+}
+
+void recalculateBestConfig(const fs::path &pattern_path) {
+    fs::path config_path = pattern_path / "results" / "best_config.txt";
+    calculatePattern(pattern_path, config_path);
 }

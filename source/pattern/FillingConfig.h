@@ -61,7 +61,7 @@ public:
     unsigned int getSeed() const;
 
 
-    explicit FillingConfig(fs::path &config_path);
+    explicit FillingConfig(const fs::path &config_path);
 
     FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                   int new_starting_point_separation, double new_repulsion, int new_step_length,
