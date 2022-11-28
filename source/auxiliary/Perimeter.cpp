@@ -21,7 +21,7 @@
 
 std::vector<std::valarray<int>> generatePerimeterList(double radius) {
     std::vector<std::valarray<int>> perimeter_list;
-    int range = (int)radius + 1;
+    int range = (int) radius + 1;
     for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
             if (floor(sqrt(i * i + j * j) - radius) == 0) {
@@ -46,7 +46,8 @@ bool isEmpty(const std::valarray<int> &position, const std::vector<std::vector<i
 
 std::valarray<double>
 getRepulsionValue(std::vector<std::vector<int>> &filled_table, std::vector<std::valarray<int>> &checked_area,
-                  const std::valarray<int> &start_positions, const std::valarray<int> &sizes, double repulsion_coefficient) {
+                  const std::valarray<int> &start_positions, const std::valarray<int> &sizes,
+                  double repulsion_coefficient) {
 
     std::valarray<double> attraction = {0, 0};
     int number_of_empty_spots = 0;
@@ -63,10 +64,15 @@ getRepulsionValue(std::vector<std::vector<int>> &filled_table, std::vector<std::
     return -repulsion_coefficient * attraction / number_of_empty_spots;
 }
 
-bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                     const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
-                     const std::valarray<int> &sizes) {
-    if (shape_table[start_positions[0]][start_positions[1]] == 0 || filled_table[start_positions[0]][start_positions[1]] > 0) {
+bool
+isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
+                const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
+                const std::valarray<int> &sizes) {
+    if (!isInRange(start_positions, sizes)) {
+        return false;
+    }
+    if (shape_table[start_positions[0]][start_positions[1]] == 0 ||
+        filled_table[start_positions[0]][start_positions[1]] > 0) {
         return false;
     }
     for (auto &perimeter: perimeter_list) {
@@ -147,7 +153,8 @@ std::valarray<int> findClosestNeighbour(std::vector<std::valarray<int>> &array, 
 }
 
 
-std::vector<std::valarray<int>> sortPerimeters(std::vector<std::valarray<int>> &unsorted_perimeters, int starting_index) {
+std::vector<std::valarray<int>>
+sortPerimeters(std::vector<std::valarray<int>> &unsorted_perimeters, int starting_index) {
     std::valarray<int> current_element = unsorted_perimeters[starting_index];
     removeElement(unsorted_perimeters, starting_index);
 
