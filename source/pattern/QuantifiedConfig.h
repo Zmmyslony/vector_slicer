@@ -59,6 +59,10 @@ public:
     DesiredPattern getDesiredPattern();
 
     FillingConfig getConfig() const;
+
+    QuantifiedConfig findBestSeed(int seeds, int threads);
+
+    void printDisagreement();
 };
 
 

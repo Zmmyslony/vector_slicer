@@ -70,6 +70,29 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
     export3DVectorToFile(sorted_paths, results_directory, "best_paths");
 }
 
+
+void generalOptimiser(int seeds, int threads, const DesiredPattern& desired_pattern, DisagreementWeights disagreement_weights, FillingConfig filling_config, bayesopt::Parameters optimisation_parameters) {
+
+    QuantifiedConfig pattern(desired_pattern, filling_config, disagreement_weights);
+    BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters));
+    vectord best_config(3);
+    vectord lower_bound(3);
+    vectord upper_bound(3);
+    lower_bound[0] = 0; // Min repulsion
+    lower_bound[1] = 0; // Min collision radius
+    lower_bound[2] = pattern.getConfig().getPrintRadius() * 0.5; // Min starting point separation
+
+    upper_bound[0] = 2;
+    upper_bound[1] = pattern.getConfig().getPrintRadius() * 1.5;
+    upper_bound[2] = pattern.getConfig().getPrintRadius() * 3;
+
+    pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
+    pattern_optimisation.optimize(best_config);
+
+    QuantifiedConfig optimised_pattern(pattern, best_config);
+}
+
+
 void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     time_t start_time = clock();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
@@ -77,31 +100,38 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
-    DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
+    DisagreementWeights default_weights(40, 2,
+                                        10, 2,
+                                        30, 2,
+                                        0.05, 2);
 
     QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
     bayesopt::Parameters parameters;
-    parameters.l_type = L_MCMC;
+//    parameters.l_type = L_MCMC;
+    parameters.l_type = L_EMPIRICAL;
+    parameters.noise = 1e-2;
     BayesianOptimisation pattern_optimisation(pattern, threads, seeds, parameters);
-    vectord best_point(3);
+    vectord best_config(3);
     vectord lower_bound(3);
     vectord upper_bound(3);
     lower_bound[0] = 0; // Min repulsion
-    lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = 0; // Min starting point separation
+    lower_bound[1] = 1; // Min collision radius
+    lower_bound[2] = 1; // Min starting point separation
 
     upper_bound[0] = 2;
-    upper_bound[1] = pattern.getConfig().getPrintRadius() * 1.5;
+    upper_bound[1] = pattern.getConfig().getPrintRadius() * 2;
     upper_bound[2] = pattern.getConfig().getPrintRadius() * 3;
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
-    pattern_optimisation.optimize(best_point);
+    pattern_optimisation.optimize(best_config);
 
-    QuantifiedConfig optimised_pattern(pattern, best_point);
+    QuantifiedConfig best_pattern = QuantifiedConfig(pattern, best_config).findBestSeed(100, 8);
 
-    exportPatternToDirectory(optimised_pattern.getFilledPattern(), pattern_path);
-    optimised_pattern.getConfig().exportConfig(pattern_path / "results" / "best_config.txt");
+    exportPatternToDirectory(best_pattern.getFilledPattern(), pattern_path);
+    best_pattern.getConfig().exportConfig(pattern_path);
+    best_pattern.getConfig().printConfig();
+    best_pattern.printDisagreement();
     printf("Multi-thread execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
 }
 
