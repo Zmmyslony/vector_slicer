@@ -97,30 +97,34 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     time_t start_time = clock();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     fs::path config_path = pattern_path / "config.txt";
+    fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
     DisagreementWeights default_weights(40, 2,
-                                        10, 2,
+                                        8, 2,
                                         30, 2,
                                         0.05, 2);
 
     QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
     bayesopt::Parameters parameters;
-//    parameters.l_type = L_MCMC;
-    parameters.l_type = L_EMPIRICAL;
-    parameters.noise = 1e-2;
+    parameters.l_type = L_MCMC;
+    parameters.n_iterations = 100;
+//    parameters.l_type = L_EMPIRICAL;
+    parameters.noise = 1e-3;
+    parameters.n_iter_relearn = 20;
+    parameters.log_filename = optimisation_log_path.string();
     BayesianOptimisation pattern_optimisation(pattern, threads, seeds, parameters);
     vectord best_config(3);
     vectord lower_bound(3);
     vectord upper_bound(3);
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = 1; // Min starting point separation
+    lower_bound[2] = pattern.getConfig().getPrintRadius(); // Min starting point separation
 
     upper_bound[0] = 2;
-    upper_bound[1] = pattern.getConfig().getPrintRadius() * 2;
+    upper_bound[1] = pattern.getConfig().getPrintRadius() + 1;
     upper_bound[2] = pattern.getConfig().getPrintRadius() * 3;
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);

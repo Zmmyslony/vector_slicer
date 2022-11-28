@@ -37,36 +37,23 @@ std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path) {
     return patterns;
 }
 
-//std::vector<int> readConfig(const std::string &filename) {
-//    std::vector<std::vector<int>> table = readFileToTableInt(filename);
-//    std::vector<int> config_row = table[0];
-//    return config_row;
-//}
-
 
 int main() {
     printf("\n\tVector slicer version %.1f.\n", VERSION);
     fs::path cwd = boost::dll::program_location().parent_path();
     fs::path results = cwd.parent_path() / "results";
-//    fs::path config_path = results / "config.txt";
-//    fs::path optimizer_path = results / "optimizationSequence.txt";
     fs::path patterns_path = results / "filesToTest.txt";
 
-//    std::vector<int> config = readConfig(config_path.string());
     std::vector<fs::path> patterns = getPatterns(patterns_path);
 
     printf("\nTested patterns: \n");
     for (auto &pattern_type: patterns) {
         std::cout << "\t" << pattern_type << std::endl;
     }
-//    printf("Testing seeds from %d to %d using %d threads.\n", config[0], config[1], config[2]);
 
     for (auto &pattern_type: patterns) {
         try {
-//            generalFinderString(pattern_type, config[0], config[1], config[2], optimizer_path.string());
-            generalFinder(pattern_type, 8, 8);
-
-            //            recalculateBestConfig(pattern_type);
+            generalFinder(pattern_type, 24, 8);
         }
         catch (std::runtime_error &error) {
             std::cout << error.what() << std::endl;
