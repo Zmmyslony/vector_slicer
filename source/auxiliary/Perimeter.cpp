@@ -66,7 +66,7 @@ getRepulsionValue(std::vector<std::vector<int>> &filled_table, std::vector<std::
 bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
                      const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
                      const std::valarray<int> &sizes) {
-    if (shape_table[start_positions[0]][start_positions[1]] == 0) {
+    if (shape_table[start_positions[0]][start_positions[1]] == 0 || filled_table[start_positions[0]][start_positions[1]] > 0) {
         return false;
     }
     for (auto &perimeter: perimeter_list) {
