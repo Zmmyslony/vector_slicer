@@ -25,6 +25,8 @@ stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<s
 
 double mean(const std::vector<double> &data);
 
+double standard_deviation(const std::vector<double> &data);
+
 
 
 #endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

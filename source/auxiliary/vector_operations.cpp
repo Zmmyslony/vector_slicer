@@ -35,3 +35,14 @@ double mean(const std::vector<double> &data) {
     return mean;
 }
 
+double standard_deviation(const std::vector<double> &data) {
+    double mean_value = mean(data);
+    long double variance_sum = 0;
+    for (auto &element : data) {
+        long double difference = element - mean_value;
+        variance_sum +=  difference * difference;
+    }
+    auto standard_deviation = (double)(sqrt(variance_sum) / data.size());
+    return standard_deviation;
+}
+
