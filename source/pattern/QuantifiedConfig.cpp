@@ -81,7 +81,7 @@ double QuantifiedConfig::calculateAverageOverlap() {
         for (int j = 0; j < y_size; j++) {
             if (number_of_times_filled[i][j] > 0) {
                 total_overlap += number_of_times_filled[i][j] - 1;
-                total_filled_elements ++;
+                total_filled_elements++;
             }
         }
     }
@@ -179,9 +179,8 @@ DesiredPattern QuantifiedConfig::getDesiredPattern() {
 }
 
 
-
 FilledPattern QuantifiedConfig::getFilledPattern() {
-    return FilledPattern((FilledPattern)*this);
+    return FilledPattern((FilledPattern) *this);
 }
 
 double QuantifiedConfig::getDisagreement(int seeds, int threads) {
@@ -212,7 +211,8 @@ QuantifiedConfig QuantifiedConfig::findBestSeed(int seeds, int threads) {
         configs_with_various_seeds[i].evaluate();
         disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
-    int min_element_index = std::distance(std::begin(disagreements), std::min_element(std::begin(disagreements), std::end(disagreements)));
+    int min_element_index = std::distance(std::begin(disagreements),
+                                          std::min_element(std::begin(disagreements), std::end(disagreements)));
 
     return configs_with_various_seeds[min_element_index];
 }
