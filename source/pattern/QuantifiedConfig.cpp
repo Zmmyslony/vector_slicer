@@ -195,7 +195,8 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads) {
         configs_with_various_seeds[i].evaluate();
         disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
-
+    std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standard_deviation(disagreements)
+              << ", noise " << standard_deviation(disagreements) / mean(disagreements) << std::endl;
     return mean(disagreements);
 }
 
