@@ -147,11 +147,11 @@ void QuantifiedConfig::printDisagreement() {
 
     stream << std::endl;
     stream << "Total disagreement " << disagreement << std::endl;
-    stream << "\tType \t\tValue \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spot_disagreement << "\t" << empty_spot_disagreement / disagreement * 100 << std::endl;
-    stream << "\tOverlap\t\t" << overlap_disagreement << "\t" << overlap_disagreement / disagreement * 100 << std::endl;
-    stream << "\tDirector\t" << director_disagreement_value << "\t" << director_disagreement_value / disagreement * 100 << std::endl;
-    stream << "\tPath\t\t" << path_disagreement << "\t" << path_disagreement / disagreement * 100 << std::endl;
+    stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
+    stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t" << empty_spot_disagreement / disagreement * 100 << std::endl;
+    stream << "\tOverlap\t\t" << average_overlap << "\t" << overlap_disagreement << "\t" << overlap_disagreement / disagreement * 100 << std::endl;
+    stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t" << director_disagreement_value / disagreement * 100 << std::endl;
+    stream << "\tPath\t\t" << number_of_paths << "\t" << path_disagreement << "\t" << path_disagreement / disagreement * 100 << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
