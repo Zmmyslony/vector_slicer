@@ -29,21 +29,22 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edge_
 }
 
 
-bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edge_first,
-                   std::valarray<double> &edge_second, std::valarray<double> &edge_third,
-                   std::valarray<double> &edge_fourth) {
+bool isInRectangle(const std::valarray<int> &point, const std::valarray<double> &edge_first,
+                   const std::valarray<double> &edge_second, const std::valarray<double> &edge_third,
+                   const std::valarray<double> &edge_fourth) {
     bool is_on_left_of_first_edge = isOnTheLeftSideOfEdge(point, edge_first, edge_second);
     bool is_on_left_of_second_edge = isOnTheLeftSideOfEdge(point, edge_second, edge_third);
     bool is_on_left_of_third_edge = isOnTheLeftSideOfEdge(point, edge_third, edge_fourth);
     bool is_on_left_of_fourth_edge = isOnTheLeftSideOfEdge(point, edge_fourth, edge_first);
 
-    return (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge && is_on_left_of_fourth_edge);
+    return (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge &&
+            is_on_left_of_fourth_edge);
 }
 
 
 double minValue(const std::vector<double> &values) {
     double min_value = DBL_MAX;
-    for (auto &current_value : values) {
+    for (auto &current_value: values) {
         if (current_value < min_value) {
             min_value = current_value;
         }
@@ -53,7 +54,7 @@ double minValue(const std::vector<double> &values) {
 
 double maxValue(const std::vector<double> &values) {
     double max_value = DBL_MIN;
-    for (auto &current_value : values) {
+    for (auto &current_value: values) {
         if (current_value > max_value) {
             max_value = current_value;
         }
@@ -62,24 +63,14 @@ double maxValue(const std::vector<double> &values) {
 }
 
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
-                                                 const std::valarray<int> &point_second, double radius) {
-    std::valarray<double> point_first_double = itodArray(point_first);
-    std::valarray<double> point_second_double = itodArray(point_second);
-
-    std::valarray<double> connecting_vector = normalize(point_second_double - point_first_double);
-    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
-
-    std::valarray<double> first_edge = point_first_double + perpendicular_vector + 0.5 * connecting_vector;
-    std::valarray<double> second_edge = point_second_double + perpendicular_vector;
-    std::valarray<double> third_edge = point_second_double - perpendicular_vector;
-    std::valarray<double> fourth_edge = point_first_double - perpendicular_vector + 0.5 * connecting_vector;
-
-
-    int x_min = (int)minValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]});
-    int x_max = (int)maxValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]}) + 1;
-    int y_max = (int)maxValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]}) + 1;
-    int y_min = (int)minValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]});
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<double> &first_edge,
+                                                 const std::valarray<double> &second_edge,
+                                                 const std::valarray<double> &third_edge,
+                                                 const std::valarray<double> &fourth_edge) {
+    int x_min = (int) minValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]});
+    int x_max = (int) maxValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]}) + 1;
+    int y_max = (int) maxValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]}) + 1;
+    int y_min = (int) minValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]});
 
     std::vector<std::valarray<int>> points_to_fill;
 
@@ -107,11 +98,48 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point
     return points_to_fill;
 }
 
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_current,
+                                                 const std::valarray<int> &point_next, double radius) {
+    std::valarray<double> point_current_double = itodArray(point_current);
+    std::valarray<double> point_next_double = itodArray(point_next);
+
+    std::valarray<double> connecting_vector = normalize(point_next - point_current);
+    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
+
+    std::valarray<double> first_edge = point_current_double + perpendicular_vector + 0.5 * connecting_vector;
+    std::valarray<double> second_edge = point_next_double + perpendicular_vector;
+    std::valarray<double> third_edge = point_next_double - perpendicular_vector;
+    std::valarray<double> fourth_edge = point_current_double - perpendicular_vector + 0.5 * connecting_vector;
+
+    return findPointsToFill(first_edge, second_edge, third_edge, fourth_edge);
+}
+
+std::vector<std::valarray<int>>
+findPointsToFill(const std::valarray<int> &point_previous, const std::valarray<int> &point_current,
+                 const std::valarray<int> &point_next, double radius, double offset) {
+    std::valarray<double> point_previous_double = itodArray(point_previous);
+    std::valarray<double> point_current_double = itodArray(point_current);
+    std::valarray<double> point_next_double = itodArray(point_next);
+
+    std::valarray<double> previous_connecting_vector = normalize(point_current - point_previous);
+    std::valarray<double> previous_perpendicular_vector = {previous_connecting_vector[1] * radius, -previous_connecting_vector[0] * radius};
+
+    std::valarray<double> connecting_vector = normalize(point_next - point_current);
+    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
+
+    std::valarray<double> first_edge = point_current_double + previous_perpendicular_vector + offset * previous_connecting_vector;
+    std::valarray<double> second_edge = point_next_double + perpendicular_vector;
+    std::valarray<double> third_edge = point_next_double - perpendicular_vector;
+    std::valarray<double> fourth_edge = point_current_double - previous_perpendicular_vector + offset * previous_connecting_vector;
+
+    return findPointsToFill(first_edge, second_edge, third_edge, fourth_edge);
+}
+
 
 std::vector<std::valarray<int>> findPointsInCircle(double radius) {
     std::vector<std::valarray<int>> points_in_circle;
-    int range = (int)radius + 1;
-    for (int i = -range ; i <= range; i++) {
+    int range = (int) radius + 1;
+    for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
             if (i * i + j * j <= radius * radius) {
                 points_in_circle.push_back({i, j});
@@ -136,7 +164,7 @@ findHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &p
 
     std::vector<std::valarray<int>> points_to_fill;
 
-    int int_radius = (int)radius + 1;
+    int int_radius = (int) radius + 1;
     for (int x_displacement = -int_radius; x_displacement < int_radius; x_displacement++) {
         for (int y_displacement = -int_radius; y_displacement < int_radius; y_displacement++) {
             std::valarray<int> displacement = {x_displacement, y_displacement};
@@ -154,5 +182,5 @@ findHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &p
 
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius) {
-    return findPointsInCircle((double)radius);
+    return findPointsInCircle((double) radius);
 }

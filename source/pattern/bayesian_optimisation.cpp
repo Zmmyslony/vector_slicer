@@ -10,18 +10,6 @@
 //
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-// 2022, Michał Zmyślony, mlz22@cam.ac.uk.
-//
-// Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
-//
-// This file is part of Vector Slicer.
-//
-// Vector Slicer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-//
-// Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
-
 //
 // Created by Michał Zmyślony on 21/11/2022.
 //
@@ -39,15 +27,15 @@ namespace fs = boost::filesystem;
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
                                            bayesopt::Parameters parameters) :
-        ContinuousModel(3, std::move(parameters)),
+        ContinuousModel(4, std::move(parameters)),
         problem(std::move(problem)),
         threads(threads),
         seeds(seeds) {}
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
-    if (x_in.size() != 3) {
-        std::cout << "WARNING: This only works for 3D inputs." << std::endl
+    if (x_in.size() != 4) {
+        std::cout << "WARNING: This only works for 4D inputs." << std::endl
                   << "WARNING: Using only first three components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in);
@@ -109,6 +97,7 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
     bayesopt::Parameters parameters;
+    parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
     parameters.n_iterations = 100;
 //    parameters.l_type = L_EMPIRICAL;
@@ -116,16 +105,20 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     parameters.n_iter_relearn = 20;
     parameters.log_filename = optimisation_log_path.string();
     BayesianOptimisation pattern_optimisation(pattern, threads, seeds, parameters);
-    vectord best_config(3);
-    vectord lower_bound(3);
-    vectord upper_bound(3);
+    vectord best_config(4);
+    vectord lower_bound(4);
+    vectord upper_bound(4);
+    double print_radius = pattern.getConfig().getPrintRadius();
+
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = pattern.getConfig().getPrintRadius(); // Min starting point separation
+    lower_bound[2] = print_radius; // Min starting point separation
+    lower_bound[3] = 0; // Repulsion radius
 
-    upper_bound[0] = 2;
-    upper_bound[1] = pattern.getConfig().getPrintRadius() + 1;
-    upper_bound[2] = pattern.getConfig().getPrintRadius() * 3;
+    upper_bound[0] = 4;
+    upper_bound[1] = print_radius + 1;
+    upper_bound[2] = print_radius * 3;
+    upper_bound[3] = print_radius;
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
     pattern_optimisation.optimize(best_config);

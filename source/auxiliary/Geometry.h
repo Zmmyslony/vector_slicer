@@ -22,8 +22,12 @@
 #include <valarray>
 #include <algorithm>
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
-                                                 const std::valarray<int> &point_second, double radius);
+std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_current,
+                                                 const std::valarray<int> &point_next, double radius);
+
+std::vector<std::valarray<int>>
+findPointsToFill(const std::valarray<int> &point_previous, const std::valarray<int> &point_current,
+                 const std::valarray<int> &point_next, double radius, double offset);
 
 std::vector<std::valarray<int>> findPointsInCircle(double radius);
 

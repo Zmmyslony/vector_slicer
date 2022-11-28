@@ -28,7 +28,7 @@ enum fillingMethod {
     ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial
 };
 enum configOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed
+    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
 };
 
 
@@ -40,6 +40,7 @@ class FillingConfig {
     double starting_point_separation;
     double print_radius;
     unsigned int seed;
+    double repulsion_radius;
 
     void readLineOfConfig(std::vector<std::string> line);
 
@@ -60,12 +61,15 @@ public:
 
     unsigned int getSeed() const;
 
+    double getRepulsionRadius() const;
+
+    explicit FillingConfig();
 
     explicit FillingConfig(const fs::path &config_path);
 
     FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                   int new_starting_point_separation, double new_repulsion, int new_step_length,
-                  int new_print_radius, unsigned int new_seed);
+                  int new_print_radius, double new_repulsion_radius, unsigned int new_seed);
 
 
     void exportConfig(const fs::path &directory);

@@ -29,7 +29,8 @@ class FilledPattern : public FillingConfig{
 //    bool isPerimeterSearchOn = true;
 
     std::vector<Path> sequence_of_paths;
-    std::vector<std::valarray<int>> points_in_circle;
+    std::vector<std::valarray<int>> print_circle;
+    std::vector<std::valarray<int>> repulsion_circle;
     std::mt19937 random_engine;
     std::uniform_int_distribution<unsigned int> distribution;
     std::uniform_int_distribution<int> x_distribution;

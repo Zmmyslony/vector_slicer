@@ -37,12 +37,13 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
         QuantifiedConfig(template_config) {
-    if (parameters.size() != 3) {
-        throw std::runtime_error("Config options can only be set with 3D vectors.");
+    if (parameters.size() != 4) {
+        throw std::runtime_error("Config options can only be set with 4D vectors.");
     }
     setConfigOption(Repulsion, std::to_string(parameters[0]));
     setConfigOption(CollisionRadius, std::to_string(parameters[1]));
     setConfigOption(StartingPointSeparation, std::to_string(parameters[2]));
+    setConfigOption(RepulsionRadius, std::to_string(parameters[3]));
 }
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, int seed) :
