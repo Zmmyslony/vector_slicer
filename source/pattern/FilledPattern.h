@@ -107,6 +107,9 @@ public:
     void fillPointsInHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point);
 
     std::valarray<int> findPointInShape();
+
+    bool isFilled(const std::valarray<int> &coordinates);
+
 };
 
 

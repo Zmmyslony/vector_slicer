@@ -25,7 +25,7 @@ bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edge_
                            std::valarray<double> edge_second) {
     int sign = (int) ((edge_second[0] - edge_first[0]) * (point[1] - edge_first[1]) -
                       (point[0] - edge_first[0]) * (edge_second[1] - edge_first[1]));
-    return (sign > 0);
+    return (sign >= 0);
 }
 
 
@@ -70,10 +70,10 @@ std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point
     std::valarray<double> connecting_vector = normalize(point_second_double - point_first_double);
     std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
 
-    std::valarray<double> first_edge = point_first_double + perpendicular_vector - 0.5 * connecting_vector;
+    std::valarray<double> first_edge = point_first_double + perpendicular_vector + 0.5 * connecting_vector;
     std::valarray<double> second_edge = point_second_double + perpendicular_vector;
     std::valarray<double> third_edge = point_second_double - perpendicular_vector;
-    std::valarray<double> fourth_edge = point_first_double - perpendicular_vector - 0.5 * connecting_vector;
+    std::valarray<double> fourth_edge = point_first_double - perpendicular_vector + 0.5 * connecting_vector;
 
 
     int x_min = (int)minValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]});
@@ -122,16 +122,17 @@ std::vector<std::valarray<int>> findPointsInCircle(double radius) {
 }
 
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
-                                               const std::valarray<int> &previous_point, double radius) {
+std::vector<std::valarray<int>>
+findHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point, double radius,
+               double offset_factor) {
     std::valarray<double> last_point_double = itodArray(last_point);
     std::valarray<double> point_second_double = itodArray(previous_point);
 
     std::valarray<double> connecting_vector = normalize(point_second_double - last_point_double);
     std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
 
-    std::valarray<double> first_corner = perpendicular_vector - 0.5 * connecting_vector;
-    std::valarray<double> second_corner = -perpendicular_vector - 0.5 * connecting_vector;
+    std::valarray<double> first_corner = perpendicular_vector - offset_factor * connecting_vector;
+    std::valarray<double> second_corner = -perpendicular_vector - offset_factor * connecting_vector;
 
     std::vector<std::valarray<int>> points_to_fill;
 

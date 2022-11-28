@@ -29,7 +29,8 @@ std::vector<std::valarray<int>> findPointsInCircle(double radius);
 
 std::vector<std::valarray<int>> findPointsInCircle(int radius);
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
-                                               const std::valarray<int> &previous_point, double radius);
+std::vector<std::valarray<int>>
+findHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point, double radius,
+               double offset_factor);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

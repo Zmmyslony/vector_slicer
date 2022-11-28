@@ -223,8 +223,14 @@ void FilledPattern::fillPointsInCircle(const std::valarray<int> &starting_coordi
 
 void
 FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point) {
-    std::vector<std::valarray<int>> half_circle_points = findHalfCircle(last_point, previous_point,
-                                                                        getPrintRadius());
+    std::vector<std::valarray<int>> half_circle_points;
+    if (isFilled(last_point)) {
+        half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(), 0.5);
+    }
+    else {
+        half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(), 0);
+    }
+
     fillPointsFromList(half_circle_points, previous_point - last_point);
 }
 
@@ -380,6 +386,10 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(filling
             break;
     }
     return starting_points;
+}
+
+bool FilledPattern::isFilled(const std::valarray<int> &coordinates) {
+    return number_of_times_filled[coordinates[0]][coordinates[1]];
 }
 
 
