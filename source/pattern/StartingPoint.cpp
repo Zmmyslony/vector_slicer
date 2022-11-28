@@ -35,14 +35,17 @@ void StartingPoint::findStartPointFullyRandomly(FilledPattern &pattern) {
     }
 }
 
+bool isPerimeterFree(const FilledPattern &pattern, const std::valarray<int> &positions) {
+    return isPerimeterFree(pattern.number_of_times_filled, pattern.desired_pattern.get().getShapeMatrix(),
+                           pattern.collision_list, positions, pattern.desired_pattern.get().getDimensions());
+}
 
 void StartingPoint::findStartPointSemiRandomly(FilledPattern &pattern) {
     tries++;
     unsigned int element = pattern.getNewElement();
     positions = pattern.points_to_fill[element];
 
-    if (isPerimeterFree(pattern.number_of_times_filled, pattern.desired_pattern.get().getShapeMatrix(),
-                        pattern.collision_list, positions, pattern.desired_pattern.get().getDimensions())) {
+    if (isPerimeterFree(pattern, positions)) {
         is_starting_point_found = true;
     }
 }
@@ -66,8 +69,7 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 void StartingPoint::lookForAPoint(FilledPattern &pattern) {
     if (pattern.search_stage == FullyRandomPointSelection) {
         findStartPointFullyRandomly(pattern);
-    }
-    else if (pattern.is_filling_method_random) {
+    } else if (pattern.is_filling_method_random) {
         findStartPointSemiRandomly(pattern);
     } else {
         findStartPointConsecutively(pattern);
@@ -105,8 +107,7 @@ std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
     while (!is_starting_point_found) {
         if (is_there_fillable_points_remaining) {
             trySearchingForAPoint(pattern);
-        }
-        else {
+        } else {
             positions = {-1, -1};
             return positions;
         }
