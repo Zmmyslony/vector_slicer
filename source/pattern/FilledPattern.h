@@ -88,6 +88,8 @@ public:
 
     FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
 
+    void setup();
+
     void addNewPath(Path &new_path);
 
     void updateSearchStageAndFillablePoints();

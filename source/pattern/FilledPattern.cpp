@@ -32,26 +32,29 @@
 FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
         desired_pattern(std::cref(new_desired_pattern)),
         FillingConfig(new_config) {
-    number_of_times_filled = std::vector<std::vector<int>>(new_desired_pattern.getDimensions()[0],
-                                                           std::vector<int>(new_desired_pattern.getDimensions()[1]));
-    x_field_filled = std::vector<std::vector<double>>(new_desired_pattern.getDimensions()[0],
-                                                      std::vector<double>(new_desired_pattern.getDimensions()[1]));
-    y_field_filled = std::vector<std::vector<double>>(new_desired_pattern.getDimensions()[0],
-                                                      std::vector<double>(new_desired_pattern.getDimensions()[1]));
+    int x_dim = desired_pattern.get().getDimensions()[0];
+    int y_dim = desired_pattern.get().getDimensions()[1];
+
+    number_of_times_filled = std::vector<std::vector<int>>(x_dim, std::vector<int>(y_dim));
+    x_field_filled = std::vector<std::vector<double>>(x_dim, std::vector<double>(y_dim));
+    y_field_filled = std::vector<std::vector<double>>(x_dim, std::vector<double>(y_dim));
+    x_distribution = std::uniform_int_distribution<int>(0, x_dim - 1);
+    y_distribution = std::uniform_int_distribution<int>(0, y_dim - 1);
+    setup();
+}
+
+void FilledPattern::setup() {
+    points_in_circle = findPointsInCircle(getPrintRadius());
+    points_to_fill = findInitialStartingPoints(getInitialFillingMethod());
     collision_list = generatePerimeterList(getCollisionRadius());
     random_engine = std::mt19937(getSeed());
-    points_in_circle = findPointsInCircle(getPrintRadius());
-    x_distribution = std::uniform_int_distribution<int>(0, desired_pattern.get().getDimensions()[0] - 1);
-    y_distribution = std::uniform_int_distribution<int>(0, desired_pattern.get().getDimensions()[1] - 1);
-    points_to_fill = findInitialStartingPoints(getInitialFillingMethod());
     unsigned int number_of_fillable_points = points_to_fill.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, number_of_fillable_points - 1);
 }
 
 
 FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius,
-                             int step_length,
-                             unsigned int seed) :
+                             int step_length, unsigned int seed) :
         FilledPattern(desired_pattern,
                       FillingConfig(RandomPerimeter, collision_radius, 2 * print_radius, 1.0, step_length, print_radius,
                                     seed)) {
