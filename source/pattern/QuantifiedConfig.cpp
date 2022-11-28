@@ -140,7 +140,7 @@ void QuantifiedConfig::evaluate() {
 
 void QuantifiedConfig::printDisagreement() {
     double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
-    double overlap_disagreement =overlap_weight * pow(average_overlap, overlap_exponent);
+    double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
     double path_disagreement = path_weight * pow(number_of_paths, path_exponent);
 
@@ -150,10 +150,14 @@ void QuantifiedConfig::printDisagreement() {
     stream << std::endl;
     stream << "Total disagreement " << disagreement << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t" << empty_spot_disagreement / disagreement * 100 << std::endl;
-    stream << "\tOverlap\t\t" << average_overlap << "\t" << overlap_disagreement << "\t" << overlap_disagreement / disagreement * 100 << std::endl;
-    stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t" << director_disagreement_value / disagreement * 100 << std::endl;
-    stream << "\tPath\t\t" << number_of_paths << "\t" << path_disagreement << "\t" << path_disagreement / disagreement * 100 << std::endl;
+    stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t"
+           << empty_spot_disagreement / disagreement * 100 << std::endl;
+    stream << "\tOverlap\t\t" << average_overlap << "\t" << overlap_disagreement << "\t"
+           << overlap_disagreement / disagreement * 100 << std::endl;
+    stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
+           << director_disagreement_value / disagreement * 100 << std::endl;
+    stream << "\tPath\t\t" << number_of_paths << "\t" << path_disagreement << "\t"
+           << path_disagreement / disagreement * 100 << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
