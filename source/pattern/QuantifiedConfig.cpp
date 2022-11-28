@@ -72,18 +72,20 @@ double QuantifiedConfig::calculateEmptySpots() {
 
 
 double QuantifiedConfig::calculateAverageOverlap() {
-    int number_of_filled_times = 0;
+    int total_overlap = 0;
     int x_size = desired_pattern.get().getDimensions()[0];
     int y_size = desired_pattern.get().getDimensions()[1];
-    int number_of_elements = 0;
+    int total_filled_elements = 0;
 
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
-            number_of_filled_times += number_of_times_filled[i][j];
-            number_of_elements += desired_pattern.get().getShapeMatrix()[i][j];
+            if (number_of_times_filled[i][j] > 0) {
+                total_overlap += number_of_times_filled[i][j] - 1;
+                total_filled_elements ++;
+            }
         }
     }
-    return (double) number_of_filled_times / (double) number_of_elements - 1 + empty_spots;
+    return (double) total_overlap / (double) total_filled_elements;
 }
 
 double QuantifiedConfig::calculateDirectorDisagreement() {
