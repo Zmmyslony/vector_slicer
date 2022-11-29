@@ -21,24 +21,27 @@
 #include <tuple>
 #include <valarray>
 
-std::vector<std::valarray<int>> generatePerimeterList(double radius);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-std::valarray<double> getRepulsionValue(std::vector<std::vector<int>> &filled_table,
-                                        std::vector<std::valarray<int>> &checked_area,
-                                        const std::valarray<int> &start_positions,
-                                        const std::valarray<int> &sizes, double repulsion_coefficient);
+std::vector<vali> generatePerimeterList(double radius);
+
+vald getRepulsionValue(std::vector<std::vector<int>> &filled_table,
+                                        std::vector<vali> &checked_area,
+                                        const vali &start_positions,
+                                        const vali &sizes, double repulsion_coefficient);
 
 bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                     const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
-                     const std::valarray<int> &sizes);
+                     const std::vector<vali> &perimeter_list, const vali &start_positions,
+                     const vali &sizes);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const std::valarray<int> &start_positions,
-              const std::valarray<int> &sizes);
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &start_positions,
+              const vali &sizes);
 
-std::vector<std::valarray<int>>
-findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
+std::vector<vali>
+findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
 
-std::vector<std::valarray<int>>
-findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
+std::vector<vali>
+findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
 
 #endif //VECTOR_SLICER_PERIMETER_H
