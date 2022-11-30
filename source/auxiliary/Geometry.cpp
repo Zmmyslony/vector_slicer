@@ -46,11 +46,11 @@ bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &e
 
 bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
                    const vald &corner_fourth, bool is_exclusive) {
-    bool is_left_of_first_edge = isLeftOfEdge(point, corner_first, corner_second, false);
+    bool is_left_of_first_edge = isLeftOfEdge(point, corner_first, corner_second, is_exclusive);
     bool is_left_of_second_edge = isLeftOfEdge(point, corner_second, corner_third, false);
 
     bool is_left_of_third_edge = isLeftOfEdge(point, corner_third, corner_fourth, false);
-    bool is_left_of_fourth_edge = isLeftOfEdge(point, corner_fourth, corner_first, is_exclusive);
+    bool is_left_of_fourth_edge = isLeftOfEdge(point, corner_fourth, corner_first, false);
 
     return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
 }
