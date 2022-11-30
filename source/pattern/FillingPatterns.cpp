@@ -52,4 +52,5 @@ void fillWithPaths(FilledPattern &pattern) {
     while (is_there_any_spot_fillable) {
         is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
     }
+    pattern.removePoints();
 }

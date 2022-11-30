@@ -35,11 +35,16 @@ class FilledPattern : public FillingConfig{
     std::uniform_int_distribution<unsigned int> distribution;
     std::uniform_int_distribution<int> x_distribution;
     std::uniform_int_distribution<int> y_distribution;
+    std::vector<std::valarray<int>> list_of_points;
 
-    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction);
+    void fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction, int value);
 
     void
     fillPointsFromList(const std::vector<std::valarray<int>> &list_of_points, const std::valarray<int> &direction);
+
+    void fillPointsFromDisplacement(const std::valarray<int> &starting_position,
+                                    const std::vector<std::valarray<int>> &list_of_displacements,
+                                    const std::valarray<int> &previous_step, int value);
 
     void fillPointsFromDisplacement(const std::valarray<int> &starting_position,
                                     const std::vector<std::valarray<int>> &list_of_displacements,
@@ -96,6 +101,8 @@ public:
     void updateSearchStageAndFillablePoints();
 
     void fillPointsInCircle(const std::valarray<int> &starting_coordinates);
+
+    void removePoints();
 
     Path generateNewPathForDirection(std::valarray<int> &starting_coordinates, const std::valarray<int> &starting_step);
 

@@ -129,10 +129,11 @@ std::valarray<double> normalizeDirection(const std::valarray<int> &previous_step
 }
 
 
-void FilledPattern::fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction) {
-    number_of_times_filled[point[0]][point[1]] += 1;
-    x_field_filled[point[0]][point[1]] += normalized_direction[0];
-    y_field_filled[point[0]][point[1]] += normalized_direction[1];
+void FilledPattern::fillPoint(const std::valarray<int> &point, const std::valarray<double> &normalized_direction,
+                              int value) {
+    number_of_times_filled[point[0]][point[1]] += value;
+    x_field_filled[point[0]][point[1]] += normalized_direction[0] * value;
+    y_field_filled[point[0]][point[1]] += normalized_direction[1] * value;
 }
 
 
@@ -140,22 +141,28 @@ void FilledPattern::fillPointsFromList(const std::vector<std::valarray<int>> &li
                                        const std::valarray<int> &direction) {
     std::valarray<double> normalized_direction = normalizeDirection(direction);
     for (auto &point: list_of_points) {
-        fillPoint(point, normalized_direction);
+        fillPoint(point, normalized_direction, 1);
     }
 }
 
 
 void FilledPattern::fillPointsFromDisplacement(const std::valarray<int> &starting_position,
                                                const std::vector<std::valarray<int>> &list_of_displacements,
-                                               const std::valarray<int> &previous_step) {
+                                               const std::valarray<int> &previous_step, int value) {
     std::valarray<double> normalized_direction = normalizeDirection(previous_step);
     for (auto &displacement: list_of_displacements) {
         std::valarray<int> point = starting_position + displacement;
         if (point[0] >= 0 && point[0] < desired_pattern.get().getDimensions()[0] && point[1] >= 0 &&
             point[1] < desired_pattern.get().getDimensions()[1]) {
-            fillPoint(point, normalized_direction);
+            fillPoint(point, normalized_direction, value);
         }
     }
+}
+
+void FilledPattern::fillPointsFromDisplacement(const std::valarray<int> &starting_position,
+                                               const std::vector<std::valarray<int>> &list_of_displacements,
+                                               const std::valarray<int> &previous_step) {
+    fillPointsFromDisplacement(starting_position, list_of_displacements, previous_step, 1);
 }
 
 
@@ -227,6 +234,14 @@ Path FilledPattern::generateNewPathForDirection(std::valarray<int> &starting_coo
 
 void FilledPattern::fillPointsInCircle(const std::valarray<int> &starting_coordinates) {
     fillPointsFromDisplacement(starting_coordinates, print_circle, {1, 0});
+    list_of_points.push_back(starting_coordinates);
+}
+
+void FilledPattern::removePoints() {
+    for (auto &position: list_of_points) {
+        fillPointsFromDisplacement(position, print_circle, {1, 0}, -1);
+    }
+    list_of_points.clear();
 }
 
 void
@@ -250,6 +265,7 @@ std::vector<Path> FilledPattern::getSequenceOfPaths() {
 void FilledPattern::addNewPath(Path &new_path) {
     sequence_of_paths.push_back(new_path);
 }
+
 
 unsigned int FilledPattern::getNewElement() {
     return distribution(random_engine);
@@ -294,7 +310,6 @@ std::valarray<double> normalizedDualVector(const std::valarray<double> &vector) 
     return normalize(perpendicular(vector));
 }
 
-
 std::vector<std::valarray<int>>
 FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates,
                                         std::valarray<double> previous_dual_director) {
@@ -311,6 +326,7 @@ FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates,
     }
     return line;
 }
+
 
 std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
     std::valarray<double> real_coordinates = itod(start);
@@ -360,7 +376,6 @@ std::valarray<int> FilledPattern::findPointInShape() {
     }
     return std::valarray<int>{x_start, y_start};
 }
-
 
 std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(fillingMethod method) {
     std::vector<std::valarray<int>> starting_points;
