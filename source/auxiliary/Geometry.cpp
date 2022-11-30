@@ -34,40 +34,25 @@ bool isLeftOfEdgeExclusive(const vali &point, const vald &edge_point_first, cons
     return (cross_product > 0);
 }
 
-// Checks is the point is within the rectangle spanned by its four corners, in which the corners are ordered
-// in an anti-clock wise manner, and inclusive of points laying on the edges.
-bool
-isInRectangleInclusive(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
-                       const vald &corner_fourth) {
-    bool is_left_of_first_edge = isLeftOfEdgeInclusive(point, corner_first, corner_second);
-    bool is_left_of_second_edge = isLeftOfEdgeInclusive(point, corner_second, corner_third);
 
-    bool is_left_of_third_edge = isLeftOfEdgeInclusive(point, corner_third, corner_fourth);
-    bool is_left_of_fourth_edge = isLeftOfEdgeInclusive(point, corner_fourth, corner_first);
-
-    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
-}
-
-// Checks is the point is within the rectangle spanned by its four corners, in which the corners are ordered
-// in an anti-clock wise manner, and inclusive of points laying on the edges with the exception of the edge
-// spanned by first and second corners.
-bool
-isInRectangleExclusive(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
-                       const vald &corner_fourth) {
-    bool is_left_of_fourth_edge_exclusive = isLeftOfEdgeExclusive(point, corner_first, corner_second);
-
-    return (isInRectangleInclusive(point, corner_first, corner_second, corner_third, corner_fourth) &&
-            is_left_of_fourth_edge_exclusive);
+bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+    if (is_exclusive) {
+        return isLeftOfEdgeExclusive(point, edge_point_first, edge_point_second);
+    } else {
+        return isLeftOfEdgeInclusive(point, edge_point_first, edge_point_second);
+    }
 }
 
 
 bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
                    const vald &corner_fourth, bool is_exclusive) {
-    if (is_exclusive) {
-        return isInRectangleExclusive(point, corner_first, corner_second, corner_third, corner_fourth);
-    } else {
-        return isInRectangleInclusive(point, corner_first, corner_second, corner_third, corner_fourth);
-    }
+    bool is_left_of_first_edge = isLeftOfEdge(point, corner_first, corner_second, false);
+    bool is_left_of_second_edge = isLeftOfEdge(point, corner_second, corner_third, false);
+
+    bool is_left_of_third_edge = isLeftOfEdge(point, corner_third, corner_fourth, false);
+    bool is_left_of_fourth_edge = isLeftOfEdge(point, corner_fourth, corner_first, is_exclusive);
+
+    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
 }
 
 
@@ -137,24 +122,15 @@ findPointsToFill(const vali &point_previous, const vali &point_current, const va
 std::vector<vali>
 findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled) {
 
-    vald tangent = normalize(previous_point - last_point);
+    vald tangent = normalize(last_point - previous_point);
     vald normal = perpendicular(tangent) * radius;
 
-    vald first_corner = -normal;
-    vald second_corner = +normal;
-
     std::vector<vali> points_to_fill;
-
     int range = (int) radius + 1;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
             vali displacement = {x_displacement, y_displacement};
-            bool is_on_correct_side;
-            if (is_last_point_filled) {
-                is_on_correct_side = isLeftOfEdgeExclusive(displacement, first_corner, second_corner);
-            } else {
-                is_on_correct_side = isLeftOfEdgeInclusive(displacement, first_corner, second_corner);
-            }
+            bool is_on_correct_side = isLeftOfEdge(displacement, normal, -normal, is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
                 points_to_fill.push_back(displacement + last_point);
