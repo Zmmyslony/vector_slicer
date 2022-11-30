@@ -19,7 +19,9 @@
 
 #include "FilledPattern.h"
 #include "disagreement_weights.h"
+
 #include <boost/numeric/ublas/vector.hpp>
+#include <cfloat>
 
 typedef boost::numeric::ublas::vector<double> vectord;
 
