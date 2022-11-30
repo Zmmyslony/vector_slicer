@@ -376,7 +376,7 @@ std::vector<std::valarray<int>> FilledPattern::findInitialStartingPoints(filling
             starting_points = getSpacedLine(getStartingPointSeparation(), desired_pattern.get().getPerimeterList());
             is_filling_method_random = false;
             break;
-        case RandomRadial:
+        case RandomDual:
             dual_line = findDualLine(findPointInShape());
             starting_points = getSpacedLine(getStartingPointSeparation(), dual_line);
             is_filling_method_random = true;
