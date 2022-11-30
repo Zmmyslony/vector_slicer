@@ -172,10 +172,10 @@ std::valarray<double> FilledPattern::getNewStep(std::valarray<double> &real_coor
 
 bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarray<double> &positions,
                                                 std::valarray<double> &previous_step, int length) {
-    std::valarray<int> current_coordinates = dtoiArray(positions);
+    std::valarray<int> current_coordinates = dtoi(positions);
     std::valarray<double> new_step = getNewStep(positions, length, previous_step);
     std::valarray<double> new_positions = positions + new_step;
-    std::valarray<int> new_coordinates = dtoiArray(new_positions);
+    std::valarray<int> new_coordinates = dtoi(new_positions);
     std::valarray<double> repulsion = {0, 0};
     if (getRepulsion() != 0) {
         repulsion = getRepulsionValue(number_of_times_filled, repulsion_circle, new_coordinates,
@@ -183,7 +183,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
     }
 
     new_positions -= repulsion;
-    new_coordinates = dtoiArray(new_positions);
+    new_coordinates = dtoi(new_positions);
     std::valarray<double> real_step = new_step - repulsion;
 
     if (new_coordinates[0] == current_coordinates[0] && new_coordinates[1] == current_coordinates[1] ||
@@ -195,16 +195,11 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
                         desired_pattern.get().getDimensions())) {
         std::vector<std::valarray<int>> current_points_to_fill;
         if (current_path.size() >= 2) {
-            if (isFilled(current_coordinates)) {
-                current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates, new_coordinates,
-                                                          getPrintRadius(), 0.1);
-            }
-            else {
-                current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates, new_coordinates,
-                                                          getPrintRadius(), 0);
-            }
+            current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates,
+                                                      new_coordinates, getPrintRadius(), isFilled(current_coordinates));
         } else {
-            current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates, getPrintRadius());
+            current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates, getPrintRadius(),
+                                                      isFilled(current_coordinates));
         }
         std::valarray<int> new_step_int = new_coordinates - current_coordinates;
         fillPointsFromList(current_points_to_fill, new_step_int);
@@ -221,8 +216,8 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
 Path FilledPattern::generateNewPathForDirection(std::valarray<int> &starting_coordinates,
                                                 const std::valarray<int> &starting_step) {
     Path new_path(starting_coordinates);
-    std::valarray<double> current_positions = itodArray(starting_coordinates);
-    std::valarray<double> current_step = itodArray(starting_step);
+    std::valarray<double> current_positions = itod(starting_coordinates);
+    std::valarray<double> current_step = itod(starting_step);
 
     for (int length = getStepLength(); length >= getPrintRadius(); length--) {
         while (tryGeneratingPathWithLength(new_path, current_positions, current_step, length)) {}
@@ -236,13 +231,8 @@ void FilledPattern::fillPointsInCircle(const std::valarray<int> &starting_coordi
 
 void
 FilledPattern::fillPointsInHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point) {
-    std::vector<std::valarray<int>> half_circle_points;
-    if (isFilled(last_point)) {
-        half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(), 0.5);
-    } else {
-        half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(), 0);
-    }
-
+    std::vector<std::valarray<int>> half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(),
+                                                                        isFilled(last_point));
     fillPointsFromList(half_circle_points, previous_point - last_point);
 }
 
@@ -310,7 +300,7 @@ FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates,
                                         std::valarray<double> previous_dual_director) {
     std::vector<std::valarray<int>> line;
     while (desired_pattern.get().isInShape(coordinates)) {
-        line.push_back(dtoiArray(coordinates));
+        line.push_back(dtoi(coordinates));
         std::valarray<double> director = getDirector(coordinates);
         std::valarray<double> dual_director = normalizedDualVector(director);
         if (dot(dual_director, previous_dual_director) < 0) {
@@ -323,7 +313,7 @@ FilledPattern::findDualLineOneDirection(std::valarray<double> coordinates,
 }
 
 std::vector<std::valarray<int>> FilledPattern::findDualLine(const std::valarray<int> &start) {
-    std::valarray<double> real_coordinates = itodArray(start);
+    std::valarray<double> real_coordinates = itod(start);
     std::valarray<double> previous_director = getDirector(real_coordinates);
     std::valarray<double> initial_dual_director = normalizedDualVector(previous_director);
 
@@ -349,7 +339,7 @@ FilledPattern::getSpacedLine(const double &distance, const std::vector<std::vala
     separated_starting_points.push_back(previous_position);
 
     for (auto &current_position: reshuffled_starting_points) {
-        double current_distance = abs(dot(itodArray(current_position - previous_position), previous_double_director));
+        double current_distance = abs(dot(itod(current_position - previous_position), previous_double_director));
         if (current_distance > distance) {
             previous_position = current_position;
             previous_director = getDirector(current_position);

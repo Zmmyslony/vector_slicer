@@ -22,19 +22,20 @@
 #include <valarray>
 #include <algorithm>
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_current,
-                                                 const std::valarray<int> &point_next, double radius);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-std::vector<std::valarray<int>>
-findPointsToFill(const std::valarray<int> &point_previous, const std::valarray<int> &point_current,
-                 const std::valarray<int> &point_next, double radius, double offset);
+std::vector<vali> findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled);
 
-std::vector<std::valarray<int>> findPointsInCircle(double radius);
+std::vector<vali>
+findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
+                 bool is_first_point_filled);
 
-std::vector<std::valarray<int>> findPointsInCircle(int radius);
+std::vector<vali> findPointsInCircle(double radius);
 
-std::vector<std::valarray<int>>
-findHalfCircle(const std::valarray<int> &last_point, const std::valarray<int> &previous_point, double radius,
-               double offset_factor);
+std::vector<vali> findPointsInCircle(int radius);
+
+std::vector<vali>
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

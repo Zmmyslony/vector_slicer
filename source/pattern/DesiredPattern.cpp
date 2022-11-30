@@ -96,7 +96,7 @@ bool DesiredPattern::isInShape(const std::valarray<int> &position) const {
 
 
 bool DesiredPattern::isInShape(const std::valarray<double> &position) const {
-    return isInShape(dtoiArray(position));
+    return isInShape(dtoi(position));
 }
 
 const std::valarray<int> &DesiredPattern::getDimensions() const {

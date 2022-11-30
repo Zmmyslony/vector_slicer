@@ -18,23 +18,23 @@
 #include <stdexcept>
 #include <iostream>
 
-std::valarray<double> itodArray(const std::valarray<int> &int_array) {
-    std::valarray<double> double_array(int_array.size());
+vald itod(const vali &int_array) {
+    vald double_array(int_array.size());
     for (int i = 0; i < int_array.size(); i++) {
         double_array[i] = (double) int_array[i];
     }
     return double_array;
 }
 
-std::valarray<int> dtoiArray(const std::valarray<double> &double_array) {
-    std::valarray<int> int_array(double_array.size());
+vali dtoi(const vald &double_array) {
+    vali int_array(double_array.size());
     for (int i = 0; i < double_array.size(); i++) {
         int_array[i] = lround(double_array[i]);
     }
     return int_array;
 }
 
-double generalNorm(const std::valarray<double> &array, const double &exponent) {
+double generalNorm(const vald &array, const double &exponent) {
     double sum = 0;
     for (auto &element: array) {
         sum += pow(element, exponent);
@@ -42,27 +42,27 @@ double generalNorm(const std::valarray<double> &array, const double &exponent) {
     return pow(sum, 1 / exponent);
 }
 
-double norm(const std::valarray<double> &array) {
+double norm(const vald &array) {
     return generalNorm(array, 2);
 }
 
-double norm(const std::valarray<int> &array) {
-    return norm(itodArray(array));
+double norm(const vali &array) {
+    return norm(itod(array));
 }
 
-std::valarray<double> generalNormalize(const std::valarray<double> &array, const double &exponent) {
+vald generalNormalize(const vald &array, const double &exponent) {
     return array / generalNorm(array, exponent);
 }
 
-std::valarray<double> normalize(const std::valarray<double> &array) {
+vald normalize(const vald &array) {
     return generalNormalize(array, 2);
 }
 
-std::valarray<double> normalize(const std::valarray<int> &array) {
-    return normalize(itodArray(array));
+vald normalize(const vali &array) {
+    return normalize(itod(array));
 }
 
-double dot(const std::valarray<double> &array_first, const std::valarray<double> &array_second) {
+double dot(const vald &array_first, const vald &array_second) {
     double dot_product = 0;
     if (array_first.size() != array_second.size()) {
         throw std::invalid_argument("Dot: Dotted array are of different size.\n");
@@ -73,24 +73,29 @@ double dot(const std::valarray<double> &array_first, const std::valarray<double>
     return dot_product;
 }
 
-double dot(const std::valarray<int> &array_first, const std::valarray<int> &array_second) {
-    return dot(itodArray(array_first), itodArray(array_second));
+double dot(const vali &array_first, const vali &array_second) {
+    return dot(itod(array_first), itod(array_second));
 }
 
-std::valarray<double> perpendicular(std::valarray<double> vector) {
+vald perpendicular(vald vector) {
     if (vector.size() != 2) {
         throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
     }
-    return std::valarray<double>({-vector[1], vector[0]});
+    return vald({-vector[1], vector[0]});
+}
+
+double cross(const vald &vector_first, const vald &vector_second) {
+
+    return vector_first[0] * vector_second[1] - vector_first[1] * vector_second[0];
 }
 
 
-std::valarray<int> perpendicular(const std::valarray<int> &vector) {
-    return dtoiArray(perpendicular(itodArray(vector)));
+vali perpendicular(const vali &vector) {
+    return dtoi(perpendicular(itod(vector)));
 }
 
 
-void printArray(const std::vector<std::valarray<int>> &array) {
+void printArray(const std::vector<vali> &array) {
     for (auto &row: array) {
         std::cout << "(";
         for (auto &element: row) {
@@ -101,7 +106,7 @@ void printArray(const std::vector<std::valarray<int>> &array) {
     std::cout << std::endl;
 }
 
-void printArray(const std::vector<std::valarray<double>> &array) {
+void printArray(const std::vector<vald> &array) {
     for (auto &row: array) {
         std::cout << "(";
         for (auto &element: row) {
@@ -112,8 +117,8 @@ void printArray(const std::vector<std::valarray<double>> &array) {
     std::cout << std::endl;
 }
 
-std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uint_array) {
-    std::valarray<int> int_array(uint_array.size());
+vali uinttointArray(const std::valarray<unsigned int> &uint_array) {
+    vali int_array(uint_array.size());
     for (int i = 0; i < uint_array.size(); i++) {
         int_array[i] = lround(uint_array[i]);
     }

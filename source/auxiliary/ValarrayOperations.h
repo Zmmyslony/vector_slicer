@@ -20,34 +20,39 @@
 #include <valarray>
 #include <vector>
 
-std::valarray<double> itodArray(const std::valarray<int> &int_array);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-std::valarray<int> dtoiArray(const std::valarray<double> &double_array);
+vald itod(const vali &int_array);
 
-double generalNorm(const std::valarray<double> &array, const double &exponent);
+vali dtoi(const vald &double_array);
 
-double norm(const std::valarray<double> &array);
+double generalNorm(const vald &array, const double &exponent);
 
-double norm(const std::valarray<int> &array);
+double norm(const vald &array);
 
-std::valarray<double> generalNormalize(const std::valarray<double> &array, const double &exponent);
+double norm(const vali &array);
 
-std::valarray<double> normalize(const std::valarray<double> &array);
+vald generalNormalize(const vald &array, const double &exponent);
 
-std::valarray<double> normalize(const std::valarray<int> &array);
+vald normalize(const vald &array);
 
-double dot(const std::valarray<double> &array_first, const std::valarray<double> &array_second);
+vald normalize(const vali &array);
 
-double dot(const std::valarray<int> &array_first, const std::valarray<int> &array_second);
+double dot(const vald &array_first, const vald &array_second);
 
-std::valarray<double> perpendicular(std::valarray<double> vector);
+double dot(const vali &array_first, const vali &array_second);
 
-std::valarray<int> perpendicular(const std::valarray<int> &vector);
+vald perpendicular(vald vector);
 
-void printArray(const std::vector<std::valarray<int>> &array);
+vali perpendicular(const vali &vector);
 
-void printArray(const std::vector<std::valarray<double>> &array);
+double cross(const vald &vector_first, const vald &vector_second);
 
-std::valarray<int> uinttointArray(const std::valarray<unsigned int> &uint_array);
+void printArray(const std::vector<vali> &array);
+
+void printArray(const std::vector<vald> &array);
+
+vali uinttointArray(const std::valarray<unsigned int> &uint_array);
 
 #endif //VECTOR_SLICER_VALARRAYOPERATIONS_H
