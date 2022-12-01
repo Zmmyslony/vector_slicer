@@ -17,7 +17,6 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
-#include <iostream>
 
 #include "Geometry.h"
 #include "ValarrayOperations.h"
@@ -147,7 +146,7 @@ std::vector<vali> findPointsInCircle(double radius) {
     for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
             vali displacement = {i, j};
-            if (norm(displacement) < radius) {
+            if (norm(displacement) <= radius) {
                 points_in_circle.push_back(displacement);
             }
         }
