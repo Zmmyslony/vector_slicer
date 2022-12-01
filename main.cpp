@@ -14,9 +14,6 @@
 #include <boost/dll.hpp>
 #include <string>
 #include <iostream>
-#include <fstream>
-//#include "source/importing_and_exporting/ReadingFromOutside.h"
-//#include "source/importing_and_exporting/TableReading.h"
 #include "source/pattern/bayesian_optimisation.h"
 
 namespace fs = boost::filesystem;
@@ -48,7 +45,7 @@ int main() {
 
     printf("\nTested patterns: \n");
     for (auto &pattern_type: patterns) {
-        std::cout << "\t" << pattern_type << std::endl;
+        std::cout << "\t" << pattern_type.string() << std::endl;
     }
 
     for (auto &pattern_type: patterns) {
