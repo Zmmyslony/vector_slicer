@@ -43,8 +43,28 @@ bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
     return (table[position[0]][position[1]] == 0);
 }
 
+vald
+getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
+                  const std::vector<vali> &checked_area, const vali &start_positions, const vali &sizes,
+                  double repulsion_coefficient) {
 
-vald getRepulsionValue(std::vector<std::vector<int>> &filled_table, std::vector<vali> &checked_area,
+    vald attraction = {0, 0};
+    int number_of_viable_points = 0;
+    for (auto &direction: checked_area) {
+        vali positions_new = direction + start_positions;
+        if (isInRange(positions_new, sizes)) {
+            if (!isEmpty(positions_new, empty_spots) && isEmpty(positions_new, filled_table)) {
+                attraction += itod(direction);
+                number_of_viable_points++;
+            }
+        }
+    }
+
+    return -repulsion_coefficient * attraction / number_of_viable_points;
+}
+
+
+vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table, const std::vector<vali> &checked_area,
                        const vali &start_positions, const vali &sizes, double repulsion_coefficient) {
 
     vald attraction = {0, 0};

@@ -185,8 +185,10 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, std::valarra
     std::valarray<int> new_coordinates = dtoi(new_positions);
     std::valarray<double> repulsion = {0, 0};
     if (getRepulsion() != 0) {
-        repulsion = getRepulsionValue(number_of_times_filled, repulsion_circle, new_coordinates,
-                                      desired_pattern.get().getDimensions(), getRepulsion());
+//        repulsion = getRepulsionValue(number_of_times_filled, repulsion_circle, new_coordinates,
+//                                      desired_pattern.get().getDimensions(), getRepulsion());
+        repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
+                                       new_coordinates, desired_pattern.get().getDimensions(), getRepulsion());
     }
 
     new_positions -= repulsion;

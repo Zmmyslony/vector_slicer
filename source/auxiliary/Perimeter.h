@@ -26,14 +26,20 @@ using vali = std::valarray<int>;
 
 std::vector<vali> generatePerimeterList(double radius);
 
-vald getRepulsionValue(std::vector<std::vector<int>> &filled_table,
-                                        std::vector<vali> &checked_area,
-                                        const vali &start_positions,
-                                        const vali &sizes, double repulsion_coefficient);
+vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table,
+                       const std::vector<vali> &checked_area,
+                       const vali &start_positions,
+                       const vali &sizes, double repulsion_coefficient);
 
-bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                     const std::vector<vali> &perimeter_list, const vali &start_positions,
-                     const vali &sizes);
+vald
+getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
+                  const std::vector<vali> &checked_area, const vali &start_positions, const vali &sizes,
+                  double repulsion_coefficient);
+
+bool
+isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
+                const std::vector<vali> &perimeter_list, const vali &start_positions,
+                const vali &sizes);
 
 bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &start_positions,
               const vali &sizes);
