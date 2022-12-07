@@ -15,24 +15,11 @@
 #include <string>
 #include <iostream>
 #include "source/pattern/bayesian_optimisation.h"
+#include "source/importing_patterns.h"
 
 namespace fs = boost::filesystem;
 
 const double VERSION = 1.0;
-
-std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path) {
-    std::vector<fs::path> patterns;
-    std::string line;
-    std::fstream file(list_of_patterns_path.string());
-
-    while (std::getline(file, line)) {
-        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-        if (exists(fs::path(line))) {
-            patterns.emplace_back(line);
-        }
-    }
-    return patterns;
-}
 
 
 int main() {
@@ -43,20 +30,20 @@ int main() {
 
     std::vector<fs::path> patterns = getPatterns(patterns_path);
 
-    printf("\nTested patterns: \n");
+    std::cout << "\nTested patterns:" << std::endl;
     for (auto &pattern_type: patterns) {
         std::cout << "\t" << pattern_type.string() << std::endl;
     }
+    std::cout << "End of tested patterns." << std::endl;
 
     for (auto &pattern_type: patterns) {
         try {
-            generalFinder(pattern_type, 24, 8);
+            optimisePattern(pattern_type, 24, 8);
         }
         catch (std::runtime_error &error) {
             std::cout << error.what() << std::endl;
         }
     }
-
 
     return 0;
 }

@@ -52,7 +52,7 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/IndexedPath.cpp
         source/pattern/IndexedPath.h
         ExecutionConfig.h
-        source/pattern/bayesian_optimisation.cpp source/pattern/bayesian_optimisation.h source/auxiliary/vector_operations.cpp source/auxiliary/vector_operations.h source/pattern/disagreement_weights.cpp source/pattern/disagreement_weights.h)
+        source/pattern/bayesian_optimisation.cpp source/pattern/bayesian_optimisation.h source/auxiliary/vector_operations.cpp source/auxiliary/vector_operations.h source/pattern/disagreement_weights.cpp source/pattern/disagreement_weights.h source/importing_patterns.h source/importing_patterns.cpp)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
