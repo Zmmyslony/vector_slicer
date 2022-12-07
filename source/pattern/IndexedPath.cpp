@@ -18,9 +18,6 @@
 #include "../auxiliary/ValarrayOperations.h"
 #include <utility>
 #include <cfloat>
-#include <iostream>
-#include <cmath>
-
 
 IndexedPath::IndexedPath(int index, bool is_path_reversed, std::valarray<int> start_coordinates,
                          std::valarray<int> end_coordinates) : index(
@@ -220,8 +217,9 @@ double getMoveDistance(const std::vector<IndexedPath> &sorted_paths) {
 }
 
 
-std::vector<IndexedPath> findBestSortingOfPathsFromStartingPoints(const std::vector<IndexedPath> &unsorted_indexed_paths,
-                                                                  const std::vector<std::valarray<int>> &list_of_starting_positions) {
+std::vector<IndexedPath>
+findBestSortingOfPathsFromStartingPoints(const std::vector<IndexedPath> &unsorted_indexed_paths,
+                                         const std::vector<std::valarray<int>> &list_of_starting_positions) {
     double minimal_distance = DBL_MAX;
     std::vector<IndexedPath> best_sorting;
     for (auto &starting_position: list_of_starting_positions) {
@@ -287,7 +285,8 @@ std::vector<std::vector<std::valarray<int>>> getSortedPaths(FilledPattern &fille
     std::vector<IndexedPath> unsorted_indices = indexPaths(filled_pattern, dimensions);
 
     std::vector<std::valarray<int>> starting_points = generateStartingPoints(dimensions, starting_point_number);
-    std::vector<IndexedPath> sorted_indices = findBestSortingOfPathsFromStartingPoints(unsorted_indices, starting_points);
+    std::vector<IndexedPath> sorted_indices = findBestSortingOfPathsFromStartingPoints(unsorted_indices,
+                                                                                       starting_points);
 
     std::vector<Path> unsorted_paths = filled_pattern.getSequenceOfPaths();
     std::vector<std::vector<std::valarray<int>>> sorted_paths = sortedSequenceOfPaths(unsorted_paths, sorted_indices);
