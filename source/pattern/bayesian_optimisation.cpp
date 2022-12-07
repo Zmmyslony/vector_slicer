@@ -16,8 +16,9 @@
 
 #include <boost/filesystem/path.hpp>
 #include <utility>
-#include "bayesian_optimisation.h"
+#include <chrono>
 
+#include "bayesian_optimisation.h"
 #include "../importing_and_exporting/OpenFiles.h"
 #include "../importing_and_exporting/Exporting.h"
 #include "../../ExecutionConfig.h"
@@ -89,7 +90,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
 
 void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
-    time_t start_time = clock();
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     fs::path config_path = pattern_path / "config.txt";
     fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
@@ -121,7 +122,8 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     best_seed.getConfig().exportConfig(pattern_path);
     best_seed.getConfig().printConfig();
     best_seed.printDisagreement();
-    printf("Execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s." << std::endl;
 }
 
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
