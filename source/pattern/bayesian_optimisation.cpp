@@ -59,55 +59,16 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
 }
 
 
-void generalOptimiser(int seeds, int threads, const DesiredPattern& desired_pattern, DisagreementWeights disagreement_weights, FillingConfig filling_config, bayesopt::Parameters optimisation_parameters) {
+QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
+                                  DisagreementWeights disagreement_weights, FillingConfig filling_config,
+                                  bayesopt::Parameters optimisation_parameters) {
 
     QuantifiedConfig pattern(desired_pattern, filling_config, disagreement_weights);
     BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters));
-    vectord best_config(3);
-    vectord lower_bound(3);
-    vectord upper_bound(3);
-    lower_bound[0] = 0; // Min repulsion
-    lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = pattern.getConfig().getPrintRadius() * 0.5; // Min starting point separation
-
-    upper_bound[0] = 2;
-    upper_bound[1] = pattern.getConfig().getPrintRadius() * 1.5;
-    upper_bound[2] = pattern.getConfig().getPrintRadius() * 3;
-
-    pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
-    pattern_optimisation.optimize(best_config);
-
-    QuantifiedConfig optimised_pattern(pattern, best_config);
-}
-
-
-void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
-    time_t start_time = clock();
-    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
-    fs::path config_path = pattern_path / "config.txt";
-    fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
-
-    FillingConfig initial_config(config_path);
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
-    DisagreementWeights default_weights(40, 2,
-                                        8, 2,
-                                        30, 2,
-                                        0.05, 2);
-
-    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
-
-    bayesopt::Parameters parameters;
-    parameters.random_seed = 0;
-    parameters.l_type = L_MCMC;
-    parameters.n_iterations = 100;
-//    parameters.l_type = L_EMPIRICAL;
-    parameters.noise = 1e-3;
-    parameters.n_iter_relearn = 20;
-    parameters.log_filename = optimisation_log_path.string();
-    BayesianOptimisation pattern_optimisation(pattern, threads, seeds, parameters);
     vectord best_config(4);
     vectord lower_bound(4);
     vectord upper_bound(4);
+
     double print_radius = pattern.getConfig().getPrintRadius();
 
     lower_bound[0] = 0; // Min repulsion
@@ -123,16 +84,47 @@ void generalFinder(const fs::path &pattern_path, int seeds, int threads) {
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
     pattern_optimisation.optimize(best_config);
 
-    QuantifiedConfig best_pattern = QuantifiedConfig(pattern, best_config).findBestSeed(100, 8);
-
-    exportPatternToDirectory(best_pattern.getFilledPattern(), pattern_path);
-    best_pattern.getConfig().exportConfig(pattern_path);
-    best_pattern.getConfig().printConfig();
-    best_pattern.printDisagreement();
-    printf("Multi-thread execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
+    return {pattern, best_config};
 }
 
-void calculatePattern(const fs::path &pattern_path, const fs::path &config_path) {
+
+void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
+    time_t start_time = clock();
+    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
+    fs::path config_path = pattern_path / "config.txt";
+    fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
+
+    FillingConfig initial_config(config_path);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
+    DisagreementWeights default_weights(40, 2,
+                                        8, 2,
+                                        30, 2,
+                                        0.05, 2);
+
+//    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
+
+    bayesopt::Parameters parameters;
+    parameters.random_seed = 0;
+    parameters.l_type = L_MCMC;
+    parameters.n_iterations = 100;
+    parameters.n_iter_relearn = 20;
+    parameters.noise = 1e-3;
+
+    parameters.verbose_level = 4;
+    parameters.log_filename = optimisation_log_path.string();
+
+    QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, default_weights, initial_config,
+                                                     parameters);
+    QuantifiedConfig best_seed = best_pattern.findBestSeed(100, 8);
+
+    exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
+    best_seed.getConfig().exportConfig(pattern_path);
+    best_seed.getConfig().printConfig();
+    best_seed.printDisagreement();
+    printf("Execution time %.2f", (double) (clock() - start_time) / CLOCKS_PER_SEC);
+}
+
+void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     FillingConfig best_config(config_path);
@@ -148,5 +140,5 @@ void calculatePattern(const fs::path &pattern_path, const fs::path &config_path)
 
 void recalculateBestConfig(const fs::path &pattern_path) {
     fs::path config_path = pattern_path / "results" / "best_config.txt";
-    calculatePattern(pattern_path, config_path);
+    fillPattern(pattern_path, config_path);
 }
