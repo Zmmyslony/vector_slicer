@@ -47,6 +47,6 @@ public:
 
 };
 
-void generalFinder(const fs::path &pattern_path, int seeds, int threads);
+void optimisePattern(const fs::path &pattern_path, int seeds, int threads);
 
 #endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
