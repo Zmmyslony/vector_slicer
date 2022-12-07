@@ -35,7 +35,7 @@ double mean(const std::vector<double> &data) {
     return mean;
 }
 
-double standard_deviation(const std::vector<double> &data) {
+double standardDeviation(const std::vector<double> &data) {
     double mean_value = mean(data);
     long double variance_sum = 0;
     for (auto &element : data) {
