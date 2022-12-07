@@ -108,7 +108,7 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
                         y_field_filled[i][j] * desired_pattern.get().getYFieldPreferred()[i][j];
                 if (desired_director_norm != 0 && filled_director_norm != 0) {
                     director_agreement +=
-                            abs(x_direction_agreement + y_direction_agreement) /
+                            std::abs(current_director_agreement) /
                             (filled_director_norm * desired_director_norm);
                     number_of_filled_elements++;
                 }
@@ -176,7 +176,7 @@ double QuantifiedConfig::getDisagreement() const {
 }
 
 DesiredPattern QuantifiedConfig::getDesiredPattern() {
-    return FilledPattern::desired_pattern;
+    return {desired_pattern};
 }
 
 
@@ -196,8 +196,8 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads) {
         configs_with_various_seeds[i].evaluate();
         disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
-    std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standard_deviation(disagreements)
-              << ", noise " << standard_deviation(disagreements) / mean(disagreements) << std::endl;
+    std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
+              << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     return mean(disagreements);
 }
 
