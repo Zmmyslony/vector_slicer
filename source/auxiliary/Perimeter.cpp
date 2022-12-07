@@ -45,18 +45,19 @@ bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
 
 vald
 getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vali &start_positions, const vali &sizes,
+                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
                   double repulsion_coefficient) {
 
     vald attraction = {0, 0};
     int number_of_viable_points = 0;
-    for (auto &direction: checked_area) {
-        vali positions_new = direction + start_positions;
-        if (isInRange(positions_new, sizes)) {
-            if (!isEmpty(positions_new, empty_spots) && isEmpty(positions_new, filled_table)) {
-                attraction += itod(direction);
-                number_of_viable_points++;
-            }
+    for (auto &displacement: checked_area) {
+        vali neighbour = coordinates + displacement;
+        if (isInRange(neighbour, sizes) &&
+            !isEmpty(neighbour, empty_spots) &&
+            isEmpty(neighbour, filled_table)) {
+
+            attraction += itod(displacement);
+            number_of_viable_points++;
         }
     }
 
