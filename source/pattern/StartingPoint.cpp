@@ -17,7 +17,6 @@
 #include "StartingPoint.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
-#include <iostream>
 
 int const MAX_RANDOM_SEARCH_TRIES = 1000;
 
