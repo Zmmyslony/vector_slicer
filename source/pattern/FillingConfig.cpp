@@ -207,7 +207,6 @@ FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
         }
         readLineOfConfig(row);
     }
-    printConfig();
 }
 
 
