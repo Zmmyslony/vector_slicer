@@ -23,6 +23,7 @@
 #include "../importing_and_exporting/Exporting.h"
 #include "../../ExecutionConfig.h"
 #include "IndexedPath.h"
+#include "../auxiliary/ProgressBar.h"
 
 namespace fs = boost::filesystem;
 
@@ -40,7 +41,9 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "WARNING: Using only first three components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in);
-    return problem.getDisagreement(seeds, threads);
+    double disagreement = problem.getDisagreement(seeds, threads);
+    showProgress(mCurrentIter, mParameters.n_iterations);
+    return disagreement;
 }
 
 void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_path) {
@@ -107,7 +110,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = 100;
+    parameters.n_iterations = 190;
     parameters.n_iter_relearn = 20;
     parameters.noise = 1e-3;
 
