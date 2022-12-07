@@ -73,9 +73,6 @@ double dot(const vald &array_first, const vald &array_second) {
     return dot_product;
 }
 
-double dot(const vali &array_first, const vali &array_second) {
-    return dot(itod(array_first), itod(array_second));
-}
 
 vald perpendicular(vald vector) {
     if (vector.size() != 2) {
@@ -87,11 +84,6 @@ vald perpendicular(vald vector) {
 double cross(const vald &vector_first, const vald &vector_second) {
 
     return vector_first[0] * vector_second[1] - vector_first[1] * vector_second[0];
-}
-
-
-vali perpendicular(const vali &vector) {
-    return dtoi(perpendicular(itod(vector)));
 }
 
 
@@ -115,12 +107,4 @@ void printArray(const std::vector<vald> &array) {
         std::cout << "), ";
     }
     std::cout << std::endl;
-}
-
-vali uinttointArray(const std::valarray<unsigned int> &uint_array) {
-    vali int_array(uint_array.size());
-    for (int i = 0; i < uint_array.size(); i++) {
-        int_array[i] = lround(uint_array[i]);
-    }
-    return int_array;
 }

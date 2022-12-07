@@ -41,18 +41,12 @@ vald normalize(const vali &array);
 
 double dot(const vald &array_first, const vald &array_second);
 
-double dot(const vali &array_first, const vali &array_second);
-
 vald perpendicular(vald vector);
-
-vali perpendicular(const vali &vector);
 
 double cross(const vald &vector_first, const vald &vector_second);
 
 void printArray(const std::vector<vali> &array);
 
 void printArray(const std::vector<vald> &array);
-
-vali uinttointArray(const std::valarray<unsigned int> &uint_array);
 
 #endif //VECTOR_SLICER_VALARRAYOPERATIONS_H
