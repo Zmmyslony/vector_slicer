@@ -41,7 +41,7 @@ isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::ve
                 const std::vector<vali> &perimeter_displacements_list, const vali &coordinates,
                 const vali &sizes);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &start_positions,
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coordinates,
               const vali &sizes);
 
 std::vector<vali>

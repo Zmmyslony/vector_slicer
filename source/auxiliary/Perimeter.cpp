@@ -101,26 +101,26 @@ isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::ve
 }
 
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &start_positions, const vali &sizes) {
-    std::vector<vali> list_of_nearest_neighbours = {{-1, 0},
-                                                    {-1, 1},
-                                                    {0,  1},
-                                                    {1,  1},
-                                                    {1,  0},
-                                                    {1,  -1},
-                                                    {0,  -1},
-                                                    {-1, -1}};
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coordinates, const vali &sizes) {
+    std::vector<vali> neighbour_displacements_list = {{-1, 0},
+                                                      {-1, 1},
+                                                      {0,  1},
+                                                      {1,  1},
+                                                      {1,  0},
+                                                      {1,  -1},
+                                                      {0,  -1},
+                                                      {-1, -1}};
 
-    if (shape_table[start_positions[0]][start_positions[1]] == 0) {
+    if (isEmpty(coordinates, shape_table)) {
         return false;
     }
 
-    for (auto &neighbour: list_of_nearest_neighbours) {
-        vali positions_new = neighbour + start_positions;
-        if (isInRange(positions_new, sizes)) {
-            if (isEmpty(positions_new, shape_table)) {
-                return true;
-            }
+
+    for (auto &neighbour_displacement: neighbour_displacements_list) {
+        vali neighbour_positions = neighbour_displacement + coordinates;
+        if (isInRange(neighbour_positions, sizes) &&
+            isEmpty(neighbour_positions, shape_table)) {
+            return true;
         }
     }
     return false;
@@ -148,7 +148,7 @@ void removeElement(std::vector<vali> &array, int index) {
 
 vali findClosestNeighbour(std::vector<vali> &array, vali &element) {
     vali closest_element;
-    double closest_distance = DBL_MAX;
+    auto closest_distance = DBL_MAX;
 
     int i_min = 0;
     for (int i = 0; i < array.size(); i++) {
