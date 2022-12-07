@@ -197,6 +197,7 @@ FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
     std::ifstream file(config_path.string());
 
     while (std::getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         std::string element;
         std::stringstream line_stream(line);
         std::vector<std::string> row;

@@ -101,6 +101,7 @@ std::vector<std::vector<int>> importTableInt(const fs::path &filename) {
     std::fstream file(filename.string());
 
     while (std::getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         std::string element;
         std::stringstream line_stream(line);
         std::vector<int> row;

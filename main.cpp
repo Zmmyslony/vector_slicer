@@ -26,8 +26,8 @@ std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path) {
     std::fstream file(list_of_patterns_path.string());
 
     while (std::getline(file, line)) {
-        if (line.find("ignore") != std::string::npos) {}
-        else {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        if (exists(fs::path(line))) {
             patterns.emplace_back(line);
         }
     }
