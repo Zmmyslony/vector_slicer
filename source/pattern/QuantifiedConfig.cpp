@@ -17,6 +17,7 @@
 #include "QuantifiedConfig.h"
 #include "FillingPatterns.h"
 #include "../auxiliary/vector_operations.h"
+#include "../auxiliary/ValarrayOperations.h"
 
 #include <utility>
 #include <cmath>
@@ -98,14 +99,11 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
             if (number_of_times_filled[i][j] > 0) {
-                double filled_director_norm = sqrt(
-                        pow(x_field_filled[i][j], 2) + pow(y_field_filled[i][j], 2));
-                double desired_director_norm = sqrt(pow(desired_pattern.get().getXFieldPreferred()[i][j], 2) +
-                                                    pow(desired_pattern.get().getYFieldPreferred()[i][j], 2));
-                double x_direction_agreement =
-                        x_field_filled[i][j] * desired_pattern.get().getXFieldPreferred()[i][j];
-                double y_direction_agreement =
-                        y_field_filled[i][j] * desired_pattern.get().getYFieldPreferred()[i][j];
+                vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
+                vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j], desired_pattern.get().getYFieldPreferred()[i][j]};
+                double filled_director_norm = norm(filled_director);
+                double desired_director_norm = norm(desired_director);
+                double current_director_agreement =  dot(filled_director, desired_director);
                 if (desired_director_norm != 0 && filled_director_norm != 0) {
                     director_agreement +=
                             std::abs(current_director_agreement) /
