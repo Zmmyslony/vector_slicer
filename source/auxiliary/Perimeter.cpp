@@ -85,20 +85,16 @@ vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table, const 
 
 bool
 isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                const std::vector<vali> &perimeter_list, const vali &start_positions, const vali &sizes) {
-    if (!isInRange(start_positions, sizes)) {
+                const std::vector<vali> &perimeter_displacements_list, const vali &coordinates, const vali &sizes) {
+    if (!isInRange(coordinates, sizes) ||
+        isEmpty(coordinates, shape_table) ||
+        !isEmpty(coordinates, filled_table)) {
         return false;
     }
-    if (shape_table[start_positions[0]][start_positions[1]] == 0 ||
-        filled_table[start_positions[0]][start_positions[1]] > 0) {
-        return false;
-    }
-    for (auto &perimeter: perimeter_list) {
-        vali positions_new = perimeter + start_positions;
-        if (isInRange(positions_new, sizes)) {
-            if (!isEmpty(positions_new, filled_table)) {
-                return false;
-            }
+    for (auto &perimeter_displacement: perimeter_displacements_list) {
+        vali perimeter = perimeter_displacement + coordinates;
+        if (isInRange(perimeter, sizes) && !isEmpty(perimeter, filled_table)) {
+            return false;
         }
     }
     return true;

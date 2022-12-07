@@ -33,12 +33,12 @@ vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table,
 
 vald
 getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vali &start_positions, const vali &sizes,
+                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
                   double repulsion_coefficient);
 
 bool
 isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                const std::vector<vali> &perimeter_list, const vali &start_positions,
+                const std::vector<vali> &perimeter_displacements_list, const vali &coordinates,
                 const vali &sizes);
 
 bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &start_positions,
