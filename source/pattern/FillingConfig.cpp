@@ -57,7 +57,7 @@ void FillingConfig::printConfig() {
     stream << "\t\tStep length is " << step_length << "." << std::endl;
 
     std::string message = stream.str();
-    std::cout << message;
+    std::cout << message << std::endl;
 }
 
 fillingMethod FillingConfig::getInitialFillingMethod() const {
@@ -124,13 +124,12 @@ configOptions stringToConfig(const std::string &string_option) {
     if (it != mapping.end()) {
         return it->second;
     } else {
-        std::cout << "Unrecognised ConfigOption: " << string_option << std::endl;
+        throw std::runtime_error("Unrecognised config option: " + string_option);
     }
 }
 
 
 fillingMethod stringToMethod(const std::string &string_option) {
-    std::cout << "\'" << string_option << "\'" << std::endl;
     static std::unordered_map<std::string, fillingMethod> const mapping = {
             {"ConsecutivePerimeter", fillingMethod::ConsecutivePerimeter},
             {"RandomPerimeter",      fillingMethod::RandomPerimeter},
@@ -141,7 +140,7 @@ fillingMethod stringToMethod(const std::string &string_option) {
     if (it != mapping.end()) {
         return it->second;
     } else {
-        std::cout << "Unrecognised filling_method:" << string_option << std::endl;
+        throw std::runtime_error("Unrecognised filling method: " + string_option);
     }
 }
 
@@ -182,8 +181,14 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
 
     std::string parameter_name = line[0];
     std::string value = line[1];
-    configOptions option = stringToConfig(parameter_name);
-    setConfigOption(option, value);
+    try {
+        configOptions option = stringToConfig(parameter_name);
+        setConfigOption(option, value);
+    }
+    catch (const std::runtime_error &error_message){
+        std::cout << "Error occurred while trying to read the config: \n\t" << error_message.what() << std::endl;
+        std::cout << "Ignoring this entry and trying to read the remaining lines of config." << std::endl;
+    }
 }
 
 
@@ -201,6 +206,7 @@ FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
         }
         readLineOfConfig(row);
     }
+    printConfig();
 }
 
 
