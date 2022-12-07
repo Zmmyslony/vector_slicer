@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+  <component name="PublishConfigData" serverName="Remote Host (0fb97dc0-6df7-407a-8fa9-796723f788a6)" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="Remote Host (0fb97dc0-6df7-407a-8fa9-796723f788a6)">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/tmp.hIdQ1W4ITa" local="$PROJECT_DIR$" />
+            <mapping deploy="/CLionProjects/vector_slicer" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-remote" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-remote" />
           </excludedPaths>
         </serverdata>
       </paths>
