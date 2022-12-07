@@ -35,6 +35,7 @@
 
 class BayesianOptimisation : public bayesopt::ContinuousModel {
     QuantifiedConfig problem;
+    std::chrono::steady_clock::time_point begin;
     int threads;
     int seeds;
 

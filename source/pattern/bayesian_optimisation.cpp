@@ -32,7 +32,8 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         ContinuousModel(4, std::move(parameters)),
         problem(std::move(problem)),
         threads(threads),
-        seeds(seeds) {}
+        seeds(seeds),
+        begin(std::chrono::steady_clock::now()) {}
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
@@ -42,7 +43,7 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     }
     problem = QuantifiedConfig(problem, x_in);
     double disagreement = problem.getDisagreement(seeds, threads);
-    showProgress(mCurrentIter, mParameters.n_iterations);
+    showProgress(mCurrentIter, mParameters.n_iterations, begin);
     return disagreement;
 }
 

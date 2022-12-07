@@ -1,4 +1,9 @@
-..\patterns\azimuthal_05_cm
-..\patterns\radial_05_cm
-..\patterns\diagonal_1x05_cm
-..\patterns\linear_1x05_cm
+ ..\patterns\azimuthal_05_cm
+ ..\patterns\radial_05_cm
+ ..\patterns\diagonal_1x05_cm
+ ..\patterns\linear_1x05_cm
+
+..\patterns\azimuthal_1_cm
+..\patterns\radial_1_cm
+..\patterns\diagonal_2x1_cm
+..\patterns\linear_2x1_cm
