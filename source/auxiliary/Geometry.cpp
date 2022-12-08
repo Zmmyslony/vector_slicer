@@ -87,6 +87,7 @@ std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_
     return points_to_fill;
 }
 
+
 std::vector<vali>
 findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled) {
     vald tangent = normalize(point_next - point_current);
@@ -99,6 +100,7 @@ findPointsToFill(const vali &point_current, const vali &point_next, double radiu
 
     return findPointsToFill(corner_first, corner_second, corner_third, corner_fourth, is_first_point_filled);
 }
+
 
 std::vector<vali>
 findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
@@ -132,7 +134,7 @@ findHalfCircle(const vali &last_point, const vali &previous_point, double radius
             bool is_on_correct_side = isLeftOfEdge(displacement, normal, -normal, is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
-                points_to_fill.push_back(displacement + last_point);
+                points_to_fill.emplace_back(displacement + last_point);
             }
         }
     }

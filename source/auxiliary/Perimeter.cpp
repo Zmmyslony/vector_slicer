@@ -72,11 +72,12 @@ vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table, const 
     int number_of_empty_spots = 0;
     for (auto &direction: checked_area) {
         vali positions_new = direction + start_positions;
-        if (isInRange(positions_new, sizes)) {
-            if (isEmpty(positions_new, filled_table)) {
-                attraction += itod(direction);
-                number_of_empty_spots++;
-            }
+        if (isInRange(positions_new, sizes) &&
+            isEmpty(positions_new, filled_table)) {
+
+            attraction += itod(direction);
+            number_of_empty_spots++;
+
         }
     }
 

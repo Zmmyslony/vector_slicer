@@ -43,7 +43,9 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     }
     problem = QuantifiedConfig(problem, x_in);
     double disagreement = problem.getDisagreement(seeds, threads);
-    showProgress(mCurrentIter, mParameters.n_iterations, begin);
+    if (mCurrentIter > 0) {
+        showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples, begin);
+    }
     return disagreement;
 }
 
@@ -98,12 +100,13 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     fs::path config_path = pattern_path / "config.txt";
     fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
+    fs::path optimisation_save_path = pattern_path / "results" / "save.txt";
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
     DisagreementWeights default_weights(40, 2,
                                         8, 2,
-                                        30, 2,
+                                        70, 2,
                                         0.05, 2);
 
 //    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
@@ -111,9 +114,12 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = 190;
+    parameters.n_iterations = 100;
     parameters.n_iter_relearn = 20;
     parameters.noise = 1e-3;
+
+    parameters.load_save_flag = 2;
+    parameters.save_filename = optimisation_save_path.string();
 
     parameters.verbose_level = 4;
     parameters.log_filename = optimisation_log_path.string();
