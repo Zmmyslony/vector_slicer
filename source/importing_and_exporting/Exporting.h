@@ -30,8 +30,11 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 
 void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename);
 
-void export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                          const std::string &suffix);
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename);
+
+void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
+                        const std::string &suffix);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
 

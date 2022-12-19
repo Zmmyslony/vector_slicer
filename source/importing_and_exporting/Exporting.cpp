@@ -54,6 +54,24 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 }
 
 
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+    std::ofstream file(filename.string());
+
+    if (file.is_open()) {
+        for (int i = 0; i < table_first.size(); i++) {
+            std::vector<int> row;
+            for (int j = 0; j < table_first[i].size(); j++) {
+                row.emplace_back(table_first[i][j]);
+                row.emplace_back(table_second[i][j]);
+            }
+            file << readRowToString(row);
+        }
+        file.close();
+    }
+}
+
+
 void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename) {
     std::ofstream file(filename.string());
     if (file.is_open()) {
@@ -82,16 +100,19 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
 
 
 void
-export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                     const std::string &suffix) {
+exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
+                   const std::string &suffix) {
     std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
     fs::path x_filename = path / ("x_" + suffix + ".csv");
     fs::path y_filename = path / ("y_" + suffix + ".csv");
 
+    fs::path paths_filename = path / "paths.csv";
+
     exportVectorTableToFile(x_table, x_filename);
     exportVectorTableToFile(y_table, y_filename);
+    exportVectorTableToFile(x_table, y_table, paths_filename);
 }
 
 
