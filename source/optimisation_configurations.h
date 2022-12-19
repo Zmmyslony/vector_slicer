@@ -10,13 +10,19 @@
 //
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef INCLUDE_GUARD
-#define INCLUDE_GUARD
+//
+// Created by Michał Zmyślony on 08/12/2022.
+//
 
-#define SLICER_NAME "@PROJECT_NAME@"
-#define SLICER_VER  "@PROJECT_VERSION@"
-#define SLICER_VER_MAJOR "@PROJECT_VERSION_MAJOR@"
-#define SLICER_VER_MINOR "@PROJECT_VERSION_MINOR@"
-#define SLICER_VER_PATCH "@PROJECT_VERSION_PATCH@"
+#ifndef VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
+#define VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
 
-#endif // INCLUDE_GUARD
+#include "bayesopt/bayesopt.hpp"
+
+bayesopt::Parameters high_precision;
+
+bayesopt::Parameters medium_precision;
+
+bayesopt::Parameters low_precision;
+
+#endif //VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H

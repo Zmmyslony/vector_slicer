@@ -10,13 +10,9 @@
 //
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef INCLUDE_GUARD
-#define INCLUDE_GUARD
+//
+// Created by Michał Zmyślony on 08/12/2022.
+//
 
-#define SLICER_NAME "@PROJECT_NAME@"
-#define SLICER_VER  "@PROJECT_VERSION@"
-#define SLICER_VER_MAJOR "@PROJECT_VERSION_MAJOR@"
-#define SLICER_VER_MINOR "@PROJECT_VERSION_MINOR@"
-#define SLICER_VER_PATCH "@PROJECT_VERSION_PATCH@"
+#include "optimisation_configurations.h"
 
-#endif // INCLUDE_GUARD

@@ -17,7 +17,7 @@
 #include "Exporting.h"
 #include <fstream>
 #include <sstream>
-#include "..\vector_slicer_config.h.in"
+#include "vector_slicer_config.h"
 
 
 std::string readRowToString(const std::vector<int> &row) {
@@ -105,9 +105,9 @@ std::string generate_header(const fs::path &path) {
     time_t ttime = time(nullptr);
     char time[26];
     ctime_s(time, sizeof time, &ttime);
-    header += "# Generated using Vector Slicer " + std::string(PROJECT_VER) + " on " + time + "\n";
+    header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
     header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
-    header += "# Source directory: " + path.string() + "\n";
+    header += "# Source directory: " + path.string() + "\n\n";
     return header;
 }
 

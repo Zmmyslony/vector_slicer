@@ -17,7 +17,8 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
-configure_file(source/vector_slicer_config.h.in 'vector_slicer_config.h.in')
+configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
+include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(Vector_Slicer main.cpp
         source/auxiliary/SimpleMathOperations.cpp
@@ -53,7 +54,16 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/IndexedPath.cpp
         source/pattern/IndexedPath.h
         ExecutionConfig.h
-        source/bayesian_optimisation.cpp source/bayesian_optimisation.h source/auxiliary/vector_operations.cpp source/auxiliary/vector_operations.h source/pattern/disagreement_weights.cpp source/pattern/disagreement_weights.h source/importing_patterns.h source/importing_patterns.cpp source/optimisation_configurations.cpp source/optimisation_configurations.h)
+        source/bayesian_optimisation.cpp
+        source/bayesian_optimisation.h
+        source/auxiliary/vector_operations.cpp
+        source/auxiliary/vector_operations.h
+        source/pattern/disagreement_weights.cpp
+        source/pattern/disagreement_weights.h
+        source/importing_patterns.h
+        source/importing_patterns.cpp
+        source/optimisation_configurations.cpp
+        source/optimisation_configurations.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
