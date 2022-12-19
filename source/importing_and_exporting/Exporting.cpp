@@ -17,6 +17,7 @@
 #include "Exporting.h"
 #include <fstream>
 #include <sstream>
+#include "..\vector_slicer_config.h.in"
 
 
 std::string readRowToString(const std::vector<int> &row) {
@@ -54,11 +55,12 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 }
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table_first,
+void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
                              const std::vector<std::vector<int>> &table_second, fs::path &filename) {
     std::ofstream file(filename.string());
 
     if (file.is_open()) {
+        file << header;
         for (int i = 0; i < table_first.size(); i++) {
             std::vector<int> row;
             for (int j = 0; j < table_first[i].size(); j++) {
@@ -98,6 +100,17 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
     return table;
 }
 
+std::string generate_header(const fs::path &path) {
+    std::string header;
+    time_t ttime = time(nullptr);
+    char time[26];
+    ctime_s(time, sizeof time, &ttime);
+    header += "# Generated using Vector Slicer " + std::string(PROJECT_VER) + " on " + time + "\n";
+    header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
+    header += "# Source directory: " + path.string() + "\n";
+    return header;
+}
+
 
 void
 exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
@@ -112,7 +125,7 @@ exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_c
 
     exportVectorTableToFile(x_table, x_filename);
     exportVectorTableToFile(y_table, y_filename);
-    exportVectorTableToFile(x_table, y_table, paths_filename);
+    exportVectorTableToFile(generate_header(path.parent_path()), x_table, y_table, paths_filename);
 }
 
 

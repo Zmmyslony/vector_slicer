@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-set(version 0.1.1)
-project(Vector_Slicer)
+project(vector_slicer VERSION 0.2.0)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -17,6 +16,8 @@ if (OPENMP_FOUND)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
+
+configure_file(source/vector_slicer_config.h.in 'vector_slicer_config.h.in')
 
 add_executable(Vector_Slicer main.cpp
         source/auxiliary/SimpleMathOperations.cpp
