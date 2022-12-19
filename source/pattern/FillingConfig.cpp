@@ -247,7 +247,7 @@ void FillingConfig::exportConfig(const fs::path &directory) {
         file << "CollisionRadius " << collision_radius << std::endl;
         file << "StartingPointSeparation " << starting_point_separation << std::endl;
         file << "Repulsion " << repulsion << std::endl;
-        file << "Repulsion radius" << repulsion_radius << std::endl;
+        file << "RepulsionRadius " << repulsion_radius << std::endl;
         file << "StepLength " << step_length << std::endl;
         file << "PrintRadius " << print_radius << std::endl;
         file << "Seed " << seed << std::endl;
