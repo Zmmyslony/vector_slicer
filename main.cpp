@@ -14,7 +14,7 @@
 #include <boost/dll.hpp>
 #include <string>
 #include <iostream>
-#include "source/pattern/bayesian_optimisation.h"
+#include "source/bayesian_optimisation.h"
 #include "source/importing_patterns.h"
 
 namespace fs = boost::filesystem;
