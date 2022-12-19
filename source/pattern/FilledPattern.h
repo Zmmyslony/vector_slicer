@@ -111,7 +111,7 @@ public:
 
     unsigned int getNewElement();
 
-    void exportToDirectory(const fs::path &directory) const;
+    void exportFilledMatrix(const fs::path &directory) const;
 
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point);
 

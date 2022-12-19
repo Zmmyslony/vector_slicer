@@ -19,11 +19,11 @@
 #include <chrono>
 
 #include "bayesian_optimisation.h"
-#include "../importing_and_exporting/OpenFiles.h"
-#include "../importing_and_exporting/Exporting.h"
-#include "../../ExecutionConfig.h"
-#include "IndexedPath.h"
-#include "../auxiliary/ProgressBar.h"
+#include "importing_and_exporting/OpenFiles.h"
+#include "importing_and_exporting/Exporting.h"
+#include "../ExecutionConfig.h"
+#include "pattern/IndexedPath.h"
+#include "auxiliary/ProgressBar.h"
 
 namespace fs = boost::filesystem;
 
@@ -59,10 +59,10 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
     if (!fs::exists(pattern_directory)) {
         fs::create_directory(pattern_directory);
     }
-    pattern.exportToDirectory(pattern_directory.string());
+    pattern.exportFilledMatrix(pattern_directory.string());
 
     std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
-    export3DVectorToFile(sorted_paths, results_directory, "best_paths");
+    exportPathSequence(sorted_paths, results_directory, "best_paths");
 }
 
 

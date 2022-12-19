@@ -248,10 +248,8 @@ FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previo
     fillPointsFromList(half_circle_points, previous_point - last_point);
 }
 
-void FilledPattern::exportToDirectory(const fs::path &directory) const {
+void FilledPattern::exportFilledMatrix(const fs::path &directory) const {
     fs::path filled_filename = directory / "number_of_times_filled.csv";
-    fs::path x_field_filename = directory / "x_field.csv";
-    fs::path y_field_filename = directory / "y_field.csv";
     exportVectorTableToFile(number_of_times_filled, filled_filename);
 }
 
