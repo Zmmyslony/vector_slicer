@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 04/11/2021.
@@ -17,8 +17,12 @@
 #ifndef VECTOR_SLICER_PROGRESSBAR_H
 #define VECTOR_SLICER_PROGRESSBAR_H
 
+#include <chrono>
+
 void showProgress(double progress);
 
 void showProgress(int current_step, int max_step);
+
+void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin);
 
 #endif //VECTOR_SLICER_PROGRESSBAR_H

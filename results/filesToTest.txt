@@ -1,8 +1,12 @@
-ignore ..\patterns\radial, r = 1 cm
-ignore ..\patterns\azimuthal, r = 0.5 cm
-ignore ..\patterns\diagonal, 2x1 cm
-ignore ..\patterns\linear, 2x1 cm
-ignore ..\patterns\symmetric gauss curved rectangle
-ignore ..\patterns\symmetric magic angle large
-ignore ..\patterns\symmetric gauss curved rectangle
-..\patterns\symmetricPositive, 4x1.2 cm
+ ..\patterns\azimuthal_05_cm
+ ..\patterns\radial_05_cm
+ ..\patterns\diagonal_1x05_cm
+ ..\patterns\linear_1x05_cm
+
+ ..\patterns\azimuthal_1_cm
+ ..\patterns\radial_1_cm
+ ..\patterns\diagonal_2x1_cm
+ ..\patterns\linear_2x1_cm
+
+ ..\patterns\symmetric_positive_4x12_cm
+..\patterns\symmetric_gauss_curved_4x3_cm

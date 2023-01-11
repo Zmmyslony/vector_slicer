@@ -11,25 +11,33 @@
 // You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 10/01/2022.
+// Created by Michał Zmyślony on 07/12/2022.
 //
 
-#ifndef VECTOR_SLICER_CONFIGGENERATION_H
-#define VECTOR_SLICER_CONFIGGENERATION_H
+#include "importing_patterns.h"
 
-#include "../auxiliary/FillingConfig.h"
-#include "../pattern/DesiredPattern.h"
+void convertSlashesOperatingSystem(std::string &string) {
+#ifdef _WIN32
+    std::replace(string.begin(), string.end(), '/', '\\');
+#endif
+
+#ifdef linux
+    std::replace(string.begin(), string.end(), '\\', '/');
+#endif
+}
+
+std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path) {
+    std::vector<fs::path> patterns;
+    std::fstream file(list_of_patterns_path.string());
+    std::string line;
 
 
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, const std::vector<FillingConfig> &config_list, int min_seed,
-                 int max_seed);
-
-std::vector<FillingConfig>
-iterateOverOption(const DesiredPattern &desired_pattern, FillingConfig initial_config, double delta, int number_of_configs,
-                  configOptions option);
-
-std::vector<FillingConfig>
-iterateOverSeeds(const DesiredPattern &desired_pattern, FillingConfig initial_config, int min_seed, int max_seed);
-
-#endif //VECTOR_SLICER_CONFIGGENERATION_H
+    while (std::getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        convertSlashesOperatingSystem(line);
+        if (exists(fs::path(line))) {
+            patterns.emplace_back(line);
+        }
+    }
+    return patterns;
+}

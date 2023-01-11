@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 27/09/2021.
@@ -21,24 +21,33 @@
 #include <tuple>
 #include <valarray>
 
-std::vector<std::valarray<int>> generatePerimeterList(double radius);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-std::valarray<double> getRepulsion(std::vector<std::vector<int>> &filled_table,
-                                   std::vector<std::valarray<int>> &checked_area,
-                                   const std::valarray<int> &start_positions,
-                                   const std::valarray<int> &sizes, double repulsion_coefficient);
+std::vector<vali> generatePerimeterList(double radius);
 
-bool isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                     const std::vector<std::valarray<int>> &perimeter_list, const std::valarray<int> &start_positions,
-                     const std::valarray<int> &sizes);
+vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table,
+                       const std::vector<vali> &checked_area,
+                       const vali &start_positions,
+                       const vali &sizes, double repulsion_coefficient);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const std::valarray<int> &start_positions,
-              const std::valarray<int> &sizes);
+vald
+getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
+                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
+                  double repulsion_coefficient);
 
-std::vector<std::valarray<int>>
-findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
+bool
+isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
+                const std::vector<vali> &perimeter_displacements_list, const vali &coordinates,
+                const vali &sizes);
 
-std::vector<std::valarray<int>>
-findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const std::valarray<int> &sizes);
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coordinates,
+              const vali &sizes);
+
+std::vector<vali>
+findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+
+std::vector<vali>
+findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
 
 #endif //VECTOR_SLICER_PERIMETER_H

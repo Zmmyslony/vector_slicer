@@ -11,16 +11,22 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 27/09/2021.
+// Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#ifndef VECTOR_SLICER_VECTOR_OPERATIONS_H
+#define VECTOR_SLICER_VECTOR_OPERATIONS_H
 
-int roundUp(double);
+#include <valarray>
+#include <vector>
 
-int sgn(double number);
+std::vector<std::valarray<int>>
+stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector);
 
-double decimalPart(double number);
+double mean(const std::vector<double> &data);
 
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+double standardDeviation(const std::vector<double> &data);
+
+
+
+#endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

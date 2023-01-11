@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 27/09/2021.
@@ -24,24 +24,24 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point)
         return false;
     } else {
         Path new_path_forwards = pattern.generateNewPathForDirection(starting_point.positions,
-                                                                     pattern.desired_pattern.preferredDirection(
-                                                                           starting_point.positions,
-                                                                           pattern.config.getStepLength()));
+                                                                     pattern.desired_pattern.get().preferredDirection(
+                                                                             starting_point.positions,
+                                                                             pattern.getStepLength()));
         Path new_path_backwards = pattern.generateNewPathForDirection(starting_point.positions,
-                                                                      -pattern.desired_pattern.preferredDirection(
-                                                                            starting_point.positions,
-                                                                            pattern.config.getStepLength()));
+                                                                      -pattern.desired_pattern.get().preferredDirection(
+                                                                              starting_point.positions,
+                                                                              pattern.getStepLength()));
 
         Path new_path(new_path_forwards, new_path_backwards);
 
-        if (new_path.getSize() == 1) {
-            pattern.fillPointsInCircle(new_path.sequence_of_positions[0]);
+        if (new_path.size() == 1) {
+            pattern.fillPointsInCircle(starting_coordinates);
         } else {
             pattern.fillPointsInHalfCircle(new_path.first(), new_path.second());
-            pattern.fillPointsInHalfCircle(new_path.last(), new_path.previousToLast());
+            pattern.fillPointsInHalfCircle(new_path.last(), new_path.secondToLast());
+            pattern.addNewPath(new_path);
         }
 
-        pattern.addNewPath(new_path);
         return true;
     }
 }
@@ -52,4 +52,5 @@ void fillWithPaths(FilledPattern &pattern) {
     while (is_there_any_spot_fillable) {
         is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
     }
+    pattern.removePoints();
 }

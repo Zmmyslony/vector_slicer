@@ -11,16 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 27/09/2021.
+// Created by Michał Zmyślony on 08/12/2022.
 //
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#ifndef VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
+#define VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
 
-int roundUp(double);
+#include "bayesopt/bayesopt.hpp"
 
-int sgn(double number);
+bayesopt::Parameters high_precision;
 
-double decimalPart(double number);
+bayesopt::Parameters medium_precision;
 
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+bayesopt::Parameters low_precision;
+
+#endif //VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H

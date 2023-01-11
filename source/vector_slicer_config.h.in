@@ -10,17 +10,13 @@
 //
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
-//
-// Created by Michał Zmyślony on 27/09/2021.
-//
+#ifndef INCLUDE_GUARD
+#define INCLUDE_GUARD
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#define SLICER_NAME "@PROJECT_NAME@"
+#define SLICER_VER  "@PROJECT_VERSION@"
+#define SLICER_VER_MAJOR "@PROJECT_VERSION_MAJOR@"
+#define SLICER_VER_MINOR "@PROJECT_VERSION_MINOR@"
+#define SLICER_VER_PATCH "@PROJECT_VERSION_PATCH@"
 
-int roundUp(double);
-
-int sgn(double number);
-
-double decimalPart(double number);
-
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#endif // INCLUDE_GUARD

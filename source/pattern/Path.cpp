@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 21/09/2021.
@@ -27,16 +27,16 @@ Path::Path(std::valarray<int> &starting_positions) {
 }
 
 
-unsigned int Path::getSize() const {
+unsigned int Path::size() const {
     return sequence_of_positions.size();
 }
 
 
 Path::Path(Path forward_path, Path backward_path) {
-    for (int i = 0; i < backward_path.getSize(); i++) {
-        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.getSize() - i - 1]);
+    for (int i = 0; i < backward_path.size(); i++) {
+        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.size() - i - 1]);
     }
-    for (int i = 1; i < forward_path.getSize(); i++) {
+    for (int i = 1; i < forward_path.size(); i++) {
         sequence_of_positions.push_back(forward_path.sequence_of_positions[i]);
     }
 }
@@ -53,6 +53,6 @@ std::valarray<int> Path::last() {
     return sequence_of_positions.back();
 }
 
-std::valarray<int> Path::previousToLast() {
+std::valarray<int> Path::secondToLast() {
     return sequence_of_positions[sequence_of_positions.size() - 2];
 }

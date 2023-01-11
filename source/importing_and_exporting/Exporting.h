@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 13/10/2021.
@@ -30,8 +30,11 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 
 void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename);
 
-void export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                          const std::string &suffix);
+void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename);
+
+void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
+                        const std::string &suffix);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
 

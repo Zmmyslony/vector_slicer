@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 13/10/2021.
@@ -17,6 +17,7 @@
 #include "Exporting.h"
 #include <fstream>
 #include <sstream>
+#include "vector_slicer_config.h"
 
 
 std::string readRowToString(const std::vector<int> &row) {
@@ -54,6 +55,25 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 }
 
 
+void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+    std::ofstream file(filename.string());
+
+    if (file.is_open()) {
+        file << header;
+        for (int i = 0; i < table_first.size(); i++) {
+            std::vector<int> row;
+            for (int j = 0; j < table_first[i].size(); j++) {
+                row.emplace_back(table_first[i][j]);
+                row.emplace_back(table_second[i][j]);
+            }
+            file << readRowToString(row);
+        }
+        file.close();
+    }
+}
+
+
 void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename) {
     std::ofstream file(filename.string());
     if (file.is_open()) {
@@ -80,18 +100,32 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
     return table;
 }
 
+std::string generateHeader(const fs::path &path) {
+    std::string header;
+    time_t ttime = time(nullptr);
+    char time[26];
+    ctime_s(time, sizeof time, &ttime);
+    header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
+    header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
+    header += "# Source directory: " + path.string() + "\n\n";
+    return header;
+}
+
 
 void
-export3DVectorToFile(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                     const std::string &suffix) {
+exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
+                   const std::string &suffix) {
     std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
-    fs::path x_filename = path / ("x_" + suffix + ".csv");
-    fs::path y_filename = path / ("y_" + suffix + ".csv");
-
-    exportVectorTableToFile(x_table, x_filename);
-    exportVectorTableToFile(y_table, y_filename);
+    fs::path paths_filename = path / "paths.csv";
+    exportVectorTableToFile(generateHeader(path.parent_path()), x_table, y_table, paths_filename);
+//
+//    fs::path x_filename = path / ("x_" + suffix + ".csv");
+//    fs::path y_filename = path / ("y_" + suffix + ".csv");
+//
+//    exportVectorTableToFile(x_table, x_filename);
+//    exportVectorTableToFile(y_table, y_filename);
 }
 
 
@@ -101,6 +135,7 @@ std::vector<std::vector<int>> importTableInt(const fs::path &filename) {
     std::fstream file(filename.string());
 
     while (std::getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         std::string element;
         std::stringstream line_stream(line);
         std::vector<int> row;

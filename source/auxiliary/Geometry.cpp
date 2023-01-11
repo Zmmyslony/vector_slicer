@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 22/09/2021.
@@ -17,112 +17,139 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
+
+#include "Geometry.h"
 #include "ValarrayOperations.h"
-#include <cfloat>
 
 
-bool isOnTheLeftSideOfEdge(std::valarray<int> point, std::valarray<double> edge_first,
-                           std::valarray<double> edge_second) {
-    int sign = (int) ((edge_second[0] - edge_first[0]) * (point[1] - edge_first[1]) -
-                      (point[0] - edge_first[0]) * (edge_second[1] - edge_first[1]));
-    if (sign > 0) {
-        return true;
+bool isLeftOfEdgeInclusive(const vali &point, const vald &edge_point_first, const vald &edge_point_second) {
+    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
+    return (cross_product >= 0);
+}
+
+
+bool isLeftOfEdgeExclusive(const vali &point, const vald &edge_point_first, const vald &edge_point_second) {
+    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
+    return (cross_product > 0);
+}
+
+
+bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+    if (is_exclusive) {
+        return isLeftOfEdgeExclusive(point, edge_point_first, edge_point_second);
     } else {
-        return false;
+        return isLeftOfEdgeInclusive(point, edge_point_first, edge_point_second);
     }
 }
 
 
-bool isInRectangle(std::valarray<int> &point, std::valarray<double> &edge_first,
-                   std::valarray<double> &edge_second, std::valarray<double> &edge_third,
-                   std::valarray<double> &edge_fourth) {
-    bool is_on_left_of_first_edge = isOnTheLeftSideOfEdge(point, edge_first, edge_second);
-    bool is_on_left_of_second_edge = isOnTheLeftSideOfEdge(point, edge_second, edge_third);
-    bool is_on_left_of_third_edge = isOnTheLeftSideOfEdge(point, edge_third, edge_fourth);
-    bool is_on_left_of_fourth_edge = isOnTheLeftSideOfEdge(point, edge_fourth, edge_first);
+bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
+                   const vald &corner_fourth, bool is_exclusive) {
+    bool is_left_of_first_edge = isLeftOfEdge(point, corner_first, corner_second, is_exclusive);
+    bool is_left_of_second_edge = isLeftOfEdge(point, corner_second, corner_third, false);
 
-    if (is_on_left_of_first_edge && is_on_left_of_second_edge && is_on_left_of_third_edge && is_on_left_of_fourth_edge) {
-        return true;
-    } else {
-        return false;
-    }
+    bool is_left_of_third_edge = isLeftOfEdge(point, corner_third, corner_fourth, false);
+    bool is_left_of_fourth_edge = isLeftOfEdge(point, corner_fourth, corner_first, false);
+
+    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
 }
 
 
 double minValue(const std::vector<double> &values) {
-    double min_value = DBL_MAX;
-    for (auto &current_value : values) {
-        if (current_value < min_value) {
-            min_value = current_value;
-        }
-    }
-    return min_value;
+    return *std::min_element(values.begin(), values.end());
 }
 
 double maxValue(const std::vector<double> &values) {
-    double max_value = DBL_MIN;
-    for (auto &current_value : values) {
-        if (current_value > max_value) {
-            max_value = current_value;
-        }
-    }
-    return max_value;
+    return *std::max_element(values.begin(), values.end());
 }
 
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
-                                                 const std::valarray<int> &point_second, double radius) {
-    std::valarray<double> point_first_double = itodArray(point_first);
-    std::valarray<double> point_second_double = itodArray(point_second);
+std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_second, const vald &corner_third,
+                                   const vald &corner_fourth, bool is_exclusive) {
+    std::vector<double> x_coordinates = {corner_first[0], corner_second[0], corner_third[0], corner_fourth[0]};
+    std::vector<double> y_coordinates = {corner_first[1], corner_second[1], corner_third[1], corner_fourth[1]};
 
-    std::valarray<double> connecting_vector = normalize(point_second_double - point_first_double);
-    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
+    int x_min = (int) minValue(x_coordinates);
+    int x_max = (int) maxValue(x_coordinates) + 1;
+    int y_min = (int) minValue(y_coordinates);
+    int y_max = (int) maxValue(y_coordinates) + 1;
 
-    std::valarray<double> first_edge = point_first_double + perpendicular_vector - 0.5 * connecting_vector;
-    std::valarray<double> second_edge = point_second_double + perpendicular_vector;
-    std::valarray<double> third_edge = point_second_double - perpendicular_vector;
-    std::valarray<double> fourth_edge = point_first_double - perpendicular_vector - 0.5 * connecting_vector;
+    std::vector<vali> points_to_fill;
 
-
-    int x_min = (int)minValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]});
-    int x_max = (int)maxValue({first_edge[0], second_edge[0], third_edge[0], fourth_edge[0]}) + 1;
-    int y_max = (int)maxValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]}) + 1;
-    int y_min = (int)minValue({first_edge[1], second_edge[1], third_edge[1], fourth_edge[1]});
-
-    std::vector<std::valarray<int>> points_to_fill;
-
-    int y_curr = y_max;
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
-        std::valarray<int> top_point = {x_curr, y_curr};
-        bool searching_for_top_point = true;
-        while (searching_for_top_point) {
-            if (isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) &&
-                top_point[1] >= y_curr && top_point[1] <= y_max) {
-                top_point[1]++;
-            } else if (!isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) &&
-                       top_point[1] <= y_curr && top_point[1] >= y_min) {
-                top_point[1]--;
-            } else {
-                searching_for_top_point = false;
+        for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
+            vali top_point = {x_curr, y_curr};
+            if (isInRectangle(top_point, corner_first, corner_second, corner_third, corner_fourth, is_exclusive)) {
+                points_to_fill.push_back(top_point);
             }
-        }
-
-        while (isInRectangle(top_point, first_edge, second_edge, third_edge, fourth_edge) && top_point[1] >= 0) {
-            points_to_fill.push_back(top_point);
-            top_point[1]--;
         }
     }
     return points_to_fill;
 }
 
 
-std::vector<std::valarray<int>> findPointsInCircle(double radius) {
-    std::vector<std::valarray<int>> points_in_circle;
-    int range = (int)radius + 1;
-    for (int i = -range ; i <= range; i++) {
+std::vector<vali>
+findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled) {
+    vald tangent = normalize(point_next - point_current);
+    vald normal = perpendicular(tangent) * radius;
+
+    vald corner_first = itod(point_current) + normal;
+    vald corner_second = itod(point_current) - normal;
+    vald corner_third = itod(point_next) - normal;
+    vald corner_fourth = itod(point_next) + normal;
+
+    return findPointsToFill(corner_first, corner_second, corner_third, corner_fourth, is_first_point_filled);
+}
+
+
+std::vector<vali>
+findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
+                 bool is_first_point_filled) {
+    vald previous_tangent = normalize(point_current - point_previous);
+    vald previous_normal = perpendicular(previous_tangent) * radius;
+
+    vald current_tangent = normalize(point_next - point_current);
+    vald current_normal = perpendicular(current_tangent) * radius;
+
+    vald corner_first = itod(point_current) + previous_normal;
+    vald corner_second = itod(point_current) - previous_normal;
+    vald corner_third = itod(point_next) - current_normal;
+    vald corner_fourth = itod(point_next) + current_normal;
+
+    return findPointsToFill(corner_first, corner_second, corner_third, corner_fourth, is_first_point_filled);
+}
+
+
+std::vector<vali>
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled) {
+
+    vald tangent = normalize(last_point - previous_point);
+    vald normal = perpendicular(tangent) * radius;
+
+    std::vector<vali> points_to_fill;
+    int range = (int) radius + 1;
+    for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
+        for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
+            vali displacement = {x_displacement, y_displacement};
+            bool is_on_correct_side = isLeftOfEdge(displacement, normal, -normal, is_last_point_filled);
+
+            if (norm(displacement) <= radius && is_on_correct_side) {
+                points_to_fill.emplace_back(displacement + last_point);
+            }
+        }
+    }
+    return points_to_fill;
+}
+
+
+std::vector<vali> findPointsInCircle(double radius) {
+    std::vector<vali> points_in_circle;
+    int range = (int) radius;
+    for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
-            if (i * i + j * j <= radius * radius) {
-                points_in_circle.push_back({i, j});
+            vali displacement = {i, j};
+            if (norm(displacement) <= radius) {
+                points_in_circle.push_back(displacement);
             }
         }
     }
@@ -130,36 +157,6 @@ std::vector<std::valarray<int>> findPointsInCircle(double radius) {
 }
 
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
-                                               const std::valarray<int> &previous_point, double radius) {
-    std::valarray<double> last_point_double = itodArray(last_point);
-    std::valarray<double> point_second_double = itodArray(previous_point);
-
-    std::valarray<double> connecting_vector = normalize(point_second_double - last_point_double);
-    std::valarray<double> perpendicular_vector = {connecting_vector[1] * radius, -connecting_vector[0] * radius};
-
-    std::valarray<double> first_corner = perpendicular_vector - 0.5 * connecting_vector;
-    std::valarray<double> second_corner = -perpendicular_vector - 0.5 * connecting_vector;
-
-    std::vector<std::valarray<int>> points_to_fill;
-
-    int int_radius = (int)radius + 1;
-    for (int x_displacement = -int_radius; x_displacement < int_radius; x_displacement++) {
-        for (int y_displacement = -int_radius; y_displacement < int_radius; y_displacement++) {
-            std::valarray<int> displacement = {x_displacement, y_displacement};
-            double distance = norm(displacement);
-
-            bool is_on_correct_side = isOnTheLeftSideOfEdge(displacement, first_corner, second_corner);
-
-            if (distance <= radius && is_on_correct_side) {
-                points_to_fill.push_back(displacement + last_point);
-            }
-        }
-    }
-    return points_to_fill;
-}
-
-
-std::vector<std::valarray<int>> findPointsInCircle(int radius) {
-    return findPointsInCircle((double)radius);
+std::vector<vali> findPointsInCircle(int radius) {
+    return findPointsInCircle((double) radius);
 }

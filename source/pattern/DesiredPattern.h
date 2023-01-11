@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 17/09/2021.
@@ -38,7 +38,13 @@ public:
 
     const std::vector<std::vector<double>> &getYFieldPreferred() const;
 
-    DesiredPattern(std::string shape_filename, std::string x_vector_field_filename, std::string y_vector_field_filename);
+    DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
+                   const std::string &y_field_filename);
+
+    DesiredPattern(const std::string& shape_filename, const std::string& theta_field_filename);
+
+    DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
+                   std::vector<std::vector<double>> y_field);
 
     std::valarray<int> preferredDirection(const std::valarray<int> &position, int distance) const;
 

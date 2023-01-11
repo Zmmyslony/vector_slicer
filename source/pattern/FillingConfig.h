@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 05/11/2021.
@@ -25,10 +25,10 @@ namespace fs = boost::filesystem;
 
 
 enum fillingMethod {
-    ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomRadial
+    ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomDual
 };
 enum configOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed
+    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
 };
 
 
@@ -40,6 +40,7 @@ class FillingConfig {
     double starting_point_separation;
     double print_radius;
     unsigned int seed;
+    double repulsion_radius;
 
     void readLineOfConfig(std::vector<std::string> line);
 
@@ -54,25 +55,28 @@ public:
 
     double getRepulsion() const;
 
-    int getStepLength() const;
-
     double getStartingPointSeparation() const;
 
     double getPrintRadius() const;
 
     unsigned int getSeed() const;
 
+    double getRepulsionRadius() const;
 
-    explicit FillingConfig(fs::path &config_path);
+    explicit FillingConfig();
+
+    explicit FillingConfig(const fs::path &config_path);
 
     FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                   int new_starting_point_separation, double new_repulsion, int new_step_length,
-                  int new_print_radius, unsigned int new_seed);
+                  int new_print_radius, double new_repulsion_radius, unsigned int new_seed);
 
-
-    std::string getConfigOption(configOptions option);
 
     void exportConfig(const fs::path &directory);
+
+    int getStepLength() const;
+
+    std::string getConfigOption(configOptions option);
 };
 
 bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config);

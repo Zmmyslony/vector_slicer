@@ -1,3 +1,4 @@
+
 // 2022, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
@@ -11,16 +12,33 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 27/09/2021.
+// Created by Michał Zmyślony on 21/11/2022.
 //
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#ifndef VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
+#define VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
 
-int roundUp(double);
+#include "bayesopt/bayesopt.hpp"
+#include <utility>
+#include "pattern/QuantifiedConfig.h"
 
-int sgn(double number);
+class BayesianOptimisation : public bayesopt::ContinuousModel {
+    QuantifiedConfig problem;
+    std::chrono::steady_clock::time_point begin;
+    int threads;
+    int seeds;
 
-double decimalPart(double number);
+public:
+    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds, bayesopt::Parameters parameters);
 
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+    double evaluateSample(const vectord &x_in);
+
+    bool checkReachability(const vectord &query) { return true; };
+
+};
+
+void optimisePattern(const fs::path &pattern_path, int seeds, int threads);
+
+void recalculateBestConfig(const fs::path &pattern_path);
+
+#endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H

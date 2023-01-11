@@ -8,7 +8,7 @@
 //
 // Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Michał Zmyślony on 27/09/2021.
@@ -22,14 +22,20 @@
 #include <valarray>
 #include <algorithm>
 
-std::vector<std::valarray<int>> findPointsToFill(const std::valarray<int> &point_first,
-                                                 const std::valarray<int> &point_second, double radius);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-std::vector<std::valarray<int>> findPointsInCircle(double radius);
+std::vector<vali> findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled);
 
-std::vector<std::valarray<int>> findPointsInCircle(int radius);
+std::vector<vali>
+findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
+                 bool is_first_point_filled);
 
-std::vector<std::valarray<int>> findHalfCircle(const std::valarray<int> &last_point,
-                                               const std::valarray<int> &previous_point, double radius);
+std::vector<vali> findPointsInCircle(double radius);
+
+std::vector<vali> findPointsInCircle(int radius);
+
+std::vector<vali>
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

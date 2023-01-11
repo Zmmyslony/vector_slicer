@@ -11,16 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 27/09/2021.
+// Created by Michał Zmyślony on 07/12/2022.
 //
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#ifndef VECTOR_SLICER_IMPORTING_PATTERNS_H
+#define VECTOR_SLICER_IMPORTING_PATTERNS_H
 
-int roundUp(double);
+#include <vector>
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
 
-int sgn(double number);
+namespace fs = boost::filesystem;
 
-double decimalPart(double number);
+std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path);
 
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#endif //VECTOR_SLICER_IMPORTING_PATTERNS_H
