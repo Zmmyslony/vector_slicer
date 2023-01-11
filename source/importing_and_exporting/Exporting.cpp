@@ -100,7 +100,7 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
     return table;
 }
 
-std::string generate_header(const fs::path &path) {
+std::string generateHeader(const fs::path &path) {
     std::string header;
     time_t ttime = time(nullptr);
     char time[26];
@@ -118,14 +118,14 @@ exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_c
     std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
-    fs::path x_filename = path / ("x_" + suffix + ".csv");
-    fs::path y_filename = path / ("y_" + suffix + ".csv");
-
     fs::path paths_filename = path / "paths.csv";
-
-    exportVectorTableToFile(x_table, x_filename);
-    exportVectorTableToFile(y_table, y_filename);
-    exportVectorTableToFile(generate_header(path.parent_path()), x_table, y_table, paths_filename);
+    exportVectorTableToFile(generateHeader(path.parent_path()), x_table, y_table, paths_filename);
+//
+//    fs::path x_filename = path / ("x_" + suffix + ".csv");
+//    fs::path y_filename = path / ("y_" + suffix + ".csv");
+//
+//    exportVectorTableToFile(x_table, x_filename);
+//    exportVectorTableToFile(y_table, y_filename);
 }
 
 
