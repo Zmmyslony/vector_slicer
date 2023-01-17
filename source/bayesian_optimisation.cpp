@@ -51,18 +51,16 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
 
 void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_path) {
     fs::path results_directory = pattern_path / "results";
-    fs::path pattern_directory = pattern_path / "results";
+    fs::path generated_paths_directory = pattern_path.parent_path().parent_path() / "paths";
 
     if (!fs::exists(results_directory)) {
         fs::create_directory(results_directory);
     }
-    if (!fs::exists(pattern_directory)) {
-        fs::create_directory(pattern_directory);
-    }
-    pattern.exportFilledMatrix(pattern_directory.string());
+    pattern.exportFilledMatrix(results_directory.string());
 
     std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
     exportPathSequence(sorted_paths, results_directory, "best_paths");
+    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string());
 }
 
 
@@ -81,7 +79,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
     lower_bound[2] = print_radius; // Min starting point separation
-    lower_bound[3] = 0; // Repulsion radius
+    lower_bound[3] = 0; // RepulsionRadius
 
     upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
@@ -147,7 +145,7 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     pattern.evaluate();
 
     exportPatternToDirectory(pattern.getFilledPattern(), pattern_path);
-    pattern.getConfig().exportConfig(pattern_path / "results" / "best_config.txt");
+    pattern.getConfig().exportConfig(pattern_path);
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {

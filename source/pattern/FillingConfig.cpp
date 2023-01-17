@@ -50,7 +50,7 @@ void FillingConfig::printConfig() {
 
     stream << "\t\tCollision radius is " << collision_radius << "." << std::endl;
     stream << "\t\tRepulsion is " << repulsion << "." << std::endl;
-    stream << "\t\tRepulsion radius is " << repulsion_radius << "." << std::endl;
+    stream << "\t\tRepulsionRadius  is " << repulsion_radius << "." << std::endl;
     stream << "\t\tPrint radius is " << print_radius << "." << std::endl;
     stream << "\t\tStarting point separation is " << starting_point_separation << "." << std::endl;
     stream << "\t\tSeed is " << seed << "." << std::endl;

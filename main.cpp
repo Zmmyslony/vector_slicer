@@ -25,7 +25,7 @@ const double VERSION = 1.0;
 int main() {
     printf("\n\tVector slicer version %.1f.\n", VERSION);
     fs::path cwd = boost::dll::program_location().parent_path();
-    fs::path results = cwd.parent_path() / "results";
+    fs::path results = cwd.parent_path() / "execution_setup";
     fs::path patterns_path = results / "filesToTest.txt";
 
     std::vector<fs::path> patterns = getPatterns(patterns_path);
