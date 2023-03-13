@@ -29,7 +29,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double empty_spots = 0;
     double average_overlap = 0;
     double director_disagreement = 0;
-    double number_of_paths = 0;
+    double average_path_inverse_length = 0;
     double disagreement = DBL_MAX;
 
     double calculateEmptySpots();
@@ -38,7 +38,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
 
     double calculateDirectorDisagreement();
 
-    double calculateNumberOfPaths();
+    double calculateAveragePathInverseLength();
 
 public:
     QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights);

@@ -15,6 +15,7 @@
 //
 
 #include "Path.h"
+#include "../auxiliary/ValarrayOperations.h"
 
 void Path::addPoint(std::valarray<int> &positions) {
     sequence_of_positions.push_back(positions);
@@ -55,4 +56,12 @@ std::valarray<int> Path::last() {
 
 std::valarray<int> Path::secondToLast() {
     return sequence_of_positions[sequence_of_positions.size() - 2];
+}
+
+double Path::getLength() {
+    double length = 0;
+    for (int i = 1; i < size(); i++) {
+        length += norm(sequence_of_positions[i] - sequence_of_positions[i - 1]);
+    }
+    return length;
 }

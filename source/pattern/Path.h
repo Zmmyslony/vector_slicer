@@ -39,6 +39,8 @@ public:
     std::valarray<int> secondToLast();
 
     std::valarray<int> second();
+
+    double getLength();
 };
 
 
