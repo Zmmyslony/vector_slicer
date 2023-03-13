@@ -17,6 +17,7 @@
 #include "Exporting.h"
 #include <fstream>
 #include <sstream>
+#include <ctime>
 #include "vector_slicer_config.h"
 
 
@@ -100,26 +101,34 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
     return table;
 }
 
-std::string generateHeader(const std::string &pattern_name) {
+std::string generateHeader(const std::string &pattern_name, double print_diameter) {
     std::string header;
     time_t ttime = time(nullptr);
     char time[26];
+
+#if defined(_WIN32) || defined(_WIN64)
     ctime_s(time, sizeof time, &ttime);
+#endif
+#ifdef __linux__
+    ctime_r(&ttime, time);
+#endif
+
     header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
     header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
-    header += "# Source directory: " + pattern_name + "\n\n";
+    header += "# Source directory: " + pattern_name + "\n";
+    header += "# Print diameter: " + std::to_string(print_diameter);
     return header;
 }
 
 
 void
 exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                   const std::string &suffix) {
+                   const std::string &suffix, double print_diameter) {
     std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
     fs::path paths_filename = path / (suffix + ".csv");
-    exportVectorTableToFile(generateHeader(suffix), x_table, y_table, paths_filename);
+    exportVectorTableToFile(generateHeader(suffix, print_diameter), x_table, y_table, paths_filename);
 }
 
 

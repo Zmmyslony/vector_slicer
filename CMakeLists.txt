@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(vector_slicer VERSION 0.2.0)
+project(vector_slicer VERSION 0.2.1)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -15,7 +15,8 @@ if (OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD C17)
 
 configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
 include_directories(${PROJECT_BINARY_DIR})

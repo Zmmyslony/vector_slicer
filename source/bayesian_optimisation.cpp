@@ -59,8 +59,8 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
     pattern.exportFilledMatrix(results_directory.string());
 
     std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
-    exportPathSequence(sorted_paths, results_directory, "best_paths");
-    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string());
+    exportPathSequence(sorted_paths, results_directory, "best_paths", pattern.getPrintRadius() * 2 + 1);
+    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(), pattern.getPrintRadius() * 2 + 1);
 }
 
 
