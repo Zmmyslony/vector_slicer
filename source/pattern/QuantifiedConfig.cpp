@@ -100,10 +100,11 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
         for (int j = 0; j < y_size; j++) {
             if (number_of_times_filled[i][j] > 0) {
                 vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
-                vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j], desired_pattern.get().getYFieldPreferred()[i][j]};
+                vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
+                                         desired_pattern.get().getYFieldPreferred()[i][j]};
                 double filled_director_norm = norm(filled_director);
                 double desired_director_norm = norm(desired_director);
-                double current_director_agreement =  dot(filled_director, desired_director);
+                double current_director_agreement = dot(filled_director, desired_director);
                 if (desired_director_norm != 0 && filled_director_norm != 0) {
                     director_agreement +=
                             std::abs(current_director_agreement) /
@@ -116,18 +117,21 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     return 1 - (double) director_agreement / (double) number_of_filled_elements;
 }
 
-double QuantifiedConfig::calculateAveragePathInverseLength() {
-
-    auto perimeter_length = (unsigned int) fmax(desired_pattern.get().getDimensions()[0],
-                                                desired_pattern.get().getDimensions()[1]);
-    double sum_of_inverse_lengths = 0;
-    for (auto &path : getSequenceOfPaths()) {
-        sum_of_inverse_lengths += perimeter_length / path.getLength();
+double QuantifiedConfig::calculatePathLengthDeviation(int order) {
+    double length_scale = fmax(desired_pattern.get().getDimensions()[0], desired_pattern.get().getDimensions()[1]);
+    double sum_of_lengths = 0;
+    for (auto &path: getSequenceOfPaths()) {
+        sum_of_lengths += path.getLength();
     }
-
     unsigned int paths_number = getSequenceOfPaths().size();
+    double average_length = sum_of_lengths / paths_number;
 
-    return sum_of_inverse_lengths / (double) paths_number;
+    double deviations_sum = 0;
+    for (auto &path: getSequenceOfPaths()) {
+        deviations_sum += pow(std::abs((path.getLength() - average_length) / length_scale), order);
+    }
+    deviations_sum /= paths_number;
+    return pow(deviations_sum, 1. / order);
 }
 
 void QuantifiedConfig::evaluate() {
@@ -136,7 +140,7 @@ void QuantifiedConfig::evaluate() {
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
-    average_path_inverse_length = calculateAveragePathInverseLength();
+    average_path_inverse_length = calculatePathLengthDeviation(2);
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +

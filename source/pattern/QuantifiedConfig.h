@@ -38,7 +38,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
 
     double calculateDirectorDisagreement();
 
-    double calculateAveragePathInverseLength();
+    double calculatePathLengthDeviation(int order);
 
 public:
     QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights);

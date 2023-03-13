@@ -105,7 +105,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     DisagreementWeights default_weights(40, 2,
                                         8, 2,
                                         70, 2,
-                                        0.0001, 2);
+                                        0.001, 2);
 
 //    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
