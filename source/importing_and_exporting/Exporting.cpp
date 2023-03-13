@@ -116,7 +116,7 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
     header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
     header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
     header += "# Source directory: " + pattern_name + "\n";
-    header += "# Print diameter: " + std::to_string(print_diameter);
+    header += "# Print diameter: " + std::to_string(print_diameter)  + "\n\n";
     return header;
 }
 
