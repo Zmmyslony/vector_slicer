@@ -16,14 +16,13 @@
 #include <iostream>
 #include "source/bayesian_optimisation.h"
 #include "source/importing_patterns.h"
+#include "vector_slicer_config.h"
 
 namespace fs = boost::filesystem;
 
-const double VERSION = 1.0;
-
 
 int main() {
-    printf("\n\tVector slicer version %.1f.\n", VERSION);
+    printf("\n\tVector slicer version %s\n", SLICER_VER);
     fs::path cwd = boost::dll::program_location().parent_path();
     fs::path results = cwd.parent_path() / "execution_setup";
     fs::path patterns_path = results / "filesToTest.txt";
@@ -38,8 +37,8 @@ int main() {
 
     for (auto &pattern_type: patterns) {
         try {
-            optimisePattern(pattern_type, 24, 8);
-//            recalculateBestConfig(pattern_type);
+//            optimisePattern(pattern_type, 24, 8);
+            recalculateBestConfig(pattern_type);
         }
         catch (std::runtime_error &error) {
             std::cout << error.what() << std::endl;
