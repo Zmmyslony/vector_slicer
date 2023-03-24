@@ -51,6 +51,7 @@ void FilledPattern::setup() {
     random_engine = std::mt19937(getSeed());
     unsigned int number_of_fillable_points = fillable_points.size();
     distribution = std::uniform_int_distribution<unsigned int>(0, number_of_fillable_points - 1);
+    sortFillablePoints();
 }
 
 
@@ -444,6 +445,24 @@ bool FilledPattern::isPointPerimeterFree(const vali &point) const {
 
 bool FilledPattern::isPointInShape(const vali &point) {
     return desired_pattern.get().getShapeMatrix()[point[0]][point[1]];
+}
+
+void FilledPattern::sortFillablePoints() {
+    std::vector<double> fillable_points_splay;
+    for (auto &point: fillable_points) {
+        fillable_points_splay.emplace_back(desired_pattern.get().getSplay(point));
+    }
+    std::vector<int> indices(fillable_points.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::sort(indices.begin(), indices.end(),
+              [&](int first, int second) -> bool {
+                  return fillable_points_splay[first] < fillable_points_splay[second];
+              });
+    fillable_points_sorted = std::vector<vali>(fillable_points.size());
+
+    for (int i = 0; i < fillable_points.size(); i++) {
+        fillable_points_sorted[i] = fillable_points[indices[i]];
+    }
 }
 
 

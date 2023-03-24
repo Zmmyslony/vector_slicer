@@ -77,13 +77,16 @@ class FilledPattern : public FillingConfig {
     std::vector<vali>
     findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 
+    void sortFillablePoints();
+
 public:
     bool is_filling_method_random = true;
     std::reference_wrapper<const DesiredPattern> desired_pattern;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
 
-    std::vector<vali> points_to_fill;
+    std::vector<vali> fillable_points;
+    std::vector<vali> fillable_points_sorted;
     std::vector<vali> collision_list;
     std::vector<std::vector<int>> number_of_times_filled;
     pointSearchStage search_stage = PerimeterSearch;
