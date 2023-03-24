@@ -439,4 +439,14 @@ bool FilledPattern::isFilled(const vali &coordinates) {
 }
 
 
+bool FilledPattern::isPointPerimeterFree(const vali &point) {
+    return isPerimeterFree(number_of_times_filled, desired_pattern.get().getShapeMatrix(),
+                           collision_list, point, desired_pattern.get().getDimensions());
+}
+
+bool FilledPattern::isPointInShape(const vali &point) {
+    return desired_pattern.get().getShapeMatrix()[point[0]][point[1]];
+}
+
+
 #pragma clang diagnostic pop

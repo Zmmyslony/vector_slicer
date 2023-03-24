@@ -27,35 +27,22 @@ StartingPoint::StartingPoint() :
 void StartingPoint::findStartPointFullyRandomly(FilledPattern &pattern) {
     tries++;
     positions = pattern.findPointInShape();
-
-    if (isPerimeterFree(pattern.number_of_times_filled, pattern.desired_pattern.get().getShapeMatrix(),
-                        pattern.collision_list, positions, pattern.desired_pattern.get().getDimensions())) {
-        is_starting_point_found = true;
-    }
-}
-
-bool isPerimeterFree(const FilledPattern &pattern, const std::valarray<int> &positions) {
-    return isPerimeterFree(pattern.number_of_times_filled, pattern.desired_pattern.get().getShapeMatrix(),
-                           pattern.collision_list, positions, pattern.desired_pattern.get().getDimensions());
+    is_starting_point_found = pattern.isPointPerimeterFree(positions);
 }
 
 void StartingPoint::findStartPointSemiRandomly(FilledPattern &pattern) {
     tries++;
     unsigned int element = pattern.getNewElement();
     positions = pattern.points_to_fill[element];
-
-    if (isPerimeterFree(pattern, positions)) {
-        is_starting_point_found = true;
-    }
+    is_starting_point_found = pattern.isPointPerimeterFree(positions);
 }
 
 
 void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
     for (int i = previously_found_point; i < pattern.points_to_fill.size(); i++) {
         positions = pattern.points_to_fill[i];
-        if (pattern.desired_pattern.get().getShapeMatrix()[positions[0]][positions[1]] &&
-            isPerimeterFree(pattern.number_of_times_filled, pattern.desired_pattern.get().getShapeMatrix(),
-                            pattern.collision_list, positions, pattern.desired_pattern.get().getDimensions())) {
+        if (pattern.isPointInShape(positions) &&
+            pattern.isPointPerimeterFree(positions)) {
             is_starting_point_found = true;
             previously_found_point = i;
             return;

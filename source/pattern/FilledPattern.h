@@ -122,6 +122,10 @@ public:
     void removeShortLines();
 
     void removeLine(Path path);
+
+    bool isPointPerimeterFree(const vali &point);
+
+    bool isPointInShape(const vali &point);
 };
 
 
