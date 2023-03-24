@@ -32,3 +32,21 @@ int sgn(double number) {
 double decimalPart(double number) {
     return number - floor(number);
 }
+
+std::vector<std::vector<double>>
+splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
+    std::vector<std::vector<double>> splay_table;
+    splay_table.emplace_back(x_field[0].size(), 0);
+    for (int i = 1; i < x_field.size() - 1; i++) {
+        std::vector<double> splay_row = {0};
+        for (int j = 1; j < x_field[i].size() - 1; j++) {
+            double current_splay = pow(x_field[i + 1][j] - x_field[i - 1][j], 2) +
+                                   pow(y_field[i][j + 1] - x_field[i][j - 1], 2);
+            splay_row.emplace_back(current_splay);
+        }
+        splay_row.emplace_back(0);
+        splay_table.emplace_back(splay_row);
+    }
+    splay_table.emplace_back(x_field[0].size(), 0);
+    return splay_table;
+}

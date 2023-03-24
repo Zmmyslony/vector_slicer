@@ -17,10 +17,15 @@
 #ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
 #define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
 
+#include <vector>
+
 int roundUp(double);
 
 int sgn(double number);
 
 double decimalPart(double number);
+
+std::vector<std::vector<double>>
+splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
 
 #endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H

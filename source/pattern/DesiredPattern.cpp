@@ -31,6 +31,7 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
         dimensions(getTableDimensions(shape_field)) {
 
     perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
+    splay_array = splay(x_field_preferred, y_field_preferred);
 }
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,

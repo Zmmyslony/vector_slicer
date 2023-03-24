@@ -26,6 +26,7 @@ class DesiredPattern {
     std::vector<std::vector<int>> shape_matrix;
     std::vector<std::vector<double>> x_field_preferred;
     std::vector<std::vector<double>> y_field_preferred;
+    std::vector<std::vector<double>> splay_array;
 public:
 
     const std::valarray<int> &getDimensions() const;
