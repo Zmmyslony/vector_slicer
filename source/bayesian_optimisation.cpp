@@ -105,15 +105,15 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     DisagreementWeights default_weights(40, 2,
                                         8, 2,
                                         70, 2,
-                                        0.001, 2);
+                                        0, 2);
 
 //    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = 100;
-    parameters.n_iter_relearn = 20;
+    parameters.n_iterations = 200;
+    parameters.n_iter_relearn = 10;
     parameters.noise = 1e-3;
 
     parameters.load_save_flag = 2;
@@ -124,7 +124,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, default_weights, initial_config,
                                                      parameters);
-    QuantifiedConfig best_seed = best_pattern.findBestSeed(100, 8);
+    QuantifiedConfig best_seed = best_pattern.findBestSeed(200, threads);
 
     exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
     best_seed.getConfig().exportConfig(pattern_path);
