@@ -57,7 +57,7 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> findRemainingFillablePointsInList(std::vector<vali> &list_of_points) const;
 
-    std::vector<vali> findInitialStartingPoints(fillingMethod method);
+    std::vector<vali> findStartingRootPoints(fillingMethod method);
 
     vald
     getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
@@ -123,7 +123,7 @@ public:
 
     void removeLine(Path path);
 
-    bool isPointPerimeterFree(const vali &point);
+    bool isPointPerimeterFree(const vali &point) const;
 
     bool isPointInShape(const vali &point);
 };

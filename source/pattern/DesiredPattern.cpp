@@ -119,3 +119,7 @@ const std::vector<std::vector<double>> &DesiredPattern::getXFieldPreferred() con
 const std::vector<std::vector<double>> &DesiredPattern::getYFieldPreferred() const {
     return y_field_preferred;
 }
+
+const double DesiredPattern::getSplay(const vali &point) const {
+    return splay_array[point[0]][point[1]];
+}

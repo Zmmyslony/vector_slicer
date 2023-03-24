@@ -33,14 +33,14 @@ void StartingPoint::findStartPointFullyRandomly(FilledPattern &pattern) {
 void StartingPoint::findStartPointSemiRandomly(FilledPattern &pattern) {
     tries++;
     unsigned int element = pattern.getNewElement();
-    positions = pattern.points_to_fill[element];
+    positions = pattern.fillable_points[element];
     is_starting_point_found = pattern.isPointPerimeterFree(positions);
 }
 
 
 void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
-    for (int i = previously_found_point; i < pattern.points_to_fill.size(); i++) {
-        positions = pattern.points_to_fill[i];
+    for (int i = previously_found_point; i < pattern.fillable_points.size(); i++) {
+        positions = pattern.fillable_points[i];
         if (pattern.isPointInShape(positions) &&
             pattern.isPointPerimeterFree(positions)) {
             is_starting_point_found = true;
@@ -68,12 +68,12 @@ void StartingPoint::updateListOfPoints(FilledPattern &pattern) {
     previously_found_point = 0;
     is_there_fillable_points_remaining = true;
 
-    unsigned int previous_number_of_fillable_points = pattern.points_to_fill.size();
+    unsigned int previous_number_of_fillable_points = pattern.fillable_points.size();
     pattern.updateSearchStageAndFillablePoints();
 
     if (pattern.search_stage != FullyRandomPointSelection) {
-        is_there_fillable_points_remaining = !pattern.points_to_fill.empty();
-        if (previous_number_of_fillable_points == pattern.points_to_fill.size()) {
+        is_there_fillable_points_remaining = !pattern.fillable_points.empty();
+        if (previous_number_of_fillable_points == pattern.fillable_points.size()) {
             is_there_fillable_points_remaining = false;
         }
     }
