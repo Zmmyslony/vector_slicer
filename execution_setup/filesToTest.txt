@@ -1,21 +1,26 @@
 ..\patterns\azimuthal_05_cm
-..\patterns\radial_05_cm
-..\patterns\diagonal_1x05_cm
-..\patterns\linear_1x05_cm
+    ..\patterns\radial_05_cm
+    ..\patterns\diagonal_1x05_cm
+    ..\patterns\linear_1x05_cm
 
-..\patterns\azimuthal_1_cm
-..\patterns\radial_1_cm
-..\patterns\diagonal_2x1_cm
-..\patterns\linear_2x1_cm
+    ..\patterns\azimuthal_1_cm
+    ..\patterns\radial_1_cm
+    ..\patterns\diagonal_2x1_cm
+    ..\patterns\linear_2x1_cm
 
-..\patterns\symmetric_positive_4x12_cm
-..\patterns\symmetric_gauss_curved_4x3_cm
+    ..\patterns\symmetric_positive_4x12_cm
+    ..\patterns\symmetric_gauss_curved_4x3_cm
 
-..\patterns\iris_r_inner_5_mm
-..\patterns\iris_r_inner_10_mm
+    ..\patterns\iris_r_inner_5_mm
+    ..\patterns\iris_r_inner_10_mm
 
 
-..\patterns\radial_2_cm
-..\patterns\azimuthal_2_cm
+    ..\patterns\radial_2_cm
+    ..\patterns\azimuthal_2_cm
 
      ..\patterns\cross_gripper
+
+    ..\patterns\fan_asymmetric_positive_3x2_cm
+    ..\patterns\fan_asymmetric_negative_3x2_cm
+    ..\patterns\fan_symmetric_positive_3x2_cm
+    ..\patterns\fan_symmetric_negative_3x2_cm
