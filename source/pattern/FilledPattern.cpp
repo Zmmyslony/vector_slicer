@@ -136,10 +136,10 @@ void FilledPattern::fillPoint(const vali &point, const vald &normalized_directio
 }
 
 
-void FilledPattern::fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction) {
+void FilledPattern::fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value) {
     vald normalized_direction = normalizeDirection(direction);
     for (auto &point: list_of_points) {
-        fillPoint(point, normalized_direction, 1);
+        fillPoint(point, normalized_direction, value);
     }
 }
 
@@ -207,7 +207,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
                                                       isFilled(current_coordinates));
         }
         vali new_step_int = new_coordinates - current_coordinates;
-        fillPointsFromList(current_points_to_fill, new_step_int);
+        fillPointsFromList(current_points_to_fill, new_step_int, 1);
         current_path.addPoint(new_coordinates);
 
         new_step = getNewStep(new_positions, length, new_step);
@@ -241,11 +241,48 @@ void FilledPattern::removePoints() {
     list_of_points.clear();
 }
 
+
+void FilledPattern::removeLine(Path path) {
+    std::vector<vali> current_points_to_fill;
+    vali current_coordinates = path.sequence_of_positions[1];
+    vali previous_coordinates = path.sequence_of_positions[0];
+    current_points_to_fill = findPointsToFill(previous_coordinates, current_coordinates, getPrintRadius(),
+                                              !isFilled(previous_coordinates));
+
+    vali new_step_int = current_coordinates - previous_coordinates;
+    fillPointsFromList(current_points_to_fill, new_step_int, -1);
+
+    for (int i = 2; i < path.size(); i++) {
+        current_coordinates = path.sequence_of_positions[i];
+        previous_coordinates = path.sequence_of_positions[i - 1];
+        vali second_previous_coordinates = path.sequence_of_positions[i - 2];
+        current_points_to_fill = findPointsToFill(second_previous_coordinates, previous_coordinates,
+                                                  current_coordinates, getPrintRadius(),
+                                                  !isFilled(previous_coordinates));
+
+        new_step_int = current_coordinates - previous_coordinates;
+        fillPointsFromList(current_points_to_fill, new_step_int, -1);
+    }
+    fillPointsInHalfCircle(path.sequence_of_positions[0], path.sequence_of_positions[1], -1);
+    fillPointsInHalfCircle(path.last(), path.secondToLast(), -1);
+}
+
+
+void FilledPattern::removeShortLines() {
+    double minimal_length = 10 * getPrintRadius();
+    for (auto &path: sequence_of_paths) {
+        if (path.getLength() < minimal_length) {
+            removeLine(path);
+        }
+    }
+}
+
+
 void
-FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point) {
+FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value) {
     std::vector<vali> half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(),
                                                           isFilled(last_point));
-    fillPointsFromList(half_circle_points, previous_point - last_point);
+    fillPointsFromList(half_circle_points, previous_point - last_point, value);
 }
 
 void FilledPattern::exportFilledMatrix(const fs::path &directory) const {

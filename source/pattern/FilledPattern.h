@@ -45,7 +45,7 @@ class FilledPattern : public FillingConfig {
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
 
     void
-    fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction);
+    fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value);
 
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step, int value);
@@ -113,12 +113,15 @@ public:
 
     void exportFilledMatrix(const fs::path &directory) const;
 
-    void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point);
+    void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
     vali findPointInShape();
 
     bool isFilled(const vali &coordinates);
 
+    void removeShortLines();
+
+    void removeLine(Path path);
 };
 
 

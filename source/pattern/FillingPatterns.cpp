@@ -37,8 +37,8 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point)
         if (new_path.size() == 1) {
             pattern.fillPointsInCircle(starting_coordinates);
         } else {
-            pattern.fillPointsInHalfCircle(new_path.first(), new_path.second());
-            pattern.fillPointsInHalfCircle(new_path.last(), new_path.secondToLast());
+            pattern.fillPointsInHalfCircle(new_path.first(), new_path.second(), 1);
+            pattern.fillPointsInHalfCircle(new_path.last(), new_path.secondToLast(), 1);
             pattern.addNewPath(new_path);
         }
 
@@ -53,4 +53,5 @@ void fillWithPaths(FilledPattern &pattern) {
         is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
     }
     pattern.removePoints();
+    pattern.removeShortLines();
 }
