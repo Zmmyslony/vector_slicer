@@ -17,8 +17,6 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cert-msc51-cpp"
 
-#include <utility>
-
 #include "FilledPattern.h"
 
 #include "../importing_and_exporting/Exporting.h"
@@ -35,9 +33,9 @@ FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingC
     int x_dim = desired_pattern.get().getDimensions()[0];
     int y_dim = desired_pattern.get().getDimensions()[1];
 
-    number_of_times_filled = std::vector < std::vector < int >> (x_dim, std::vector<int>(y_dim));
-    x_field_filled = std::vector < std::vector < double >> (x_dim, std::vector<double>(y_dim));
-    y_field_filled = std::vector < std::vector < double >> (x_dim, std::vector<double>(y_dim));
+    number_of_times_filled = std::vector<std::vector<int >>(x_dim, std::vector<int>(y_dim));
+    x_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
+    y_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
     x_distribution = std::uniform_int_distribution<int>(0, x_dim - 1);
     y_distribution = std::uniform_int_distribution<int>(0, y_dim - 1);
     setup();
@@ -70,7 +68,7 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
         FilledPattern::FilledPattern(desired_pattern, print_radius, collision_radius, step_length, 0) {}
 
 
-std::vector <vali> FilledPattern::findAllFillablePoints() const {
+std::vector<vali> FilledPattern::findAllFillablePoints() const {
     std::vector<vali> new_points_to_fill;
     for (int i = 0; i < desired_pattern.get().getDimensions()[0]; i++) {
         for (int j = 0; j < desired_pattern.get().getDimensions()[1]; j++) {
@@ -84,8 +82,7 @@ std::vector <vali> FilledPattern::findAllFillablePoints() const {
 }
 
 
-std::vector <vali>
-FilledPattern::findRemainingFillablePointsInList(std::vector <vali> &list_of_points) const {
+std::vector<vali> FilledPattern::findRemainingFillablePointsInList(std::vector<vali> &list_of_points) const {
     std::vector<vali> fillable_points_list;
     for (auto &point: list_of_points) {
         if (isPointPerimeterFree(point)) {
@@ -135,7 +132,7 @@ void FilledPattern::fillPoint(const vali &point, const vald &normalized_directio
 }
 
 
-void FilledPattern::fillPointsFromList(const std::vector <vali> &list_of_points, const vali &direction, int value) {
+void FilledPattern::fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value) {
     vald normalized_direction = normalizeDirection(direction);
     for (auto &point: list_of_points) {
         fillPoint(point, normalized_direction, value);
@@ -143,10 +140,9 @@ void FilledPattern::fillPointsFromList(const std::vector <vali> &list_of_points,
 }
 
 
-void
-FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
-                                          const std::vector <vali> &list_of_displacements,
-                                          const vali &previous_step, int value) {
+void FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
+                                               const std::vector<vali> &list_of_displacements,
+                                               const vali &previous_step, int value) {
     vald normalized_direction = normalizeDirection(previous_step);
     for (auto &displacement: list_of_displacements) {
         vali point = starting_position + displacement;
@@ -157,10 +153,9 @@ FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
     }
 }
 
-void
-FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
-                                          const std::vector <vali> &list_of_displacements,
-                                          const vali &previous_step) {
+void FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
+                                               const std::vector<vali> &list_of_displacements,
+                                               const vali &previous_step) {
     fillPointsFromDisplacement(starting_position, list_of_displacements, previous_step, 1);
 }
 
@@ -182,8 +177,6 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     vali new_coordinates = dtoi(new_positions);
     vald repulsion = {0, 0};
     if (getRepulsion() != 0) {
-//        repulsion = getRepulsionValue(number_of_times_filled, repulsion_circle, new_coordinates,
-//                                      desired_pattern.get().getDimensions(), getRepulsion());
         repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
                                       new_coordinates, desired_pattern.get().getDimensions(), getRepulsion());
     }
@@ -243,7 +236,7 @@ void FilledPattern::removePoints() {
 
 
 void FilledPattern::removeLine(Path path) {
-    std::vector <vali> current_points_to_fill;
+    std::vector<vali> current_points_to_fill;
     vali current_coordinates = path.sequence_of_positions[1];
     vali previous_coordinates = path.sequence_of_positions[0];
     current_points_to_fill = findPointsToFill(previous_coordinates, current_coordinates, getPrintRadius(),
@@ -280,8 +273,8 @@ void FilledPattern::removeShortLines() {
 
 void
 FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value) {
-    std::vector <vali> half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(),
-                                                           isFilled(last_point));
+    std::vector<vali> half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(),
+                                                          isFilled(last_point));
     fillPointsFromList(half_circle_points, previous_point - last_point, value);
 }
 
@@ -290,7 +283,7 @@ void FilledPattern::exportFilledMatrix(const fs::path &directory) const {
     exportVectorTableToFile(number_of_times_filled, filled_filename);
 }
 
-std::vector <Path> FilledPattern::getSequenceOfPaths() {
+std::vector<Path> FilledPattern::getSequenceOfPaths() {
     return sequence_of_paths;
 }
 
@@ -304,9 +297,8 @@ unsigned int FilledPattern::getNewElement() {
 }
 
 
-std::vector <vali>
-reshuffle(const std::vector <vali> &initial_vector, std::mt19937 &random_engine) {
-    std::vector <vali> new_vector(initial_vector.size());
+std::vector<vali> reshuffle(const std::vector<vali> &initial_vector, std::mt19937 &random_engine) {
+    std::vector<vali> new_vector(initial_vector.size());
     std::uniform_int_distribution<unsigned int> distribution(0, initial_vector.size() - 1);
     unsigned int elements_to_push = distribution(random_engine);
     for (int i = 0; i < initial_vector.size(); i++) {
@@ -342,8 +334,8 @@ vald normalizedDualVector(const vald &vector) {
     return normalize(perpendicular(vector));
 }
 
-std::vector <vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
-    std::vector <vali> line;
+std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
+    std::vector<vali> line;
     while (desired_pattern.get().isInShape(coordinates)) {
         line.push_back(dtoi(coordinates));
         vald director = getDirector(coordinates);
@@ -358,13 +350,13 @@ std::vector <vali> FilledPattern::findDualLineOneDirection(vald coordinates, val
 }
 
 
-std::vector <vali> FilledPattern::findDualLine(const vali &start) {
+std::vector<vali> FilledPattern::findDualLine(const vali &start) {
     vald real_coordinates = itod(start);
     vald previous_director = getDirector(real_coordinates);
     vald initial_dual_director = normalizedDualVector(previous_director);
 
-    std::vector <vali> points_in_dual_line_forward;
-    std::vector <vali> points_in_dual_line_backward;
+    std::vector<vali> points_in_dual_line_forward;
+    std::vector<vali> points_in_dual_line_backward;
 
     points_in_dual_line_forward = findDualLineOneDirection(real_coordinates, initial_dual_director);
     points_in_dual_line_backward = findDualLineOneDirection(real_coordinates, -initial_dual_director);
@@ -373,18 +365,18 @@ std::vector <vali> FilledPattern::findDualLine(const vali &start) {
 }
 
 
-std::vector <vali> FilledPattern::getSpacedLine(const double &distance, const std::vector <vali> &line) {
-    std::vector <vali> reshuffled_starting_points = reshuffle(line, random_engine);
+std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std::vector<vali> &line) {
+    std::vector<vali> reshuffled_starting_points = reshuffle(line, random_engine);
 
     vali previous_position = reshuffled_starting_points[0];
     vald previous_director = getDirector(previous_position);
     vald previous_double_director = normalizedDualVector(previous_director);
 
-    std::vector <vali> separated_starting_points;
+    std::vector<vali> separated_starting_points;
     separated_starting_points.push_back(previous_position);
 
     for (auto &current_position: reshuffled_starting_points) {
-        double current_distance = abs(dot(itod(current_position - previous_position), previous_double_director));
+        double current_distance = std::abs(dot(itod(current_position - previous_position), previous_double_director));
         if (current_distance > distance) {
             previous_position = current_position;
             previous_director = getDirector(current_position);
@@ -406,9 +398,9 @@ vali FilledPattern::findPointInShape() {
     return vali{x_start, y_start};
 }
 
-std::vector <vali> FilledPattern::findStartingRootPoints(fillingMethod method) {
-    std::vector <vali> root_points;
-    std::vector <vali> dual_line;
+std::vector<vali> FilledPattern::findStartingRootPoints(fillingMethod method) {
+    std::vector<vali> root_points;
+    std::vector<vali> dual_line;
 
     switch (method) {
         case RandomPerimeter:
@@ -443,7 +435,7 @@ bool FilledPattern::isPointPerimeterFree(const vali &point) const {
                            collision_list, point, desired_pattern.get().getDimensions());
 }
 
-bool FilledPattern::isPointInShape(const vali &point) {
+bool FilledPattern::isPointInShape(const vali &point) const {
     return desired_pattern.get().getShapeMatrix()[point[0]][point[1]];
 }
 

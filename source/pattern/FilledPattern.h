@@ -128,7 +128,7 @@ public:
 
     bool isPointPerimeterFree(const vali &point) const;
 
-    bool isPointInShape(const vali &point);
+    bool isPointInShape(const vali &point) const;
 };
 
 
