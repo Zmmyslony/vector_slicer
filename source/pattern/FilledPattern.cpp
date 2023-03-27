@@ -252,11 +252,17 @@ void FilledPattern::removeLine(Path path) {
 
 void FilledPattern::removeShortLines() {
     double minimal_length = 10 * getPrintRadius();
+    std::vector<Path> new_sequence_of_paths;
+
     for (auto &path: sequence_of_paths) {
         if (path.getLength() < minimal_length) {
             removeLine(path);
         }
+        else {
+            new_sequence_of_paths.push_back(path);
+        }
     }
+    sequence_of_paths = new_sequence_of_paths;
 }
 
 void
