@@ -18,6 +18,7 @@
 #pragma ide diagnostic ignored "cert-msc51-cpp"
 
 #include "FilledPattern.h"
+#include <iostream>
 
 #include "../importing_and_exporting/Exporting.h"
 #include "../auxiliary/Geometry.h"
@@ -460,6 +461,11 @@ FilledPattern::binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int 
         coordinates_splay.push_back(current_splay);
     }
     double max_splay = *std::max_element(coordinates_splay.begin(), coordinates_splay.end());
+    if (max_splay == 0) {
+        std::shuffle(unsorted_coordinates.begin(), unsorted_coordinates.end(), std::mt19937());
+        return {unsorted_coordinates};
+    }
+
     std::vector<std::vector<vali>> binned_coordinates(bins);
 
     for (int i = 0; i < unsorted_coordinates.size(); i++) {
@@ -467,6 +473,7 @@ FilledPattern::binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int 
         if (bin == bins) {
             bin = bins - 1;
         }
+        std::cout << bin << std::endl;
         binned_coordinates[bin].push_back(unsorted_coordinates[i]);
     }
 
