@@ -39,7 +39,7 @@ void FillingConfig::printConfig() {
         case RandomPerimeter:
             stream << "random perimeter.";
             break;
-        case ConsecutiveRadial:
+        case ConsecutiveDual:
             stream << "consecutive radial.";
             break;
         case RandomDual:
@@ -133,7 +133,7 @@ fillingMethod stringToMethod(const std::string &string_option) {
     static std::unordered_map<std::string, fillingMethod> const mapping = {
             {"ConsecutivePerimeter", fillingMethod::ConsecutivePerimeter},
             {"RandomPerimeter",      fillingMethod::RandomPerimeter},
-            {"ConsecutiveRadial",    fillingMethod::ConsecutiveRadial},
+            {"ConsecutiveDual",    fillingMethod::ConsecutiveDual},
             {"RandomDual",         fillingMethod::RandomDual}
     };
     auto it = mapping.find(string_option);
@@ -236,8 +236,8 @@ void FillingConfig::exportConfig(const fs::path &directory) {
             case RandomPerimeter:
                 file << "RandomPerimeter";
                 break;
-            case ConsecutiveRadial:
-                file << "ConsecutiveRadial";
+            case ConsecutiveDual:
+                file << "ConsecutiveDual";
                 break;
             case RandomDual:
                 file << "RandomDual";

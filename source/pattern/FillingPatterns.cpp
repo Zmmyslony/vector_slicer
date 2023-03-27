@@ -16,21 +16,19 @@
 
 #include "FillingPatterns.h"
 
-
 bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point) {
-    starting_point.refresh();
     std::valarray<int> starting_coordinates = starting_point.findStartPoint(pattern);
-    if (starting_point.positions[0] == -1 || starting_point.positions[1] == -1) {
+    if (starting_coordinates[0] == -1 || starting_coordinates[1] == -1) {
         return false;
     } else {
-        Path forwards_path = pattern.generateNewPathForDirection(starting_point.positions,
+        Path forwards_path = pattern.generateNewPathForDirection(starting_coordinates,
                                                                  pattern.desired_pattern.get().preferredDirection(
-                                                                             starting_point.positions,
-                                                                             pattern.getStepLength()));
-        Path backwards_path = pattern.generateNewPathForDirection(starting_point.positions,
+                                                                         starting_coordinates,
+                                                                         pattern.getStepLength()));
+        Path backwards_path = pattern.generateNewPathForDirection(starting_coordinates,
                                                                   -pattern.desired_pattern.get().preferredDirection(
-                                                                              starting_point.positions,
-                                                                              pattern.getStepLength()));
+                                                                          starting_coordinates,
+                                                                          pattern.getStepLength()));
 
         Path new_path(forwards_path, backwards_path);
 

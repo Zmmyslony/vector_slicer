@@ -9,6 +9,33 @@
       <file path="$PROJECT_DIR$/bayesopt" />
       <file path="$PROJECT_DIR$/cmake-build-debug" />
       <file path="$PROJECT_DIR$/cmake-build-minsizerel" />
+      <file path="$PROJECT_DIR$/paths" />
+      <file path="$PROJECT_DIR$/patterns" />
+      <file path="$PROJECT_DIR$/patterns/azimuthal_05_cm" />
+      <file path="$PROJECT_DIR$/patterns/azimuthal_1_cm" />
+      <file path="$PROJECT_DIR$/patterns/azimuthal_2_cm" />
+      <file path="$PROJECT_DIR$/patterns/cross_gripper" />
+      <file path="$PROJECT_DIR$/patterns/diagonal_1x05_cm" />
+      <file path="$PROJECT_DIR$/patterns/diagonal_2x1_cm" />
+      <file path="$PROJECT_DIR$/patterns/fan_asymmetric_negative_3x2_cm" />
+      <file path="$PROJECT_DIR$/patterns/fan_asymmetric_positive_3x2_cm" />
+      <file path="$PROJECT_DIR$/patterns/fan_symmetric_mirrored_4x3_cm" />
+      <file path="$PROJECT_DIR$/patterns/fan_symmetric_negative_3x2_cm" />
+      <file path="$PROJECT_DIR$/patterns/fan_symmetric_positive_3x2_cm" />
+      <file path="$PROJECT_DIR$/patterns/iris_r_inner_10_mm" />
+      <file path="$PROJECT_DIR$/patterns/iris_r_inner_5_mm" />
+      <file path="$PROJECT_DIR$/patterns/linear_1x05_cm" />
+      <file path="$PROJECT_DIR$/patterns/linear_2x1_cm" />
+      <file path="$PROJECT_DIR$/patterns/radial, r = 2 cm" />
+      <file path="$PROJECT_DIR$/patterns/radial_05_cm" />
+      <file path="$PROJECT_DIR$/patterns/radial_1_cm" />
+      <file path="$PROJECT_DIR$/patterns/radial_2_cm" />
+      <file path="$PROJECT_DIR$/patterns/symmetric magic angle" />
+      <file path="$PROJECT_DIR$/patterns/symmetric magic angle large" />
+      <file path="$PROJECT_DIR$/patterns/symmetric_gauss_curved_4x3_cm" />
+      <file path="$PROJECT_DIR$/patterns/symmetric_positive_2x06_cm" />
+      <file path="$PROJECT_DIR$/patterns/symmetric_positive_4x12_cm" />
+      <file path="$PROJECT_DIR$/patterns/test" />
     </excludeRoots>
   </component>
 </project>

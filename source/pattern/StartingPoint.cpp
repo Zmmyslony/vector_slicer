@@ -27,14 +27,14 @@ StartingPoint::StartingPoint() :
 void StartingPoint::findStartPointFullyRandomly(FilledPattern &pattern) {
     tries++;
     positions = pattern.findPointInShape();
-    is_starting_point_found = pattern.isPointPerimeterFree(positions);
+    is_starting_point_found = pattern.isFillable(positions);
 }
 
 void StartingPoint::findStartPointSemiRandomly(FilledPattern &pattern) {
     tries++;
     unsigned int element = pattern.getNewElement();
     positions = pattern.fillable_points[element];
-    is_starting_point_found = pattern.isPointPerimeterFree(positions);
+    is_starting_point_found = pattern.isFillable(positions);
 }
 
 
@@ -42,7 +42,7 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
     for (int i = previously_found_point; i < pattern.fillable_points.size(); i++) {
         positions = pattern.fillable_points[i];
         if (pattern.isPointInShape(positions) &&
-            pattern.isPointPerimeterFree(positions)) {
+                pattern.isFillable(positions)) {
             is_starting_point_found = true;
             previously_found_point = i;
             return;
@@ -53,7 +53,7 @@ void StartingPoint::findStartPointConsecutively(FilledPattern &pattern) {
 
 
 void StartingPoint::lookForAPoint(FilledPattern &pattern) {
-    if (pattern.search_stage == FullyRandomPointSelection) {
+    if (pattern.search_stage == RandomPointSelection) {
         findStartPointFullyRandomly(pattern);
     } else if (pattern.is_filling_method_random) {
         findStartPointSemiRandomly(pattern);
@@ -71,7 +71,7 @@ void StartingPoint::updateListOfPoints(FilledPattern &pattern) {
     unsigned int previous_number_of_fillable_points = pattern.fillable_points.size();
     pattern.updateSearchStageAndFillablePoints();
 
-    if (pattern.search_stage != FullyRandomPointSelection) {
+    if (pattern.search_stage != RandomPointSelection) {
         is_there_fillable_points_remaining = !pattern.fillable_points.empty();
         if (previous_number_of_fillable_points == pattern.fillable_points.size()) {
             is_there_fillable_points_remaining = false;
@@ -89,7 +89,7 @@ void StartingPoint::trySearchingForAPoint(FilledPattern &pattern) {
 }
 
 
-std::valarray<int> StartingPoint::findStartPoint(FilledPattern &pattern) {
+std::valarray<int> StartingPoint::findStartPointLegacy(FilledPattern &pattern) {
     while (!is_starting_point_found) {
         if (is_there_fillable_points_remaining) {
             trySearchingForAPoint(pattern);
@@ -107,3 +107,40 @@ void StartingPoint::refresh() {
     is_starting_point_found = false;
     is_there_fillable_points_remaining = true;
 }
+
+
+vali StartingPoint::findRootPoint(FilledPattern &pattern){
+    while (pattern.isFillablePointLeft()) {
+        vali test_point = pattern.getFillablePoint();
+        if (pattern.isFillable(test_point)) {
+            return test_point;
+        }
+        if (!pattern.isFillablePointLeft() && pattern.search_stage == PerimeterSearch) {
+            pattern.updateFillablePoints();
+        }
+    }
+    return {-1, -1};
+}
+
+void StartingPoint::findStemPoints(FilledPattern &pattern, const vali& root_point) {
+    std::vector<vali> dual_line = pattern.findDualLine(root_point);
+    stem_points = pattern.getSpacedLine(pattern.getStartingPointSeparation(), dual_line);
+}
+
+
+vali StartingPoint::findStartPoint(FilledPattern &pattern) {
+    if (stem_points.empty()) {
+        vali root_point = findRootPoint(pattern);
+        if (root_point[0] == -1) {
+            return root_point;
+        }
+        findStemPoints(pattern, root_point);
+    }
+    std::uniform_int_distribution<unsigned int> bin_distribution(0, stem_points.size() - 1);
+    unsigned int random_index = bin_distribution(pattern.random_engine);
+    vali random_element = stem_points[random_index];
+    stem_points.erase(stem_points.begin() + random_index);
+
+    return random_element;
+}
+

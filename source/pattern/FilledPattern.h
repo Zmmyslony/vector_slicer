@@ -27,7 +27,7 @@ using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
 enum pointSearchStage {
-    PerimeterSearch, FullyRandomPointSelection, EmptySpotRandomSelection
+    PerimeterSearch, RandomPointSelection, EmptySpotRandomSelection
 };
 
 class FilledPattern : public FillingConfig {
@@ -67,33 +67,28 @@ class FilledPattern : public FillingConfig {
 
     vald getDirector(const vali &positions) const;
 
-    std::vector<vali>
-    getSpacedLine(const double &distance, const std::vector<vali> &line);
-
-    std::vector<vali> findDualLine(const vali &start);
-
     vald getDirector(const vald &positions);
 
     std::vector<vali>
     findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 
-    void sortFillablePoints();
+    std::vector<std::vector<vali>> binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int bins) const;
 
 public:
+
     bool is_filling_method_random = true;
+
     std::reference_wrapper<const DesiredPattern> desired_pattern;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
-
     std::vector<vali> fillable_points;
-    std::vector<vali> fillable_points_sorted;
+    std::vector<std::vector<vali>> binned_fillable_points;
+
     std::vector<vali> collision_list;
     std::vector<std::vector<int>> number_of_times_filled;
     pointSearchStage search_stage = PerimeterSearch;
-
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
                   unsigned int seed);
-
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
     FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
@@ -120,15 +115,28 @@ public:
 
     vali findPointInShape();
 
-    bool isFilled(const vali &coordinates);
+    bool isFilled(const vali &coordinates) const;
 
     void removeShortLines();
 
     void removeLine(Path path);
 
-    bool isPointPerimeterFree(const vali &point) const;
+    [[nodiscard]] bool isFillable(const vali &point) const;
 
-    bool isPointInShape(const vali &point) const;
+    [[nodiscard]] bool isPointInShape(const vali &point) const;
+
+    vali getFillablePoint();
+
+    bool isFillablePointLeft() const;
+
+    std::vector<vali> findDualLine(const vali &start);
+
+    std::vector<vali>
+    getSpacedLine(const double &distance, const std::vector<vali> &line);
+
+    friend class StartingPoint;
+
+    void updateFillablePoints();
 };
 
 

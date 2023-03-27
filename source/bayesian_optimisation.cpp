@@ -144,6 +144,9 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     QuantifiedConfig pattern(desired_pattern, best_config, default_weights);
     pattern.evaluate();
 
+    best_config.printConfig();
+    pattern.printDisagreement();
+
     exportPatternToDirectory(pattern.getFilledPattern(), pattern_path);
     pattern.getConfig().exportConfig(pattern_path);
 }

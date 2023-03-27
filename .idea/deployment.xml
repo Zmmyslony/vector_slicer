@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Remote Host (0fb97dc0-6df7-407a-8fa9-796723f788a6)" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+  <component name="PublishConfigData" autoUpload="Always" promptOnRemoteOverwrite="CHECK_CONTENT" serverName="Remote Development" deleteMissingItems="true" confirmBeforeUploading="false" showNewOnTargetInSync="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="Remote Host (0fb97dc0-6df7-407a-8fa9-796723f788a6)">
@@ -9,27 +9,51 @@
             <mapping deploy="/CLionProjects/vector_slicer" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-remote" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo-remote-host" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/test" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/diagonal_1x05_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/azimuthal_2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/fan_asymmetric_positive_3x2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/symmetric_gauss_curved_4x3_cm" />
             <excludedPath local="true" path="$PROJECT_DIR$/bayesopt" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/azimuthal_05_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/symmetric_positive_2x06_cm" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/diagonal_2x1_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/symmetric magic angle large" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/symmetric magic angle" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/fan_asymmetric_negative_3x2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/symmetric_positive_4x12_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/bayesopt" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/fan_symmetric_mirrored_4x3_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/radial, r = 2 cm" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-remote" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/linear_2x1_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/linear_1x05_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/radial_2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/paths" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/iris_r_inner_5_mm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/iris_r_inner_10_mm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-minsizerel" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/radial_1_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo-remote-host" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/fan_symmetric_negative_3x2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/fan_symmetric_positive_3x2_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-remote" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/azimuthal_1_cm" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/cross_gripper" />
+            <excludedPath local="true" path="$PROJECT_DIR$/patterns/radial_05_cm" />
           </excludedPaths>
         </serverdata>
       </paths>
-      <paths name="Remote Host Duygu (cfa03df4-d392-421b-8eb7-41706aa017cc)">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

@@ -55,7 +55,7 @@ public:
 
     bool isInShape(const std::valarray<double> &position) const;
 
-    const double getSplay(const std::valarray<int> &point) const;
+    double getSplay(const std::valarray<int> &point) const;
 };
 
 

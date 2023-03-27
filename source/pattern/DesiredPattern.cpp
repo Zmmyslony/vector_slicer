@@ -92,7 +92,7 @@ std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<dou
 
 
 bool DesiredPattern::isInShape(const std::valarray<int> &position) const {
-    return shape_matrix[position[0]][position[1]];
+    return 0 <= position[0] && 0 <= position[1] && shape_matrix[position[0]][position[1]];
 }
 
 
@@ -120,6 +120,6 @@ const std::vector<std::vector<double>> &DesiredPattern::getYFieldPreferred() con
     return y_field_preferred;
 }
 
-const double DesiredPattern::getSplay(const vali &point) const {
+double DesiredPattern::getSplay(const vali &point) const {
     return splay_array[point[0]][point[1]];
 }

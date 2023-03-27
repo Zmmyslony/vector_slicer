@@ -25,7 +25,7 @@ namespace fs = boost::filesystem;
 
 
 enum fillingMethod {
-    ConsecutivePerimeter, RandomPerimeter, ConsecutiveRadial, RandomDual
+    ConsecutivePerimeter, RandomPerimeter, ConsecutiveDual, RandomDual
 };
 enum configOptions {
     InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
