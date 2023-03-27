@@ -20,7 +20,6 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
-#include <sstream>
 #include <iomanip>
 #include <boost/filesystem/path.hpp>
 
@@ -33,17 +32,11 @@ void FillingConfig::printConfig() {
 
     stream << "\t\tPerimeter filling is ";
     switch (filling_method) {
-        case ConsecutivePerimeter:
-            stream << "consecutive perimeter.";
+        case Perimeter:
+            stream << "perimeter.";
             break;
-        case RandomPerimeter:
-            stream << "random perimeter.";
-            break;
-        case ConsecutiveDual:
-            stream << "consecutive radial.";
-            break;
-        case RandomDual:
-            stream << "random radial.";
+        case Dual:
+            stream << "dual.";
             break;
     }
     stream << std::endl;
@@ -131,10 +124,8 @@ configOptions stringToConfig(const std::string &string_option) {
 
 fillingMethod stringToMethod(const std::string &string_option) {
     static std::unordered_map<std::string, fillingMethod> const mapping = {
-            {"ConsecutivePerimeter", fillingMethod::ConsecutivePerimeter},
-            {"RandomPerimeter",      fillingMethod::RandomPerimeter},
-            {"ConsecutiveDual",    fillingMethod::ConsecutiveDual},
-            {"RandomDual",         fillingMethod::RandomDual}
+            {"Perimeter",      fillingMethod::Perimeter},
+            {"Dual",         fillingMethod::Dual}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -230,17 +221,11 @@ void FillingConfig::exportConfig(const fs::path &directory) {
     if (file.is_open()) {
         file << "InitialFillingMethod ";
         switch (filling_method) {
-            case ConsecutivePerimeter:
-                file << "ConsecutivePerimeter";
+            case Perimeter:
+                file << "Perimeter";
                 break;
-            case RandomPerimeter:
-                file << "RandomPerimeter";
-                break;
-            case ConsecutiveDual:
-                file << "ConsecutiveDual";
-                break;
-            case RandomDual:
-                file << "RandomDual";
+            case Dual:
+                file << "Dual";
                 break;
         }
         file << std::endl;
@@ -255,7 +240,7 @@ void FillingConfig::exportConfig(const fs::path &directory) {
     }
 }
 
-FillingConfig::FillingConfig() : FillingConfig(RandomPerimeter, 5,
+FillingConfig::FillingConfig() : FillingConfig(Perimeter, 5,
                                                5, 0, 10,
                                                5, 0, 0) {}
 
@@ -266,15 +251,4 @@ double FillingConfig::getRepulsionRadius() const {
 
 bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, FillingConfig &second_config) {
     return first_config.getConfigOption(option) == second_config.getConfigOption(option);
-}
-
-
-bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config) {
-    configOptions all_options[] = {Repulsion, CollisionRadius, StartingPointSeparation, StepLength, PrintRadius};
-    for (auto &option: all_options) {
-        if (!isConfigOptionTheSame(option, first_config, second_config)) {
-            return false;
-        }
-    }
-    return true;
 }

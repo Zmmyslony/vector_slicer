@@ -25,7 +25,7 @@ namespace fs = boost::filesystem;
 
 
 enum fillingMethod {
-    ConsecutivePerimeter, RandomPerimeter, ConsecutiveDual, RandomDual
+    Perimeter, Dual
 };
 enum configOptions {
     InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
@@ -49,19 +49,19 @@ public:
 
     void setConfigOption(const configOptions &option, const std::string &value);
 
-    fillingMethod getInitialFillingMethod() const;
+    [[nodiscard]] fillingMethod getInitialFillingMethod() const;
 
-    double getCollisionRadius() const;
+    [[nodiscard]] double getCollisionRadius() const;
 
-    double getRepulsion() const;
+    [[nodiscard]] double getRepulsion() const;
 
-    double getStartingPointSeparation() const;
+    [[nodiscard]] double getStartingPointSeparation() const;
 
-    double getPrintRadius() const;
+    [[nodiscard]] double getPrintRadius() const;
 
-    unsigned int getSeed() const;
+    [[nodiscard]] unsigned int getSeed() const;
 
-    double getRepulsionRadius() const;
+    [[nodiscard]] double getRepulsionRadius() const;
 
     explicit FillingConfig();
 
@@ -74,12 +74,10 @@ public:
 
     void exportConfig(const fs::path &directory);
 
-    int getStepLength() const;
+    [[nodiscard]] int getStepLength() const;
 
     std::string getConfigOption(configOptions option);
 };
-
-bool areFillingConfigsTheSame(FillingConfig &first_config, FillingConfig &second_config);
 
 configOptions stringToConfig(const std::string &string_option);
 

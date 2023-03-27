@@ -27,7 +27,7 @@ using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
 enum pointSearchStage {
-    PerimeterSearch, RandomPointSelection, EmptySpotRandomSelection
+    PerimeterSearch, RandomPointSelection
 };
 
 class FilledPattern : public FillingConfig {
@@ -53,9 +53,7 @@ class FilledPattern : public FillingConfig {
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step);
 
-    std::vector<vali> findAllFillablePoints() const;
-
-    std::vector<vali> findRemainingFillablePointsInList(std::vector<vali> &list_of_points) const;
+    [[nodiscard]] std::vector<vali> findAllFillablePoints() const;
 
     std::vector<vali> findStartingRootPoints(fillingMethod method);
 
@@ -65,7 +63,7 @@ class FilledPattern : public FillingConfig {
     bool
     tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
 
-    vald getDirector(const vali &positions) const;
+    [[nodiscard]] vald getDirector(const vali &positions) const;
 
     vald getDirector(const vald &positions);
 
@@ -75,9 +73,6 @@ class FilledPattern : public FillingConfig {
     std::vector<std::vector<vali>> binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int bins) const;
 
 public:
-
-    bool is_filling_method_random = true;
-
     std::reference_wrapper<const DesiredPattern> desired_pattern;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
@@ -97,8 +92,6 @@ public:
 
     void addNewPath(Path &new_path);
 
-    void updateSearchStageAndFillablePoints();
-
     void fillPointsInCircle(const vali &starting_coordinates);
 
     void removePoints();
@@ -107,15 +100,11 @@ public:
 
     std::vector<Path> getSequenceOfPaths();
 
-    unsigned int getNewElement();
-
     void exportFilledMatrix(const fs::path &directory) const;
 
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
-    vali findPointInShape();
-
-    bool isFilled(const vali &coordinates) const;
+    [[nodiscard]] bool isFilled(const vali &coordinates) const;
 
     void removeShortLines();
 
@@ -123,11 +112,9 @@ public:
 
     [[nodiscard]] bool isFillable(const vali &point) const;
 
-    [[nodiscard]] bool isPointInShape(const vali &point) const;
-
     vali getFillablePoint();
 
-    bool isFillablePointLeft() const;
+    [[nodiscard]] bool isFillablePointLeft() const;
 
     std::vector<vali> findDualLine(const vali &start);
 

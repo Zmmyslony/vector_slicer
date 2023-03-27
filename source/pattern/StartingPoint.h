@@ -22,36 +22,15 @@
 
 
 class StartingPoint {
-    bool is_starting_point_found = false;
-    bool is_there_fillable_points_remaining = true;
-    int tries;
-    int previously_found_point = 0;
     std::vector<vali> stem_points = {};
 
-    void updateListOfPoints(FilledPattern &pattern);
-
-    void lookForAPoint(FilledPattern &pattern);
-
-    void trySearchingForAPoint(FilledPattern &pattern);
-
-    void findStartPointFullyRandomly(FilledPattern &pattern);
-
-    void findStartPointConsecutively(FilledPattern &pattern);
-
-    void findStartPointSemiRandomly(FilledPattern &pattern);
-
-public:
-    explicit StartingPoint();
-
-    void refresh();
-
-    vali positions;
-
-    vali findStartPointLegacy(FilledPattern &pattern);
-
-    vali findRootPoint(FilledPattern &pattern);
+    static vali findRootPoint(FilledPattern &pattern);
 
     void findStemPoints(FilledPattern &pattern, const vali &root_point);
+
+public:
+
+    explicit StartingPoint();
 
     vali findStartPoint(FilledPattern &pattern);
 };
