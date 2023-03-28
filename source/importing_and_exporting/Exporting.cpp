@@ -19,6 +19,7 @@
 #include <sstream>
 #include <ctime>
 #include "vector_slicer_config.h"
+#include "../auxiliary/configuration_reading.h"
 
 
 std::string readRowToString(const std::vector<int> &row) {
@@ -116,7 +117,18 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
     header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
     header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
     header += "# Source directory: " + pattern_name + "\n";
-    header += "# Print diameter: " + std::to_string(print_diameter)  + "\n\n";
+    header += "# Print diameter: " + std::to_string(print_diameter) + "\n";
+    header += "# Disagreement configuration: \n";
+    header += "# \t empty spot (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "empty_spot_weight") + "," +
+              readKey(DISAGREEMENT_FUNCTION_CONFIG, "empty_spot_power") + ")\n";
+    header += "# \t overlap (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "overlap_weight") + "," +
+              readKey(DISAGREEMENT_FUNCTION_CONFIG, "overlap_power") + ")\n";
+    header += "# \t director (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "director_weight") + "," +
+              readKey(DISAGREEMENT_FUNCTION_CONFIG, "director_power") + ")\n";
+    header += "# Iterations: " + readKey(BAYESIAN_CONFIG, "number_of_iterations") + ", relearning period: " +
+              readKey(BAYESIAN_CONFIG, "iterations_between_relearning") + ", noise: " +
+              readKey(BAYESIAN_CONFIG, "noise") + "\n";
+    header += "\n";
     return header;
 }
 
