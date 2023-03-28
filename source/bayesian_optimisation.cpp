@@ -28,8 +28,9 @@
 namespace fs = boost::filesystem;
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
-                                           bayesopt::Parameters parameters) :
-        ContinuousModel(4, std::move(parameters)),
+                                           bayesopt::Parameters parameters, int dims) :
+        ContinuousModel(dims, std::move(parameters)),
+        dims(dims),
         problem(std::move(problem)),
         threads(threads),
         seeds(seeds),
@@ -37,11 +38,11 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
-    if (x_in.size() != 4) {
-        std::cout << "WARNING: This only works for 4D inputs." << std::endl
-                  << "WARNING: Using only first three components." << std::endl;
+    if (x_in.size() != dims) {
+        std::cout << "WARNING: This only works for " << dims << "D inputs." << std::endl
+                  << "WARNING: Using only first four components." << std::endl;
     }
-    problem = QuantifiedConfig(problem, x_in);
+    problem = QuantifiedConfig(problem, x_in, dims);
     double disagreement = problem.getDisagreement(seeds, threads);
     if (mCurrentIter > 0) {
         showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples, begin);
@@ -66,30 +67,33 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
 
 QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
                                   DisagreementWeights disagreement_weights, FillingConfig filling_config,
-                                  bayesopt::Parameters optimisation_parameters) {
+                                  bayesopt::Parameters optimisation_parameters, int dims) {
 
     QuantifiedConfig pattern(desired_pattern, filling_config, disagreement_weights);
-    BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters));
-    vectord best_config(4);
-    vectord lower_bound(4);
-    vectord upper_bound(4);
+    BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters), dims);
+    vectord best_config(dims);
+    vectord lower_bound(dims);
+    vectord upper_bound(dims);
 
     double print_radius = pattern.getConfig().getPrintRadius();
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = print_radius; // Min starting point separation
-    lower_bound[3] = 0; // RepulsionRadius
+    lower_bound[2] = print_radius / 2; // Min starting point separation
 
     upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
     upper_bound[2] = print_radius * 3;
-    upper_bound[3] = print_radius;
+
+    if (dims > 3) {
+        lower_bound[3] = 0; // RepulsionRadius
+        upper_bound[3] = print_radius;
+    }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
     pattern_optimisation.optimize(best_config);
 
-    return {pattern, best_config};
+    return {pattern, best_config, 3};
 }
 
 
@@ -107,13 +111,11 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
                                         70, 2,
                                         0, 2);
 
-//    QuantifiedConfig pattern(desired_pattern, initial_config, default_weights);
-
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = 200;
-    parameters.n_iter_relearn = 10;
+    parameters.n_iterations = 100;
+    parameters.n_iter_relearn = 20;
     parameters.noise = 1e-3;
 
     parameters.load_save_flag = 2;
@@ -123,7 +125,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.log_filename = optimisation_log_path.string();
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, default_weights, initial_config,
-                                                     parameters);
+                                                     parameters, 3);
     QuantifiedConfig best_seed = best_pattern.findBestSeed(200, threads);
 
     exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);

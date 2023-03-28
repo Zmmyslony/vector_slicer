@@ -27,9 +27,11 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     std::chrono::steady_clock::time_point begin;
     int threads;
     int seeds;
+    int dims;
 
 public:
-    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds, bayesopt::Parameters parameters);
+    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
+                         bayesopt::Parameters parameters, int dims);
 
     double evaluateSample(const vectord &x_in);
 

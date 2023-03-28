@@ -36,15 +36,17 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
         DisagreementWeights(disagreement_weights) {
 }
 
-QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
+QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims) :
         QuantifiedConfig(template_config) {
-    if (parameters.size() != 4) {
+    if (parameters.size() != dims) {
         throw std::runtime_error("Config options can only be set with 4D vectors.");
     }
     setConfigOption(Repulsion, std::to_string(parameters[0]));
     setConfigOption(CollisionRadius, std::to_string(parameters[1]));
     setConfigOption(StartingPointSeparation, std::to_string(parameters[2]));
-    setConfigOption(RepulsionRadius, std::to_string(parameters[3]));
+    if (dims > 3) {
+        setConfigOption(RepulsionRadius, std::to_string(parameters[3]));
+    }
 }
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, int seed) :
@@ -140,19 +142,19 @@ void QuantifiedConfig::evaluate() {
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
-    average_path_inverse_length = calculatePathLengthDeviation(2);
+//    average_path_inverse_length = calculatePathLengthDeviation(2);
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
-                   director_weight * pow(director_disagreement, director_exponent) +
-                   path_weight * pow(average_path_inverse_length, path_exponent);
+                   director_weight * pow(director_disagreement, director_exponent);
+//    +                  path_weight * pow(average_path_inverse_length, path_exponent);
 }
 
 void QuantifiedConfig::printDisagreement() {
     double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
     double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
-    double path_disagreement = path_weight * pow(average_path_inverse_length, path_exponent);
+//    double path_disagreement = path_weight * pow(average_path_inverse_length, path_exponent);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(3);
@@ -166,8 +168,8 @@ void QuantifiedConfig::printDisagreement() {
            << overlap_disagreement / disagreement * 100 << std::endl;
     stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
-    stream << "\tPath\t\t" << average_path_inverse_length << "\t" << path_disagreement << "\t"
-           << path_disagreement / disagreement * 100 << std::endl;
+//    stream << "\tPath\t\t" << average_path_inverse_length << "\t" << path_disagreement << "\t"
+//           << path_disagreement / disagreement * 100 << std::endl;
 
     std::cout << stream.str() << std::endl;
 }

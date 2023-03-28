@@ -46,13 +46,13 @@ public:
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
                      DisagreementWeights disagreement_weights);
 
-    QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters);
+    QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims);
 
     QuantifiedConfig(QuantifiedConfig &template_config, int seed);
 
     void evaluate();
 
-    double getDisagreement() const;
+    [[nodiscard]] double getDisagreement() const;
 
     double getDisagreement(int seeds, int threads);
 
@@ -60,7 +60,7 @@ public:
 
     DesiredPattern getDesiredPattern();
 
-    FillingConfig getConfig() const;
+    [[nodiscard]] FillingConfig getConfig() const;
 
     QuantifiedConfig findBestSeed(int seeds, int threads);
 
