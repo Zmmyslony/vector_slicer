@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+
 #include <unordered_map>
 #include <iomanip>
 #include <boost/filesystem/path.hpp>

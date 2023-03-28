@@ -90,6 +90,7 @@ std::vector<vali> FilledPattern::findStartingRootPoints(fillingMethod method) {
             binned_fillable_points = binBySplay(fillable_points, 100);
             break;
         case Dual:
+            updateFillablePoints();
             break;
     }
     return stem_points;
