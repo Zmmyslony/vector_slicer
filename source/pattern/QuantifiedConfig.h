@@ -54,7 +54,7 @@ public:
 
     [[nodiscard]] double getDisagreement() const;
 
-    double getDisagreement(int seeds, int threads);
+    double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed);
 
     FilledPattern getFilledPattern();
 

@@ -19,4 +19,11 @@
 #define SLICER_VER_MINOR "@PROJECT_VERSION_MINOR@"
 #define SLICER_VER_PATCH "@PROJECT_VERSION_PATCH@"
 
+#define PATTERNS_PATH "${PROJECT_SOURCE_DIR}/configuration/filesToTest.txt"
+#define BAYESIAN_CONFIG "${PROJECT_SOURCE_DIR}/configuration/bayesian_optimisation.cfg"
+#define DISAGREEMENT_FUNCTION_CONFIG "${PROJECT_SOURCE_DIR}/configuration/disagreement_function.cfg"
+#define DISAGREEMENT_CONFIG "${PROJECT_SOURCE_DIR}/configuration/disagreement.cfg"
+#define FILLING_CONFIG "${PROJECT_SOURCE_DIR}/configuration/filling.cfg"
+
+
 #endif // INCLUDE_GUARD

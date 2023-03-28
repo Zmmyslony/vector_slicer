@@ -23,6 +23,6 @@
 
 namespace fs = boost::filesystem;
 
-std::vector<fs::path> getPatterns(const fs::path &list_of_patterns_path);
+std::vector<fs::path> getPatterns(fs::path list_of_patterns_path);
 
 #endif //VECTOR_SLICER_IMPORTING_PATTERNS_H

@@ -24,6 +24,8 @@
 #include "../ExecutionConfig.h"
 #include "pattern/IndexedPath.h"
 #include "auxiliary/ProgressBar.h"
+#include "vector_slicer_config.h"
+#include "auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
 
@@ -34,7 +36,8 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         problem(std::move(problem)),
         threads(threads),
         seeds(seeds),
-        begin(std::chrono::steady_clock::now()) {}
+        begin(std::chrono::steady_clock::now()),
+        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")) {}
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
@@ -43,9 +46,10 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "WARNING: Using only first four components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in, dims);
-    double disagreement = problem.getDisagreement(seeds, threads);
+    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);
     if (mCurrentIter > 0) {
-        showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples, begin);
+        showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
+                     begin);
     }
     return disagreement;
 }
@@ -61,7 +65,8 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
 
     std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
     exportPathSequence(sorted_paths, results_directory, "best_paths", pattern.getPrintRadius() * 2 + 1);
-    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(), pattern.getPrintRadius() * 2 + 1);
+    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(),
+                       pattern.getPrintRadius() * 2 + 1);
 }
 
 
@@ -106,35 +111,39 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
-    DisagreementWeights default_weights(40, 2,
-                                        8, 2,
-                                        70, 2,
-                                        0, 2);
+    DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = 100;
-    parameters.n_iter_relearn = 20;
-    parameters.noise = 1e-3;
+    parameters.n_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
+    parameters.n_iter_relearn = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
+    parameters.noise = readKeyDouble(BAYESIAN_CONFIG, "noise");
 
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();
 
-    parameters.verbose_level = 4;
+    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");;
     parameters.log_filename = optimisation_log_path.string();
 
-    QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, default_weights, initial_config,
+    QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, 3);
-    QuantifiedConfig best_seed = best_pattern.findBestSeed(200, threads);
+    QuantifiedConfig best_seed = best_pattern.findBestSeed(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
 
     exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
     best_seed.getConfig().exportConfig(pattern_path);
     best_seed.getConfig().printConfig();
     best_seed.printDisagreement();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s." << std::endl;
+    std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
+              << std::endl;
 }
+
+
+void optimisePattern(const fs::path &pattern_path) {
+    optimisePattern(pattern_path, readKeyInt(DISAGREEMENT_CONFIG, "seeds"), readKeyInt(DISAGREEMENT_CONFIG, "threads"));
+}
+
 
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;

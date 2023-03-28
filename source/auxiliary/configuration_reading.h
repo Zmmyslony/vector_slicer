@@ -1,4 +1,4 @@
-// 2022, Michał Zmyślony, mlz22@cam.ac.uk.
+// 2023, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -11,34 +11,25 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 21/11/2022.
+// Created by Michał Zmyślony on 28/03/2023.
 //
 
-#ifndef VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H
-#define VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H
+#ifndef VECTOR_SLICER_CONFIGURATION_READING_H
+#define VECTOR_SLICER_CONFIGURATION_READING_H
 
+#include <string>
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
 namespace fs = boost::filesystem;
 
-class DisagreementWeights {
-protected:
-    double empty_spot_exponent = 1;
-    double empty_spot_weight = 0;
-    double overlap_weight = 0;
-    double overlap_exponent = 1;
-    double director_weight = 0;
-    double director_exponent = 1;
-    double path_weight = 0;
-    double path_exponent = 1;
-public:
-    DisagreementWeights(double empty_spot_weight, double empty_spot_exponent, double overlap_weight,
-                        double overlap_exponent, double director_weight, double director_exponent, double path_weight,
-                        double path_exponent);
+std::string readKey(const fs::path &file_path, const std::string &key);
 
-    explicit DisagreementWeights(const fs::path &path);
-};
+int readKeyInt(const fs::path &file_path, const std::string &key);
+
+double readKeyDouble(const fs::path &file_path, const std::string &key);
+
+bool readKeyBool(const fs::path &file_path, const std::string &key);
 
 
-#endif //VECTOR_SLICER_DISAGREEMENT_WEIGHTS_H
+#endif //VECTOR_SLICER_CONFIGURATION_READING_H

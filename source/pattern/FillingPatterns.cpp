@@ -15,6 +15,8 @@
 //
 
 #include "FillingPatterns.h"
+#include "../auxiliary/configuration_reading.h"
+#include "vector_slicer_config.h"
 
 bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point) {
     std::valarray<int> starting_coordinates = starting_point.findStartPoint(pattern);
@@ -50,6 +52,11 @@ void fillWithPaths(FilledPattern &pattern) {
     while (is_there_any_spot_fillable) {
         is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
     }
-    pattern.removePoints();
-    pattern.removeShortLines();
+    if (readKeyBool(FILLING_CONFIG, "is_points_removed")) {
+        pattern.removePoints();
+    }
+    double short_line_coefficient = readKeyDouble(FILLING_CONFIG, "minimal_line_length");
+    if (short_line_coefficient > 0) {
+        pattern.removeShortLines(short_line_coefficient);
+    }
 }

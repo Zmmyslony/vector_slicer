@@ -17,17 +17,21 @@
 #include "source/bayesian_optimisation.h"
 #include "source/importing_patterns.h"
 #include "vector_slicer_config.h"
+#include "source/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
 
 
 int main() {
     printf("\n\tVector slicer version %s\n", SLICER_VER);
-    fs::path cwd = boost::dll::program_location().parent_path();
-    fs::path results = cwd.parent_path() / "execution_setup";
-    fs::path patterns_path = results / "filesToTest.txt";
+    printf("Optimising using %i seeds and %i threads.\n",
+           readKeyInt(DISAGREEMENT_CONFIG, "seeds"),
+           readKeyInt(DISAGREEMENT_CONFIG, "threads"));
+    printf("There will be %i iterations of optimisation, with relearning every %i iterations.\n",
+           readKeyInt(BAYESIAN_CONFIG, "number_of_iterations"),
+           readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning"));
 
-    std::vector<fs::path> patterns = getPatterns(patterns_path);
+    std::vector<fs::path> patterns = getPatterns(PATTERNS_PATH);
 
     std::cout << "\nTested patterns:" << std::endl;
     for (auto &pattern_type: patterns) {
@@ -37,8 +41,7 @@ int main() {
 
     for (auto &pattern_type: patterns) {
         try {
-//            optimisePattern(pattern_type, 16, 8);
-            recalculateBestConfig(pattern_type);
+            optimisePattern(pattern_type);
         }
         catch (std::runtime_error &error) {
             std::cout << error.what() << std::endl;

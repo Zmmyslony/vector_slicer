@@ -25,6 +25,8 @@
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/ValarrayOperations.h"
 #include "../auxiliary/vector_operations.h"
+#include "../auxiliary/configuration_reading.h"
+#include "vector_slicer_config.h"
 
 
 FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
@@ -251,8 +253,8 @@ void FilledPattern::removeLine(Path path) {
 }
 
 
-void FilledPattern::removeShortLines() {
-    double minimal_length = 10 * getPrintRadius();
+void FilledPattern::removeShortLines(double length_coefficient) {
+    double minimal_length = length_coefficient * getPrintRadius();
     std::vector<Path> new_sequence_of_paths;
 
     for (auto &path: sequence_of_paths) {

@@ -1,6 +1,6 @@
     ..\patterns\azimuthal_05_cm
     ..\patterns\radial_05_cm
-    ..\patterns\diagonal_1x05_cm
+..\patterns\diagonal_1x05_cm
     ..\patterns\linear_1x05_cm
 
     ..\patterns\azimuthal_1_cm
@@ -16,5 +16,5 @@
 
     ..\patterns\fan_asymmetric_positive_3x2_cm
     ..\patterns\fan_asymmetric_negative_3x2_cm
-..\patterns\fan_symmetric_positive_3x2_cm
+    ..\patterns\fan_symmetric_positive_3x2_cm
     ..\patterns\fan_symmetric_negative_3x2_cm

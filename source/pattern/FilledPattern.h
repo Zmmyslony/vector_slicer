@@ -106,7 +106,7 @@ public:
 
     [[nodiscard]] bool isFilled(const vali &coordinates) const;
 
-    void removeShortLines();
+    void removeShortLines(double length_coefficient);
 
     void removeLine(Path path);
 

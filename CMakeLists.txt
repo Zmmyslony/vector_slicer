@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(vector_slicer VERSION 0.3.0)
+project(vector_slicer VERSION 0.4.0)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -64,7 +64,9 @@ add_executable(Vector_Slicer main.cpp
         source/importing_patterns.h
         source/importing_patterns.cpp
         source/optimisation_configurations.cpp
-        source/optimisation_configurations.h)
+        source/optimisation_configurations.h
+        source/auxiliary/configuration_reading.cpp
+        source/auxiliary/configuration_reading.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}

@@ -28,6 +28,7 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     int threads;
     int seeds;
     int dims;
+    bool is_disagreement_details_printed = false;
 
 public:
     BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
@@ -40,6 +41,8 @@ public:
 };
 
 void optimisePattern(const fs::path &pattern_path, int seeds, int threads);
+
+void optimisePattern(const fs::path &pattern_path);
 
 void recalculateBestConfig(const fs::path &pattern_path);
 
