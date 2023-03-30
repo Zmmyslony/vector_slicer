@@ -48,8 +48,10 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     problem = QuantifiedConfig(problem, x_in, dims);
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);
     if (mCurrentIter > 0) {
+//        double minimal_disagreement = getValueAtMinimum();
+        double minimal_disagreement = 0;
         showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
-                     begin);
+                     begin, minimal_disagreement);
     }
     return disagreement;
 }
@@ -84,11 +86,11 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = print_radius / 2; // Min starting point separation
+    lower_bound[2] = print_radius * 1.5; // Min starting point separation
 
     upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
-    upper_bound[2] = print_radius * 3;
+    upper_bound[2] = print_radius * 2.5;
 
     if (dims > 3) {
         lower_bound[3] = 0; // RepulsionRadius

@@ -41,6 +41,7 @@ class FilledPattern : public FillingConfig {
     std::uniform_int_distribution<int> x_distribution;
     std::uniform_int_distribution<int> y_distribution;
     std::vector<vali> list_of_points;
+    std::vector<vali> stem_points = {};
 
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
 
@@ -55,7 +56,7 @@ class FilledPattern : public FillingConfig {
 
     [[nodiscard]] std::vector<vali> findAllFillablePoints() const;
 
-    std::vector<vali> findStartingRootPoints(fillingMethod method);
+    std::vector<vali> findStartingStemPoints(fillingMethod method);
 
     vald
     getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
@@ -72,18 +73,24 @@ class FilledPattern : public FillingConfig {
 
     std::vector<std::vector<vali>> binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int bins) const;
 
+    vali findRootPoint();
+
+    void updateStemPoints(const vali &root_point);
+
 public:
     std::reference_wrapper<const DesiredPattern> desired_pattern;
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
     std::vector<vali> fillable_points;
-    std::vector<std::vector<vali>> binned_fillable_points;
+    std::vector<std::vector<vali>> binned_root_points;
 
     std::vector<vali> collision_list;
     std::vector<std::vector<int>> number_of_times_filled;
     pointSearchStage search_stage = PerimeterSearch;
+
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
                   unsigned int seed);
+
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
     FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
@@ -123,7 +130,9 @@ public:
 
     friend class StartingPoint;
 
-    void updateFillablePoints();
+    void updateRootPoints();
+
+    vali findStartPoint();
 };
 
 

@@ -195,9 +195,9 @@ sortIndexedPaths(std::vector<IndexedPath> indexed_paths, const vali &starting_po
     IndexedPath current_path(0, false, starting_positions, starting_positions);
     std::vector<IndexedPath> sorted_paths;
     while (!indexed_paths.empty()) {
-//        current_path = findNearestNeighbour(indexed_paths, current_path);
+        current_path = findNearestNeighbour(indexed_paths, current_path);
 //        current_path = findNearestNeighbourLeft(indexed_paths, current_path);
-        current_path = findNearestNeighbourRadial(indexed_paths, current_path);
+//        current_path = findNearestNeighbourRadial(indexed_paths, current_path);
         removePathsWithSameIndex(indexed_paths, current_path);
         sorted_paths.emplace_back(current_path);
     }

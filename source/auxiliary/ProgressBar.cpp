@@ -16,6 +16,7 @@
 
 #include "ProgressBar.h"
 #include <iostream>
+#include <string>
 
 void showProgress(double progress) {
     int bar_width = 20;
@@ -37,7 +38,8 @@ void showProgress(int current_step, int max_step) {
 }
 
 void
-showProgress(double progress, std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now) {
+showProgress(double progress, std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
+             const std::string& suffix) {
     int bar_width = 20;
     int pos = (int) (bar_width * progress);
     std::cout << "\r " << std::chrono::duration_cast<std::chrono::seconds>(now - begin).count() << "/" <<
@@ -49,11 +51,12 @@ showProgress(double progress, std::chrono::steady_clock::time_point begin, std::
             std::cout << " ";
         }
     }
-    std::cout << "] " << int(progress * 100.0) << "% ";
+    std::cout << "] " << int(progress * 100.0) << "% " << suffix;
     std::cout.flush();
 }
 
 void
-showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin) {
-    showProgress((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now());
+showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value) {
+    std::string suffix = "Current min: " + std::to_string(min_value);
+    showProgress((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
 }

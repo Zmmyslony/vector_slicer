@@ -17,7 +17,7 @@
 #include "StartingPoint.h"
 #include "../auxiliary/Perimeter.h"
 #include "../auxiliary/ValarrayOperations.h"
-
+#include <iostream>
 
 StartingPoint::StartingPoint() : stem_points({}) {}
 
@@ -29,7 +29,7 @@ vali StartingPoint::findRootPoint(FilledPattern &pattern) {
             return test_point;
         }
         if (!pattern.isFillablePointLeft() && pattern.search_stage == PerimeterSearch) {
-            pattern.updateFillablePoints();
+            pattern.updateRootPoints();
         }
     }
     return {-1, -1};
