@@ -17,6 +17,9 @@
 #include "DesiredPattern.h"
 
 #include <utility>
+#include <algorithm>
+#include <iostream>
+
 #include "../importing_and_exporting/TableReading.h"
 #include "../auxiliary/SimpleMathOperations.h"
 #include "../auxiliary/Perimeter.h"
@@ -32,7 +35,9 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
 
     perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
     splay_array = splay(x_field_preferred, y_field_preferred);
+    splay_sorted_empty_spots = binBySplay(100);
 }
+
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                                const std::string &y_field_filename) :
@@ -100,26 +105,78 @@ bool DesiredPattern::isInShape(const std::valarray<double> &position) const {
     return isInShape(dtoi(position));
 }
 
+
 const std::valarray<int> &DesiredPattern::getDimensions() const {
     return dimensions;
 }
+
 
 const std::vector<std::valarray<int>> &DesiredPattern::getPerimeterList() const {
     return perimeter_list;
 }
 
+
 const std::vector<std::vector<int>> &DesiredPattern::getShapeMatrix() const {
     return shape_matrix;
 }
+
 
 const std::vector<std::vector<double>> &DesiredPattern::getXFieldPreferred() const {
     return x_field_preferred;
 }
 
+
 const std::vector<std::vector<double>> &DesiredPattern::getYFieldPreferred() const {
     return y_field_preferred;
 }
 
+
 double DesiredPattern::getSplay(const vali &point) const {
     return splay_array[point[0]][point[1]];
+}
+
+
+std::vector<vali> findFillableCells(const std::vector<std::vector<int>> &shape_matrix) {
+    std::vector<vali> fillable_cells;
+    for (int i = 0; i < shape_matrix.size(); i++) {
+        for (int j = 0; j < shape_matrix[i].size(); j++) {
+            if (shape_matrix[i][j]){
+                fillable_cells.push_back({i, j});
+            }
+        }
+    }
+    return fillable_cells;
+}
+
+
+std::vector<std::vector<vali>>
+DesiredPattern::binBySplay(unsigned int bins) const {
+    std::vector<vali> unsorted_coordinates = findFillableCells(shape_matrix);
+    if (unsorted_coordinates.empty()) {
+        return {};
+    }
+    std::vector<double> coordinates_splay;
+    for (auto &point: unsorted_coordinates) {
+        double current_splay = getSplay(point);
+        coordinates_splay.push_back(current_splay);
+    }
+    double max_splay = *std::max_element(coordinates_splay.begin(), coordinates_splay.end());
+    if (max_splay == 0) {
+        return {unsorted_coordinates};
+    }
+
+    std::vector<std::vector<vali>> binned_coordinates(bins);
+
+    for (int i = 0; i < unsorted_coordinates.size(); i++) {
+        auto bin = (unsigned int) ((double) bins * (max_splay - coordinates_splay[i]) / max_splay);
+        if (bin == bins) {
+            bin = bins - 1;
+        }
+        binned_coordinates[bin].push_back(unsorted_coordinates[i]);
+    }
+    return binned_coordinates;
+}
+
+const std::vector<std::vector<vali>> &DesiredPattern::getSplaySortedEmptySpots() const {
+    return splay_sorted_empty_spots;
 }

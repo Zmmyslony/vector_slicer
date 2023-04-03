@@ -40,19 +40,15 @@ FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingC
     number_of_times_filled = std::vector<std::vector<int >>(x_dim, std::vector<int>(y_dim));
     x_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
     y_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
-    x_distribution = std::uniform_int_distribution<int>(0, x_dim - 1);
-    y_distribution = std::uniform_int_distribution<int>(0, y_dim - 1);
     setup();
 }
 
 void FilledPattern::setup() {
     print_circle = findPointsInCircle(getPrintRadius());
     repulsion_circle = findPointsInCircle(getPrintRadius() + getRepulsionRadius());
-    fillable_points = findStartingStemPoints(getInitialFillingMethod());
     collision_list = generatePerimeterList(getCollisionRadius());
     random_engine = std::mt19937(getSeed());
-    unsigned int number_of_fillable_points = fillable_points.size();
-    distribution = std::uniform_int_distribution<unsigned int>(0, number_of_fillable_points - 1);
+    findStartingStemPoints(getInitialFillingMethod());
 }
 
 
@@ -71,39 +67,31 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
         FilledPattern::FilledPattern(desired_pattern, print_radius, collision_radius, step_length, 0) {}
 
 
-std::vector<vali> FilledPattern::findAllFillablePoints() const {
-    std::vector<vali> new_points_to_fill;
-    for (int i = 0; i < desired_pattern.get().getDimensions()[0]; i++) {
-        for (int j = 0; j < desired_pattern.get().getDimensions()[1]; j++) {
-            vali current_pos = {i, j};
-            if (isFillable(current_pos)) {
-                new_points_to_fill.emplace_back(current_pos);
-            }
-        }
-    }
-    return new_points_to_fill;
-}
-
-
-std::vector<vali> FilledPattern::findStartingStemPoints(fillingMethod method) {
+void FilledPattern::findStartingStemPoints(fillingMethod method) {
     switch (method) {
         case Perimeter:
             stem_points = getSpacedLine(getStartingPointSeparation(), desired_pattern.get().getPerimeterList());
-            binned_root_points = binBySplay(fillable_points, 100);
+            std::shuffle(stem_points.begin(), stem_points.end(), random_engine);
             break;
         case Dual:
             updateRootPoints();
             break;
     }
-    return stem_points;
 }
 
 
 void FilledPattern::updateRootPoints() {
-    fillable_points = findAllFillablePoints();
-    if (!fillable_points.empty()) {
-        binned_root_points = binBySplay(fillable_points, 100);
+    std::vector<std::vector<vali>> binned_coordinates = desired_pattern.get().getSplaySortedEmptySpots();
+    if (binned_coordinates.empty()) {
+        return;
     }
+
+    for (auto &bin: binned_coordinates) {
+        if (!bin.empty()) {
+            std::shuffle(bin.begin(), bin.end(), random_engine);
+        }
+    }
+    binned_root_points = binned_coordinates;
     search_stage = RandomPointSelection;
 }
 
@@ -125,23 +113,7 @@ vali FilledPattern::findRootPoint() {
 void FilledPattern::updateStemPoints(const vali &root_point) {
     std::vector<vali> dual_line = findDualLine(root_point);
     stem_points = getSpacedLine(getStartingPointSeparation(), dual_line);
-}
-
-
-vali FilledPattern::findStartPoint() {
-    if (stem_points.empty()) {
-        vali root_point = findRootPoint();
-        if (root_point[0] == -1) {
-            return root_point;
-        }
-        updateStemPoints(root_point);
-    }
-    std::uniform_int_distribution<unsigned int> bin_distribution(0, stem_points.size() - 1);
-    unsigned int random_index = bin_distribution(random_engine);
-    vali random_element = stem_points[random_index];
-    stem_points.erase(stem_points.begin() + random_index);
-
-    return random_element;
+    std::shuffle(stem_points.begin(), stem_points.end(), random_engine);
 }
 
 
@@ -168,6 +140,7 @@ void FilledPattern::fillPointsFromList(const std::vector<vali> &list_of_points, 
         fillPoint(point, normalized_direction, value);
     }
 }
+
 
 void FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
                                                const std::vector<vali> &list_of_displacements,
@@ -198,6 +171,7 @@ vald FilledPattern::getNewStep(vald &real_coordinates, int &length, vald &previo
     }
     return new_move;
 }
+
 
 bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
@@ -240,6 +214,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     return false;
 }
 
+
 Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step) {
     Path new_path(starting_coordinates);
     vald current_positions = itod(starting_coordinates);
@@ -250,6 +225,7 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
     }
     return new_path;
 }
+
 
 void FilledPattern::fillPointsInCircle(const vali &starting_coordinates) {
     fillPointsFromDisplacement(starting_coordinates, print_circle, {1, 0});
@@ -298,13 +274,13 @@ void FilledPattern::removeShortLines(double length_coefficient) {
     for (auto &path: sequence_of_paths) {
         if (path.getLength() < minimal_length) {
             removeLine(path);
-        }
-        else {
+        } else {
             new_sequence_of_paths.push_back(path);
         }
     }
     sequence_of_paths = new_sequence_of_paths;
 }
+
 
 void
 FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value) {
@@ -313,10 +289,12 @@ FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previo
     fillPointsFromList(half_circle_points, previous_point - last_point, value);
 }
 
+
 void FilledPattern::exportFilledMatrix(const fs::path &directory) const {
     fs::path filled_filename = directory / "number_of_times_filled.csv";
     exportVectorTableToFile(number_of_times_filled, filled_filename);
 }
+
 
 std::vector<Path> FilledPattern::getSequenceOfPaths() {
     return sequence_of_paths;
@@ -360,6 +338,7 @@ vald FilledPattern::getDirector(const vald &positions) {
     return director;
 }
 
+
 vald normalizedDualVector(const vald &vector) {
     return normalize(perpendicular(vector));
 }
@@ -400,8 +379,6 @@ std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std
     std::vector<vali> reshuffled_starting_points = reshuffle(line, random_engine);
 
     vali previous_position = reshuffled_starting_points[0];
-//    vald previous_director = getDirector(previous_position);
-//    vald previous_double_director = normalizedDualVector(previous_director);
 
     std::vector<vali> separated_starting_points;
     separated_starting_points.push_back(previous_position);
@@ -412,9 +389,6 @@ std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std
         current_distance += dot(itod(current_position - previous_position), current_double_director);
         previous_position = current_position;
         if (std::abs(current_distance) >= distance) {
-//            previous_position = current_position;
-//            previous_director = getDirector(current_position);
-//            previous_double_director = normalizedDualVector(previous_director);
             separated_starting_points.push_back(current_position);
             current_distance = 0;
         }
@@ -436,43 +410,6 @@ bool FilledPattern::isFillable(const vali &point) const {
 }
 
 
-// Bins fillable points by their splay
-std::vector<std::vector<vali>>
-FilledPattern::binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int bins) const {
-    if (unsorted_coordinates.empty()) {
-        return {};
-    }
-    std::vector<double> coordinates_splay;
-    for (auto &point: unsorted_coordinates) {
-        double current_splay = desired_pattern.get().getSplay(point);
-        coordinates_splay.push_back(current_splay);
-    }
-    double max_splay = *std::max_element(coordinates_splay.begin(), coordinates_splay.end());
-    if (max_splay == 0) {
-        std::shuffle(unsorted_coordinates.begin(), unsorted_coordinates.end(), std::mt19937());
-        return {unsorted_coordinates};
-    }
-
-    std::vector<std::vector<vali>> binned_coordinates(bins);
-
-    for (int i = 0; i < unsorted_coordinates.size(); i++) {
-        auto bin = (unsigned int) ((double) bins * (max_splay - coordinates_splay[i]) / max_splay);
-        if (bin == bins) {
-            bin = bins - 1;
-        }
-        binned_coordinates[bin].push_back(unsorted_coordinates[i]);
-    }
-
-    for (auto &bin: binned_coordinates) {
-        if (!bin.empty()) {
-            std::shuffle(binned_coordinates.begin(), binned_coordinates.end(), std::mt19937());
-        }
-
-    }
-    return binned_coordinates;
-}
-
-
 vali FilledPattern::getFillablePoint() {
     while (!binned_root_points.empty() && binned_root_points.back().empty()) {
         binned_root_points.pop_back();
@@ -485,8 +422,25 @@ vali FilledPattern::getFillablePoint() {
     return last_element;
 }
 
+
 bool FilledPattern::isFillablePointLeft() const {
     return !binned_root_points.empty();
+}
+
+
+vali FilledPattern::findStartPoint() {
+    if (stem_points.empty()) {
+        vali root_point = findRootPoint();
+        if (root_point[0] == -1) {
+            return root_point;
+        }
+        updateStemPoints(root_point);
+    }
+
+    vali last_element = stem_points.back();
+    stem_points.pop_back();
+
+    return last_element;
 }
 
 #pragma clang diagnostic pop

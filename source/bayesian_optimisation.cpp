@@ -37,7 +37,11 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         threads(threads),
         seeds(seeds),
         begin(std::chrono::steady_clock::now()),
-        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")) {}
+        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")) {
+    // Needed, as after optimisation of the first pattern the mCurrentIter does not reset, while getValueAtMinium
+    // does not have an object to refer to, so it tries to access an out-of-scope object and crashes.
+    mCurrentIter = 0;
+}
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
@@ -48,8 +52,7 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     problem = QuantifiedConfig(problem, x_in, dims);
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);
     if (mCurrentIter > 0) {
-//        double minimal_disagreement = getValueAtMinimum();
-        double minimal_disagreement = 0;
+        double minimal_disagreement = getValueAtMinimum();
         showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
                      begin, minimal_disagreement);
     }

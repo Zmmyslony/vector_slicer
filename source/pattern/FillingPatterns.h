@@ -18,9 +18,8 @@
 #define VECTOR_SLICER_FILLINGPATTERNS_H
 
 #include "FilledPattern.h"
-#include "StartingPoint.h"
 
-bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point);
+bool tryGeneratingNewPath(FilledPattern &pattern);
 
 void fillWithPaths(FilledPattern &pattern);
 

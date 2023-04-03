@@ -36,8 +36,6 @@ add_executable(Vector_Slicer main.cpp
         source/auxiliary/Perimeter.h
         source/auxiliary/Geometry.cpp
         source/auxiliary/Geometry.h
-        source/pattern/StartingPoint.cpp
-        source/pattern/StartingPoint.h
         source/importing_and_exporting/OpenFiles.cpp
         source/importing_and_exporting/OpenFiles.h
         source/pattern/FillingPatterns.cpp

@@ -20,42 +20,50 @@
 #include <vector>
 #include <valarray>
 
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
+
 class DesiredPattern {
-    std::valarray<int> dimensions;
-    std::vector<std::valarray<int>> perimeter_list;
+    vali dimensions;
+    std::vector<vali> perimeter_list;
     std::vector<std::vector<int>> shape_matrix;
     std::vector<std::vector<double>> x_field_preferred;
     std::vector<std::vector<double>> y_field_preferred;
     std::vector<std::vector<double>> splay_array;
+    std::vector<std::vector<vali>> splay_sorted_empty_spots;
+
+    [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
+
 public:
+    [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
 
-    const std::valarray<int> &getDimensions() const;
+    [[nodiscard]] const vali &getDimensions() const;
 
-    const std::vector<std::valarray<int>> &getPerimeterList() const;
+    [[nodiscard]] const std::vector<vali> &getPerimeterList() const;
 
-    const std::vector<std::vector<int>> &getShapeMatrix() const;
+    [[nodiscard]] const std::vector<std::vector<int>> &getShapeMatrix() const;
 
-    const std::vector<std::vector<double>> &getXFieldPreferred() const;
+    [[nodiscard]] const std::vector<std::vector<double>> &getXFieldPreferred() const;
 
-    const std::vector<std::vector<double>> &getYFieldPreferred() const;
+    [[nodiscard]] const std::vector<std::vector<double>> &getYFieldPreferred() const;
 
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                    const std::string &y_field_filename);
 
-    DesiredPattern(const std::string& shape_filename, const std::string& theta_field_filename);
+    DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename);
 
     DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
                    std::vector<std::vector<double>> y_field);
 
-    std::valarray<int> preferredDirection(const std::valarray<int> &position, int distance) const;
+    [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
 
-    std::valarray<double> preferredDirection(const std::valarray<double> &position, int distance) const;
+    [[nodiscard]] vald preferredDirection(const vald &position, int distance) const;
 
-    bool isInShape(const std::valarray<int> &position) const;
+    [[nodiscard]] bool isInShape(const vali &position) const;
 
-    bool isInShape(const std::valarray<double> &position) const;
+    [[nodiscard]] bool isInShape(const vald &position) const;
 
-    double getSplay(const std::valarray<int> &point) const;
+    [[nodiscard]] double getSplay(const vali &point) const;
 };
 
 
