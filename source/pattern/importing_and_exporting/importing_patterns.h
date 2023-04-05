@@ -11,18 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 08/12/2022.
+// Created by Michał Zmyślony on 07/12/2022.
 //
 
-#ifndef VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
-#define VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
+#ifndef VECTOR_SLICER_IMPORTING_PATTERNS_H
+#define VECTOR_SLICER_IMPORTING_PATTERNS_H
 
-#include "bayesopt/bayesopt.hpp"
+#include <vector>
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
 
-bayesopt::Parameters high_precision;
+namespace fs = boost::filesystem;
 
-bayesopt::Parameters medium_precision;
+std::vector<fs::path> getPatterns(const fs::path& list_of_patterns_path);
 
-bayesopt::Parameters low_precision;
-
-#endif //VECTOR_SLICER_OPTIMISATION_CONFIGURATIONS_H
+#endif //VECTOR_SLICER_IMPORTING_PATTERNS_H

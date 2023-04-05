@@ -15,7 +15,7 @@
 //
 
 #include "disagreement_weights.h"
-#include "../auxiliary/configuration_reading.h"
+#include "auxiliary/configuration_reading.h"
 
 DisagreementWeights::DisagreementWeights(double empty_spot_weight, double empty_spot_exponent, double overlap_weight,
                                          double overlap_exponent, double director_weight, double director_exponent,

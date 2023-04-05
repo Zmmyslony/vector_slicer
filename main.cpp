@@ -15,9 +15,9 @@
 #include <string>
 #include <iostream>
 #include "source/bayesian_optimisation.h"
-#include "source/importing_patterns.h"
+#include "source/pattern/importing_and_exporting/importing_patterns.h"
 #include "vector_slicer_config.h"
-#include "source/auxiliary/configuration_reading.h"
+#include "source/pattern/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
 

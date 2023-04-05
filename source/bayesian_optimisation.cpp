@@ -19,13 +19,14 @@
 #include <chrono>
 
 #include "bayesian_optimisation.h"
-#include "importing_and_exporting/OpenFiles.h"
-#include "importing_and_exporting/Exporting.h"
 #include "../ExecutionConfig.h"
-#include "pattern/IndexedPath.h"
-#include "auxiliary/ProgressBar.h"
 #include "vector_slicer_config.h"
-#include "auxiliary/configuration_reading.h"
+#include "pattern/DirectorIndexedPath.h"
+#include "pattern/vector_sorted_paths.h"
+#include "pattern/importing_and_exporting/OpenFiles.h"
+#include "pattern/importing_and_exporting/Exporting.h"
+#include "pattern/auxiliary/ProgressBar.h"
+#include "pattern/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
 
@@ -67,8 +68,13 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
         fs::create_directory(results_directory);
     }
     pattern.exportFilledMatrix(results_directory.string());
+    std::vector<std::vector<std::valarray<int>>> sorted_paths;
 
-    std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
+    if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
+        sorted_paths = getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0});
+    } else {
+        sorted_paths = getDirectorSortedPaths(pattern, starting_point_number);
+    }
     exportPathSequence(sorted_paths, results_directory, "best_paths", pattern.getPrintRadius() * 2 + 1);
     exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(),
                        pattern.getPrintRadius() * 2 + 1);
@@ -128,7 +134,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();
 
-    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");;
+    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
     parameters.log_filename = optimisation_log_path.string();
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,

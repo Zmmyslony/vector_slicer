@@ -33,7 +33,7 @@ vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table,
 
 vald
 getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
+                  const std::vector<vali> &checked_area, const vald &coordinates, const vali &sizes,
                   double repulsion_coefficient);
 
 bool

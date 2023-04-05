@@ -26,7 +26,7 @@ void convertSlashesOperatingSystem(std::string &string) {
 #endif
 }
 
-std::vector<fs::path> getPatterns(fs::path list_of_patterns_path) {
+std::vector<fs::path> getPatterns(const fs::path& list_of_patterns_path) {
     std::vector<fs::path> patterns;
     std::fstream file(list_of_patterns_path.string());
     std::string line;

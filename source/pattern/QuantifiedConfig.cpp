@@ -16,8 +16,8 @@
 
 #include "QuantifiedConfig.h"
 #include "FillingPatterns.h"
-#include "../auxiliary/vector_operations.h"
-#include "../auxiliary/ValarrayOperations.h"
+#include "auxiliary/vector_operations.h"
+#include "auxiliary/ValarrayOperations.h"
 
 #include <utility>
 #include <cmath>
@@ -39,7 +39,7 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims) :
         QuantifiedConfig(template_config) {
     if (parameters.size() != dims) {
-        throw std::runtime_error("Config options can only be set with 4D vectors.");
+        throw std::runtime_error("Config options can only be set with " + std::to_string(dims) + "D vectors.");
     }
     setConfigOption(Repulsion, std::to_string(parameters[0]));
     setConfigOption(CollisionRadius, std::to_string(parameters[1]));
@@ -208,8 +208,8 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
         disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
     if (is_disagreement_details_printed) {
-    std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
-              << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
+        std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
+                  << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     }
     return mean(disagreements);
 }

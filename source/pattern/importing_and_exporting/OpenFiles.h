@@ -17,7 +17,7 @@
 #ifndef VECTOR_SLICER_OPENFILES_H
 #define VECTOR_SLICER_OPENFILES_H
 
-#include "../pattern/FilledPattern.h"
+#include "../FilledPattern.h"
 
 #include <string>
 #include <vector>

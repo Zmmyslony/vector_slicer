@@ -26,19 +26,19 @@ public:
 
     explicit Path(std::valarray<int> &starting_positions);
 
-    Path(Path forward_path, Path backward_path);
+    Path(const Path& forward_path, const Path& backward_path);
 
     void addPoint(std::valarray<int> &positions);
 
-    std::valarray<int> first();
+    [[nodiscard]] std::valarray<int> first() const ;
 
-    std::valarray<int> last();
+    [[nodiscard]] std::valarray<int> last() const ;
 
-    unsigned int size() const;
+    [[nodiscard]] unsigned int size() const;
 
-    std::valarray<int> secondToLast();
+    [[nodiscard]] std::valarray<int> secondToLast() const;
 
-    std::valarray<int> second();
+    [[nodiscard]] std::valarray<int> second() const;
 
     double getLength();
 };

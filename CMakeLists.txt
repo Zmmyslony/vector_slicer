@@ -22,49 +22,47 @@ configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
 include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(Vector_Slicer main.cpp
-        source/auxiliary/SimpleMathOperations.cpp
-        source/auxiliary/SimpleMathOperations.h
-        source/importing_and_exporting/TableReading.cpp
-        source/importing_and_exporting/TableReading.h
+        source/pattern/auxiliary/SimpleMathOperations.cpp
+        source/pattern/auxiliary/SimpleMathOperations.h
+        source/pattern/importing_and_exporting/TableReading.cpp
+        source/pattern/importing_and_exporting/TableReading.h
         source/pattern/FilledPattern.cpp
         source/pattern/FilledPattern.h
         source/pattern/DesiredPattern.cpp
         source/pattern/DesiredPattern.h
         source/pattern/Path.cpp
         source/pattern/Path.h
-        source/auxiliary/Perimeter.cpp
-        source/auxiliary/Perimeter.h
-        source/auxiliary/Geometry.cpp
-        source/auxiliary/Geometry.h
-        source/importing_and_exporting/OpenFiles.cpp
-        source/importing_and_exporting/OpenFiles.h
+        source/pattern/auxiliary/Perimeter.cpp
+        source/pattern/auxiliary/Perimeter.h
+        source/pattern/auxiliary/Geometry.cpp
+        source/pattern/auxiliary/Geometry.h
+        source/pattern/importing_and_exporting/OpenFiles.cpp
+        source/pattern/importing_and_exporting/OpenFiles.h
         source/pattern/FillingPatterns.cpp
         source/pattern/FillingPatterns.h
         source/pattern/QuantifiedConfig.cpp
         source/pattern/QuantifiedConfig.h
-        source/importing_and_exporting/Exporting.h
-        source/importing_and_exporting/Exporting.cpp
-        source/auxiliary/ValarrayOperations.cpp
-        source/auxiliary/ValarrayOperations.h
-        source/auxiliary/ProgressBar.cpp
-        source/auxiliary/ProgressBar.h
+        source/pattern/importing_and_exporting/Exporting.h
+        source/pattern/importing_and_exporting/Exporting.cpp
+        source/pattern/auxiliary/ValarrayOperations.cpp
+        source/pattern/auxiliary/ValarrayOperations.h
+        source/pattern/auxiliary/ProgressBar.cpp
+        source/pattern/auxiliary/ProgressBar.h
         source/pattern/FillingConfig.cpp
         source/pattern/FillingConfig.h
-        source/pattern/IndexedPath.cpp
-        source/pattern/IndexedPath.h
+        source/pattern/DirectorIndexedPath.cpp
+        source/pattern/DirectorIndexedPath.h
         ExecutionConfig.h
         source/bayesian_optimisation.cpp
         source/bayesian_optimisation.h
-        source/auxiliary/vector_operations.cpp
-        source/auxiliary/vector_operations.h
+        source/pattern/auxiliary/vector_operations.cpp
+        source/pattern/auxiliary/vector_operations.h
         source/pattern/disagreement_weights.cpp
         source/pattern/disagreement_weights.h
-        source/importing_patterns.h
-        source/importing_patterns.cpp
-        source/optimisation_configurations.cpp
-        source/optimisation_configurations.h
-        source/auxiliary/configuration_reading.cpp
-        source/auxiliary/configuration_reading.h)
+        source/pattern/importing_and_exporting/importing_patterns.h
+        source/pattern/importing_and_exporting/importing_patterns.cpp
+        source/pattern/auxiliary/configuration_reading.cpp
+        source/pattern/auxiliary/configuration_reading.h source/pattern/vector_sorted_paths.cpp source/pattern/vector_sorted_paths.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}

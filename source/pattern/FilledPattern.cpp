@@ -19,13 +19,13 @@
 
 #include "FilledPattern.h"
 
-#include "../importing_and_exporting/Exporting.h"
-#include "../auxiliary/Geometry.h"
-#include "../auxiliary/Perimeter.h"
-#include "../auxiliary/SimpleMathOperations.h"
-#include "../auxiliary/ValarrayOperations.h"
-#include "../auxiliary/vector_operations.h"
-#include "../auxiliary/configuration_reading.h"
+#include "importing_and_exporting/Exporting.h"
+#include "auxiliary/Geometry.h"
+#include "auxiliary/Perimeter.h"
+#include "auxiliary/SimpleMathOperations.h"
+#include "auxiliary/ValarrayOperations.h"
+#include "auxiliary/vector_operations.h"
+#include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 #include <iostream>
@@ -165,11 +165,13 @@ void FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
 
 vald FilledPattern::getNewStep(vald &real_coordinates, int &length, vald &previous_move) const {
     vald new_move = desired_pattern.get().preferredDirection(real_coordinates, length);
-    int is_opposite_to_previous_step = sgn(new_move[0] * previous_move[0] + new_move[1] * previous_move[1]);
-    if (is_opposite_to_previous_step < 0) {
-        new_move = -new_move;
+    double is_opposite_to_previous_step = dot(new_move, previous_move);
+
+    if (is_opposite_to_previous_step >= 0) {
+        return new_move;
+    } else {
+        return -new_move;
     }
-    return new_move;
 }
 
 
@@ -177,27 +179,43 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     vali current_coordinates = dtoi(positions);
     vald new_step = getNewStep(positions, length, previous_step);
     vald new_positions = positions + new_step;
-    vali new_coordinates = dtoi(new_positions);
-    vald repulsion = {0, 0};
+
     if (getRepulsion() != 0) {
-        repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
-                                      new_coordinates, desired_pattern.get().getDimensions(), getRepulsion());
+        vald original_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
+                                      new_positions, desired_pattern.get().getDimensions(), getRepulsion());
+        vald test_positions = new_positions - original_repulsion;
+        vald offset_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
+                                                  test_positions, desired_pattern.get().getDimensions(), getRepulsion());
+
+        vald repulsion = original_repulsion + offset_repulsion / 2;
+//        vald repulsion = original_repulsion;
+        new_positions -= repulsion;
+        new_step  -= repulsion;
     }
 
-    new_positions -= repulsion;
-    new_coordinates = dtoi(new_positions);
-    vald real_step = new_step - repulsion;
+    vali new_coordinates = dtoi(new_positions);
 
+    // Check if repulsion has cancelled the step, inverted the step, or the step is too short
     if (new_coordinates[0] == current_coordinates[0] && new_coordinates[1] == current_coordinates[1] ||
-        dot(real_step, previous_step) <= 0 || norm(real_step) <= 2) {
+        dot(new_step, previous_step) <= 0 || norm(new_step) <= 2) {
         return false;
+    }
+
+    // If vector filling is enabled, check if we are moving in the constant direction
+    if (desired_pattern.get().isVectorFillingEnabled()) {
+        double previous_sign = dot(getDirector(current_coordinates), previous_step);
+        double new_sign = dot(getDirector(new_coordinates), new_step);
+        if (previous_sign * new_sign <= 0) {
+            return false;
+        }
     }
 
     if (isFillable(new_coordinates)) {
         std::vector<vali> current_points_to_fill;
         if (current_path.size() >= 2) {
             current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates,
-                                                      new_coordinates, getPrintRadius(), isFilled(current_coordinates));
+                                                      new_coordinates, getPrintRadius(),
+                                                      isFilled(current_coordinates));
         } else {
             current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates, getPrintRadius(),
                                                       isFilled(current_coordinates));
@@ -206,7 +224,6 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
         fillPointsFromList(current_points_to_fill, new_step_int, 1);
         current_path.addPoint(new_coordinates);
 
-        new_step = getNewStep(new_positions, length, new_step);
         positions = new_positions;
         previous_step = new_step;
         return true;

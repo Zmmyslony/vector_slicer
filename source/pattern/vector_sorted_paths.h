@@ -1,4 +1,4 @@
-// 2022, Michał Zmyślony, mlz22@cam.ac.uk.
+// 2023, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -11,8 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 08/12/2022.
+// Created by Michał Zmyślony on 03/04/2023.
 //
 
-#include "optimisation_configurations.h"
+#ifndef VECTOR_SLICER_VECTOR_SORTED_PATHS_H
+#define VECTOR_SLICER_VECTOR_SORTED_PATHS_H
 
+#include "Path.h"
+#include "auxiliary/ValarrayOperations.h"
+
+
+std::vector<std::vector<vali>> getVectorSortedPaths(std::vector<Path> unsorted_paths, const vali& starting_point);
+
+
+
+#endif //VECTOR_SLICER_VECTOR_SORTED_PATHS_H

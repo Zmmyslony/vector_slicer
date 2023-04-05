@@ -31,6 +31,7 @@ class DesiredPattern {
     std::vector<std::vector<double>> y_field_preferred;
     std::vector<std::vector<double>> splay_array;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
+    bool is_vector_field = false;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
 
@@ -64,6 +65,8 @@ public:
     [[nodiscard]] bool isInShape(const vald &position) const;
 
     [[nodiscard]] double getSplay(const vali &point) const;
+
+    [[nodiscard]] bool isVectorFillingEnabled() const;
 };
 
 

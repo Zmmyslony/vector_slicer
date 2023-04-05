@@ -20,11 +20,12 @@
 #include <algorithm>
 #include <iostream>
 
-#include "../importing_and_exporting/TableReading.h"
-#include "../auxiliary/SimpleMathOperations.h"
-#include "../auxiliary/Perimeter.h"
-#include "../auxiliary/ValarrayOperations.h"
-
+#include "importing_and_exporting/TableReading.h"
+#include "auxiliary/SimpleMathOperations.h"
+#include "auxiliary/Perimeter.h"
+#include "auxiliary/ValarrayOperations.h"
+#include "auxiliary/configuration_reading.h"
+#include "vector_slicer_config.h"
 
 DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
                                std::vector<std::vector<double>> y_field) :
@@ -36,6 +37,7 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
     perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
     splay_array = splay(x_field_preferred, y_field_preferred);
     splay_sorted_empty_spots = binBySplay(100);
+    is_vector_field = readKeyBool(FILLING_CONFIG, "is_vector_operation_enabled");
 }
 
 
@@ -45,14 +47,14 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
                        readFileToTableDouble(y_field_filename)) {}
 
 
-DesiredPattern::DesiredPattern(const std::string& shape_filename, const std::string& theta_field_filename) {
+DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename) {
     std::vector<std::vector<double>> theta_field = readFileToTableDouble(theta_field_filename);
     std::vector<std::vector<double>> x_field;
     std::vector<std::vector<double>> y_field;
-    for (const auto& theta_row : theta_field) {
+    for (const auto &theta_row: theta_field) {
         std::vector<double> x_row;
         std::vector<double> y_row;
-        for (const auto &theta : theta_row) {
+        for (const auto &theta: theta_row) {
             x_row.push_back(cos(theta));
             y_row.push_back(sin(theta));
         }
@@ -140,7 +142,7 @@ std::vector<vali> findFillableCells(const std::vector<std::vector<int>> &shape_m
     std::vector<vali> fillable_cells;
     for (int i = 0; i < shape_matrix.size(); i++) {
         for (int j = 0; j < shape_matrix[i].size(); j++) {
-            if (shape_matrix[i][j]){
+            if (shape_matrix[i][j]) {
                 fillable_cells.push_back({i, j});
             }
         }
@@ -179,4 +181,9 @@ DesiredPattern::binBySplay(unsigned int bins) const {
 
 const std::vector<std::vector<vali>> &DesiredPattern::getSplaySortedEmptySpots() const {
     return splay_sorted_empty_spots;
+}
+
+
+bool DesiredPattern::isVectorFillingEnabled() const {
+    return is_vector_field;
 }
