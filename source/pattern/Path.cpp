@@ -39,13 +39,6 @@ Path::Path(const Path &forward_path, const Path &backward_path) {
     std::reverse(backward_sequence.begin(), backward_sequence.end());
     backward_sequence.insert(backward_sequence.end(), forward_sequence.begin() + 1, forward_sequence.end());
     sequence_of_positions = backward_sequence;
-
-//    for (int i = 0; i < backward_path.size(); i++) {
-//        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.size() - i - 1]);
-//    }
-//    for (int i = 1; i < forward_path.size(); i++) {
-//        sequence_of_positions.push_back(forward_path.sequence_of_positions[i]);
-//    }
 }
 
 vali Path::first() const {

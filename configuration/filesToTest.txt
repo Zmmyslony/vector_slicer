@@ -16,7 +16,7 @@
     ..\patterns\azimuthal_2_cm
 
     ..\patterns\fan_asymmetric_positive_3x2_cm
-..\patterns\fan_asymmetric_negative_3x2_cm
+    ..\patterns\fan_asymmetric_negative_3x2_cm
     ..\patterns\fan_symmetric_positive_3x2_cm
     ..\patterns\fan_symmetric_negative_3x2_cm
 
@@ -28,3 +28,5 @@
     ..\patterns\three_charge_field
 
     ..\patterns\iris_r_inner_10_mm
+
+..\patterns\fan_asymmetric_negative_5x2_cm
