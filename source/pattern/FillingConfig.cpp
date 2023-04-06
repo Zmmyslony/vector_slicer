@@ -174,6 +174,9 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
 
     std::string parameter_name = line[0];
     std::string value = line[1];
+//    if (line.size() > 2 && parameter_name == "seed") {
+//
+//    }
     try {
         configOptions option = stringToConfig(parameter_name);
         setConfigOption(option, value);

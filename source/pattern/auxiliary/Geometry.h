@@ -38,4 +38,6 @@ std::vector<vali> findPointsInCircle(int radius);
 std::vector<vali>
 findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled);
 
+std::vector<vali> generateLineDisplacements(const vald &tangent, double radius);
+
 #endif //VECTOR_SLICER_GEOMETRY_H

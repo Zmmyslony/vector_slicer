@@ -16,8 +16,11 @@
 
 #include "Perimeter.h"
 #include "ValarrayOperations.h"
+#include "Geometry.h"
 
 #include <cfloat>
+#include <iostream>
+
 
 std::vector<vali> generatePerimeterList(double radius) {
     std::vector<vali> perimeter_list;
@@ -44,24 +47,108 @@ bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
 }
 
 vald
-getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
+getRepulsionValue(const std::vector<std::vector<int>> &shape_matrix, const std::vector<std::vector<int>> &filled_table,
                   const std::vector<vali> &checked_area, const vald &coordinates, const vali &sizes,
                   double repulsion_coefficient) {
 
     vald attraction = {0, 0};
-    int number_of_viable_points = 0;
+    int number_of_repulsing_coordinates = 0;
+    auto closest_distance = DBL_MAX;
+    auto furthest_distance = DBL_MIN;
     for (auto &displacement: checked_area) {
         vali neighbour = dtoi(coordinates) + displacement;
         if (isInRange(neighbour, sizes) &&
-            !isEmpty(neighbour, empty_spots) &&
+            !isEmpty(neighbour, shape_matrix) &&
             isEmpty(neighbour, filled_table)) {
 
             attraction += itod(displacement);
-            number_of_viable_points++;
+            number_of_repulsing_coordinates++;
+
+            double distance = norm(displacement);
+            if (distance < closest_distance) {
+                closest_distance = distance;
+            }
+            if (distance > furthest_distance) {
+                furthest_distance = distance;
+            }
+        }
+    }
+    vald repulsion_vector = -repulsion_coefficient * attraction / number_of_repulsing_coordinates;
+
+    double maximal_repulsion = furthest_distance - closest_distance;
+    if (norm(repulsion_vector) > maximal_repulsion) {
+        repulsion_vector = normalize(repulsion_vector) * maximal_repulsion;
+    }
+
+    return repulsion_vector;
+}
+
+
+vald
+getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &current_displacements, const vali &sizes,
+                             const std::vector<std::vector<int>> &shape_matrix,
+                             const std::vector<std::vector<int>> &filled_table) {
+    int number_of_repulsing_coordinates = 0;
+    vald attraction = {0, 0};
+
+    for (auto &displacement: current_displacements) {
+        vali neighbour = dtoi(coordinates) + displacement;
+        if (isInRange(neighbour, sizes) &&
+            !isEmpty(neighbour, shape_matrix) &&
+            isEmpty(neighbour, filled_table)) {
+
+            attraction += itod(displacement);
+            number_of_repulsing_coordinates++;
+        }
+    }
+    if (number_of_repulsing_coordinates == 0) {
+        return {0, 0};
+    }
+    else{
+        vald repulsion_vector = attraction / number_of_repulsing_coordinates;
+        return repulsion_vector;
+    }
+}
+
+
+vald
+getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
+                      const std::vector<std::vector<int>> &filled_table,
+                      const vald &tangent, double radius, const vald &coordinates, const vali &sizes,
+                      double repulsion_coefficient) {
+
+
+    std::vector<vali> current_displacements = generateLineDisplacements(tangent, radius);
+    vald maximal_repulsion_vector = repulsion_coefficient *
+                                    getRepulsionFromDisplacement(coordinates, current_displacements, sizes,
+                                                                 shape_matrix, filled_table);
+
+    double maximal_repulsion_length = norm(maximal_repulsion_vector);
+    if (maximal_repulsion_length < 1) {
+        return maximal_repulsion_vector;
+    }
+    vali maximal_repulsion_vector_i = dtoi(maximal_repulsion_vector);
+    int maximal_repulsion_length_i = std::max(std::abs(maximal_repulsion_vector_i[0]),
+                                              std::abs(maximal_repulsion_vector_i[1]));
+
+    for (int i = 1; i <= maximal_repulsion_length_i; i++) {
+        vald local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
+        vald local_repulsion = repulsion_coefficient *
+                               getRepulsionFromDisplacement(coordinates + local_displacement, current_displacements,
+                                                            sizes, shape_matrix, filled_table);
+//        std::cout << maximal_repulsion_vector[0] << ","
+//                  << maximal_repulsion_vector[1] << ","
+//                  << local_displacement[0] << ","
+//                  << local_displacement[1] << ","
+//                  << local_repulsion[0] << ","
+//                  << local_repulsion[1] << ","
+//                  << dot(local_repulsion, maximal_repulsion_vector) << std::endl;
+        if (dot(local_repulsion, maximal_repulsion_vector) <= 0) {
+            return local_displacement;
         }
     }
 
-    return -repulsion_coefficient * attraction / number_of_viable_points;
+    return maximal_repulsion_vector;
 }
 
 
