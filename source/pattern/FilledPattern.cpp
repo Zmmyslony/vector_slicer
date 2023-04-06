@@ -92,6 +92,7 @@ void FilledPattern::updateRootPoints() {
         }
     }
     binned_root_points = binned_coordinates;
+    binned_root_points = {{}};
     search_stage = RandomPointSelection;
 }
 
@@ -181,16 +182,20 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     vald new_positions = positions + new_step;
 
     if (getRepulsion() != 0) {
-        vald original_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
-                                      new_positions, desired_pattern.get().getDimensions(), getRepulsion());
+        vald original_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
+                                                    repulsion_circle,
+                                                    new_positions, desired_pattern.get().getDimensions(),
+                                                    getRepulsion());
         vald test_positions = new_positions - original_repulsion;
-        vald offset_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled, repulsion_circle,
-                                                  test_positions, desired_pattern.get().getDimensions(), getRepulsion());
+        vald offset_repulsion = getRepulsionValue(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
+                                                  repulsion_circle,
+                                                  test_positions, desired_pattern.get().getDimensions(),
+                                                  getRepulsion());
 
         vald repulsion = original_repulsion + offset_repulsion / 2;
 //        vald repulsion = original_repulsion;
         new_positions -= repulsion;
-        new_step  -= repulsion;
+        new_step -= repulsion;
     }
 
     vali new_coordinates = dtoi(new_positions);
@@ -402,8 +407,9 @@ std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std
     double current_distance = 0;
 
     for (auto &current_position: reshuffled_starting_points) {
-        vald current_double_director = std::abs(normalizedDualVector(getDirector(current_position)));
-        current_distance += dot(itod(current_position - previous_position), current_double_director);
+        vald current_double_director = normalizedDualVector(getDirector(current_position));
+        vald current_displacement = itod(current_position - previous_position);
+        current_distance += dot(current_displacement, current_double_director);
         previous_position = current_position;
         if (std::abs(current_distance) >= distance) {
             separated_starting_points.push_back(current_position);
