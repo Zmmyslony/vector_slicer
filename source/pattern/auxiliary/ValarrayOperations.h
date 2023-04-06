@@ -41,7 +41,7 @@ vald normalize(const vali &array);
 
 double dot(const vald &array_first, const vald &array_second);
 
-vald perpendicular(vald vector);
+vald perpendicular(const vald &vector);
 
 double cross(const vald &vector_first, const vald &vector_second);
 
