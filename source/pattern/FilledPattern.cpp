@@ -97,7 +97,7 @@ void FilledPattern::updateRootPoints() {
 
 
 vali FilledPattern::findRootPoint() {
-    while (isFillablePointLeft()) {
+    while (isFillablePointLeft() || search_stage == PerimeterSearch) {
         vali test_point = getFillablePoint();
         if (isFillable(test_point)) {
             return test_point;
