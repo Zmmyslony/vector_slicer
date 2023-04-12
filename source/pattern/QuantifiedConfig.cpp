@@ -24,8 +24,8 @@
 #include <omp.h>
 #include <iomanip>
 
-QuantifiedConfig::QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights) :
-        FilledPattern(std::move(pattern)),
+QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights) :
+        FilledPattern(pattern),
         DisagreementWeights(disagreement_weights) {
 
 }
@@ -142,19 +142,16 @@ void QuantifiedConfig::evaluate() {
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
-//    average_path_inverse_length = calculatePathLengthDeviation(2);
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
                    director_weight * pow(director_disagreement, director_exponent);
-//    +                  path_weight * pow(average_path_inverse_length, path_exponent);
 }
 
 void QuantifiedConfig::printDisagreement() {
     double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
     double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
-//    double path_disagreement = path_weight * pow(average_path_inverse_length, path_exponent);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(3);
@@ -168,8 +165,6 @@ void QuantifiedConfig::printDisagreement() {
            << overlap_disagreement / disagreement * 100 << std::endl;
     stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
-//    stream << "\tPath\t\t" << average_path_inverse_length << "\t" << path_disagreement << "\t"
-//           << path_disagreement / disagreement * 100 << std::endl;
 
     std::cout << stream.str() << std::endl;
 }

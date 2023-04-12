@@ -47,8 +47,8 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     if (x_in.size() != dims) {
-        std::cout << "WARNING: This only works for " << dims << "D inputs." << std::endl
-                  << "WARNING: Using only first four components." << std::endl;
+        std::cerr << "ERROR: This only works for " << dims << "D inputs." << std::endl
+                  << "ERROR: Using only first four components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in, dims);
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);

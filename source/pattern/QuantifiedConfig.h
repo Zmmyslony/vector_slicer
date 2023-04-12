@@ -41,7 +41,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double calculatePathLengthDeviation(int order);
 
 public:
-    QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights);
+    QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights);
 
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
                      DisagreementWeights disagreement_weights);
