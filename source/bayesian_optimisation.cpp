@@ -80,6 +80,33 @@ void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_pat
                        pattern.getPrintRadius() * 2 + 1);
 }
 
+void exportPatternsToDirectory(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path) {
+    fs::path results_directory = pattern_path / "results";
+    fs::path generated_paths_directory = pattern_path.parent_path().parent_path() / "paths";
+
+    if (!fs::exists(results_directory)) {
+        fs::create_directory(results_directory);
+    }
+
+    patterns[0].getFilledPattern().exportFilledMatrix(results_directory.string());
+
+    std::vector<std::vector<std::vector<std::valarray<int>>>> sorted_paths;
+    double print_diameter = 0;
+    for (int i = 0; i < 10; i++) {
+        FilledPattern pattern = patterns[i].getFilledPattern();
+        if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
+            sorted_paths.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
+        } else {
+            sorted_paths.emplace_back(getDirectorSortedPaths(pattern, starting_point_number));
+        }
+        print_diameter = pattern.getPrintRadius() * 2 + 1;
+    }
+
+    exportPathSequence(sorted_paths, results_directory, "best_paths", print_diameter);
+    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(),
+                       print_diameter);
+}
+
 
 QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
                                   DisagreementWeights disagreement_weights, FillingConfig filling_config,
@@ -139,7 +166,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, 3);
-    QuantifiedConfig best_seed = best_pattern.findBestSeed(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
+    std::vector<QuantifiedConfig> best_seed = best_pattern.findBestSeeds(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
 
     exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
     best_seed.getConfig().exportConfig(pattern_path);

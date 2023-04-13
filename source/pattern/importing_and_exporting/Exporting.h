@@ -36,6 +36,9 @@ void exportVectorTableToFile(const std::string &header, const std::vector<std::v
 void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
                         const std::string &suffix, double print_diameter);
 
+void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
+                        const fs::path &path, const std::string &suffix, double print_diameter);
+
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
 
 #endif //VECTOR_SLICER_EXPORTING_H

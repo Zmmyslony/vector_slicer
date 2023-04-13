@@ -56,13 +56,13 @@ public:
 
     double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed);
 
-    FilledPattern getFilledPattern();
+    FilledPattern getFilledPattern() const;
 
     DesiredPattern getDesiredPattern();
 
     [[nodiscard]] FillingConfig getConfig() const;
 
-    QuantifiedConfig findBestSeed(int seeds, int threads);
+    std::vector<QuantifiedConfig> findBestSeeds(int seeds, int threads);
 
     void printDisagreement();
 };

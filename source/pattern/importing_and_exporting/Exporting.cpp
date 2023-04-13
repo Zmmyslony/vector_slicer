@@ -57,22 +57,47 @@ void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::pat
 }
 
 
-void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
-                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+std::stringstream convertVectorTableToStream(const std::vector<std::vector<int>> &table_first,
+                                             const std::vector<std::vector<int>> &table_second) {
+    std::stringstream stream;
+    for (int i = 0; i < table_first.size(); i++) {
+        std::vector<int> row;
+        for (int j = 0; j < table_first[i].size(); j++) {
+            row.emplace_back(table_first[i][j]);
+            row.emplace_back(table_second[i][j]);
+        }
+        stream << readRowToString(row);
+    }
+    return stream;
+}
+
+void exportHeaderToFile(const std::string &header, const fs::path &filename) {
     std::ofstream file(filename.string());
 
     if (file.is_open()) {
         file << header;
-        for (int i = 0; i < table_first.size(); i++) {
-            std::vector<int> row;
-            for (int j = 0; j < table_first[i].size(); j++) {
-                row.emplace_back(table_first[i][j]);
-                row.emplace_back(table_second[i][j]);
-            }
-            file << readRowToString(row);
-        }
-        file.close();
+    } else {
+        throw std::runtime_error("File " + filename.string() + " failed to create.");
     }
+}
+
+
+void appendVectorTableToFile(const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+    std::ofstream file(filename.string(), std::ios_base::app);
+
+    if (file.is_open()) {
+        file << "# Start of paths";
+        file << convertVectorTableToStream(table_first, table_second).rdbuf();
+        file << "# End of paths";
+    }
+}
+
+
+void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
+                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+    exportHeaderToFile(header, filename);
+    appendVectorTableToFile(table_first, table_second, filename);
 }
 
 
@@ -136,11 +161,27 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 void
 exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
                    const std::string &suffix, double print_diameter) {
+    fs::path paths_filename = path / (suffix + ".csv");
+    exportHeaderToFile(generateHeader(suffix, print_diameter), paths_filename);
+
     std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
+    appendVectorTableToFile(x_table, y_table, paths_filename);
+//    exportVectorTableToFile(generateHeader(suffix, print_diameter), x_table, y_table, paths_filename);
+}
+
+void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
+                        const fs::path &path, const std::string &suffix, double print_diameter) {
     fs::path paths_filename = path / (suffix + ".csv");
-    exportVectorTableToFile(generateHeader(suffix, print_diameter), x_table, y_table, paths_filename);
+    exportHeaderToFile(generateHeader(suffix, print_diameter), paths_filename);
+
+    for (auto &grid : grids_of_paths) {
+        std::vector<std::vector<int>> x_table = indexTable(grid, 0);
+        std::vector<std::vector<int>> y_table = indexTable(grid, 1);
+
+        appendVectorTableToFile(x_table, y_table, paths_filename);
+    }
 }
 
 

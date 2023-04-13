@@ -23,6 +23,9 @@
 #include <cmath>
 #include <omp.h>
 #include <iomanip>
+#include <algorithm>
+#include <vector>
+
 
 QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights) :
         FilledPattern(pattern),
@@ -186,8 +189,8 @@ DesiredPattern QuantifiedConfig::getDesiredPattern() {
 }
 
 
-FilledPattern QuantifiedConfig::getFilledPattern() {
-    return FilledPattern((FilledPattern) *this);
+FilledPattern QuantifiedConfig::getFilledPattern() const {
+    return *this;
 }
 
 double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed) {
@@ -209,9 +212,9 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
     return mean(disagreements);
 }
 
-QuantifiedConfig QuantifiedConfig::findBestSeed(int seeds, int threads) {
+std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
-    std::vector<double> disagreements(seeds);
+    std::vector<std::pair<double, int>> disagreements(seeds);
     for (int i = 0; i < seeds; i++) {
         configs_with_various_seeds.emplace_back(*this, i);
     }
@@ -219,12 +222,12 @@ QuantifiedConfig QuantifiedConfig::findBestSeed(int seeds, int threads) {
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
         configs_with_various_seeds[i].evaluate();
-        disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
-    int min_element_index = std::distance(std::begin(disagreements),
-                                          std::min_element(std::begin(disagreements), std::end(disagreements)));
 
-    return configs_with_various_seeds[min_element_index];
+    std::sort(configs_with_various_seeds.begin(), configs_with_various_seeds.end(), [](auto &left, auto&right) {
+        return left.getDisagreement() < right.getDisagreement();
+    });
+    return configs_with_various_seeds;
 }
 
 
