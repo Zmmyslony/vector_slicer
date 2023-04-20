@@ -166,12 +166,12 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, 3);
-    std::vector<QuantifiedConfig> best_seed = best_pattern.findBestSeeds(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
-
-    exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
-    best_seed.getConfig().exportConfig(pattern_path);
-    best_seed.getConfig().printConfig();
-    best_seed.printDisagreement();
+    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
+    
+    exportPatternsToDirectory(best_fills, pattern_path);
+    best_fills[0].getConfig().exportConfig(pattern_path);
+    best_fills[0].getConfig().printConfig();
+    best_fills[0].printDisagreement();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
               << std::endl;
