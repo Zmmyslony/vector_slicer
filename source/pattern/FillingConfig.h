@@ -28,7 +28,14 @@ enum fillingMethod {
     Perimeter, Dual
 };
 enum configOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
+    InitialFillingMethod,
+    CollisionRadius,
+    StepLength,
+    PrintRadius,
+    Repulsion,
+    StartingPointSeparation,
+    Seed,
+    RepulsionRadius
 };
 
 
@@ -67,12 +74,14 @@ public:
 
     explicit FillingConfig(const fs::path &config_path);
 
+    FillingConfig(const FillingConfig &source_config, int source_seed);
+
     FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                   int new_starting_point_separation, double new_repulsion, int new_step_length,
                   int new_print_radius, double new_repulsion_radius, unsigned int new_seed);
 
 
-    void exportConfig(const fs::path &directory);
+    void exportConfig(const fs::path &directory, const std::string &suffix);
 
     [[nodiscard]] int getStepLength() const;
 
@@ -80,5 +89,9 @@ public:
 };
 
 configOptions stringToConfig(const std::string &string_option);
+
+void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path &directory, const std::string &suffix);
+
+std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 
 #endif //VECTOR_SLICER_FILLINGCONFIG_H

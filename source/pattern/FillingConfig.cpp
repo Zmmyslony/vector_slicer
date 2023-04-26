@@ -29,7 +29,7 @@
 void FillingConfig::printConfig() {
     std::stringstream stream;
     stream << std::fixed << std::setprecision(2);
-
+    stream << std::endl;
     stream << "\tCurrent configuration:" << std::endl;
 
     stream << "\t\tPerimeter filling is ";
@@ -126,8 +126,8 @@ configOptions stringToConfig(const std::string &string_option) {
 
 fillingMethod stringToMethod(const std::string &string_option) {
     static std::unordered_map<std::string, fillingMethod> const mapping = {
-            {"Perimeter",      fillingMethod::Perimeter},
-            {"Dual",         fillingMethod::Dual}
+            {"Perimeter", fillingMethod::Perimeter},
+            {"Dual",      fillingMethod::Dual}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -181,7 +181,7 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
         configOptions option = stringToConfig(parameter_name);
         setConfigOption(option, value);
     }
-    catch (const std::runtime_error &error_message){
+    catch (const std::runtime_error &error_message) {
         std::cout << "Error occurred while trying to read the config: \n\t" << error_message.what() << std::endl;
         std::cout << "Ignoring this entry and trying to read the remaining lines of config." << std::endl;
     }
@@ -205,6 +205,40 @@ FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
     }
 }
 
+std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
+    FillingConfig base_config(config_path);
+
+    std::vector<int> seed_list;
+    std::string line;
+    std::ifstream file(config_path.string());
+
+    while (std::getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        std::string element;
+        std::stringstream line_stream(line);
+        std::vector<std::string> row;
+
+        while (std::getline(line_stream, element, ' ')) {
+            row.push_back(element);
+        }
+        if (row[0] == "Seed") {
+            std::cout<< row.size() << std::endl;
+            for (int i = 1; i < row.size(); i++) {
+                seed_list.emplace_back(std::stoi(row[i]));
+            }
+        }
+    }
+
+    std::vector <FillingConfig> filling_config_list;
+    for (auto &seed: seed_list) {
+        filling_config_list.emplace_back(FillingConfig(base_config, seed));
+    }
+    return filling_config_list;
+}
+
+FillingConfig::FillingConfig(const FillingConfig &source_config, int source_seed) : FillingConfig(source_config) {
+    seed = source_seed;
+}
 
 FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                              int new_starting_point_separation, double new_repulsion, int new_step_length,
@@ -219,13 +253,13 @@ FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method, int new
     seed = new_seed;
 }
 
-void FillingConfig::exportConfig(const fs::path &directory) {
-    fs::path filename = directory / "results" / "best_config.txt";
+void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path &directory, const std::string &suffix) {
+    fs::path filename = directory / "results" / suffix;
     std::ofstream file(filename.string());
 
     if (file.is_open()) {
         file << "InitialFillingMethod ";
-        switch (filling_method) {
+        switch (configs[0].getInitialFillingMethod()) {
             case Perimeter:
                 file << "Perimeter";
                 break;
@@ -234,15 +268,23 @@ void FillingConfig::exportConfig(const fs::path &directory) {
                 break;
         }
         file << std::endl;
-        file << "CollisionRadius " << collision_radius << std::endl;
-        file << "StartingPointSeparation " << starting_point_separation << std::endl;
-        file << "Repulsion " << repulsion << std::endl;
-        file << "RepulsionRadius " << repulsion_radius << std::endl;
-        file << "StepLength " << step_length << std::endl;
-        file << "PrintRadius " << print_radius << std::endl;
-        file << "Seed " << seed << std::endl;
+        file << "CollisionRadius " << configs[0].getCollisionRadius() << std::endl;
+        file << "StartingPointSeparation " << configs[0].getStartingPointSeparation() << std::endl;
+        file << "Repulsion " << configs[0].getRepulsion() << std::endl;
+        file << "RepulsionRadius " << configs[0].getRepulsionRadius() << std::endl;
+        file << "StepLength " << configs[0].getStepLength() << std::endl;
+        file << "PrintRadius " << configs[0].getPrintRadius() << std::endl;
+        file << "Seed ";
+        for (auto &config: configs) {
+            file << config.getSeed() << " ";
+        }
+        file << std::endl;
         file.close();
     }
+}
+
+void FillingConfig::exportConfig(const fs::path &directory, const std::string &suffix) {
+    exportConfigList({*this}, directory, suffix);
 }
 
 FillingConfig::FillingConfig() : FillingConfig(Perimeter, 5,
