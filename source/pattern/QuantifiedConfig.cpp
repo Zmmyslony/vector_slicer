@@ -152,7 +152,7 @@ void QuantifiedConfig::evaluate() {
                    overlap_weight * pow(average_overlap, overlap_exponent) +
                    director_weight * pow(director_disagreement, director_exponent);
 
-    total_disagreement = disagreement * pow(paths_number, path_exponent);
+    total_disagreement = disagreement * fmax(pow(paths_number, path_exponent), 1);
 }
 
 void QuantifiedConfig::printDisagreement() const {
