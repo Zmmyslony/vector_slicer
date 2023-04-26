@@ -35,6 +35,6 @@ DisagreementWeights::DisagreementWeights(const fs::path &path) :
                             readKeyDouble(path, "overlap_power"),
                             readKeyDouble(path, "director_weight"),
                             readKeyDouble(path, "director_power"),
-                            0, 1) {}
+                            0, readKeyDouble(path, "paths_power")) {}
 
 

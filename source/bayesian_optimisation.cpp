@@ -100,7 +100,6 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     double print_diameter = 0;
     for (int i = 0; i < 10; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
-        patterns[i].printDisagreement();
         if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
@@ -204,7 +203,6 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
-
         filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], default_weights));
     }
 
@@ -215,14 +213,11 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
         filled_configs[i].evaluate();
     }
     std::cout << filled_configs.size() << std::endl;
-
-    filled_configs[0].getConfig().printConfig();
-    filled_configs[0].printDisagreement();
-
     exportPatterns(filled_configs, pattern_path);
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {
-    fs::path config_path = pattern_path / "results" / "best_config.txt";
+    std::string pattern_name = pattern_path.stem().string() + ".txt";
+    fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / pattern_name;
     fillPattern(pattern_path, config_path);
 }

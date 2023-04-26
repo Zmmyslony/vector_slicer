@@ -146,9 +146,13 @@ void QuantifiedConfig::evaluate() {
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
 
+    paths_number = getSequenceOfPaths().size();
+
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
                    director_weight * pow(director_disagreement, director_exponent);
+
+    total_disagreement = disagreement * pow(paths_number, path_exponent);
 }
 
 void QuantifiedConfig::printDisagreement() const {
@@ -160,7 +164,7 @@ void QuantifiedConfig::printDisagreement() const {
     stream << std::fixed << std::setprecision(3);
 
     stream << std::endl;
-    stream << "Total disagreement " << disagreement << std::endl;
+    stream << "Base disagreement " << disagreement << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
     stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t"
            << empty_spot_disagreement / disagreement * 100 << std::endl;
@@ -168,6 +172,8 @@ void QuantifiedConfig::printDisagreement() const {
            << overlap_disagreement / disagreement * 100 << std::endl;
     stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
+    stream << "\n\tPaths\t" << paths_number << std::endl;
+    stream << "\tPaths multiplier\t" << pow(paths_number, path_exponent) << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
@@ -177,11 +183,11 @@ FillingConfig QuantifiedConfig::getConfig() const {
 }
 
 double QuantifiedConfig::getDisagreement() const {
-    if (disagreement == DBL_MAX) {
+    if (total_disagreement == DBL_MAX) {
         throw std::runtime_error("Disagreement of a pattern is equal to DBL_MAX. Most likely the pattern has"
                                  "not been evaluated before retrieving disagreement.");
     }
-    return disagreement;
+    return total_disagreement;
 }
 
 DesiredPattern QuantifiedConfig::getDesiredPattern() {
