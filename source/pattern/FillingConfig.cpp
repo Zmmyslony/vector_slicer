@@ -253,9 +253,9 @@ FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method, int new
     seed = new_seed;
 }
 
-void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path &directory, const std::string &suffix) {
-    fs::path filename = directory / "results" / suffix;
-    std::ofstream file(filename.string());
+void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) {
+    path.replace_extension("txt");
+    std::ofstream file(path.string());
 
     if (file.is_open()) {
         file << "InitialFillingMethod ";
@@ -284,7 +284,7 @@ void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path 
 }
 
 void FillingConfig::exportConfig(const fs::path &directory, const std::string &suffix) {
-    exportConfigList({*this}, directory, suffix);
+    exportConfigList({*this}, directory);
 }
 
 FillingConfig::FillingConfig() : FillingConfig(Perimeter, 5,

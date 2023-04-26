@@ -64,7 +64,7 @@ public:
 
     std::vector<QuantifiedConfig> findBestSeeds(int seeds, int threads);
 
-    void printDisagreement();
+    void printDisagreement() const;
 };
 
 

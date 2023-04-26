@@ -46,8 +46,9 @@ std::string readRowToString(const std::vector<double> &row) {
 }
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &filename) {
-    std::ofstream file(filename.string());
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path) {
+    path.replace_extension(".csv");
+    std::ofstream file(path.string());
     if (file.is_open()) {
         for (auto &row: table) {
             file << readRowToString(row);
@@ -169,19 +170,18 @@ exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_c
     std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
 
     appendVectorTableToFile(x_table, y_table, paths_filename);
-//    exportVectorTableToFile(generateHeader(suffix, print_diameter), x_table, y_table, paths_filename);
 }
 
 void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
-                        const fs::path &path, const std::string &suffix, double print_diameter) {
-    fs::path paths_filename = path / (suffix + ".csv");
-    exportHeaderToFile(generateHeader(suffix, print_diameter), paths_filename);
+                        fs::path path, const std::string &suffix, double print_diameter) {
+    path.replace_extension("csv");
+    exportHeaderToFile(generateHeader(suffix, print_diameter), path);
 
     for (auto &grid : grids_of_paths) {
         std::vector<std::vector<int>> x_table = indexTable(grid, 0);
         std::vector<std::vector<int>> y_table = indexTable(grid, 1);
 
-        appendVectorTableToFile(x_table, y_table, paths_filename);
+        appendVectorTableToFile(x_table, y_table, path);
     }
 }
 

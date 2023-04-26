@@ -26,7 +26,7 @@
 namespace fs = boost::filesystem;
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &filename);
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path);
 
 void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename);
 
@@ -37,7 +37,7 @@ void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid
                         const std::string &suffix, double print_diameter);
 
 void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
-                        const fs::path &path, const std::string &suffix, double print_diameter);
+                        fs::path path, const std::string &suffix, double print_diameter);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
 

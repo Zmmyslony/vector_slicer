@@ -151,7 +151,7 @@ void QuantifiedConfig::evaluate() {
                    director_weight * pow(director_disagreement, director_exponent);
 }
 
-void QuantifiedConfig::printDisagreement() {
+void QuantifiedConfig::printDisagreement() const {
     double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
     double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);

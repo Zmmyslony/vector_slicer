@@ -117,7 +117,7 @@ public:
 
     vali findStartPoint();
 
-    void exportFilledMatrix(const fs::path &directory) const;
+    void exportFilledMatrix(const fs::path &path) const;
 };
 
 

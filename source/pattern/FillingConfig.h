@@ -90,7 +90,7 @@ public:
 
 configOptions stringToConfig(const std::string &string_option);
 
-void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path &directory, const std::string &suffix);
+void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path);
 
 std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 
