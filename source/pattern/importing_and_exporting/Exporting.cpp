@@ -87,9 +87,10 @@ void appendVectorTableToFile(const std::vector<std::vector<int>> &table_first,
     std::ofstream file(filename.string(), std::ios_base::app);
 
     if (file.is_open()) {
-        file << "# Start of paths";
+        file << std::endl;
+        file << "# Start of paths" << std::endl;
         file << convertVectorTableToStream(table_first, table_second).rdbuf();
-        file << "# End of paths";
+        file << "# End of paths" << std::endl;
     }
 }
 

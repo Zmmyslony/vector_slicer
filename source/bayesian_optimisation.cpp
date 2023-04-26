@@ -17,6 +17,7 @@
 #include <boost/filesystem/path.hpp>
 #include <utility>
 #include <chrono>
+#include <omp.h>
 
 #include "bayesian_optimisation.h"
 #include "../ExecutionConfig.h"
@@ -29,6 +30,12 @@
 #include "pattern/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
+
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
+
+using pattern = std::vector<std::vector<vali>>
+
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
                                            bayesopt::Parameters parameters, int dims) :
@@ -90,20 +97,20 @@ void exportPatternsToDirectory(const std::vector<QuantifiedConfig> &patterns, co
 
     patterns[0].getFilledPattern().exportFilledMatrix(results_directory.string());
 
-    std::vector<std::vector<std::vector<std::valarray<int>>>> sorted_paths;
+    std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
     for (int i = 0; i < 10; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
-            sorted_paths.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
+            sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
-            sorted_paths.emplace_back(getDirectorSortedPaths(pattern, starting_point_number));
+            sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, starting_point_number));
         }
         print_diameter = pattern.getPrintRadius() * 2 + 1;
     }
 
-    exportPathSequence(sorted_paths, results_directory, "best_paths", print_diameter);
-    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(),
+    exportPathSequence(sorted_patterns, results_directory, "best_paths", print_diameter);
+    exportPathSequence(sorted_patterns, generated_paths_directory, pattern_path.stem().string(),
                        print_diameter);
 }
 
@@ -169,7 +176,11 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
     
     exportPatternsToDirectory(best_fills, pattern_path);
-    best_fills[0].getConfig().exportConfig(pattern_path);
+    std::vector<FillingConfig> config_list;
+    for (auto &filled_config : best_fills) {
+        config_list.emplace_back(filled_config.getConfig());
+    }
+    exportConfigList(config_list, pattern_path, "best_config.txt");
     best_fills[0].getConfig().printConfig();
     best_fills[0].printDisagreement();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -186,18 +197,28 @@ void optimisePattern(const fs::path &pattern_path) {
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
-    FillingConfig best_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
     DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
 
-    QuantifiedConfig pattern(desired_pattern, best_config, default_weights);
-    pattern.evaluate();
+    std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
+    std::vector<QuantifiedConfig> filled_configs;
+    for (int i = 0; i < 10; i++) {
 
-    best_config.printConfig();
-    pattern.printDisagreement();
+        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], default_weights));
+    }
 
-    exportPatternToDirectory(pattern.getFilledPattern(), pattern_path);
-    pattern.getConfig().exportConfig(pattern_path);
+    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    omp_set_num_threads(threads);
+#pragma omp parallel for
+    for (int i = 0; i < filled_configs.size(); i++) {
+        filled_configs[i].evaluate();
+    }
+    std::cout << filled_configs.size() << std::endl;
+
+    filled_configs[0].getConfig().printConfig();
+    filled_configs[0].printDisagreement();
+
+    exportPatternsToDirectory(filled_configs, pattern_path);
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {
