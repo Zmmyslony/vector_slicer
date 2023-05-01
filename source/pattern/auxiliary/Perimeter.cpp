@@ -46,43 +46,6 @@ bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
     return (table[position[0]][position[1]] == 0);
 }
 
-vald
-getRepulsionValue(const std::vector<std::vector<int>> &shape_matrix, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vald &coordinates, const vali &sizes,
-                  double repulsion_coefficient) {
-
-    vald attraction = {0, 0};
-    int number_of_repulsing_coordinates = 0;
-    auto closest_distance = DBL_MAX;
-    auto furthest_distance = DBL_MIN;
-    for (auto &displacement: checked_area) {
-        vali neighbour = dtoi(coordinates) + displacement;
-        if (isInRange(neighbour, sizes) &&
-            !isEmpty(neighbour, shape_matrix) &&
-            isEmpty(neighbour, filled_table)) {
-
-            attraction += itod(displacement);
-            number_of_repulsing_coordinates++;
-
-            double distance = norm(displacement);
-            if (distance < closest_distance) {
-                closest_distance = distance;
-            }
-            if (distance > furthest_distance) {
-                furthest_distance = distance;
-            }
-        }
-    }
-    vald repulsion_vector = -repulsion_coefficient * attraction / number_of_repulsing_coordinates;
-
-    double maximal_repulsion = furthest_distance - closest_distance;
-    if (norm(repulsion_vector) > maximal_repulsion) {
-        repulsion_vector = normalize(repulsion_vector) * maximal_repulsion;
-    }
-
-    return repulsion_vector;
-}
-
 
 vald
 getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &current_displacements, const vali &sizes,
@@ -113,9 +76,9 @@ getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &c
 
 vald
 getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                      const std::vector<std::vector<int>> &filled_table,
-                      const vald &tangent, double radius, const vald &coordinates, const vali &sizes,
-                      double repulsion_coefficient) {
+                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
+                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                      double maximal_repulsion_angle) {
 
 
     std::vector<vali> current_displacements = generateLineDisplacements(tangent, radius);
@@ -131,44 +94,21 @@ getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
     int maximal_repulsion_length_i = std::max(std::abs(maximal_repulsion_vector_i[0]),
                                               std::abs(maximal_repulsion_vector_i[1]));
 
+    vald previous_displacement = {0, 0};
     for (int i = 1; i <= maximal_repulsion_length_i; i++) {
         vald local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
         vald local_repulsion = repulsion_coefficient *
                                getRepulsionFromDisplacement(coordinates + local_displacement, current_displacements,
                                                             sizes, shape_matrix, filled_table);
-//        std::cout << maximal_repulsion_vector[0] << ","
-//                  << maximal_repulsion_vector[1] << ","
-//                  << local_displacement[0] << ","
-//                  << local_displacement[1] << ","
-//                  << local_repulsion[0] << ","
-//                  << local_repulsion[1] << ","
-//                  << dot(local_repulsion, maximal_repulsion_vector) << std::endl;
-        if (dot(local_repulsion, maximal_repulsion_vector) <= 0) {
-            return local_displacement;
+
+        if (dot(local_repulsion, maximal_repulsion_vector) <= 0 ||
+            dot(tangent, tangent + local_repulsion) < cos(maximal_repulsion_angle)) {
+            return previous_displacement;
         }
+        previous_displacement = local_displacement;
     }
 
     return maximal_repulsion_vector;
-}
-
-
-vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table, const std::vector<vali> &checked_area,
-                       const vali &start_positions, const vali &sizes, double repulsion_coefficient) {
-
-    vald attraction = {0, 0};
-    int number_of_empty_spots = 0;
-    for (auto &direction: checked_area) {
-        vali positions_new = direction + start_positions;
-        if (isInRange(positions_new, sizes) &&
-            isEmpty(positions_new, filled_table)) {
-
-            attraction += itod(direction);
-            number_of_empty_spots++;
-
-        }
-    }
-
-    return -repulsion_coefficient * attraction / number_of_empty_spots;
 }
 
 bool

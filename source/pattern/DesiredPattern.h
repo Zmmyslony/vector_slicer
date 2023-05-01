@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <cmath>
 #include <valarray>
 
 using vald = std::valarray<double>;
@@ -32,6 +33,7 @@ class DesiredPattern {
     std::vector<std::vector<double>> splay_array;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
     bool is_vector_field = false;
+    double maximal_repulsion_angle = M_PI;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
 
@@ -67,6 +69,8 @@ public:
     [[nodiscard]] double getSplay(const vali &point) const;
 
     [[nodiscard]] bool isVectorFillingEnabled() const;
+
+    [[nodiscard]] double getMaximalRepulsionAngle() const;
 };
 
 

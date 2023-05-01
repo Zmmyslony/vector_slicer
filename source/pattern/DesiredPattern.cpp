@@ -38,6 +38,7 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
     splay_array = splay(x_field_preferred, y_field_preferred);
     splay_sorted_empty_spots = binBySplay(100);
     is_vector_field = readKeyBool(FILLING_CONFIG, "is_vector_operation_enabled");
+    maximal_repulsion_angle = readKeyDouble(FILLING_CONFIG, "maximum_repulsion_angle");
 }
 
 
@@ -186,4 +187,8 @@ const std::vector<std::vector<vali>> &DesiredPattern::getSplaySortedEmptySpots()
 
 bool DesiredPattern::isVectorFillingEnabled() const {
     return is_vector_field;
+}
+
+double DesiredPattern::getMaximalRepulsionAngle() const {
+    return maximal_repulsion_angle;
 }

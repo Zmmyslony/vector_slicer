@@ -52,8 +52,8 @@ findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const va
 
 vald
 getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                      const std::vector<std::vector<int>> &filled_table,
-                      const vald &tangent, double radius, const vald &coordinates, const vali &sizes,
-                      double repulsion_coefficient);
+                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
+                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                      double maximal_repulsion_angle);
 
 #endif //VECTOR_SLICER_PERIMETER_H

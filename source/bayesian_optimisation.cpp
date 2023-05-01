@@ -81,6 +81,23 @@ void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path pat
     exportConfigList(filling_configs, std::move(path));
 }
 
+fs::path createPathWithExtension(std::string directory, std::string filename, std::string extension) {
+    fs::path directory_path = directory;
+    createDirectory(directory_path);
+    fs::path joined_path = directory_path / filename;
+    joined_path.replace_extension(extension);
+    return joined_path;
+}
+
+fs::path createTxtPath(std::string directory, std::string filename) {
+    return createPathWithExtension(std::move(directory), std::move(filename), "txt");
+}
+
+fs::path createCsvPath(std::string directory, std::string filename) {
+    return createPathWithExtension(std::move(directory), std::move(filename), "csv");
+}
+
+
 void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path) {
     fs::path results_directory = pattern_path / "results";
 
@@ -88,13 +105,9 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     createDirectory(output_directory);
     std::string pattern_name = pattern_path.stem().string();
 
-    fs::path generated_paths_directory = output_directory / "paths";
-    fs::path matrices_directory = output_directory / "filled_matrices";
-    fs::path best_config_directory = output_directory / "best_configs";
-
-    createDirectory(generated_paths_directory);
-    createDirectory(matrices_directory);
-    createDirectory(best_config_directory);
+    fs::path generated_paths_directory = createCsvPath(PATHS_EXPORT_PATH, pattern_name);
+    fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
+    fs::path best_config_directory = createCsvPath(CONFIG_EXPORT_PATH, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
@@ -108,11 +121,10 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
         print_diameter = pattern.getPrintRadius() * 2 + 1;
     }
 
-    exportConfigList(patterns, best_config_directory / pattern_name);
-    patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory / pattern_name);
-    exportPathSequence(sorted_patterns, generated_paths_directory / pattern_name, pattern_name, print_diameter);
+    exportConfigList(patterns, best_config_directory);
+    patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
+    exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter);
 }
-
 
 QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
                                   DisagreementWeights disagreement_weights, FillingConfig filling_config,
@@ -149,9 +161,10 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
-    fs::path config_path = pattern_path / "config.txt";
-    fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
-    fs::path optimisation_save_path = pattern_path / "results" / "save.txt";
+    std::string pattern_name = pattern_path.stem().string();
+    fs::path config_path = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
+    fs::path optimisation_log_path = createTxtPath(LOGS_EXPORT_PATH, pattern_name);
+    fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);

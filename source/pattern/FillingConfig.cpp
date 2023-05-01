@@ -254,7 +254,6 @@ FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method, int new
 }
 
 void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) {
-    path.replace_extension("txt");
     std::ofstream file(path.string());
 
     if (file.is_open()) {

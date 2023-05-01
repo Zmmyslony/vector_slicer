@@ -47,7 +47,6 @@ std::string readRowToString(const std::vector<double> &row) {
 
 
 void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path) {
-    path.replace_extension(".csv");
     std::ofstream file(path.string());
     if (file.is_open()) {
         for (auto &row: table) {
@@ -89,9 +88,9 @@ void appendVectorTableToFile(const std::vector<std::vector<int>> &table_first,
 
     if (file.is_open()) {
         file << std::endl;
-        file << "# Start of paths" << std::endl;
+        file << "# Start of pattern" << std::endl;
         file << convertVectorTableToStream(table_first, table_second).rdbuf();
-        file << "# End of paths" << std::endl;
+        file << "# End of pattern" << std::endl;
     }
 }
 
@@ -174,7 +173,6 @@ exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_c
 
 void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
                         fs::path path, const std::string &suffix, double print_diameter) {
-    path.replace_extension("csv");
     exportHeaderToFile(generateHeader(suffix, print_diameter), path);
 
     for (auto &grid : grids_of_paths) {

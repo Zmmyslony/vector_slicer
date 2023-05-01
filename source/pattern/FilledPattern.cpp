@@ -184,7 +184,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
         vald repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
                                                new_step, getPrintRadius(),
                                                new_positions, desired_pattern.get().getDimensions(),
-                                               getRepulsion());
+                                               getRepulsion(), desired_pattern.get().getMaximalRepulsionAngle());
         new_positions += repulsion;
         new_step += repulsion;
     }
