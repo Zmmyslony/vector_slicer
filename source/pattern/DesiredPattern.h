@@ -26,7 +26,7 @@ using vali = std::valarray<int>;
 
 class DesiredPattern {
     vali dimensions;
-    std::vector<vali> perimeter_list;
+    std::vector<std::vector<vali>> perimeter_list;
     std::vector<std::vector<int>> shape_matrix;
     std::vector<std::vector<double>> x_field_preferred;
     std::vector<std::vector<double>> y_field_preferred;
@@ -42,7 +42,7 @@ public:
 
     [[nodiscard]] const vali &getDimensions() const;
 
-    [[nodiscard]] const std::vector<vali> &getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
 
     [[nodiscard]] const std::vector<std::vector<int>> &getShapeMatrix() const;
 

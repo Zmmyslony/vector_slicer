@@ -34,7 +34,7 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
         y_field_preferred(std::move(y_field)),
         dimensions(getTableDimensions(shape_field)) {
 
-    perimeter_list = findSortedPerimeters(shape_matrix, dimensions);
+    perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions);
     splay_array = splay(x_field_preferred, y_field_preferred);
     splay_sorted_empty_spots = binBySplay(100);
     is_vector_field = readKeyBool(FILLING_CONFIG, "is_vector_operation_enabled");
@@ -114,7 +114,7 @@ const std::valarray<int> &DesiredPattern::getDimensions() const {
 }
 
 
-const std::vector<std::valarray<int>> &DesiredPattern::getPerimeterList() const {
+const std::vector<std::vector<std::valarray<int>>> & DesiredPattern::getPerimeterList() const {
     return perimeter_list;
 }
 

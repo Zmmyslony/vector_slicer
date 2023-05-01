@@ -66,8 +66,7 @@ getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &c
     }
     if (number_of_repulsing_coordinates == 0) {
         return {0, 0};
-    }
-    else{
+    } else {
         vald repulsion_vector = attraction / number_of_repulsing_coordinates;
         return repulsion_vector;
     }
@@ -205,9 +204,33 @@ std::vector<vali> sortPerimeters(std::vector<vali> &unsorted_perimeters, int sta
     return sorted_perimeters;
 }
 
+std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_perimeters) {
+    std::vector<std::vector<vali>> separated_perimeters;
+    std::vector<vali> current_subpath = {sorted_perimeters.front()};
+    for (int i = 1; i < sorted_perimeters.size(); i++) {
+        vali displacement_vector = sorted_perimeters[i] - sorted_perimeters[i - 1];
+        if (norm(displacement_vector) > sqrt(2)) {
+            separated_perimeters.emplace_back(current_subpath);
+            current_subpath.clear();
+        }
+        else {
+            current_subpath.emplace_back(sorted_perimeters[i]);
+        }
+    }
+    separated_perimeters.emplace_back(current_subpath);
+    return separated_perimeters;
+}
+
 
 std::vector<vali> findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
     std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
     return sorted_perimeters;
+}
+
+std::vector<std::vector<vali>> findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali& sizes) {
+    std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
+    std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
+    std::vector<std::vector<vali>> separated_perimeters = separatePerimeters(sorted_perimeters);
+    return separated_perimeters;
 }

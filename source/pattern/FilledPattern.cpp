@@ -68,9 +68,20 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
 
 
 void FilledPattern::findStartingStemPoints(fillingMethod method) {
+    std::vector<std::vector<vali>> separated_perimeters = desired_pattern.get().getPerimeterList();
+    std::vector<vali> perimeters;
+    if (separated_perimeters.size() == 1) {
+        perimeters = separated_perimeters[0];
+    }
+    else {
+        std::uniform_int_distribution<unsigned int> distribution(0, separated_perimeters.size() - 1);
+        unsigned int path_index = distribution(random_engine);
+        perimeters = separated_perimeters[path_index];
+    }
+
     switch (method) {
         case Perimeter:
-            stem_points = getSpacedLine(getStartingPointSeparation(), desired_pattern.get().getPerimeterList());
+            stem_points = getSpacedLine(getStartingPointSeparation(), perimeters);
             std::shuffle(stem_points.begin(), stem_points.end(), random_engine);
             break;
         case Dual:

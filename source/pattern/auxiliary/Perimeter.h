@@ -56,4 +56,7 @@ getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
                       const vald &coordinates, const vali &sizes, double repulsion_coefficient,
                       double maximal_repulsion_angle);
 
+std::vector<std::vector<vali>>
+findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+
 #endif //VECTOR_SLICER_PERIMETER_H
