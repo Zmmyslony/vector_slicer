@@ -45,7 +45,8 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         threads(threads),
         seeds(seeds),
         begin(std::chrono::steady_clock::now()),
-        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")) {
+        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")),
+        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")){
     // Needed, as after optimisation of the first pattern the mCurrentIter does not reset, while getValueAtMinium
     // does not have an object to refer to, so it tries to access an out-of-scope object and crashes.
     mCurrentIter = 0;
@@ -58,7 +59,7 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "ERROR: Using only first four components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in, dims);
-    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);
+    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed, disagreement_percentile);
     if (mCurrentIter > 0) {
         double minimal_disagreement = getValueAtMinimum();
         showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
@@ -73,10 +74,11 @@ void createDirectory(const fs::path &path) {
     }
 }
 
-void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path path) {
+void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path path, int number_of_configs) {
     std::vector<FillingConfig> filling_configs;
-    for (auto &config: configs) {
-        filling_configs.push_back(config.getConfig());
+
+    for (int i = 0; i < number_of_configs; i++) {
+        filling_configs.push_back(configs[i].getConfig());
     }
     exportConfigList(filling_configs, std::move(path));
 }
@@ -111,7 +113,8 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
-    for (int i = 0; i < 10; i++) {
+    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+    for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
@@ -121,7 +124,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
         print_diameter = pattern.getPrintRadius() * 2 + 1;
     }
 
-    exportConfigList(patterns, best_config_directory);
+    exportConfigList(patterns, best_config_directory, number_of_layers);
     patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter);
 }

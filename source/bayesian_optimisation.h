@@ -29,6 +29,7 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     int seeds;
     int dims;
     bool is_disagreement_details_printed = false;
+    double disagreement_percentile = 0.5;
 
 public:
     BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,

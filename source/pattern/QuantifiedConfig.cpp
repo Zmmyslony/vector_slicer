@@ -199,7 +199,8 @@ FilledPattern QuantifiedConfig::getFilledPattern() const {
     return *this;
 }
 
-double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed) {
+double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
+                                         double disagreement_percentile) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
     std::vector<double> disagreements(seeds);
     for (int i = 0; i < seeds; i++) {
@@ -215,7 +216,10 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
         std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
                   << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     }
-    return mean(disagreements);
+    std::sort(disagreements.begin(), disagreements.end());
+    int return_index = disagreements.size() * (1 - disagreement_percentile);
+//    return mean(disagreements);
+    return disagreements[return_index];
 }
 
 std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {

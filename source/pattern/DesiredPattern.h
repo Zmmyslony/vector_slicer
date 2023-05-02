@@ -16,6 +16,8 @@
 #ifndef VECTOR_SLICER_DESIREDPATTERN_H
 #define VECTOR_SLICER_DESIREDPATTERN_H
 
+#define _USE_MATH_DEFINES
+
 #include <string>
 #include <vector>
 #include <cmath>
