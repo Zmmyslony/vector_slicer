@@ -74,7 +74,7 @@ double dot(const vald &array_first, const vald &array_second) {
 }
 
 
-vald perpendicular(vald vector) {
+vald perpendicular(const vald &vector) {
     if (vector.size() != 2) {
         throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
     }

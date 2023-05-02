@@ -16,8 +16,11 @@
 
 #include "Perimeter.h"
 #include "ValarrayOperations.h"
+#include "Geometry.h"
 
 #include <cfloat>
+#include <iostream>
+
 
 std::vector<vali> generatePerimeterList(double radius) {
     std::vector<vali> perimeter_list;
@@ -43,45 +46,68 @@ bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
     return (table[position[0]][position[1]] == 0);
 }
 
-vald
-getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
-                  double repulsion_coefficient) {
 
+vald
+getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &current_displacements, const vali &sizes,
+                             const std::vector<std::vector<int>> &shape_matrix,
+                             const std::vector<std::vector<int>> &filled_table) {
+    int number_of_repulsing_coordinates = 0;
     vald attraction = {0, 0};
-    int number_of_viable_points = 0;
-    for (auto &displacement: checked_area) {
-        vali neighbour = coordinates + displacement;
+
+    for (auto &displacement: current_displacements) {
+        vali neighbour = dtoi(coordinates) + displacement;
         if (isInRange(neighbour, sizes) &&
-            !isEmpty(neighbour, empty_spots) &&
+            !isEmpty(neighbour, shape_matrix) &&
             isEmpty(neighbour, filled_table)) {
 
             attraction += itod(displacement);
-            number_of_viable_points++;
+            number_of_repulsing_coordinates++;
         }
     }
-
-    return -repulsion_coefficient * attraction / number_of_viable_points;
+    if (number_of_repulsing_coordinates == 0) {
+        return {0, 0};
+    } else {
+        vald repulsion_vector = attraction / number_of_repulsing_coordinates;
+        return repulsion_vector;
+    }
 }
 
 
-vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table, const std::vector<vali> &checked_area,
-                       const vali &start_positions, const vali &sizes, double repulsion_coefficient) {
+vald
+getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
+                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
+                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                      double maximal_repulsion_angle) {
 
-    vald attraction = {0, 0};
-    int number_of_empty_spots = 0;
-    for (auto &direction: checked_area) {
-        vali positions_new = direction + start_positions;
-        if (isInRange(positions_new, sizes) &&
-            isEmpty(positions_new, filled_table)) {
 
-            attraction += itod(direction);
-            number_of_empty_spots++;
+    std::vector<vali> current_displacements = generateLineDisplacements(tangent, radius);
+    vald maximal_repulsion_vector = repulsion_coefficient *
+                                    getRepulsionFromDisplacement(coordinates, current_displacements, sizes,
+                                                                 shape_matrix, filled_table);
 
+    double maximal_repulsion_length = norm(maximal_repulsion_vector);
+    if (maximal_repulsion_length < 1) {
+        return maximal_repulsion_vector;
+    }
+    vali maximal_repulsion_vector_i = dtoi(maximal_repulsion_vector);
+    int maximal_repulsion_length_i = std::max(std::abs(maximal_repulsion_vector_i[0]),
+                                              std::abs(maximal_repulsion_vector_i[1]));
+
+    vald previous_displacement = {0, 0};
+    for (int i = 1; i <= maximal_repulsion_length_i; i++) {
+        vald local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
+        vald local_repulsion = repulsion_coefficient *
+                               getRepulsionFromDisplacement(coordinates + local_displacement, current_displacements,
+                                                            sizes, shape_matrix, filled_table);
+
+        if (dot(local_repulsion, maximal_repulsion_vector) <= 0 ||
+            dot(tangent, tangent + local_repulsion) < cos(maximal_repulsion_angle)) {
+            return previous_displacement;
         }
+        previous_displacement = local_displacement;
     }
 
-    return -repulsion_coefficient * attraction / number_of_empty_spots;
+    return maximal_repulsion_vector;
 }
 
 bool
@@ -178,9 +204,35 @@ std::vector<vali> sortPerimeters(std::vector<vali> &unsorted_perimeters, int sta
     return sorted_perimeters;
 }
 
+std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_perimeters) {
+    std::vector<std::vector<vali>> separated_perimeters;
+    std::vector<vali> current_subpath = {sorted_perimeters.front()};
+    for (int i = 1; i < sorted_perimeters.size(); i++) {
+        vali displacement_vector = sorted_perimeters[i] - sorted_perimeters[i - 1];
+        if (norm(displacement_vector) > sqrt(2) && !current_subpath.empty()) {
+            separated_perimeters.emplace_back(current_subpath);
+            current_subpath.clear();
+        }
+        else {
+            current_subpath.emplace_back(sorted_perimeters[i]);
+        }
+    }
+    if (!current_subpath.empty()) {
+        separated_perimeters.emplace_back(current_subpath);
+    }
+    return separated_perimeters;
+}
+
 
 std::vector<vali> findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
     std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
     return sorted_perimeters;
+}
+
+std::vector<std::vector<vali>> findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali& sizes) {
+    std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
+    std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
+    std::vector<std::vector<vali>> separated_perimeters = separatePerimeters(sorted_perimeters);
+    return separated_perimeters;
 }

@@ -15,16 +15,15 @@
 //
 
 #include "Path.h"
-#include "../auxiliary/ValarrayOperations.h"
+#include "auxiliary/ValarrayOperations.h"
 
-void Path::addPoint(std::valarray<int> &positions) {
+void Path::addPoint(vali &positions) {
     sequence_of_positions.push_back(positions);
 }
 
 
-Path::Path(std::valarray<int> &starting_positions) {
+Path::Path(vali &starting_positions) {
     addPoint(starting_positions);
-
 }
 
 
@@ -33,28 +32,28 @@ unsigned int Path::size() const {
 }
 
 
-Path::Path(Path forward_path, Path backward_path) {
-    for (int i = 0; i < backward_path.size(); i++) {
-        sequence_of_positions.push_back(backward_path.sequence_of_positions[backward_path.size() - i - 1]);
-    }
-    for (int i = 1; i < forward_path.size(); i++) {
-        sequence_of_positions.push_back(forward_path.sequence_of_positions[i]);
-    }
+Path::Path(const Path &forward_path, const Path &backward_path) {
+    std::vector<vali> backward_sequence = backward_path.sequence_of_positions;
+    std::vector<vali> forward_sequence = forward_path.sequence_of_positions;
+
+    std::reverse(backward_sequence.begin(), backward_sequence.end());
+    backward_sequence.insert(backward_sequence.end(), forward_sequence.begin() + 1, forward_sequence.end());
+    sequence_of_positions = backward_sequence;
 }
 
-std::valarray<int> Path::first() {
-    return sequence_of_positions[0];
+vali Path::first() const {
+    return sequence_of_positions.front();
 }
 
-std::valarray<int> Path::second() {
+vali Path::second() const {
     return sequence_of_positions[1];
 }
 
-std::valarray<int> Path::last() {
+vali Path::last() const {
     return sequence_of_positions.back();
 }
 
-std::valarray<int> Path::secondToLast() {
+vali Path::secondToLast() const {
     return sequence_of_positions[sequence_of_positions.size() - 2];
 }
 

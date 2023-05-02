@@ -15,7 +15,7 @@
 //
 
 #include "disagreement_weights.h"
-#include "../auxiliary/configuration_reading.h"
+#include "auxiliary/configuration_reading.h"
 
 DisagreementWeights::DisagreementWeights(double empty_spot_weight, double empty_spot_exponent, double overlap_weight,
                                          double overlap_exponent, double director_weight, double director_exponent,
@@ -35,6 +35,6 @@ DisagreementWeights::DisagreementWeights(const fs::path &path) :
                             readKeyDouble(path, "overlap_power"),
                             readKeyDouble(path, "director_weight"),
                             readKeyDouble(path, "director_power"),
-                            0, 1) {}
+                            0, readKeyDouble(path, "paths_power")) {}
 
 

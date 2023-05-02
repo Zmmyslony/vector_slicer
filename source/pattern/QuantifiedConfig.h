@@ -29,8 +29,9 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double empty_spots = 0;
     double average_overlap = 0;
     double director_disagreement = 0;
-    double average_path_inverse_length = 0;
+    double paths_number = 0;
     double disagreement = DBL_MAX;
+    double total_disagreement = DBL_MAX;
 
     double calculateEmptySpots();
 
@@ -41,7 +42,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double calculatePathLengthDeviation(int order);
 
 public:
-    QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights);
+    QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights);
 
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
                      DisagreementWeights disagreement_weights);
@@ -54,17 +55,18 @@ public:
 
     [[nodiscard]] double getDisagreement() const;
 
-    double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed);
+    double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
+                           double disagreement_percentile);
 
-    FilledPattern getFilledPattern();
+    FilledPattern getFilledPattern() const;
 
     DesiredPattern getDesiredPattern();
 
     [[nodiscard]] FillingConfig getConfig() const;
 
-    QuantifiedConfig findBestSeed(int seeds, int threads);
+    std::vector<QuantifiedConfig> findBestSeeds(int seeds, int threads);
 
-    void printDisagreement();
+    void printDisagreement() const;
 };
 
 

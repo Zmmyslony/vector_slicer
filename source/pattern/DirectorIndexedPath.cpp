@@ -14,36 +14,36 @@
 // Created by Michał Zmyślony on 07/01/2022.
 //
 
-#include "IndexedPath.h"
-#include "../auxiliary/ValarrayOperations.h"
+#include "DirectorIndexedPath.h"
+#include "auxiliary/ValarrayOperations.h"
 #include <utility>
 #include <cfloat>
 
-IndexedPath::IndexedPath(int index, bool is_path_reversed, vali start_coordinates,
-                         vali end_coordinates) : index(
+DirectorIndexedPath::DirectorIndexedPath(int index, bool is_path_reversed, vali start_coordinates,
+                                         vali end_coordinates) : index(
         index), reversed_path(is_path_reversed), start_coordinates(std::move(start_coordinates)),
                                                  end_coordinates(std::move(end_coordinates)) {}
 
-int IndexedPath::getIndex() const {
+int DirectorIndexedPath::getIndex() const {
     return index;
 }
 
-bool IndexedPath::isPathReversed() const {
+bool DirectorIndexedPath::isPathReversed() const {
     return reversed_path;
 }
 
-const vali &IndexedPath::getStartCoordinates() const {
+const vali &DirectorIndexedPath::getStartCoordinates() const {
     return start_coordinates;
 }
 
-const vali &IndexedPath::getEndCoordinates() const {
+const vali &DirectorIndexedPath::getEndCoordinates() const {
     return end_coordinates;
 }
 
-IndexedPath::IndexedPath() : index(0), reversed_path(false), start_coordinates(vali({0, 0})),
-                             end_coordinates(vali({0, 0})) {}
+DirectorIndexedPath::DirectorIndexedPath() : index(0), reversed_path(false), start_coordinates(vali({0, 0})),
+                                             end_coordinates(vali({0, 0})) {}
 
-IndexedPath::IndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions) :
+DirectorIndexedPath::DirectorIndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions) :
         index(index),
         reversed_path(is_path_reversed) {
     if (is_path_reversed) {
@@ -53,7 +53,7 @@ IndexedPath::IndexedPath(int index, bool is_path_reversed, const std::vector<val
         start_coordinates = path.front();
         end_coordinates = path.back();
     }
-    double max_distance = DBL_MIN;
+    auto max_distance = DBL_MIN;
     for (auto &point: path) {
         double x_vector = point[0] - (double) dimensions[0] / 2;
         double y_vector = point[1] - (double) dimensions[1] / 2;
@@ -70,29 +70,29 @@ IndexedPath::IndexedPath(int index, bool is_path_reversed, const std::vector<val
     }
 }
 
-int IndexedPath::getXMin() const {
+int DirectorIndexedPath::getXMin() const {
     return x_min;
 }
 
-int IndexedPath::getXMax() const {
+int DirectorIndexedPath::getXMax() const {
     return x_max;
 }
 
-int IndexedPath::getYMin() const {
+int DirectorIndexedPath::getYMin() const {
     return y_min;
 }
 
-int IndexedPath::getYMax() const {
+int DirectorIndexedPath::getYMax() const {
     return y_max;
 }
 
-double IndexedPath::getAngle() const {
+double DirectorIndexedPath::getAngle() const {
     return angle;
 }
 
 
-std::vector<IndexedPath> indexPaths(const std::vector<Path> &sequence_of_paths, const vali &dimensions) {
-    std::vector<IndexedPath> indexed_paths;
+std::vector<DirectorIndexedPath> indexPaths(const std::vector<Path> &sequence_of_paths, const vali &dimensions) {
+    std::vector<DirectorIndexedPath> indexed_paths;
     for (int i = 0; i < sequence_of_paths.size(); i++) {
         Path current_path = sequence_of_paths[i];
         indexed_paths.emplace_back(i, false, current_path.sequence_of_positions, dimensions);
@@ -102,7 +102,7 @@ std::vector<IndexedPath> indexPaths(const std::vector<Path> &sequence_of_paths, 
 }
 
 
-void removePathsWithIndex(std::vector<IndexedPath> &indexed_paths, int index) {
+void removePathsWithIndex(std::vector<DirectorIndexedPath> &indexed_paths, int index) {
     std::vector<int> indices_to_remove;
     int i = 0;
     for (auto &element: indexed_paths) {
@@ -119,20 +119,20 @@ void removePathsWithIndex(std::vector<IndexedPath> &indexed_paths, int index) {
 }
 
 
-void removePathsWithSameIndex(std::vector<IndexedPath> &indexed_paths, const IndexedPath &path) {
+void removePathsWithSameIndex(std::vector<DirectorIndexedPath> &indexed_paths, const DirectorIndexedPath &path) {
     removePathsWithIndex(indexed_paths, path.getIndex());
 }
 
 
-double distanceBetweenPaths(const IndexedPath &current_path, const IndexedPath &new_path) {
+double distanceBetweenPaths(const DirectorIndexedPath &current_path, const DirectorIndexedPath &new_path) {
     vali connecting_vector = current_path.getEndCoordinates() - new_path.getStartCoordinates();
     return norm(connecting_vector);
 }
 
 
-IndexedPath findNearestNeighbour(const std::vector<IndexedPath> &indexed_paths, const IndexedPath &current_path) {
-    double minimal_distance = DBL_MAX;
-    IndexedPath nearest_path = current_path;
+DirectorIndexedPath findNearestNeighbour(const std::vector<DirectorIndexedPath> &indexed_paths, const DirectorIndexedPath &current_path) {
+    auto minimal_distance = DBL_MAX;
+    DirectorIndexedPath nearest_path = current_path;
     for (auto &element: indexed_paths) {
         double current_distance = distanceBetweenPaths(current_path, element);
         if (current_distance < minimal_distance) {
@@ -143,10 +143,10 @@ IndexedPath findNearestNeighbour(const std::vector<IndexedPath> &indexed_paths, 
     return nearest_path;
 }
 
-IndexedPath findNearestNeighbourLeft(const std::vector<IndexedPath> &indexed_paths, const IndexedPath &current_path) {
-    double minimal_distance = DBL_MAX;
-    double left_most_position = DBL_MAX;
-    IndexedPath nearest_path = current_path;
+DirectorIndexedPath findNearestNeighbourLeft(const std::vector<DirectorIndexedPath> &indexed_paths, const DirectorIndexedPath &current_path) {
+    auto minimal_distance = DBL_MAX;
+    auto left_most_position = DBL_MAX;
+    DirectorIndexedPath nearest_path = current_path;
 
     for (auto &element: indexed_paths) {
         double current_pos = element.getXMin();
@@ -166,10 +166,10 @@ IndexedPath findNearestNeighbourLeft(const std::vector<IndexedPath> &indexed_pat
     return nearest_path;
 }
 
-IndexedPath findNearestNeighbourRadial(const std::vector<IndexedPath> &indexed_paths, const IndexedPath &current_path) {
-    double minimal_distance = DBL_MAX;
-    double minimal_angle = DBL_MAX;
-    IndexedPath nearest_path = current_path;
+DirectorIndexedPath findNearestNeighbourRadial(const std::vector<DirectorIndexedPath> &indexed_paths, const DirectorIndexedPath &current_path) {
+    auto minimal_distance = DBL_MAX;
+    auto minimal_angle = DBL_MAX;
+    DirectorIndexedPath nearest_path = current_path;
 
     for (auto &element: indexed_paths) {
         double current_angle = -element.getAngle();
@@ -190,14 +190,12 @@ IndexedPath findNearestNeighbourRadial(const std::vector<IndexedPath> &indexed_p
 }
 
 
-std::vector<IndexedPath>
-sortIndexedPaths(std::vector<IndexedPath> indexed_paths, const vali &starting_positions) {
-    IndexedPath current_path(0, false, starting_positions, starting_positions);
-    std::vector<IndexedPath> sorted_paths;
+std::vector<DirectorIndexedPath>
+sortIndexedPaths(std::vector<DirectorIndexedPath> indexed_paths, const vali &starting_positions) {
+    DirectorIndexedPath current_path(0, false, starting_positions, starting_positions);
+    std::vector<DirectorIndexedPath> sorted_paths;
     while (!indexed_paths.empty()) {
-//        current_path = findNearestNeighbour(indexed_paths, current_path);
-//        current_path = findNearestNeighbourLeft(indexed_paths, current_path);
-        current_path = findNearestNeighbourRadial(indexed_paths, current_path);
+        current_path = findNearestNeighbour(indexed_paths, current_path);
         removePathsWithSameIndex(indexed_paths, current_path);
         sorted_paths.emplace_back(current_path);
     }
@@ -205,7 +203,7 @@ sortIndexedPaths(std::vector<IndexedPath> indexed_paths, const vali &starting_po
 }
 
 
-double getMoveDistance(const std::vector<IndexedPath> &sorted_paths) {
+double getMoveDistance(const std::vector<DirectorIndexedPath> &sorted_paths) {
     double distance = 0;
     for (int i = 1; i < sorted_paths.size(); i++) {
         distance += distanceBetweenPaths(sorted_paths[i - 1], sorted_paths[i]);
@@ -214,13 +212,13 @@ double getMoveDistance(const std::vector<IndexedPath> &sorted_paths) {
 }
 
 
-std::vector<IndexedPath>
-findBestSortingOfPathsFromStartingPoints(const std::vector<IndexedPath> &unsorted_indexed_paths,
+std::vector<DirectorIndexedPath>
+findBestSortingOfPathsFromStartingPoints(const std::vector<DirectorIndexedPath> &unsorted_indexed_paths,
                                          const std::vector<vali> &list_of_starting_positions) {
-    double minimal_distance = DBL_MAX;
-    std::vector<IndexedPath> best_sorting;
+    auto minimal_distance = DBL_MAX;
+    std::vector<DirectorIndexedPath> best_sorting;
     for (auto &starting_position: list_of_starting_positions) {
-        std::vector<IndexedPath> current_sorting = sortIndexedPaths(unsorted_indexed_paths, starting_position);
+        std::vector<DirectorIndexedPath> current_sorting = sortIndexedPaths(unsorted_indexed_paths, starting_position);
         if (getMoveDistance(current_sorting) < minimal_distance) {
             minimal_distance = getMoveDistance(current_sorting);
             best_sorting = current_sorting;
@@ -247,7 +245,7 @@ std::vector<vali> generateStartingPoints(const vali &dimensions, int number_of_s
 
 
 std::vector<std::vector<vali>>
-sortedSequenceOfPaths(const std::vector<Path> &paths, const std::vector<IndexedPath> &sorted_indexed_paths) {
+sortedSequenceOfPaths(const std::vector<Path> &paths, const std::vector<DirectorIndexedPath> &sorted_indexed_paths) {
     std::vector<std::vector<vali>> sorted_sequence;
     for (auto &indexed_path: sorted_indexed_paths) {
         std::vector<vali> new_path = (paths[indexed_path.getIndex()]).sequence_of_positions;
@@ -261,7 +259,7 @@ sortedSequenceOfPaths(const std::vector<Path> &paths, const std::vector<IndexedP
 }
 
 
-std::vector<IndexedPath> indexPaths(FilledPattern filled_pattern, const vali &dimensions) {
+std::vector<DirectorIndexedPath> indexPaths(FilledPattern filled_pattern, const vali &dimensions) {
     std::vector<Path> sequence_of_paths = filled_pattern.getSequenceOfPaths();
     return indexPaths(sequence_of_paths, dimensions);
 }
@@ -277,13 +275,13 @@ std::vector<std::vector<vali>> pathToVector(const std::vector<Path> &path) {
 }
 
 
-std::vector<std::vector<vali>> getSortedPaths(FilledPattern &filled_pattern, int starting_point_number) {
+std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, int starting_point_number) {
     vali dimensions = filled_pattern.desired_pattern.get().getDimensions();
-    std::vector<IndexedPath> unsorted_indices = indexPaths(filled_pattern, dimensions);
+    std::vector<DirectorIndexedPath> unsorted_indices = indexPaths(filled_pattern, dimensions);
 
     std::vector<vali> starting_points = generateStartingPoints(dimensions, starting_point_number);
-    std::vector<IndexedPath> sorted_indices = findBestSortingOfPathsFromStartingPoints(unsorted_indices,
-                                                                                       starting_points);
+    std::vector<DirectorIndexedPath> sorted_indices = findBestSortingOfPathsFromStartingPoints(unsorted_indices,
+                                                                                               starting_points);
 
     std::vector<Path> unsorted_paths = filled_pattern.getSequenceOfPaths();
     std::vector<std::vector<vali>> sorted_paths = sortedSequenceOfPaths(unsorted_paths, sorted_indices);

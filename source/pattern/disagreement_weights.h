@@ -31,7 +31,7 @@ protected:
     double director_weight = 0;
     double director_exponent = 1;
     double path_weight = 0;
-    double path_exponent = 1;
+    double path_exponent = 0.5;
 public:
     DisagreementWeights(double empty_spot_weight, double empty_spot_exponent, double overlap_weight,
                         double overlap_exponent, double director_weight, double director_exponent, double path_weight,

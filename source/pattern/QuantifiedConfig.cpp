@@ -16,16 +16,19 @@
 
 #include "QuantifiedConfig.h"
 #include "FillingPatterns.h"
-#include "../auxiliary/vector_operations.h"
-#include "../auxiliary/ValarrayOperations.h"
+#include "auxiliary/vector_operations.h"
+#include "auxiliary/ValarrayOperations.h"
 
 #include <utility>
 #include <cmath>
 #include <omp.h>
 #include <iomanip>
+#include <algorithm>
+#include <vector>
 
-QuantifiedConfig::QuantifiedConfig(FilledPattern pattern, DisagreementWeights disagreement_weights) :
-        FilledPattern(std::move(pattern)),
+
+QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights) :
+        FilledPattern(pattern),
         DisagreementWeights(disagreement_weights) {
 
 }
@@ -39,7 +42,7 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims) :
         QuantifiedConfig(template_config) {
     if (parameters.size() != dims) {
-        throw std::runtime_error("Config options can only be set with 4D vectors.");
+        throw std::runtime_error("Config options can only be set with " + std::to_string(dims) + "D vectors.");
     }
     setConfigOption(Repulsion, std::to_string(parameters[0]));
     setConfigOption(CollisionRadius, std::to_string(parameters[1]));
@@ -142,25 +145,26 @@ void QuantifiedConfig::evaluate() {
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
-//    average_path_inverse_length = calculatePathLengthDeviation(2);
+
+    paths_number = getSequenceOfPaths().size();
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
                    director_weight * pow(director_disagreement, director_exponent);
-//    +                  path_weight * pow(average_path_inverse_length, path_exponent);
+
+    total_disagreement = disagreement * fmax(pow(paths_number, path_exponent), 1);
 }
 
-void QuantifiedConfig::printDisagreement() {
+void QuantifiedConfig::printDisagreement() const {
     double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
     double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
-//    double path_disagreement = path_weight * pow(average_path_inverse_length, path_exponent);
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(3);
 
     stream << std::endl;
-    stream << "Total disagreement " << disagreement << std::endl;
+    stream << "Base disagreement " << disagreement << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
     stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t"
            << empty_spot_disagreement / disagreement * 100 << std::endl;
@@ -168,8 +172,8 @@ void QuantifiedConfig::printDisagreement() {
            << overlap_disagreement / disagreement * 100 << std::endl;
     stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
-//    stream << "\tPath\t\t" << average_path_inverse_length << "\t" << path_disagreement << "\t"
-//           << path_disagreement / disagreement * 100 << std::endl;
+    stream << "\n\tPaths\t" << paths_number << std::endl;
+    stream << "\tPaths multiplier\t" << pow(paths_number, path_exponent) << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
@@ -179,11 +183,11 @@ FillingConfig QuantifiedConfig::getConfig() const {
 }
 
 double QuantifiedConfig::getDisagreement() const {
-    if (disagreement == DBL_MAX) {
+    if (total_disagreement == DBL_MAX) {
         throw std::runtime_error("Disagreement of a pattern is equal to DBL_MAX. Most likely the pattern has"
                                  "not been evaluated before retrieving disagreement.");
     }
-    return disagreement;
+    return total_disagreement;
 }
 
 DesiredPattern QuantifiedConfig::getDesiredPattern() {
@@ -191,11 +195,12 @@ DesiredPattern QuantifiedConfig::getDesiredPattern() {
 }
 
 
-FilledPattern QuantifiedConfig::getFilledPattern() {
-    return FilledPattern((FilledPattern) *this);
+FilledPattern QuantifiedConfig::getFilledPattern() const {
+    return *this;
 }
 
-double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed) {
+double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
+                                         double disagreement_percentile) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
     std::vector<double> disagreements(seeds);
     for (int i = 0; i < seeds; i++) {
@@ -208,15 +213,18 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
         disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
     if (is_disagreement_details_printed) {
-    std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
-              << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
+        std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
+                  << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     }
-    return mean(disagreements);
+    std::sort(disagreements.begin(), disagreements.end());
+    int return_index = disagreements.size() * (1 - disagreement_percentile);
+//    return mean(disagreements);
+    return disagreements[return_index];
 }
 
-QuantifiedConfig QuantifiedConfig::findBestSeed(int seeds, int threads) {
+std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
-    std::vector<double> disagreements(seeds);
+    std::vector<std::pair<double, int>> disagreements(seeds);
     for (int i = 0; i < seeds; i++) {
         configs_with_various_seeds.emplace_back(*this, i);
     }
@@ -224,12 +232,12 @@ QuantifiedConfig QuantifiedConfig::findBestSeed(int seeds, int threads) {
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
         configs_with_various_seeds[i].evaluate();
-        disagreements[i] = configs_with_various_seeds[i].getDisagreement();
     }
-    int min_element_index = std::distance(std::begin(disagreements),
-                                          std::min_element(std::begin(disagreements), std::end(disagreements)));
 
-    return configs_with_various_seeds[min_element_index];
+    std::sort(configs_with_various_seeds.begin(), configs_with_various_seeds.end(), [](auto &left, auto&right) {
+        return left.getDisagreement() < right.getDisagreement();
+    });
+    return configs_with_various_seeds;
 }
 
 

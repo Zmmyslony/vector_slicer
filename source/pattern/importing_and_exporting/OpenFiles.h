@@ -11,31 +11,32 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 13/10/2021.
+// Created by Michał Zmyślony on 24/09/2021.
 //
 
-#ifndef VECTOR_SLICER_EXPORTING_H
-#define VECTOR_SLICER_EXPORTING_H
+#ifndef VECTOR_SLICER_OPENFILES_H
+#define VECTOR_SLICER_OPENFILES_H
+
+#include "../FilledPattern.h"
 
 #include <string>
-#include <valarray>
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
 namespace fs = boost::filesystem;
 
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path);
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &filename);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path);
 
-void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed);
 
-void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
-                             const std::vector<std::vector<int>> &table_second, fs::path &filename);
+std::vector<int> readConfigTable(const fs::path &config_path);
 
-void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                        const std::string &suffix, double print_diameter);
+FilledPattern
+openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern, unsigned int seed);
 
-std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
+FilledPattern openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern);
 
-#endif //VECTOR_SLICER_EXPORTING_H
+#endif //VECTOR_SLICER_OPENFILES_H

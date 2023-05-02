@@ -14,8 +14,8 @@
 // Created by Michał Zmyślony on 07/01/2022.
 //
 
-#ifndef VECTOR_SLICER_INDEXEDPATH_H
-#define VECTOR_SLICER_INDEXEDPATH_H
+#ifndef VECTOR_SLICER_DIRECTORINDEXEDPATH_H
+#define VECTOR_SLICER_DIRECTORINDEXEDPATH_H
 
 #include "Path.h"
 #include "FilledPattern.h"
@@ -27,7 +27,7 @@
 using vali = std::valarray<int>;
 using vald = std::valarray<double>;
 
-class IndexedPath {
+class DirectorIndexedPath {
 private:
     bool reversed_path;
     vali start_coordinates;
@@ -59,13 +59,13 @@ public:
 
     double getAngle() const;
 
-    IndexedPath(int index, bool is_path_reversed, vali start_coordinates, vali end_coordinates);
+    DirectorIndexedPath(int index, bool is_path_reversed, vali start_coordinates, vali end_coordinates);
 
-    IndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions);
+    DirectorIndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions);
 
-    IndexedPath();
+    DirectorIndexedPath();
 };
 
-std::vector<std::vector<vali>> getSortedPaths(FilledPattern &filled_pattern, int starting_point_number);
+std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, int starting_point_number);
 
-#endif //VECTOR_SLICER_INDEXEDPATH_H
+#endif //VECTOR_SLICER_DIRECTORINDEXEDPATH_H

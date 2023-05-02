@@ -28,18 +28,35 @@ enum fillingMethod {
     Perimeter, Dual
 };
 enum configOptions {
-    InitialFillingMethod, CollisionRadius, StepLength, PrintRadius, Repulsion, StartingPointSeparation, Seed, RepulsionRadius
+    InitialFillingMethod,
+    CollisionRadius,
+    StepLength,
+    PrintRadius,
+    Repulsion,
+    StartingPointSeparation,
+    Seed,
+    RepulsionRadius
 };
 
 
 class FillingConfig {
+    // Filling method can be either Perimeter of Dual. Perimeter extracts the boundary and selects points out of it
+    // that are distanced starting_point_separation away from each other. The Dual method selects points and creates
+    // a Dual line to it (perpendicular to the vector field) that is also separated into the list of equidistant points.
     fillingMethod filling_method;
+    // Distance between the new point and the nearest filled point deciding when the line will terminate.
     double collision_radius;
+    // Multiplier deciding how much the lines will try to avoid one another.
     double repulsion;
+    // Length of each step in pixels.
     int step_length;
+    // See FillingMethod
     double starting_point_separation;
+    // Radius away from the generated line where the pixels of the filled_matrix will be filled.
     double print_radius;
+    // Numerical seed deciding the randomness of the whole algorithm.
     unsigned int seed;
+    // Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
     double repulsion_radius;
 
     void readLineOfConfig(std::vector<std::string> line);
@@ -67,12 +84,14 @@ public:
 
     explicit FillingConfig(const fs::path &config_path);
 
+    FillingConfig(const FillingConfig &source_config, int source_seed);
+
     FillingConfig(fillingMethod new_perimeter_filling_method, int new_collision_radius,
                   int new_starting_point_separation, double new_repulsion, int new_step_length,
                   int new_print_radius, double new_repulsion_radius, unsigned int new_seed);
 
 
-    void exportConfig(const fs::path &directory);
+    void exportConfig(const fs::path &directory, const std::string &suffix);
 
     [[nodiscard]] int getStepLength() const;
 
@@ -80,5 +99,9 @@ public:
 };
 
 configOptions stringToConfig(const std::string &string_option);
+
+void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path);
+
+std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 
 #endif //VECTOR_SLICER_FILLINGCONFIG_H

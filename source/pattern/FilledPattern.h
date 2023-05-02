@@ -31,21 +31,21 @@ enum pointSearchStage {
 };
 
 class FilledPattern : public FillingConfig {
-//    bool isPerimeterSearchOn = true;
+    pointSearchStage search_stage = PerimeterSearch;
+    std::mt19937 random_engine;
 
     std::vector<Path> sequence_of_paths;
     std::vector<vali> print_circle;
     std::vector<vali> repulsion_circle;
-    std::mt19937 random_engine;
-    std::uniform_int_distribution<unsigned int> distribution;
-    std::uniform_int_distribution<int> x_distribution;
-    std::uniform_int_distribution<int> y_distribution;
     std::vector<vali> list_of_points;
+    std::vector<vali> collision_list;
+    std::vector<vali> stem_points = {};
+
+    std::vector<std::vector<vali>> binned_root_points;
 
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
 
-    void
-    fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value);
+    void fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value);
 
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step, int value);
@@ -53,77 +53,71 @@ class FilledPattern : public FillingConfig {
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step);
 
-    [[nodiscard]] std::vector<vali> findAllFillablePoints() const;
+    void findStartingStemPoints(fillingMethod method);
 
-    std::vector<vali> findStartingRootPoints(fillingMethod method);
+    vald getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
 
-    vald
-    getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
-
-    bool
-    tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
+    bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
 
     [[nodiscard]] vald getDirector(const vali &positions) const;
 
     vald getDirector(const vald &positions);
 
-    std::vector<vali>
-    findDualLineOneDirection(vald coordinates, vald previous_dual_director);
+    std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 
-    std::vector<std::vector<vali>> binBySplay(std::vector<vali> &unsorted_coordinates, unsigned int bins) const;
+    vali findRootPoint();
 
-public:
-    std::reference_wrapper<const DesiredPattern> desired_pattern;
-    std::vector<std::vector<double>> x_field_filled;
-    std::vector<std::vector<double>> y_field_filled;
-    std::vector<vali> fillable_points;
-    std::vector<std::vector<vali>> binned_fillable_points;
+    void updateStemPoints(const vali &root_point);
 
-    std::vector<vali> collision_list;
-    std::vector<std::vector<int>> number_of_times_filled;
-    pointSearchStage search_stage = PerimeterSearch;
-    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
-                  unsigned int seed);
-    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
-
-    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
-
-    void setup();
-
-    void addNewPath(Path &new_path);
-
-    void fillPointsInCircle(const vali &starting_coordinates);
-
-    void removePoints();
-
-    Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
-
-    std::vector<Path> getSequenceOfPaths();
-
-    void exportFilledMatrix(const fs::path &directory) const;
-
-    void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
-
-    [[nodiscard]] bool isFilled(const vali &coordinates) const;
-
-    void removeShortLines(double length_coefficient);
+    vali getFillablePoint();
 
     void removeLine(Path path);
 
-    [[nodiscard]] bool isFillable(const vali &point) const;
+    [[nodiscard]] bool isFilled(const vali &coordinates) const;
 
-    vali getFillablePoint();
+    [[nodiscard]] bool isFillable(const vali &point) const;
 
     [[nodiscard]] bool isFillablePointLeft() const;
 
     std::vector<vali> findDualLine(const vali &start);
 
-    std::vector<vali>
-    getSpacedLine(const double &distance, const std::vector<vali> &line);
+    std::vector<vali> getSpacedLine(const double &distance, const std::vector<vali> &line);
 
-    friend class StartingPoint;
+    void updateRootPoints();
 
-    void updateFillablePoints();
+public:
+
+    std::vector<std::vector<double>> x_field_filled;
+    std::vector<std::vector<double>> y_field_filled;
+    std::reference_wrapper<const DesiredPattern> desired_pattern;
+    std::vector<std::vector<int>> number_of_times_filled;
+
+    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
+                  unsigned int seed);
+
+    FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
+
+    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
+
+    void removeShortLines(double length_coefficient);
+
+    void removePoints();
+
+    void fillPointsInCircle(const vali &starting_coordinates);
+
+    void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
+
+    Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
+
+    void addNewPath(Path &new_path);
+
+    void setup();
+
+    std::vector<Path> getSequenceOfPaths();
+
+    vali findStartPoint();
+
+    void exportFilledMatrix(const fs::path &path) const;
 };
 
 

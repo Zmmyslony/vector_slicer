@@ -11,32 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 24/09/2021.
+// Created by Michał Zmyślony on 07/12/2022.
 //
 
-#ifndef VECTOR_SLICER_OPENFILES_H
-#define VECTOR_SLICER_OPENFILES_H
+#ifndef VECTOR_SLICER_IMPORTING_PATTERNS_H
+#define VECTOR_SLICER_IMPORTING_PATTERNS_H
 
-#include "../pattern/FilledPattern.h"
-
-#include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
 namespace fs = boost::filesystem;
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path);
+std::vector<fs::path> getPatterns(const fs::path& list_of_patterns_path);
 
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path);
-
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed);
-
-std::vector<int> readConfigTable(const fs::path &config_path);
-
-FilledPattern
-openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern, unsigned int seed);
-
-FilledPattern openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern);
-
-#endif //VECTOR_SLICER_OPENFILES_H
+#endif //VECTOR_SLICER_IMPORTING_PATTERNS_H

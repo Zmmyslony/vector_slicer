@@ -15,11 +15,11 @@
 //
 
 #include "FillingPatterns.h"
-#include "../auxiliary/configuration_reading.h"
+#include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 
-bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point) {
-    std::valarray<int> starting_coordinates = starting_point.findStartPoint(pattern);
+bool tryGeneratingNewPath(FilledPattern &pattern) {
+    std::valarray<int> starting_coordinates = pattern.findStartPoint();
     if (starting_coordinates[0] == -1 || starting_coordinates[1] == -1) {
         return false;
     } else {
@@ -48,9 +48,8 @@ bool tryGeneratingNewPath(FilledPattern &pattern, StartingPoint &starting_point)
 
 void fillWithPaths(FilledPattern &pattern) {
     bool is_there_any_spot_fillable = true;
-    StartingPoint starting_point;
     while (is_there_any_spot_fillable) {
-        is_there_any_spot_fillable = tryGeneratingNewPath(pattern, starting_point);
+        is_there_any_spot_fillable = tryGeneratingNewPath(pattern);
     }
     if (readKeyBool(FILLING_CONFIG, "is_points_removed")) {
         pattern.removePoints();

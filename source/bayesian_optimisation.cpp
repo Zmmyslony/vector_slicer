@@ -17,17 +17,25 @@
 #include <boost/filesystem/path.hpp>
 #include <utility>
 #include <chrono>
+#include <omp.h>
 
 #include "bayesian_optimisation.h"
-#include "importing_and_exporting/OpenFiles.h"
-#include "importing_and_exporting/Exporting.h"
 #include "../ExecutionConfig.h"
-#include "pattern/IndexedPath.h"
-#include "auxiliary/ProgressBar.h"
 #include "vector_slicer_config.h"
-#include "auxiliary/configuration_reading.h"
+#include "pattern/DirectorIndexedPath.h"
+#include "pattern/vector_sorted_paths.h"
+#include "pattern/importing_and_exporting/OpenFiles.h"
+#include "pattern/importing_and_exporting/Exporting.h"
+#include "pattern/auxiliary/ProgressBar.h"
+#include "pattern/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
+
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
+
+using pattern = std::vector<std::vector<vali>>;
+
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
                                            bayesopt::Parameters parameters, int dims) :
@@ -37,38 +45,89 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         threads(threads),
         seeds(seeds),
         begin(std::chrono::steady_clock::now()),
-        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")) {}
+        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")),
+        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")){
+    // Needed, as after optimisation of the first pattern the mCurrentIter does not reset, while getValueAtMinium
+    // does not have an object to refer to, so it tries to access an out-of-scope object and crashes.
+    mCurrentIter = 0;
+}
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     if (x_in.size() != dims) {
-        std::cout << "WARNING: This only works for " << dims << "D inputs." << std::endl
-                  << "WARNING: Using only first four components." << std::endl;
+        std::cerr << "ERROR: This only works for " << dims << "D inputs." << std::endl
+                  << "ERROR: Using only first four components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in, dims);
-    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed);
+    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed, disagreement_percentile);
     if (mCurrentIter > 0) {
+        double minimal_disagreement = getValueAtMinimum();
         showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
-                     begin);
+                     begin, minimal_disagreement);
     }
     return disagreement;
 }
 
-void exportPatternToDirectory(FilledPattern pattern, const fs::path &pattern_path) {
-    fs::path results_directory = pattern_path / "results";
-    fs::path generated_paths_directory = pattern_path.parent_path().parent_path() / "paths";
-
-    if (!fs::exists(results_directory)) {
-        fs::create_directory(results_directory);
+void createDirectory(const fs::path &path) {
+    if (!fs::exists(path)) {
+        fs::create_directory(path);
     }
-    pattern.exportFilledMatrix(results_directory.string());
-
-    std::vector<std::vector<std::valarray<int>>> sorted_paths = getSortedPaths(pattern, starting_point_number);
-    exportPathSequence(sorted_paths, results_directory, "best_paths", pattern.getPrintRadius() * 2 + 1);
-    exportPathSequence(sorted_paths, generated_paths_directory, pattern_path.stem().string(),
-                       pattern.getPrintRadius() * 2 + 1);
 }
 
+void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path path, int number_of_configs) {
+    std::vector<FillingConfig> filling_configs;
+
+    for (int i = 0; i < number_of_configs; i++) {
+        filling_configs.push_back(configs[i].getConfig());
+    }
+    exportConfigList(filling_configs, std::move(path));
+}
+
+fs::path createPathWithExtension(std::string directory, std::string filename, std::string extension) {
+    fs::path directory_path = directory;
+    createDirectory(directory_path);
+    fs::path joined_path = directory_path / filename;
+    joined_path.replace_extension(extension);
+    return joined_path;
+}
+
+fs::path createTxtPath(std::string directory, std::string filename) {
+    return createPathWithExtension(std::move(directory), std::move(filename), "txt");
+}
+
+fs::path createCsvPath(std::string directory, std::string filename) {
+    return createPathWithExtension(std::move(directory), std::move(filename), "csv");
+}
+
+
+void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path) {
+    fs::path results_directory = pattern_path / "results";
+
+    fs::path output_directory = pattern_path.parent_path().parent_path() / "output";
+    createDirectory(output_directory);
+    std::string pattern_name = pattern_path.stem().string();
+
+    fs::path generated_paths_directory = createCsvPath(PATHS_EXPORT_PATH, pattern_name);
+    fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
+    fs::path best_config_directory = createCsvPath(CONFIG_EXPORT_PATH, pattern_name);
+
+    std::vector<pattern> sorted_patterns;
+    double print_diameter = 0;
+    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+    for (int i = 0; i < number_of_layers; i++) {
+        FilledPattern pattern = patterns[i].getFilledPattern();
+        if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
+            sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
+        } else {
+            sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, starting_point_number));
+        }
+        print_diameter = pattern.getPrintRadius() * 2 + 1;
+    }
+
+    exportConfigList(patterns, best_config_directory, number_of_layers);
+    patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
+    exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter);
+}
 
 QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
                                   DisagreementWeights disagreement_weights, FillingConfig filling_config,
@@ -84,11 +143,11 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = print_radius / 2; // Min starting point separation
+    lower_bound[2] = print_radius * 1.5; // Min starting point separation
 
     upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
-    upper_bound[2] = print_radius * 3;
+    upper_bound[2] = print_radius * 2.5;
 
     if (dims > 3) {
         lower_bound[3] = 0; // RepulsionRadius
@@ -105,9 +164,10 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
-    fs::path config_path = pattern_path / "config.txt";
-    fs::path optimisation_log_path = pattern_path / "results" / "log.txt";
-    fs::path optimisation_save_path = pattern_path / "results" / "save.txt";
+    std::string pattern_name = pattern_path.stem().string();
+    fs::path config_path = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
+    fs::path optimisation_log_path = createTxtPath(LOGS_EXPORT_PATH, pattern_name);
+    fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
     FillingConfig initial_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
@@ -123,17 +183,22 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();
 
-    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");;
+    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
     parameters.log_filename = optimisation_log_path.string();
 
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, 3);
-    QuantifiedConfig best_seed = best_pattern.findBestSeed(readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
+    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
+            readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
 
-    exportPatternToDirectory(best_seed.getFilledPattern(), pattern_path);
-    best_seed.getConfig().exportConfig(pattern_path);
-    best_seed.getConfig().printConfig();
-    best_seed.printDisagreement();
+    exportPatterns(best_fills, pattern_path);
+    std::vector<FillingConfig> config_list;
+    for (auto &filled_config: best_fills) {
+        config_list.emplace_back(filled_config.getConfig());
+    }
+
+    best_fills[0].getConfig().printConfig();
+    best_fills[0].printDisagreement();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
               << std::endl;
@@ -148,21 +213,27 @@ void optimisePattern(const fs::path &pattern_path) {
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
-    FillingConfig best_config(config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
     DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
 
-    QuantifiedConfig pattern(desired_pattern, best_config, default_weights);
-    pattern.evaluate();
+    std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
+    std::vector<QuantifiedConfig> filled_configs;
+    for (int i = 0; i < 10; i++) {
+        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], default_weights));
+    }
 
-    best_config.printConfig();
-    pattern.printDisagreement();
-
-    exportPatternToDirectory(pattern.getFilledPattern(), pattern_path);
-    pattern.getConfig().exportConfig(pattern_path);
+    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    omp_set_num_threads(threads);
+#pragma omp parallel for
+    for (int i = 0; i < filled_configs.size(); i++) {
+        filled_configs[i].evaluate();
+    }
+    std::cout << filled_configs.size() << std::endl;
+    exportPatterns(filled_configs, pattern_path);
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {
-    fs::path config_path = pattern_path / "results" / "best_config.txt";
+    std::string pattern_name = pattern_path.stem().string() + ".txt";
+    fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / pattern_name;
     fillPattern(pattern_path, config_path);
 }

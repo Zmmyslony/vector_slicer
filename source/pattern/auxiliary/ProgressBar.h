@@ -23,6 +23,6 @@ void showProgress(double progress);
 
 void showProgress(int current_step, int max_step);
 
-void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin);
+void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value);
 
 #endif //VECTOR_SLICER_PROGRESSBAR_H

@@ -16,6 +16,7 @@
 
 #include "SimpleMathOperations.h"
 #include <cmath>
+#include <cassert>
 
 int roundUp(double number) {
     if (number > 0) {
@@ -37,7 +38,9 @@ std::vector<std::vector<double>>
 splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
     std::vector<std::vector<double>> splay_table;
     splay_table.emplace_back(x_field[0].size(), 0);
+    assert((x_field.size() == y_field.size()));
     for (int i = 1; i < x_field.size() - 1; i++) {
+        assert((x_field[i].size() == y_field[i].size()));
         std::vector<double> splay_row = {0};
         for (int j = 1; j < x_field[i].size() - 1; j++) {
             double current_splay = pow(x_field[i + 1][j] - x_field[i - 1][j], 2) +

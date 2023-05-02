@@ -32,8 +32,8 @@ vald getRepulsionValue(const std::vector<std::vector<int>> &filled_table,
                        const vali &sizes, double repulsion_coefficient);
 
 vald
-getRepulsionValue(const std::vector<std::vector<int>> &empty_spots, const std::vector<std::vector<int>> &filled_table,
-                  const std::vector<vali> &checked_area, const vali &coordinates, const vali &sizes,
+getRepulsionValue(const std::vector<std::vector<int>> &shape_matrix, const std::vector<std::vector<int>> &filled_table,
+                  const std::vector<vali> &checked_area, const vald &coordinates, const vali &sizes,
                   double repulsion_coefficient);
 
 bool
@@ -49,5 +49,14 @@ findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali 
 
 std::vector<vali>
 findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+
+vald
+getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
+                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
+                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                      double maximal_repulsion_angle);
+
+std::vector<std::vector<vali>>
+findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
 
 #endif //VECTOR_SLICER_PERIMETER_H

@@ -11,42 +11,33 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 15/10/2021.
+// Created by Michał Zmyślony on 27/09/2021.
 //
 
-#ifndef VECTOR_SLICER_VALARRAYOPERATIONS_H
-#define VECTOR_SLICER_VALARRAYOPERATIONS_H
+#ifndef VECTOR_SLICER_GEOMETRY_H
+#define VECTOR_SLICER_GEOMETRY_H
 
-#include <valarray>
+#include <utility>
 #include <vector>
+#include <valarray>
+#include <algorithm>
 
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
-vald itod(const vali &int_array);
+std::vector<vali> findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled);
 
-vali dtoi(const vald &double_array);
+std::vector<vali>
+findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
+                 bool is_first_point_filled);
 
-double generalNorm(const vald &array, const double &exponent);
+std::vector<vali> findPointsInCircle(double radius);
 
-double norm(const vald &array);
+std::vector<vali> findPointsInCircle(int radius);
 
-double norm(const vali &array);
+std::vector<vali>
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled);
 
-vald generalNormalize(const vald &array, const double &exponent);
+std::vector<vali> generateLineDisplacements(const vald &tangent, double radius);
 
-vald normalize(const vald &array);
-
-vald normalize(const vali &array);
-
-double dot(const vald &array_first, const vald &array_second);
-
-vald perpendicular(vald vector);
-
-double cross(const vald &vector_first, const vald &vector_second);
-
-void printArray(const std::vector<vali> &array);
-
-void printArray(const std::vector<vald> &array);
-
-#endif //VECTOR_SLICER_VALARRAYOPERATIONS_H
+#endif //VECTOR_SLICER_GEOMETRY_H
