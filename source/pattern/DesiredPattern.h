@@ -18,9 +18,10 @@
 
 #define _USE_MATH_DEFINES
 
+#include <cmath>
+#include <math.h>
 #include <string>
 #include <vector>
-#include <cmath>
 #include <valarray>
 
 using vald = std::valarray<double>;
