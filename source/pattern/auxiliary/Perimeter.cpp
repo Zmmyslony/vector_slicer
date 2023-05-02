@@ -209,7 +209,7 @@ std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_peri
     std::vector<vali> current_subpath = {sorted_perimeters.front()};
     for (int i = 1; i < sorted_perimeters.size(); i++) {
         vali displacement_vector = sorted_perimeters[i] - sorted_perimeters[i - 1];
-        if (norm(displacement_vector) > sqrt(2)) {
+        if (norm(displacement_vector) > sqrt(2) && !current_subpath.empty()) {
             separated_perimeters.emplace_back(current_subpath);
             current_subpath.clear();
         }
@@ -217,7 +217,9 @@ std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_peri
             current_subpath.emplace_back(sorted_perimeters[i]);
         }
     }
-    separated_perimeters.emplace_back(current_subpath);
+    if (!current_subpath.empty()) {
+        separated_perimeters.emplace_back(current_subpath);
+    }
     return separated_perimeters;
 }
 
