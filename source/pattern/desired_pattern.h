@@ -43,7 +43,8 @@ class DesiredPattern {
     std::vector<std::vector<double>> y_field_preferred;
     std::vector<std::vector<double>> splay_array;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
-    bool is_vector_field = false;
+    bool is_vector_filled = false;
+    bool is_vector_sorted = false;
     double maximal_repulsion_angle = M_PI;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
@@ -69,6 +70,12 @@ public:
 
     [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
 
+    [[nodiscard]] double getSplay(const vali &point) const;
+
+    [[nodiscard]] bool isVectorFilled() const;
+
+    [[nodiscard]] bool isVectorSorted() const;
+
     [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
 
     [[nodiscard]] vald preferredDirection(const vald &position, int distance) const;
@@ -76,10 +83,6 @@ public:
     [[nodiscard]] bool isInShape(const vali &position) const;
 
     [[nodiscard]] bool isInShape(const vald &position) const;
-
-    [[nodiscard]] double getSplay(const vali &point) const;
-
-    [[nodiscard]] bool isVectorFillingEnabled() const;
 
     [[nodiscard]] double getMaximalRepulsionAngle() const;
 };

@@ -120,7 +120,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
-        if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
+        if (pattern.desired_pattern.get().isVectorSorted()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
             sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, 0));

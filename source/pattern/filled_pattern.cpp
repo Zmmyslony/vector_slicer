@@ -210,7 +210,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     }
 
     // If vector filling is enabled, check if we are moving in the constant direction
-    if (desired_pattern.get().isVectorFillingEnabled()) {
+    if (desired_pattern.get().isVectorFilled()) {
         double previous_sign = dot(getDirector(current_coordinates), previous_step);
         double new_sign = dot(getDirector(new_coordinates), new_step);
         if (previous_sign * new_sign <= 0) {

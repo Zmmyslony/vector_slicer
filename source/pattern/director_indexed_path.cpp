@@ -285,6 +285,7 @@ std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_patt
     std::vector<DirectorIndexedPath> unsorted_indices = indexPaths(filled_pattern, dimensions);
 
     std::vector<vali> starting_points = generateStartingPoints(dimensions, starting_point_number);
+    starting_points = {{0, 0}};
     std::vector<DirectorIndexedPath> sorted_indices = findBestSortingOfPathsFromStartingPoints(unsorted_indices,
                                                                                                starting_points);
 

@@ -8,7 +8,7 @@
     ..\patterns\diagonal_2x1_cm
     ..\patterns\linear_2x1_cm
 
-..\patterns\iris_r_inner_5_mm
+    ..\patterns\iris_r_inner_5_mm
     ..\patterns\cylinder_r_inner_5_mm
     ..\patterns\evertor_r_inner_5_mm
 
