@@ -22,13 +22,13 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cert-msc51-cpp"
 
-#include "FilledPattern.h"
+#include "filled_pattern.h"
 
-#include "importing_and_exporting/Exporting.h"
-#include "auxiliary/Geometry.h"
-#include "auxiliary/Perimeter.h"
-#include "auxiliary/SimpleMathOperations.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "importing_and_exporting/exporting.h"
+#include "auxiliary/geometry.h"
+#include "auxiliary/perimeter.h"
+#include "auxiliary/simple_math_operations.h"
+#include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"

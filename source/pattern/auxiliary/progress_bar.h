@@ -16,24 +16,18 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 27/09/2021.
+// Created by Michał Zmyślony on 04/11/2021.
 //
 
-#ifndef VECTOR_SLICER_TABLEREADING_H
-#define VECTOR_SLICER_TABLEREADING_H
+#ifndef VECTOR_SLICER_PROGRESS_BAR_H
+#define VECTOR_SLICER_PROGRESS_BAR_H
 
-#include <vector>
-#include <valarray>
-#include <string>
+#include <chrono>
 
-std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename);
+void showProgress(double progress);
 
-std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table);
+void showProgress(int current_step, int max_step);
 
-std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
+void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value);
 
-std::valarray<int> getTableDimensions(std::string &filename);
-
-std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table);
-
-#endif //VECTOR_SLICER_TABLEREADING_H
+#endif //VECTOR_SLICER_PROGRESS_BAR_H

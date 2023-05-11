@@ -19,13 +19,13 @@
 // Created by Michał Zmyślony on 27/09/2021.
 //
 
-#ifndef VECTOR_SLICER_FILLINGPATTERNS_H
-#define VECTOR_SLICER_FILLINGPATTERNS_H
+#ifndef VECTOR_SLICER_FILLING_PATTERNS_H
+#define VECTOR_SLICER_FILLING_PATTERNS_H
 
-#include "FilledPattern.h"
+#include "filled_pattern.h"
 
 bool tryGeneratingNewPath(FilledPattern &pattern);
 
 void fillWithPaths(FilledPattern &pattern);
 
-#endif //VECTOR_SLICER_FILLINGPATTERNS_H
+#endif //VECTOR_SLICER_FILLING_PATTERNS_H

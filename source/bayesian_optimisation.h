@@ -24,7 +24,7 @@
 
 #include "bayesopt/bayesopt.hpp"
 #include <utility>
-#include "pattern/QuantifiedConfig.h"
+#include "pattern/quantified_config.h"
 
 /// \brief The main class responsible for the optimisation of the problem. The QuantifiedConfig contains all the information
 /// about the DesiredPattern and the DisagreementWeights that will be used for optimisation.

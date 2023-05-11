@@ -19,8 +19,8 @@
 // Created by Michał Zmyślony on 07/01/2022.
 //
 
-#include "DirectorIndexedPath.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "director_indexed_path.h"
+#include "auxiliary/valarray_operations.h"
 #include <utility>
 #include <cfloat>
 

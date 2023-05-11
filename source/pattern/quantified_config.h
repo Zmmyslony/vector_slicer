@@ -19,10 +19,10 @@
 // Created by Michał Zmyślony on 29/09/2021.
 //
 
-#ifndef VECTOR_SLICER_QUANTIFIEDCONFIG_H
-#define VECTOR_SLICER_QUANTIFIEDCONFIG_H
+#ifndef VECTOR_SLICER_QUANTIFIED_CONFIG_H
+#define VECTOR_SLICER_QUANTIFIED_CONFIG_H
 
-#include "FilledPattern.h"
+#include "filled_pattern.h"
 #include "disagreement_weights.h"
 
 #include <boost/numeric/ublas/vector.hpp>
@@ -81,4 +81,4 @@ public:
 };
 
 
-#endif //VECTOR_SLICER_QUANTIFIEDCONFIG_H
+#endif //VECTOR_SLICER_QUANTIFIED_CONFIG_H

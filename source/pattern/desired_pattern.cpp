@@ -19,16 +19,16 @@
 // Created by Michał Zmyślony on 17/09/2021.
 //
 
-#include "DesiredPattern.h"
+#include "desired_pattern.h"
 
 #include <utility>
 #include <algorithm>
 #include <iostream>
 
-#include "importing_and_exporting/TableReading.h"
-#include "auxiliary/SimpleMathOperations.h"
-#include "auxiliary/Perimeter.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "importing_and_exporting/table_reading.h"
+#include "auxiliary/simple_math_operations.h"
+#include "auxiliary/perimeter.h"
+#include "auxiliary/valarray_operations.h"
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 

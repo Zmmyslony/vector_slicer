@@ -19,10 +19,10 @@
 // Created by Michał Zmyślony on 24/09/2021.
 //
 
-#ifndef VECTOR_SLICER_OPENFILES_H
-#define VECTOR_SLICER_OPENFILES_H
+#ifndef VECTOR_SLICER_OPEN_FILES_H
+#define VECTOR_SLICER_OPEN_FILES_H
 
-#include "../FilledPattern.h"
+#include "../filled_pattern.h"
 
 #include <string>
 #include <vector>
@@ -44,4 +44,4 @@ openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const D
 
 FilledPattern openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern);
 
-#endif //VECTOR_SLICER_OPENFILES_H
+#endif //VECTOR_SLICER_OPEN_FILES_H

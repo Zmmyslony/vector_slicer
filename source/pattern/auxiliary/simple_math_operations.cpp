@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 23/09/2021.
 //
 
-#include "SimpleMathOperations.h"
+#include "simple_math_operations.h"
 #include <cmath>
 #include <cassert>
 

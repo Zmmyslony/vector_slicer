@@ -25,13 +25,12 @@
 #include <omp.h>
 
 #include "bayesian_optimisation.h"
-#include "../ExecutionConfig.h"
 #include "vector_slicer_config.h"
-#include "pattern/DirectorIndexedPath.h"
+#include "pattern/director_indexed_path.h"
 #include "pattern/vector_sorted_paths.h"
-#include "pattern/importing_and_exporting/OpenFiles.h"
-#include "pattern/importing_and_exporting/Exporting.h"
-#include "pattern/auxiliary/ProgressBar.h"
+#include "pattern/importing_and_exporting/open_files.h"
+#include "pattern/importing_and_exporting/exporting.h"
+#include "pattern/auxiliary/progress_bar.h"
 #include "pattern/auxiliary/configuration_reading.h"
 
 namespace fs = boost::filesystem;
@@ -124,7 +123,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
         if (pattern.desired_pattern.get().isVectorFillingEnabled()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
-            sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, starting_point_number));
+            sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, 0));
         }
         print_diameter = pattern.getPrintRadius() * 2 + 1;
     }

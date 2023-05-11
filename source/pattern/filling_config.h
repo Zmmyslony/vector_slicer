@@ -19,8 +19,8 @@
 // Created by Michał Zmyślony on 05/11/2021.
 //
 
-#ifndef VECTOR_SLICER_FILLINGCONFIG_H
-#define VECTOR_SLICER_FILLINGCONFIG_H
+#ifndef VECTOR_SLICER_FILLING_CONFIG_H
+#define VECTOR_SLICER_FILLING_CONFIG_H
 
 #include <string>
 #include <vector>
@@ -109,4 +109,4 @@ void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path);
 
 std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 
-#endif //VECTOR_SLICER_FILLINGCONFIG_H
+#endif //VECTOR_SLICER_FILLING_CONFIG_H

@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 04/11/2021.
 //
 
-#include "ProgressBar.h"
+#include "progress_bar.h"
 #include <iostream>
 #include <string>
 

@@ -16,18 +16,21 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 04/11/2021.
+// Created by Michał Zmyślony on 27/09/2021.
 //
 
-#ifndef VECTOR_SLICER_PROGRESSBAR_H
-#define VECTOR_SLICER_PROGRESSBAR_H
+#ifndef VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
+#define VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
 
-#include <chrono>
+#include <vector>
 
-void showProgress(double progress);
+int roundUp(double);
 
-void showProgress(int current_step, int max_step);
+int sgn(double number);
 
-void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value);
+double decimalPart(double number);
 
-#endif //VECTOR_SLICER_PROGRESSBAR_H
+std::vector<std::vector<double>>
+splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+
+#endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

@@ -19,10 +19,10 @@
 // Created by Michał Zmyślony on 29/09/2021.
 //
 
-#include "QuantifiedConfig.h"
-#include "FillingPatterns.h"
+#include "quantified_config.h"
+#include "filling_patterns.h"
 #include "auxiliary/vector_operations.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "auxiliary/valarray_operations.h"
 
 #include <utility>
 #include <cmath>

@@ -19,8 +19,8 @@
 // Created by Michał Zmyślony on 21/09/2021.
 //
 
-#include "Path.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "path.h"
+#include "auxiliary/valarray_operations.h"
 
 void Path::addPoint(vali &positions) {
     sequence_of_positions.push_back(positions);

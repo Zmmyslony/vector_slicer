@@ -22,8 +22,8 @@
 #ifndef VECTOR_SLICER_VECTOR_SORTED_PATHS_H
 #define VECTOR_SLICER_VECTOR_SORTED_PATHS_H
 
-#include "Path.h"
-#include "auxiliary/ValarrayOperations.h"
+#include "path.h"
+#include "auxiliary/valarray_operations.h"
 
 
 std::vector<std::vector<vali>> getVectorSortedPaths(std::vector<Path> unsorted_paths, const vali& starting_point);

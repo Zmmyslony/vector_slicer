@@ -19,18 +19,21 @@
 // Created by Michał Zmyślony on 27/09/2021.
 //
 
-#ifndef VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
-#define VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+#ifndef VECTOR_SLICER_TABLE_READING_H
+#define VECTOR_SLICER_TABLE_READING_H
 
 #include <vector>
+#include <valarray>
+#include <string>
 
-int roundUp(double);
+std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename);
 
-int sgn(double number);
+std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table);
 
-double decimalPart(double number);
+std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
 
-std::vector<std::vector<double>>
-splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+std::valarray<int> getTableDimensions(std::string &filename);
 
-#endif //VECTOR_SLICER_SIMPLEMATHOPERATIONS_H
+std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table);
+
+#endif //VECTOR_SLICER_TABLE_READING_H

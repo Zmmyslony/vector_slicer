@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 21/09/2021.
 //
 
-#include "TableReading.h"
+#include "table_reading.h"
 
 #include <iostream>
 #include <fstream>

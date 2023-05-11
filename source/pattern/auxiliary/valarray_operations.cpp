@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 15/10/2021.
 //
 
-#include "ValarrayOperations.h"
+#include "valarray_operations.h"
 #include <stdexcept>
 #include <iostream>
 

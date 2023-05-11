@@ -19,9 +19,9 @@
 // Created by Michał Zmyślony on 22/09/2021.
 //
 
-#include "Perimeter.h"
-#include "ValarrayOperations.h"
-#include "Geometry.h"
+#include "perimeter.h"
+#include "valarray_operations.h"
+#include "geometry.h"
 
 #include <cfloat>
 #include <iostream>

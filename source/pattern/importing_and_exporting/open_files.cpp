@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 24/09/2021.
 //
 
-#include "OpenFiles.h"
+#include "open_files.h"
 #include <iostream>
 #include <sstream>
 

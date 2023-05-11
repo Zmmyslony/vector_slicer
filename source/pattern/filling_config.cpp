@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 05/11/2021.
 //
 
-#include "FillingConfig.h"
+#include "filling_config.h"
 
 #include <algorithm>
 #include <fstream>

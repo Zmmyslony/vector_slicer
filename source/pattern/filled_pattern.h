@@ -18,13 +18,13 @@
 //
 // Created by Michał Zmyślony on 21/09/2021.
 //
-#ifndef VECTOR_SLICER_FILLEDPATTERN_H
-#define VECTOR_SLICER_FILLEDPATTERN_H
+#ifndef VECTOR_SLICER_FILLED_PATTERN_H
+#define VECTOR_SLICER_FILLED_PATTERN_H
 
 
-#include "DesiredPattern.h"
-#include "Path.h"
-#include "FillingConfig.h"
+#include "desired_pattern.h"
+#include "path.h"
+#include "filling_config.h"
 #include <string>
 #include <random>
 
@@ -134,4 +134,4 @@ public:
 };
 
 
-#endif //VECTOR_SLICER_FILLEDPATTERN_H
+#endif //VECTOR_SLICER_FILLED_PATTERN_H

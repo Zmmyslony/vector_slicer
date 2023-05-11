@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 13/10/2021.
 //
 
-#include "Exporting.h"
+#include "exporting.h"
 #include <fstream>
 #include <sstream>
 #include <ctime>

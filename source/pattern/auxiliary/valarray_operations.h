@@ -19,8 +19,8 @@
 // Created by Michał Zmyślony on 15/10/2021.
 //
 
-#ifndef VECTOR_SLICER_VALARRAYOPERATIONS_H
-#define VECTOR_SLICER_VALARRAYOPERATIONS_H
+#ifndef VECTOR_SLICER_VALARRAY_OPERATIONS_H
+#define VECTOR_SLICER_VALARRAY_OPERATIONS_H
 
 #include <valarray>
 #include <vector>
@@ -54,4 +54,4 @@ void printArray(const std::vector<vali> &array);
 
 void printArray(const std::vector<vald> &array);
 
-#endif //VECTOR_SLICER_VALARRAYOPERATIONS_H
+#endif //VECTOR_SLICER_VALARRAY_OPERATIONS_H

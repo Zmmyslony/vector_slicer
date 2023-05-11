@@ -23,8 +23,8 @@
 #include <valarray>
 #include <algorithm>
 
-#include "Geometry.h"
-#include "ValarrayOperations.h"
+#include "geometry.h"
+#include "valarray_operations.h"
 
 
 bool isLeftOfEdgeInclusive(const vali &point, const vald &edge_point_first, const vald &edge_point_second) {

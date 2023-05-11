@@ -19,7 +19,7 @@
 // Created by Michał Zmyślony on 27/09/2021.
 //
 
-#include "FillingPatterns.h"
+#include "filling_patterns.h"
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 

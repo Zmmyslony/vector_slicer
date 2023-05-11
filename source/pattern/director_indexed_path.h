@@ -19,11 +19,11 @@
 // Created by Michał Zmyślony on 07/01/2022.
 //
 
-#ifndef VECTOR_SLICER_DIRECTORINDEXEDPATH_H
-#define VECTOR_SLICER_DIRECTORINDEXEDPATH_H
+#ifndef VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H
+#define VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H
 
-#include "Path.h"
-#include "FilledPattern.h"
+#include "path.h"
+#include "filled_pattern.h"
 #include <valarray>
 #include <vector>
 #include <climits>
@@ -74,4 +74,4 @@ public:
 
 std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, int starting_point_number);
 
-#endif //VECTOR_SLICER_DIRECTORINDEXEDPATH_H
+#endif //VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H
