@@ -25,6 +25,7 @@
 
 typedef boost::numeric::ublas::vector<double> vectord;
 
+/// Class quantifying how given FillingConfig works for a number of seeds
 class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double empty_spots = 0;
     double average_overlap = 0;
@@ -47,16 +48,11 @@ public:
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
                      DisagreementWeights disagreement_weights);
 
+    /// Function allowing BayesianOptimisation to create new FillingConfig using vectord input
     QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims);
 
+    /// Creating copies of QuantifiedConfig with differing seeds
     QuantifiedConfig(QuantifiedConfig &template_config, int seed);
-
-    void evaluate();
-
-    [[nodiscard]] double getDisagreement() const;
-
-    double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
-                           double disagreement_percentile);
 
     FilledPattern getFilledPattern() const;
 
@@ -64,6 +60,16 @@ public:
 
     [[nodiscard]] FillingConfig getConfig() const;
 
+    [[nodiscard]] double getDisagreement() const;
+
+    /// Fills the pattern
+    void evaluate();
+
+    /// Returns percentile based disagreement for a number of seeds
+    double getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
+                           double disagreement_percentile);
+
+    /// Evaluates number of seeds and sorts them according to their disagreement
     std::vector<QuantifiedConfig> findBestSeeds(int seeds, int threads);
 
     void printDisagreement() const;

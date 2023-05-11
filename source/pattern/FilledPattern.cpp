@@ -69,15 +69,8 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
 
 void FilledPattern::findStartingStemPoints(fillingMethod method) {
     std::vector<std::vector<vali>> separated_perimeters = desired_pattern.get().getPerimeterList();
-    std::vector<vali> perimeters;
-    if (separated_perimeters.size() == 1) {
-        perimeters = separated_perimeters[0];
-    }
-    else {
-        std::uniform_int_distribution<unsigned int> distribution(0, separated_perimeters.size() - 1);
-        unsigned int path_index = distribution(random_engine);
-        perimeters = separated_perimeters[path_index];
-    }
+    std::shuffle(separated_perimeters.begin(), separated_perimeters.end(), random_engine);
+    std::vector<vali> perimeters = separated_perimeters.front();
 
     switch (method) {
         case Perimeter:
@@ -107,6 +100,7 @@ void FilledPattern::updateRootPoints() {
 }
 
 
+/// Finds a single point that can be filled
 vali FilledPattern::findRootPoint() {
     while (isFillablePointLeft() || search_stage == PerimeterSearch) {
         vali test_point = getFillablePoint();
@@ -121,6 +115,8 @@ vali FilledPattern::findRootPoint() {
 }
 
 
+/// Creates a stem following the dual director in both directions starting from the selected point. The stem is
+/// terminated when it encounters an unfillable point
 void FilledPattern::updateStemPoints(const vali &root_point) {
     std::vector<vali> dual_line = findDualLine(root_point);
     stem_points = getSpacedLine(getStartingPointSeparation(), dual_line);
@@ -251,11 +247,10 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
 }
 
 
-void FilledPattern::fillPointsInCircle(const vali &starting_coordinates) {
-    fillPointsFromDisplacement(starting_coordinates, print_circle, {1, 0});
-    list_of_points.push_back(starting_coordinates);
+void FilledPattern::fillPointsInCircle(const vali &coordinates) {
+    fillPointsFromDisplacement(coordinates, print_circle, {1, 0});
+    list_of_points.push_back(coordinates);
 }
-
 
 void FilledPattern::removePoints() {
     for (auto &position: list_of_points) {
@@ -263,7 +258,6 @@ void FilledPattern::removePoints() {
     }
     list_of_points.clear();
 }
-
 
 void FilledPattern::removeLine(Path path) {
     std::vector<vali> current_points_to_fill;
@@ -290,7 +284,6 @@ void FilledPattern::removeLine(Path path) {
     fillPointsInHalfCircle(path.last(), path.secondToLast(), -1);
 }
 
-
 void FilledPattern::removeShortLines(double length_coefficient) {
     double minimal_length = length_coefficient * getPrintRadius();
     std::vector<Path> new_sequence_of_paths;
@@ -304,7 +297,6 @@ void FilledPattern::removeShortLines(double length_coefficient) {
     }
     sequence_of_paths = new_sequence_of_paths;
 }
-
 
 void
 FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value) {
@@ -451,7 +443,6 @@ vali FilledPattern::getFillablePoint() {
 bool FilledPattern::isFillablePointLeft() const {
     return !binned_root_points.empty();
 }
-
 
 vali FilledPattern::findStartPoint() {
     if (stem_points.empty()) {

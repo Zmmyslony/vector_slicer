@@ -38,25 +38,25 @@ enum configOptions {
     RepulsionRadius
 };
 
-
+/// The generating parameters that decide how the pattern will be filled.
 class FillingConfig {
-    // Filling method can be either Perimeter of Dual. Perimeter extracts the boundary and selects points out of it
-    // that are distanced starting_point_separation away from each other. The Dual method selects points and creates
-    // a Dual line to it (perpendicular to the vector field) that is also separated into the list of equidistant points.
+    /// Filling method can be either Perimeter of Dual. Perimeter extracts the boundary and selects points out of it
+    /// that are distanced starting_point_separation away from each other. The Dual method selects points and creates
+    /// a Dual line to it (perpendicular to the vector field) that is also separated into the list of equidistant points.
     fillingMethod filling_method;
-    // Distance between the new point and the nearest filled point deciding when the line will terminate.
+    /// Distance between the new point and the nearest filled point deciding when the line will terminate.
     double collision_radius;
-    // Multiplier deciding how much the lines will try to avoid one another.
+    /// Multiplier deciding how much the lines will try to avoid one another.
     double repulsion;
-    // Length of each step in pixels.
+    /// Length of each step in pixels.
     int step_length;
-    // See FillingMethod
+    /// See FillingMethod
     double starting_point_separation;
-    // Radius away from the generated line where the pixels of the filled_matrix will be filled.
+    /// Radius away from the generated line where the pixels of the filled_matrix will be filled.
     double print_radius;
-    // Numerical seed deciding the randomness of the whole algorithm.
+    /// Numerical seed deciding the randomness of the whole algorithm.
     unsigned int seed;
-    // Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
+    /// Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
     double repulsion_radius;
 
     void readLineOfConfig(std::vector<std::string> line);

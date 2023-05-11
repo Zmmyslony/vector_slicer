@@ -20,6 +20,7 @@
 #include <vector>
 #include <valarray>
 
+/// Contains the sequence of coordinates that form a single path
 class Path {
 public:
     std::vector<std::valarray<int>> sequence_of_positions;

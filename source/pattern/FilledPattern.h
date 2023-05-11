@@ -30,6 +30,7 @@ enum pointSearchStage {
     PerimeterSearch, RandomPointSelection
 };
 
+/// Object used to fill the DesiredPattern based on selected FillingConfig
 class FilledPattern : public FillingConfig {
     pointSearchStage search_stage = PerimeterSearch;
     std::mt19937 random_engine;
@@ -71,6 +72,7 @@ class FilledPattern : public FillingConfig {
 
     vali getFillablePoint();
 
+/// Removes a selected path and removes the points which were filled while creating the path
     void removeLine(Path path);
 
     [[nodiscard]] bool isFilled(const vali &coordinates) const;
@@ -86,7 +88,6 @@ class FilledPattern : public FillingConfig {
     void updateRootPoints();
 
 public:
-
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
     std::reference_wrapper<const DesiredPattern> desired_pattern;
@@ -99,23 +100,30 @@ public:
 
     FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
 
+    /// Sets up the objects deriving from the FillingConfig
+    void setup();
+
+    /// Postprocessing: removes paths shorter than the set threshold
     void removeShortLines(double length_coefficient);
 
+    /// Postprocessing: removes paths consisting of only single points
     void removePoints();
 
-    void fillPointsInCircle(const vali &starting_coordinates);
+    /// Fills points around the coordinates in a radius of print_radius
+    void fillPointsInCircle(const vali &coordinates);
 
+    /// Fills points in half circle at the end of the path
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
+    /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
     Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
+
+    /// Looks for a suitable point where a new path can be started from. If
+    vali findStartPoint();
 
     void addNewPath(Path &new_path);
 
-    void setup();
-
     std::vector<Path> getSequenceOfPaths();
-
-    vali findStartPoint();
 
     void exportFilledMatrix(const fs::path &path) const;
 };

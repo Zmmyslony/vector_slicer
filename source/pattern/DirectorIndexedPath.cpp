@@ -19,29 +19,13 @@
 #include <utility>
 #include <cfloat>
 
+DirectorIndexedPath::DirectorIndexedPath() : index(0), reversed_path(false), start_coordinates(vali({0, 0})),
+                                             end_coordinates(vali({0, 0})) {}
+
 DirectorIndexedPath::DirectorIndexedPath(int index, bool is_path_reversed, vali start_coordinates,
                                          vali end_coordinates) : index(
         index), reversed_path(is_path_reversed), start_coordinates(std::move(start_coordinates)),
                                                  end_coordinates(std::move(end_coordinates)) {}
-
-int DirectorIndexedPath::getIndex() const {
-    return index;
-}
-
-bool DirectorIndexedPath::isPathReversed() const {
-    return reversed_path;
-}
-
-const vali &DirectorIndexedPath::getStartCoordinates() const {
-    return start_coordinates;
-}
-
-const vali &DirectorIndexedPath::getEndCoordinates() const {
-    return end_coordinates;
-}
-
-DirectorIndexedPath::DirectorIndexedPath() : index(0), reversed_path(false), start_coordinates(vali({0, 0})),
-                                             end_coordinates(vali({0, 0})) {}
 
 DirectorIndexedPath::DirectorIndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions) :
         index(index),
@@ -68,6 +52,22 @@ DirectorIndexedPath::DirectorIndexedPath(int index, bool is_path_reversed, const
             max_distance = distance;
         }
     }
+}
+
+int DirectorIndexedPath::getIndex() const {
+    return index;
+}
+
+bool DirectorIndexedPath::isPathReversed() const {
+    return reversed_path;
+}
+
+const vali &DirectorIndexedPath::getStartCoordinates() const {
+    return start_coordinates;
+}
+
+const vali &DirectorIndexedPath::getEndCoordinates() const {
+    return end_coordinates;
 }
 
 int DirectorIndexedPath::getXMin() const {

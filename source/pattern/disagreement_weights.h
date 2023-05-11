@@ -22,6 +22,7 @@
 
 namespace fs = boost::filesystem;
 
+/// Set up of the polynomial deciding the disagreement of the filling of a FilledPattern
 class DisagreementWeights {
 protected:
     double empty_spot_exponent = 1;

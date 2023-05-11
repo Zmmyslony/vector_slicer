@@ -27,6 +27,7 @@
 using vali = std::valarray<int>;
 using vald = std::valarray<double>;
 
+/// Helper class for sorting the vector of Path based on the nearest neighbour approach
 class DirectorIndexedPath {
 private:
     bool reversed_path;
@@ -40,6 +41,11 @@ private:
     double angle = DBL_MAX;
 
 public:
+    DirectorIndexedPath();
+
+    DirectorIndexedPath(int index, bool is_path_reversed, vali start_coordinates, vali end_coordinates);
+
+    DirectorIndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions);
 
     const vali &getEndCoordinates() const;
 
@@ -59,11 +65,6 @@ public:
 
     double getAngle() const;
 
-    DirectorIndexedPath(int index, bool is_path_reversed, vali start_coordinates, vali end_coordinates);
-
-    DirectorIndexedPath(int index, bool is_path_reversed, const std::vector<vali> &path, const vali &dimensions);
-
-    DirectorIndexedPath();
 };
 
 std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, int starting_point_number);

@@ -27,8 +27,11 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
+/// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
+/// with the information about its continuous edges
 class DesiredPattern {
     vali dimensions;
+    /// Each element is one continuous edge of the pattern
     std::vector<std::vector<vali>> perimeter_list;
     std::vector<std::vector<int>> shape_matrix;
     std::vector<std::vector<double>> x_field_preferred;
@@ -41,18 +44,6 @@ class DesiredPattern {
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
 
 public:
-    [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
-
-    [[nodiscard]] const vali &getDimensions() const;
-
-    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
-
-    [[nodiscard]] const std::vector<std::vector<int>> &getShapeMatrix() const;
-
-    [[nodiscard]] const std::vector<std::vector<double>> &getXFieldPreferred() const;
-
-    [[nodiscard]] const std::vector<std::vector<double>> &getYFieldPreferred() const;
-
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                    const std::string &y_field_filename);
 
@@ -60,6 +51,18 @@ public:
 
     DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
                    std::vector<std::vector<double>> y_field);
+
+    [[nodiscard]] const std::vector<std::vector<int>> &getShapeMatrix() const;
+
+    [[nodiscard]] const std::vector<std::vector<double>> &getXFieldPreferred() const;
+
+    [[nodiscard]] const std::vector<std::vector<double>> &getYFieldPreferred() const;
+
+    [[nodiscard]] const vali &getDimensions() const;
+
+    [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
+
+    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
 
     [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
 
