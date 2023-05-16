@@ -113,7 +113,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     fs::path generated_paths_directory = createCsvPath(PATHS_EXPORT_PATH, pattern_name);
     fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
-    fs::path best_config_directory = createCsvPath(CONFIG_EXPORT_PATH, pattern_name);
+    fs::path best_config_directory = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
@@ -239,5 +239,6 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
 void recalculateBestConfig(const fs::path &pattern_path) {
     std::string pattern_name = pattern_path.stem().string() + ".txt";
     fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / pattern_name;
+    config_path.replace_extension("txt");
     fillPattern(pattern_path, config_path);
 }
