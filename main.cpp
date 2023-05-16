@@ -19,6 +19,7 @@
 #include <boost/dll.hpp>
 #include <string>
 #include <iostream>
+
 #include "source/bayesian_optimisation.h"
 #include "source/pattern/importing_and_exporting/importing_patterns.h"
 #include "vector_slicer_config.h"

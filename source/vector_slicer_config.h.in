@@ -36,4 +36,6 @@
 #define OPTIMISATION_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/optimisation_save"
 #define PATHS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/paths"
 
+#define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"
+
 #endif // INCLUDE_GUARD

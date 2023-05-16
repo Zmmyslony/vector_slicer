@@ -1,33 +1,34 @@
-    ..\patterns\azimuthal_05_cm
-    ..\patterns\radial_05_cm
-    ..\patterns\diagonal_1x05_cm
-    ..\patterns\linear_1x05_cm
+    azimuthal_05_cm
+    radial_05_cm
+    diagonal_1x05_cm
+    linear_1x05_cm
 
-    ..\patterns\azimuthal_1_cm
-    ..\patterns\radial_1_cm
-    ..\patterns\diagonal_2x1_cm
-    ..\patterns\linear_2x1_cm
+    azimuthal_1_cm
+    radial_1_cm
+    diagonal_2x1_cm
+    linear_2x1_cm
 
-    ..\patterns\iris_r_inner_5_mm
-    ..\patterns\cylinder_r_inner_5_mm
-    ..\patterns\evertor_r_inner_5_mm
+    iris_r_inner_5_mm
+    cylinder_r_inner_5_mm
+    evertor_r_inner_5_mm
 
-    ..\patterns\radial_2_cm
-    ..\patterns\azimuthal_2_cm
+    radial_2_cm
+    azimuthal_2_cm
 
-    ..\patterns\fan_asymmetric_positive_3x1_cm
-    ..\patterns\fan_asymmetric_negative_3x1_cm
-    ..\patterns\fan_symmetric_positive_3x1_cm
-    ..\patterns\fan_symmetric_negative_3x1_cm
+    fan_asymmetric_positive_3x1_cm
+    fan_asymmetric_negative_3x1_cm
+    fan_symmetric_positive_3x1_cm
+    fan_symmetric_negative_3x1_cm
 
-    ..\patterns\fan_asymmetric_positive_4x1_cm
-    ..\patterns\fan_asymmetric_negative_4x1_cm
-    ..\patterns\fan_symmetric_positive_4x1_cm
-    ..\patterns\fan_symmetric_negative_4x1_cm
+    fan_asymmetric_positive_4x1_cm
+    fan_asymmetric_negative_4x1_cm
+    fan_symmetric_positive_4x1_cm
+    fan_symmetric_negative_4x1_cm
 
-    ..\patterns\three_charge_field
-    ..\patterns\three_charge_field_blob
+    three_charge_field
+    three_charge_field_blob
 
-..\patterns\iris_r_inner_10_mm
-    ..\patterns\linear_blob
+    iris_r_inner_10_mm
+    linear_blob
 
+azimuthal_1_cm_square

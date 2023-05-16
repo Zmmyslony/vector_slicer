@@ -19,7 +19,11 @@
 // Created by Michał Zmyślony on 07/12/2022.
 //
 
+#include <iostream>
+
+#include "vector_slicer_config.h"
 #include "importing_patterns.h"
+#include "../auxiliary/configuration_reading.h"
 
 void convertSlashesOperatingSystem(std::string &string) {
 #ifdef _WIN32
@@ -36,12 +40,16 @@ std::vector<fs::path> getPatterns(const fs::path& list_of_patterns_path) {
     std::fstream file(list_of_patterns_path.string());
     std::string line;
 
+    fs::path patterns_directory = PATTERNS_SOURCE_DIRECTORY;
 
     while (std::getline(file, line)) {
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         convertSlashesOperatingSystem(line);
-        if (exists(fs::path(line))) {
-            patterns.emplace_back(line);
+
+        fs::path test_path = patterns_directory / line;
+        if (exists(test_path) && !line.empty() > 0 && !isspace(line[0]) ) {
+            patterns.emplace_back(test_path);
+
         }
     }
     return patterns;
