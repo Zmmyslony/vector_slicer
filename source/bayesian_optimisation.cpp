@@ -32,6 +32,7 @@
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
 #include "pattern/auxiliary/configuration_reading.h"
+#include "dataset.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -50,10 +51,7 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         seeds(seeds),
         begin(std::chrono::steady_clock::now()),
         is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")),
-        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")){
-    // Needed, as after optimisation of the first pattern the mCurrentIter does not reset, while getValueAtMinium
-    // does not have an object to refer to, so it tries to access an out-of-scope object and crashes.
-    mCurrentIter = 0;
+        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")) {
 }
 
 
@@ -63,14 +61,41 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "ERROR: Using only first four components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in, dims);
-    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed, disagreement_percentile);
-    if (mCurrentIter > 0) {
-        double minimal_disagreement = getValueAtMinimum();
-        showProgress(mCurrentIter + mParameters.n_init_samples, mParameters.n_iterations + mParameters.n_init_samples,
-                     begin, minimal_disagreement);
-    }
+    double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
+                                                  disagreement_percentile);
+
     return disagreement;
 }
+
+
+void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps) {
+    initializeOptimization();
+    int steps_since_improvement = 0;
+    for (int i = 0; i < max_steps; i++) {
+        stepOptimization();
+        double minimal_disagreement = getValueAtMinimum();
+        double current_disagreement = getData()->getLastSampleY();
+        if (current_disagreement == minimal_disagreement) {
+            steps_since_improvement = 0;
+        }
+        showProgress(mCurrentIter + mParameters.n_init_samples, max_steps + mParameters.n_init_samples,
+                     begin, minimal_disagreement);
+        steps_since_improvement++;
+        if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
+            std::cout
+                    << "\rSteps since last improvement of the disagreement exceeded after " << mCurrentIter
+                    << " steps. Finishing optimisation."
+                    << std::endl;
+            break;
+        }
+        else if (current_disagreement == 0) {
+            std::cout << "\rIdeal filling found. Finishing optimisation." << std::endl;
+            break;
+        }
+    }
+    x_out = getFinalResult();
+}
+
 
 void createDirectory(const fs::path &path) {
     if (!fs::exists(path)) {
@@ -159,7 +184,9 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
-    pattern_optimisation.optimize(best_config);
+    int max_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
+    int max_iterations_without_improvement = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
+    pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
 
     return {pattern, best_config, 3};
 }
@@ -180,7 +207,8 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
+//    parameters.n_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
+//    parameters.n_inner_iterations = 5;
     parameters.n_iter_relearn = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
     parameters.noise = readKeyDouble(BAYESIAN_CONFIG, "noise");
 
@@ -232,8 +260,8 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     for (int i = 0; i < filled_configs.size(); i++) {
         filled_configs[i].evaluate();
     }
-    std::cout << filled_configs.size() << std::endl;
     exportPatterns(filled_configs, pattern_path);
+    std::cout << "Pattern filled." << std::endl;
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {

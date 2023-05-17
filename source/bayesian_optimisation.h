@@ -46,6 +46,9 @@ public:
 
     bool checkReachability(const vectord &query) { return true; };
 
+    /// Optimizes the pattern with a threshold on number of steps without improvement
+    void optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps);
+
 };
 
 /// Optimises the pattern from the selected path using the set configuration
@@ -56,5 +59,6 @@ void optimisePattern(const fs::path &pattern_path);
 
 /// Recalculates the best config using a config from output/best_configs
 void recalculateBestConfig(const fs::path &pattern_path);
+
 
 #endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H
