@@ -105,8 +105,10 @@ getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
                                getRepulsionFromDisplacement(coordinates + local_displacement, current_displacements,
                                                             sizes, shape_matrix, filled_table);
 
-        if (dot(local_repulsion, maximal_repulsion_vector) <= 0 ||
-            dot(tangent, tangent + local_repulsion) < cos(maximal_repulsion_angle)) {
+        double local_angle = angle(tangent, tangent + local_repulsion);
+        bool is_maximal_angle_exceeded = local_angle >= maximal_repulsion_angle;
+        bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) <= 0;
+        if (is_maximal_angle_exceeded || is_repulsion_inverted) {
             return previous_displacement;
         }
         previous_displacement = local_displacement;
@@ -217,8 +219,7 @@ std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_peri
         if (norm(displacement_vector) > sqrt(2) && !current_subpath.empty()) {
             separated_perimeters.emplace_back(current_subpath);
             current_subpath.clear();
-        }
-        else {
+        } else {
             current_subpath.emplace_back(sorted_perimeters[i]);
         }
     }
@@ -235,7 +236,8 @@ std::vector<vali> findSortedPerimeters(const std::vector<std::vector<int>> &shap
     return sorted_perimeters;
 }
 
-std::vector<std::vector<vali>> findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali& sizes) {
+std::vector<std::vector<vali>>
+findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
     std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
     std::vector<std::vector<vali>> separated_perimeters = separatePerimeters(sorted_perimeters);

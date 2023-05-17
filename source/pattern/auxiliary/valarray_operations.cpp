@@ -78,6 +78,23 @@ double dot(const vald &array_first, const vald &array_second) {
     return dot_product;
 }
 
+double angle(const vald &array_first, const vald &array_second) {
+    double dot_product = dot(array_first, array_second);
+    double length_first = norm(array_first);
+    double length_second = norm(array_second);
+    if (length_first == 0 || length_second == 0) {
+        return M_PI;
+    }
+
+    double cosine = dot_product / (length_first * length_second);
+    if (cosine > 1) {
+        return 0;
+    }
+
+
+    return acos(cosine);
+}
+
 
 vald perpendicular(const vald &vector) {
     if (vector.size() != 2) {

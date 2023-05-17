@@ -227,7 +227,6 @@ std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
             row.push_back(element);
         }
         if (row[0] == "Seed") {
-            std::cout<< row.size() << std::endl;
             for (int i = 1; i < row.size(); i++) {
                 seed_list.emplace_back(std::stoi(row[i]));
             }

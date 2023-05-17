@@ -1,5 +1,5 @@
-    azimuthal_05_cm
-    radial_05_cm
+azimuthal_05_cm
+radial_05_cm
     diagonal_1x05_cm
     linear_1x05_cm
 
@@ -31,4 +31,4 @@
     iris_r_inner_10_mm
     linear_blob
 
-azimuthal_1_cm_square
+    azimuthal_1_cm_square

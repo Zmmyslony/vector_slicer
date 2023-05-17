@@ -28,16 +28,7 @@ bool tryGeneratingNewPath(FilledPattern &pattern) {
     if (starting_coordinates[0] == -1 || starting_coordinates[1] == -1) {
         return false;
     } else {
-        Path forwards_path = pattern.generateNewPathForDirection(starting_coordinates,
-                                                                 pattern.desired_pattern.get().preferredDirection(
-                                                                         starting_coordinates,
-                                                                         pattern.getStepLength()));
-        Path backwards_path = pattern.generateNewPathForDirection(starting_coordinates,
-                                                                  -pattern.desired_pattern.get().preferredDirection(
-                                                                          starting_coordinates,
-                                                                          pattern.getStepLength()));
-
-        Path new_path(forwards_path, backwards_path);
+        Path new_path = pattern.generateNewPath(starting_coordinates);
 
         if (new_path.size() == 1) {
             pattern.fillPointsInCircle(starting_coordinates);

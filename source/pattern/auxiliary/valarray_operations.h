@@ -54,4 +54,6 @@ void printArray(const std::vector<vali> &array);
 
 void printArray(const std::vector<vald> &array);
 
+double angle(const vald &array_first, const vald &array_second);
+
 #endif //VECTOR_SLICER_VALARRAY_OPERATIONS_H
