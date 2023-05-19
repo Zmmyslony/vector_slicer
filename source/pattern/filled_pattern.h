@@ -92,10 +92,13 @@ class FilledPattern : public FillingConfig {
 
     void updateRootPoints();
 
+    /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
+    Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
 public:
     std::vector<std::vector<double>> x_field_filled;
     std::vector<std::vector<double>> y_field_filled;
     std::reference_wrapper<const DesiredPattern> desired_pattern;
+
     std::vector<std::vector<int>> number_of_times_filled;
 
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
@@ -120,11 +123,11 @@ public:
     /// Fills points in half circle at the end of the path
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
-    /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
-    Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
-
     /// Looks for a suitable point where a new path can be started from. If
     vali findStartPoint();
+
+    /// Creates a path starting from starting_coordinates, going in both directions of the vector field
+    Path generateNewPath(vali &starting_coordinates);
 
     void addNewPath(Path &new_path);
 

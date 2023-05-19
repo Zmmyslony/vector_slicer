@@ -1,5 +1,5 @@
-azimuthal_05_cm
-radial_05_cm
+    azimuthal_05_cm
+    radial_05_cm
     diagonal_1x05_cm
     linear_1x05_cm
 
@@ -28,7 +28,7 @@ radial_05_cm
     three_charge_field
     three_charge_field_blob
 
-    iris_r_inner_10_mm
-    linear_blob
+iris_r_inner_10_mm
+linear_blob
 
-    azimuthal_1_cm_square
+azimuthal_1_cm_square

@@ -20,8 +20,8 @@ The program requires the input director pattern to be in form of three matrices 
 **shape.csv** which tells which pixels ought to be filled, and two more called **xField.csv** and **yField.csv**  which
 are respectively x and y components of the vector field dictating the preferred direction.
 
-In addition to that, **config.txt** is required, with _InitialFillingMethod_, _StepLength_ and _PrintRadius_ to be
-defined. _InitialFillingMethod_ can either be _Perimeter_ or _Dual_, where the perimeter approach
+In addition to that, **config.txt** is **required** to be defined with _InitialFillingMethod_, _StepLength_ and _
+PrintRadius_. _InitialFillingMethod_ can either be _Perimeter_ or _Dual_, where the perimeter approach
 starts by separating the boundary of the shape into equidistant points, from which lines will be started,
 while the dual approach starts the line in a random point within the pattern that has low splay. _StepLength_ is
 an integer telling how long is each step in pixels, and _PrintRadius_ is a double variable deciding the radius of
@@ -39,7 +39,9 @@ in the <b>configuration</b> directory:
   configurations.
 * <b>disagreement_function.cfg</b> - defines the disagreement function used in the optimisation.
 * <b>filling.cfg</b> - controls the filling algorithm.
-  The locations of each of the configuration files can be modified in the **vector_slicer_config** file.
+
+The locations of each of the configuration files together with the directories used for importing and exporting can
+be modified in the **vector_slicer_config.h.in** file.
 
 ## Output
 

@@ -251,6 +251,23 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
     return new_path;
 }
 
+Path FilledPattern::generateNewPath(vali &starting_coordinates) {
+    vali starting_step = desired_pattern.get().preferredDirection(starting_coordinates, getStepLength());
+//    if (getRepulsion() != 0) {
+//        vald repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
+//                                               itod(starting_step), getPrintRadius(),
+//                                               itod(starting_coordinates), desired_pattern.get().getDimensions(),
+//                                               getRepulsion(), desired_pattern.get().getMaximalRepulsionAngle());
+//        starting_coordinates += dtoi(repulsion);
+//        starting_step = desired_pattern.get().preferredDirection(starting_coordinates, getStepLength());
+//    }
+
+    Path forward_path = generateNewPathForDirection(starting_coordinates, starting_step);
+    Path backward_path = generateNewPathForDirection(starting_coordinates, -starting_step);
+
+    return {forward_path, backward_path};
+}
+
 
 void FilledPattern::fillPointsInCircle(const vali &coordinates) {
     fillPointsFromDisplacement(coordinates, print_circle, {1, 0});
