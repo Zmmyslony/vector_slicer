@@ -196,11 +196,11 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     std::string pattern_name = pattern_path.stem().string();
-    fs::path config_path = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
+    fs::path initial_config_path = pattern_path / "config.txt";
     fs::path optimisation_log_path = createTxtPath(LOGS_EXPORT_PATH, pattern_name);
     fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
-    FillingConfig initial_config(config_path);
+    FillingConfig initial_config(initial_config_path);
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
     DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
 
