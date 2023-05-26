@@ -19,8 +19,11 @@
 // Created by Michał Zmyślony on 15/10/2021.
 //
 
+#define _USE_MATH_DEFINES
+
 #include "valarray_operations.h"
 #include <stdexcept>
+#include <math.h>
 #include <iostream>
 
 vald itod(const vali &int_array) {
