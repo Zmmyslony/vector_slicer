@@ -382,9 +382,27 @@ vald normalizedDualVector(const vald &vector) {
 }
 
 
+bool isAlreadyCrossed(vald &coordinates, const std::vector<vali> &line) {
+    if (line.empty()) {
+        return false;
+    }
+    bool is_different_point_found = false;
+    vali coords = dtoi(coordinates);
+    for (int i = line.size() - 1; i >= 0; i--) {
+        if (line[i][0] != coords[0] || line[i][1] != coords[1]) {
+            is_different_point_found = true;
+        }
+        if (is_different_point_found && line[i][0] == coords[0] && line[i][1] == coords[1]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
     std::vector<vali> line;
-    while (isFillable(dtoi(coordinates))) {
+    while (isFillable(dtoi(coordinates)) && !isAlreadyCrossed(coordinates, line)) {
         line.push_back(dtoi(coordinates));
         vald director = getDirector(coordinates);
         vald dual_director = normalizedDualVector(director);

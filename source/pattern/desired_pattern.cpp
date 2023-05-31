@@ -41,7 +41,8 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
 
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions);
     splay_array = splay(x_field_preferred, y_field_preferred);
-    splay_sorted_empty_spots = binBySplay(100);
+    int maximal_size = std::max(shape_matrix.size(), shape_matrix[0].size());
+    splay_sorted_empty_spots = binBySplay(maximal_size);
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
     maximal_repulsion_angle = readKeyDouble(FILLING_CONFIG, "maximum_repulsion_angle");
