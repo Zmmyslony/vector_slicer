@@ -206,24 +206,21 @@ FilledPattern QuantifiedConfig::getFilledPattern() const {
 
 double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
                                          double disagreement_percentile) {
-    std::vector<QuantifiedConfig> configs_with_various_seeds;
     std::vector<double> disagreements(seeds);
-    for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds.emplace_back(*this, i);
-    }
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds[i].evaluate();
-        disagreements[i] = configs_with_various_seeds[i].getDisagreement();
+        QuantifiedConfig current_config(*this, i);
+        current_config.evaluate();
+        disagreements[i] = current_config.getDisagreement();
     }
+
     if (is_disagreement_details_printed) {
         std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
                   << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     }
     std::sort(disagreements.begin(), disagreements.end());
     int return_index = disagreements.size() * (1 - disagreement_percentile);
-//    return mean(disagreements);
     return disagreements[return_index];
 }
 
