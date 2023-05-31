@@ -87,9 +87,9 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
                     << " steps. Finishing optimisation."
                     << std::endl;
             break;
-        }
-        else if (current_disagreement == 0) {
-            std::cout << "\rIdeal filling found. Finishing optimisation." << std::endl;
+        } else if (current_disagreement == 0) {
+            std::cout << "\rIdeal filling found after " << mCurrentIter << " steps. Finishing optimisation."
+                      << std::endl;
             break;
         }
     }
