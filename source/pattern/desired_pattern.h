@@ -42,14 +42,20 @@ class DesiredPattern {
     std::vector<std::vector<double>> x_field_preferred;
     std::vector<std::vector<double>> y_field_preferred;
     std::vector<std::vector<double>> splay_array;
+    std::vector<std::vector<std::valarray<double>>> splay_vector_array;
+    std::vector<std::vector<vald>> splay_gradient;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
+    bool is_splay_provided = false;
+    bool is_splay_gradient_provided = false;
     double maximal_repulsion_angle = M_PI;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
 
 public:
+    DesiredPattern();
+
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                    const std::string &y_field_filename);
 
@@ -68,7 +74,7 @@ public:
 
     [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
 
-    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> &getPerimeterList() const;
 
     [[nodiscard]] double getSplay(const vali &point) const;
 
@@ -85,6 +91,18 @@ public:
     [[nodiscard]] bool isInShape(const vald &position) const;
 
     [[nodiscard]] double getMaximalRepulsionAngle() const;
+
+    [[nodiscard]] const vald &getSplayGradient(const vali &positions) const;
+
+    [[nodiscard]] const vald &getSplayGradient(const vald &positions) const;
+
+    [[nodiscard]] bool isSplayProvided() const;
+
+    [[nodiscard]] bool isSplayGradientProvided() const;
+
+    void setSplayVector(const std::string &path);
+
+    void setSplayGradient(const std::string &path);
 };
 
 

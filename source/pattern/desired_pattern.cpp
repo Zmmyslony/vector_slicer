@@ -32,6 +32,10 @@
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 
+
+DesiredPattern::DesiredPattern() = default;
+
+
 DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
                                std::vector<std::vector<double>> y_field) :
         shape_matrix(std::move(shape_field)),
@@ -40,9 +44,11 @@ DesiredPattern::DesiredPattern(std::vector<std::vector<int>> shape_field, std::v
         dimensions(getTableDimensions(shape_field)) {
 
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions);
-    splay_array = splay(x_field_preferred, y_field_preferred);
+    splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
+    splay_array = normalizeVectorArray(splay_vector_array);
     int maximal_size = std::max(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(maximal_size);
+    splay_gradient = gradient(splay_array);
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
     maximal_repulsion_angle = readKeyDouble(FILLING_CONFIG, "maximum_repulsion_angle");
@@ -121,7 +127,7 @@ const std::valarray<int> &DesiredPattern::getDimensions() const {
 }
 
 
-const std::vector<std::vector<std::valarray<int>>> & DesiredPattern::getPerimeterList() const {
+const std::vector<std::vector<std::valarray<int>>> &DesiredPattern::getPerimeterList() const {
     return perimeter_list;
 }
 
@@ -158,7 +164,6 @@ std::vector<vali> findFillableCells(const std::vector<std::vector<int>> &shape_m
     return fillable_cells;
 }
 
-
 std::vector<std::vector<vali>>
 DesiredPattern::binBySplay(unsigned int bins) const {
     std::vector<vali> unsorted_coordinates = findFillableCells(shape_matrix);
@@ -187,10 +192,10 @@ DesiredPattern::binBySplay(unsigned int bins) const {
     return binned_coordinates;
 }
 
+
 const std::vector<std::vector<vali>> &DesiredPattern::getSplaySortedEmptySpots() const {
     return splay_sorted_empty_spots;
 }
-
 
 bool DesiredPattern::isVectorFilled() const {
     return is_vector_filled;
@@ -202,4 +207,33 @@ bool DesiredPattern::isVectorSorted() const {
 
 double DesiredPattern::getMaximalRepulsionAngle() const {
     return maximal_repulsion_angle;
+}
+
+const vald &DesiredPattern::getSplayGradient(const vali &positions) const {
+    return splay_gradient[positions[0]][positions[1]];
+}
+
+const vald &DesiredPattern::getSplayGradient(const vald &positions) const {
+    return getSplayGradient(dtoi(positions));
+}
+
+bool DesiredPattern::isSplayProvided() const {
+    return is_splay_provided;
+}
+
+bool DesiredPattern::isSplayGradientProvided() const {
+    return is_splay_gradient_provided;
+}
+
+
+void DesiredPattern::setSplayVector(const std::string &path) {
+    splay_vector_array = readFileToTableDoubleVector(path);
+    splay_array = normalizeVectorArray(splay_vector_array);
+    splay_gradient = gradient(splay_array);
+    is_splay_provided = true;
+}
+
+void DesiredPattern::setSplayGradient(const std::string &path) {
+    splay_gradient = readFileToTableDoubleVector(path);
+    is_splay_gradient_provided = true;
 }
