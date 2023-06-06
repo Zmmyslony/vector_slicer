@@ -23,6 +23,7 @@
 #define VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
 
 #include <vector>
+#include <valarray>
 
 int roundUp(double);
 
@@ -32,5 +33,7 @@ double decimalPart(double number);
 
 std::vector<std::vector<double>>
 splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+
+std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std::vector<double>> &field);
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

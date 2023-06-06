@@ -58,3 +58,24 @@ splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::ve
     splay_table.emplace_back(x_field[0].size(), 0);
     return splay_table;
 }
+
+std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std::vector<double>> &field) {
+    std::vector<std::vector<std::valarray<double>>> div(field.size(),
+                                                        std::vector<std::valarray<double>>(field[0].size()));
+    for (int i = 0; i < field.size(); i++) {
+        div[i][0] = {0, 0};
+        div[i][field[i].size() - 1] = {0, 0};
+    }
+    for (int j = 0; j < field[0].size(); j++) {
+        div[0][j] = {0, 0};
+        div[field.size() - 1][j] = {0, 0};
+    }
+
+    for (int i = 1; i < field.size() - 1; i++) {
+        for (int j = 1; j < field[i].size() - 1; j++) {
+            div[i][j] = {field[i + 1][j] - field[i - 1][j],
+                         field[i][j + 1] - field[i][j - 1]};
+        }
+    }
+    return div;
+}
