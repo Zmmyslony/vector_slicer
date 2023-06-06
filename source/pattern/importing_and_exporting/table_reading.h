@@ -36,4 +36,6 @@ std::valarray<int> getTableDimensions(std::string &filename);
 
 std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table);
 
+std::vector<std::vector<std::valarray<double>>> readFileToTableDoubleVector(const std::string &filename);
+
 #endif //VECTOR_SLICER_TABLE_READING_H
