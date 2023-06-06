@@ -19,9 +19,11 @@
 // Created by Michał Zmyślony on 23/09/2021.
 //
 
-#include "simple_math_operations.h"
 #include <cmath>
 #include <cassert>
+
+#include "simple_math_operations.h"
+#include "valarray_operations.h"
 
 int roundUp(double number) {
     if (number > 0) {
@@ -39,27 +41,26 @@ double decimalPart(double number) {
     return number - floor(number);
 }
 
-std::vector<std::vector<double>>
-splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
-    std::vector<std::vector<double>> splay_table;
-    splay_table.emplace_back(x_field[0].size(), 0);
+std::vector<std::vector<std::valarray<double>>>
+splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
+    std::vector<std::vector<std::valarray<double>>> splay_table;
+    splay_table.emplace_back(x_field[0].size(), std::valarray<double>{0, 0});
     assert((x_field.size() == y_field.size()));
     for (int i = 1; i < x_field.size() - 1; i++) {
         assert((x_field[i].size() == y_field[i].size()));
-        std::vector<double> splay_row = {0};
+        std::vector<std::valarray<double>> splay_row = {{0, 0}};
         for (int j = 1; j < x_field[i].size() - 1; j++) {
-            double current_splay = pow(x_field[i + 1][j] - x_field[i - 1][j], 2) +
-                                   pow(y_field[i][j + 1] - x_field[i][j - 1], 2);
+            std::valarray<double> current_splay = {x_field[i + 1][j] - x_field[i - 1][j], y_field[i][j + 1] - x_field[i][j - 1]};
             splay_row.emplace_back(current_splay);
         }
         splay_row.emplace_back(0);
         splay_table.emplace_back(splay_row);
     }
-    splay_table.emplace_back(x_field[0].size(), 0);
+    splay_table.emplace_back(x_field[0].size(), std::valarray<double>{0, 0});
     return splay_table;
 }
 
-std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std::vector<double>> &field) {
+std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field) {
     std::vector<std::vector<std::valarray<double>>> div(field.size(),
                                                         std::vector<std::valarray<double>>(field[0].size()));
     for (int i = 0; i < field.size(); i++) {
@@ -78,4 +79,15 @@ std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std
         }
     }
     return div;
+}
+
+std::vector<std::vector<double>>
+normalizeVectorArray(const std::vector<std::vector<std::valarray<double>>> &vector_array) {
+    std::vector<std::vector<double>> norms(vector_array.size(), std::vector<double>(vector_array[0].size()));
+    for (int i = 0; i < vector_array.size(); i++) {
+        for (int j = 0; j < vector_array[i].size(); j++) {
+            norms[i][j] = norm(vector_array[i][j]);
+        }
+    }
+    return norms;
 }
