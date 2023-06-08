@@ -23,9 +23,7 @@
 
 #include <utility>
 #include <algorithm>
-#include <iostream>
 #include <set>
-#include <unordered_set>
 
 #include "importing_and_exporting/table_reading.h"
 #include "auxiliary/simple_math_operations.h"
@@ -288,7 +286,7 @@ DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set, bool &
 
 
 void DesiredPattern::findLineDensityMinima() {
-    std::vector<vali> candidate_coordinates = splay_sorted_empty_spots.front();
+    std::vector<vali> candidate_coordinates = splay_sorted_empty_spots.back();
     std::set<veci> candidate_set;
     for (auto &vali_coordinates: candidate_coordinates) {
         candidate_set.insert(veci(std::begin(vali_coordinates), std::end(vali_coordinates)));
@@ -339,4 +337,12 @@ vecd DesiredPattern::getSplayDirection(const vecd &position, double length) cons
 
 double DesiredPattern::splay(const vecd &position) const {
     return splay_array[(int) position[0]][(int) position[1]];
+}
+
+bool DesiredPattern::isLowSplay(const vald &coordinates) const {
+     return splay_array[(int)coordinates[0]][(int)coordinates[1]] < first_bin_splay;
+}
+
+const std::vector<vali> &DesiredPattern::getLineDensityMinima() const {
+    return line_density_minima;
 }

@@ -70,7 +70,6 @@ class DesiredPattern {
                                               std::set<veci> incorrect_set);
 
     [[nodiscard]] double splay(const vecd &position) const;
-
 public:
 
     DesiredPattern();
@@ -122,6 +121,10 @@ public:
     void setSplayVector(const std::string &path);
 
     void setSplayGradient(const std::string &path);
+
+    bool isLowSplay(const vald &coordinates) const;
+
+    const std::vector<vali> &getLineDensityMinima() const;
 };
 
 
