@@ -31,13 +31,13 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
-enum pointSearchStage {
-    PerimeterSearch, RandomPointSelection
+enum rootPointSearchStage {
+    SplayFilling, PerimeterFilling, RemainingFilling
 };
 
 /// Object used to fill the DesiredPattern based on selected FillingConfig
 class FilledPattern : public FillingConfig {
-    pointSearchStage search_stage = PerimeterSearch;
+    rootPointSearchStage search_stage = PerimeterFilling;
     std::mt19937 random_engine;
 
     std::vector<Path> sequence_of_paths;
@@ -45,7 +45,9 @@ class FilledPattern : public FillingConfig {
     std::vector<vali> repulsion_circle;
     std::vector<vali> list_of_points;
     std::vector<vali> collision_list;
-    std::vector<vali> stem_points = {};
+    std::vector<vali> seed_points = {};
+    std::vector<vali> zero_splay_roots;
+    std::vector<std::vector<vali>> separated_perimeters;
 
     std::vector<std::vector<vali>> binned_root_points;
 
@@ -59,8 +61,6 @@ class FilledPattern : public FillingConfig {
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step);
 
-    void findStartingStemPoints(fillingMethod method);
-
     vald getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
 
     bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
@@ -71,9 +71,7 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 
-    vali findRootPoint();
-
-    void updateStemPoints(const vali &root_point);
+    vali findRemainingRootPoint();
 
     vali getFillablePoint();
 
@@ -90,13 +88,26 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> getSpacedLine(const double &distance, const std::vector<vali> &line);
 
-    void updateRootPoints();
+    std::vector<vali> findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction);
 
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
     Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
+
+    void updateSeedPoints();
+
+    std::vector<vali> findSeedLine();
+
+    std::vector<vali> findConstantSplayLine(const vali &start);
+
+    std::vector<vali>
+    findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald));
+
 public:
+
     std::vector<std::vector<double>> x_field_filled;
+
     std::vector<std::vector<double>> y_field_filled;
+
     std::reference_wrapper<const DesiredPattern> desired_pattern;
 
     std::vector<std::vector<int>> number_of_times_filled;
@@ -124,7 +135,7 @@ public:
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
     /// Looks for a suitable point where a new path can be started from. If
-    vali findStartPoint();
+    vali findSeedPoint();
 
     /// Creates a path starting from starting_coordinates, going in both directions of the vector field
     Path generateNewPath(vali &starting_coordinates);

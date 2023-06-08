@@ -24,7 +24,7 @@
 #include "vector_slicer_config.h"
 
 bool tryGeneratingNewPath(FilledPattern &pattern) {
-    std::valarray<int> starting_coordinates = pattern.findStartPoint();
+    std::valarray<int> starting_coordinates = pattern.findSeedPoint();
     if (starting_coordinates[0] == -1 || starting_coordinates[1] == -1) {
         return false;
     } else {
