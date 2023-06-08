@@ -276,6 +276,9 @@ DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set, bool &
                    current_coordinates != previous_coordinates) {
             is_valid = true;
             break;
+        } else if (!isInShape(vectoval(current_coordinates))) {
+            is_valid = true;
+            break;
         }
         current_set.insert(dtoi(current_coordinates));
         candidate_set.erase(dtoi(current_coordinates));
