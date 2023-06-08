@@ -30,7 +30,7 @@ namespace fs = boost::filesystem;
 
 
 enum fillingMethod {
-    Perimeter, Dual
+    Splay, Perimeter, Dual
 };
 enum configOptions {
     InitialFillingMethod,

@@ -37,13 +37,16 @@ void FillingConfig::printConfig() {
     stream << std::endl;
     stream << "\tCurrent configuration:" << std::endl;
 
-    stream << "\t\tPerimeter filling is ";
+    stream << "\t\tFilling algorithm is ";
     switch (filling_method) {
         case Perimeter:
             stream << "perimeter.";
             break;
         case Dual:
             stream << "dual.";
+            break;
+        case Splay:
+            stream << "splay.";
             break;
     }
     stream << std::endl;
@@ -132,7 +135,8 @@ configOptions stringToConfig(const std::string &string_option) {
 fillingMethod stringToMethod(const std::string &string_option) {
     static std::unordered_map<std::string, fillingMethod> const mapping = {
             {"Perimeter", fillingMethod::Perimeter},
-            {"Dual",      fillingMethod::Dual}
+            {"Dual",      fillingMethod::Dual},
+            {"Splay", fillingMethod::Splay}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -268,6 +272,9 @@ void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) 
                 break;
             case Dual:
                 file << "Dual";
+                break;
+            case Splay:
+                file << "Splay";
                 break;
         }
         file << std::endl;
