@@ -125,6 +125,8 @@ public:
     bool isLowSplay(const vald &coordinates) const;
 
     const std::vector<vali> &getLineDensityMinima() const;
+
+    void updateSplayGradient();
 };
 
 

@@ -74,16 +74,17 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path) {
             pattern.setSplayGradient(splay_gradient_path.string());
         } else {
             std::cout
-                    << "Splay gradient file not found - quality of output will be decreased. "
+                    << "Splay gradient file not found - quality of output may be decreased. "
                        "See documentation for more information."
                     << std::endl;
         }
     } else {
         std::cout
-                << "Splay file not found - quality of output will be decreased. "
+                << "Splay file not found - quality of output may be decreased. "
                    "See documentation for more information."
                 << std::endl;
     }
+    pattern.updateSplayGradient();
     return pattern;
 }
 

@@ -49,7 +49,7 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
     splay_array = normalizeVectorArray(splay_vector_array);
     int maximal_size = std::max(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(maximal_size);
-    splay_gradient = gradient(splay_array);
+//    splay_gradient = gradient(splay_array);
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
     maximal_repulsion_angle = readKeyDouble(FILLING_CONFIG, "maximum_repulsion_angle");
@@ -229,7 +229,6 @@ bool DesiredPattern::isSplayGradientProvided() const {
 void DesiredPattern::setSplayVector(const std::string &path) {
     splay_vector_array = readFileToTableDoubleVector(path);
     splay_array = normalizeVectorArray(splay_vector_array);
-    splay_gradient = gradient(splay_array);
     is_splay_provided = true;
     findLineDensityMinima();
 }
@@ -345,4 +344,10 @@ bool DesiredPattern::isLowSplay(const vald &coordinates) const {
 
 const std::vector<vali> &DesiredPattern::getLineDensityMinima() const {
     return line_density_minima;
+}
+
+void DesiredPattern::updateSplayGradient() {
+    if (!isSplayProvided()) {
+        splay_gradient = gradient(splay_array);
+    }
 }
