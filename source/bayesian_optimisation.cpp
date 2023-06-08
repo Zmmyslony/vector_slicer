@@ -72,10 +72,10 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
     initializeOptimization();
     int steps_since_improvement = 0;
     for (int i = 0; i < max_steps; i++) {
-        stepOptimization();
         double minimal_disagreement = getValueAtMinimum();
+        stepOptimization();
         double current_disagreement = getData()->getLastSampleY();
-        if (current_disagreement == minimal_disagreement) {
+        if (current_disagreement < minimal_disagreement) {
             steps_since_improvement = 0;
         }
         showProgress(mCurrentIter + mParameters.n_init_samples, max_steps + mParameters.n_init_samples,
