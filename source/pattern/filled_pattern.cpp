@@ -66,13 +66,15 @@ void FilledPattern::setup() {
             } else {
                 search_stage = PerimeterFilling;
             }
+            break;
         case Perimeter:
             search_stage = PerimeterFilling;
-            return;
+            break;
         case Dual:
             search_stage = RemainingFilling;
-            return;
+            break;
     }
+    setupRootPoints();
     updateSeedPoints();
 }
 
@@ -90,6 +92,19 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
         FilledPattern::FilledPattern(desired_pattern, print_radius, collision_radius, step_length, 0) {}
 
 
+void FilledPattern::setupRootPoints() {
+    std::vector<std::vector<vali>> root_points = desired_pattern.get().getSplaySortedEmptySpots();
+    if (root_points.empty()) {
+        return;
+    }
+
+    for (auto &bin: root_points) {
+        if (!bin.empty()) {
+            std::shuffle(bin.begin(), bin.end(), random_engine);
+        }
+    }
+    binned_root_points = root_points;
+}
 
 std::vector<vali> FilledPattern::findSeedLine() {
     if (search_stage == SplayFilling) {
@@ -102,37 +117,23 @@ std::vector<vali> FilledPattern::findSeedLine() {
         }
         search_stage = PerimeterFilling;
     }
+
     if (search_stage == PerimeterFilling) {
         std::vector<vali> seed_line = separated_perimeters.back();
         separated_perimeters.pop_back();
 
-        if (!separated_perimeters.empty()) {
-            return seed_line;
+        if (separated_perimeters.empty()) {
+            search_stage = RemainingFilling;
         }
 
-        search_stage = RemainingFilling;
-
-        std::vector<std::vector<vali>> root_points = desired_pattern.get().getSplaySortedEmptySpots();
-        if (root_points.empty()) {
-            return seed_line;
-        }
-
-        for (auto &bin: root_points) {
-            if (!bin.empty()) {
-                std::shuffle(bin.begin(), bin.end(), random_engine);
-            }
-        }
-        binned_root_points = root_points;
         return seed_line;
     }
-    if (search_stage == RemainingFilling) {
-        vali root_point = findRemainingRootPoint();
-        if (root_point[0] == -1) {
-            return {root_point};
-        }
-        return findDualLine(root_point);
+
+    vali root_point = findRemainingRootPoint();
+    if (root_point[0] == -1) {
+        return {root_point};
     }
-    return {{-1, -1}};
+    return findDualLine(root_point);
 }
 
 

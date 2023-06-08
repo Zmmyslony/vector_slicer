@@ -102,6 +102,8 @@ class FilledPattern : public FillingConfig {
     std::vector<vali>
     findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald));
 
+    void setupRootPoints();
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;
