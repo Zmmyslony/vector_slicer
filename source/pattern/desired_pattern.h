@@ -50,7 +50,7 @@ class DesiredPattern {
     std::vector<std::vector<vald>> splay_gradient;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
     std::vector<vali> line_density_minima = {{}};
-    double first_bin_splay = 0;
+    double last_bin_splay = 0;
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
     bool is_splay_provided = false;
@@ -126,7 +126,7 @@ public:
 
     const std::vector<vali> &getLineDensityMinima() const;
 
-    void updateSplayGradient();
+    void updateSplayProperties();
 };
 
 

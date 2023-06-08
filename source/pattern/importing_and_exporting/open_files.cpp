@@ -84,7 +84,7 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path) {
                    "See documentation for more information."
                 << std::endl;
     }
-    pattern.updateSplayGradient();
+    pattern.updateSplayProperties();
     return pattern;
 }
 
