@@ -66,8 +66,8 @@ class DesiredPattern {
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
     std::set<veci> findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates,
-                                              vecd previous_displacement, std::set<veci> solution_set,
-                                              std::set<veci> incorrect_set);
+                                              vecd previous_displacement, const std::set<veci> &solution_set,
+                                              const std::set<veci> &incorrect_set);
 
     [[nodiscard]] double splay(const vecd &position) const;
 public:

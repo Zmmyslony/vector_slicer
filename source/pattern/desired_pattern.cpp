@@ -251,8 +251,8 @@ vecd DesiredPattern::preferredDirection(const vecd &position, int distance) cons
 std::set<veci> DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set,
                                                           bool &is_valid, vecd current_coordinates,
                                                           vecd previous_displacement,
-                                                          std::set<veci> solution_set,
-                                                          std::set<veci> incorrect_set) {
+                                                          const std::set<veci> &solution_set,
+                                                          const std::set<veci> &incorrect_set) {
     std::set<veci> current_set = {dtoi(current_coordinates)};
 
     while (true) {
