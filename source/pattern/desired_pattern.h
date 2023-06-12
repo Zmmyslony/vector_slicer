@@ -65,7 +65,7 @@ class DesiredPattern {
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
-    veci findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
+    veci findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
 
     [[nodiscard]] double splay(const vecd &position) const;
 public:

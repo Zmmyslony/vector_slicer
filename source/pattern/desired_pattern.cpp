@@ -58,13 +58,12 @@ void DesiredPattern::updateSplayProperties() {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
         splay_array = normalizeVectorArray(splay_vector_array);
         splay_vector_array.clear();
-    }
-    else if (!isSplayGradientProvided()) {
+    } else if (!isSplayGradientProvided()) {
         splay_gradient = gradient(splay_array);
     }
     int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(100);
-    if (isSplayProvided()){
+    if (isSplayProvided()) {
         findLineDensityMinima();
     }
 }
@@ -254,12 +253,16 @@ vecd DesiredPattern::preferredDirection(const vecd &position, int distance) cons
 }
 
 veci
-DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates) {
+DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates) {
     vecd previous_displacement = getSplayDirection(current_coordinates, 1);
 
+    // If we start in the minimum of line density we need to start away from it, so that the later algorithm will work
     if (norm(previous_displacement) == 0) {
+        previous_displacement = preferredDirection(current_coordinates, 2);
+        current_coordinates = add(current_coordinates, previous_displacement);
         previous_displacement = preferredDirection(current_coordinates, 1);
     }
+
     veci line_minimum = dtoi(current_coordinates);
     vecd previous_coordinates = current_coordinates;
 
@@ -305,10 +308,10 @@ void DesiredPattern::findLineDensityMinima() {
         vecd current_coordinates = itod(first_coordinate);
         vecd previous_displacement = preferredDirection(current_coordinates, 1);
 
-        veci line_minimum = findLineDensityInDirection(candidate_set, is_valid, current_coordinates);
+        veci point_of_minimum_density = findPointOfMinimumDensity(candidate_set, is_valid, current_coordinates);
 
         if (is_valid) {
-            solution_set.insert(line_minimum);
+            solution_set.insert(point_of_minimum_density);
         }
     }
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
@@ -316,21 +319,21 @@ void DesiredPattern::findLineDensityMinima() {
     for (auto &vector: line_density_minima_vectors) {
         line_density_minima_local.emplace_back(vectoval(vector));
     }
-//    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
-//    if (line_density_minima_file.is_open()) {
-//        for (auto &line: line_density_minima_local) {
-//            line_density_minima_file << line[0] << "," << line[1] << std::endl;
-//        }
-//        line_density_minima_file.close();
-//    }
+    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+    if (line_density_minima_file.is_open()) {
+        for (auto &line: line_density_minima_local) {
+            line_density_minima_file << line[0] << "," << line[1] << std::endl;
+        }
+        line_density_minima_file.close();
+    }
 
     if (line_density_minima_local.empty()) {
         return;
     }
-    std::vector<vali> sorted_lines_of_minimal_density = sortPoints(line_density_minima_local, {0,0});
-    std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateLines(sorted_lines_of_minimal_density, sqrt(2));
+    std::vector<vali> sorted_lines_of_minimal_density = sortPoints(line_density_minima_local, {0, 0});
+    std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateLines(sorted_lines_of_minimal_density,sqrt(2));
 
-    for (auto &line : separated_lines_of_minimal_density) {
+    for (auto &line: separated_lines_of_minimal_density) {
         if (line.size() > 2) {
             lines_of_minimal_density.push_back(line);
         }
@@ -352,6 +355,6 @@ bool DesiredPattern::isLowSplay(const vald &coordinates) const {
     return getSplay(dtoi(coordinates)) <= last_bin_splay;
 }
 
-const std::vector<std::vector<vali>> & DesiredPattern::getLineDensityMinima() const {
+const std::vector<std::vector<vali>> &DesiredPattern::getLineDensityMinima() const {
     return lines_of_minimal_density;
 }
