@@ -64,4 +64,8 @@ getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
 std::vector<std::vector<vali>>
 findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
 
+std::vector<vali> sortPoints(std::vector<vali> &unsorted_perimeters, vali starting_coordinates);
+
+std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance);
+
 #endif //VECTOR_SLICER_PERIMETER_H

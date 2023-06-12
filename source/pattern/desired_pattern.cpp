@@ -313,18 +313,26 @@ void DesiredPattern::findLineDensityMinima() {
     for (auto &vector: line_density_minima_vectors) {
         line_density_minima_local.emplace_back(vectoval(vector));
     }
-    lines_of_minimal_density = line_density_minima_local;
-    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+//    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+//    if (line_density_minima_file.is_open()) {
+//        for (auto &line: line_density_minima_local) {
+//            line_density_minima_file << line[0] << "," << line[1] << std::endl;
+//        }
+//        line_density_minima_file.close();
+//    }
 
-
-    if (line_density_minima_file.is_open()) {
-        for (auto &line: lines_of_minimal_density) {
-            line_density_minima_file << line[0] << "," << line[1] << std::endl;
-        }
-        line_density_minima_file.close();
-    } else {
-        std::cout << "File cannot be opened" << std::endl;
+    if (line_density_minima_local.empty()) {
+        return;
     }
+    std::vector<vali> sorted_lines_of_minimal_density = sortPoints(line_density_minima_local, {0,0});
+    std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateLines(sorted_lines_of_minimal_density, sqrt(2));
+
+    for (auto &line : separated_lines_of_minimal_density) {
+        if (line.size() > 2) {
+            lines_of_minimal_density.push_back(line);
+        }
+    }
+
 }
 
 vecd DesiredPattern::getSplayDirection(const vecd &position, double length) const {
@@ -341,6 +349,6 @@ bool DesiredPattern::isLowSplay(const vald &coordinates) const {
     return getSplay(dtoi(coordinates)) <= last_bin_splay;
 }
 
-const std::vector<vali> &DesiredPattern::getLineDensityMinima() const {
+const std::vector<std::vector<vali>> & DesiredPattern::getLineDensityMinima() const {
     return lines_of_minimal_density;
 }

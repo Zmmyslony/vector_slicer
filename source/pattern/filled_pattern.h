@@ -46,8 +46,8 @@ class FilledPattern : public FillingConfig {
     std::vector<vali> list_of_points;
     std::vector<vali> collision_list;
     std::vector<vali> seed_points = {};
-    std::vector<vali> zero_splay_roots;
-    std::vector<std::vector<vali>> separated_perimeters;
+    std::vector<std::vector<vali>> zero_splay_seeds;
+    std::vector<std::vector<vali>> perimeter_seeds;
 
     std::vector<std::vector<vali>> binned_root_points;
 
@@ -103,6 +103,8 @@ class FilledPattern : public FillingConfig {
     findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald));
 
     void setupRootPoints();
+
+    std::vector<std::vector<vali>> separateLines(std::vector<std::vector<vali>> list_of_lines);
 
 public:
 

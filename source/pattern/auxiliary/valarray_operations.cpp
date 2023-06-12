@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <math.h>
 #include <iostream>
+#include <string>
 
 vald itod(const vali &int_array) {
     vald double_array(int_array.size());

@@ -41,12 +41,22 @@ FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingC
         FillingConfig(new_config) {
     int x_dim = desired_pattern.get().getDimensions()[0];
     int y_dim = desired_pattern.get().getDimensions()[1];
-    zero_splay_roots = desired_pattern.get().getLineDensityMinima();
 
     number_of_times_filled = std::vector<std::vector<int >>(x_dim, std::vector<int>(y_dim));
     x_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
     y_field_filled = std::vector<std::vector<double >>(x_dim, std::vector<double>(y_dim));
     setup();
+}
+
+std::vector<std::vector<vali>> FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines) {
+    std::vector<std::vector<vali>> separated_lines;
+    std::shuffle(list_of_lines.begin(), list_of_lines.end(), random_engine);
+    for (auto &line: list_of_lines) {
+        std::vector<vali> spaced_line = getSpacedLine(getStartingPointSeparation(), line);
+        std::shuffle(spaced_line.begin(), spaced_line.end(), random_engine);
+        separated_lines.emplace_back(spaced_line);
+    }
+    return separated_lines;
 }
 
 void FilledPattern::setup() {
@@ -55,9 +65,8 @@ void FilledPattern::setup() {
     collision_list = generatePerimeterList(getCollisionRadius());
     random_engine = std::mt19937(getSeed());
 
-    std::shuffle(zero_splay_roots.begin(), zero_splay_roots.end(), random_engine);
-    separated_perimeters = desired_pattern.get().getPerimeterList();
-    std::shuffle(separated_perimeters.begin(), separated_perimeters.end(), random_engine);
+    zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima());
+    perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
 
     switch (getInitialFillingMethod()) {
         case Splay:
@@ -108,21 +117,21 @@ void FilledPattern::setupRootPoints() {
 
 std::vector<vali> FilledPattern::findSeedLine() {
     if (search_stage == SplayFilling) {
-        while (!zero_splay_roots.empty()) {
-            vali last_point = zero_splay_roots.back();
-            zero_splay_roots.pop_back();
-            if (isFillable(last_point)) {
-                return findConstantSplayLine(last_point);
-            }
+        if (!zero_splay_seeds.empty()) {
+            std::vector<vali> seed_line = zero_splay_seeds.back();
+            zero_splay_seeds.pop_back();
+            return seed_line;
+        } else {
+            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
+            search_stage = PerimeterFilling;
         }
-        search_stage = PerimeterFilling;
     }
 
     if (search_stage == PerimeterFilling) {
-        std::vector<vali> seed_line = separated_perimeters.back();
-        separated_perimeters.pop_back();
+        std::vector<vali> seed_line = perimeter_seeds.back();
+        perimeter_seeds.pop_back();
 
-        if (separated_perimeters.empty()) {
+        if (perimeter_seeds.empty()) {
             search_stage = RemainingFilling;
         }
 

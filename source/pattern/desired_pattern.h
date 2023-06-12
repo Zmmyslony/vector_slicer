@@ -49,7 +49,7 @@ class DesiredPattern {
     std::vector<std::vector<std::valarray<double>>> splay_vector_array;
     std::vector<std::vector<vald>> splay_gradient;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
-    std::vector<vali> lines_of_minimal_density = {{}};
+    std::vector<std::vector<vali>> lines_of_minimal_density;
     double last_bin_splay = 0;
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
@@ -122,7 +122,7 @@ public:
 
     bool isLowSplay(const vald &coordinates) const;
 
-    const std::vector<vali> &getLineDensityMinima() const;
+    const std::vector<std::vector<vali>> & getLineDensityMinima() const;
 
     void updateSplayProperties();
 };
