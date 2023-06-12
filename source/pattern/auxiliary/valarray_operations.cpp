@@ -22,6 +22,7 @@
 #define _USE_MATH_DEFINES
 
 #include "valarray_operations.h"
+
 #include <stdexcept>
 #include <math.h>
 #include <iostream>
@@ -73,7 +74,9 @@ vald normalize(const vali &array) {
 double dot(const vald &array_first, const vald &array_second) {
     double dot_product = 0;
     if (array_first.size() != array_second.size()) {
-        throw std::invalid_argument("Dot: Dotted array are of different size.\n");
+        throw std::invalid_argument(
+                "Dot: Dotted array are of different sizes" + std::to_string(array_first.size()) + " and "
+                        + std::to_string(array_second.size()) + "\n");
     }
     for (int i = 0; i < array_first.size(); i++) {
         dot_product += array_first[i] * array_second[i];
