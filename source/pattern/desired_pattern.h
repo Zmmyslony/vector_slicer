@@ -49,7 +49,7 @@ class DesiredPattern {
     std::vector<std::vector<std::valarray<double>>> splay_vector_array;
     std::vector<std::vector<vald>> splay_gradient;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
-    std::vector<vali> line_density_minima = {{}};
+    std::vector<vali> lines_of_minimal_density = {{}};
     double last_bin_splay = 0;
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
@@ -65,9 +65,7 @@ class DesiredPattern {
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
-    std::set<veci> findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates,
-                                              vecd previous_displacement, const std::set<veci> &solution_set,
-                                              const std::set<veci> &incorrect_set);
+    veci findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
 
     [[nodiscard]] double splay(const vecd &position) const;
 public:

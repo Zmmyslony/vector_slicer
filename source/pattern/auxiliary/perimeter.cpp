@@ -198,12 +198,10 @@ vali findClosestNeighbour(std::vector<vali> &array, vali &element) {
 }
 
 
-std::vector<vali> sortPerimeters(std::vector<vali> &unsorted_perimeters, int starting_index) {
-    vali current_element = unsorted_perimeters[starting_index];
-    removeElement(unsorted_perimeters, starting_index);
+std::vector<vali> sortPoints(std::vector<vali> &unsorted_perimeters, vali starting_coordinates) {
+    vali current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
+    std::vector<vali> sorted_perimeters = {current_element};
 
-    std::vector<vali> sorted_perimeters;
-    sorted_perimeters.push_back(current_element);
     while (!unsorted_perimeters.empty()) {
         current_element = findClosestNeighbour(unsorted_perimeters, current_element);
         sorted_perimeters.push_back(current_element);
@@ -211,12 +209,12 @@ std::vector<vali> sortPerimeters(std::vector<vali> &unsorted_perimeters, int sta
     return sorted_perimeters;
 }
 
-std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_perimeters) {
+std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance) {
     std::vector<std::vector<vali>> separated_perimeters;
     std::vector<vali> current_subpath = {sorted_perimeters.front()};
     for (int i = 1; i < sorted_perimeters.size(); i++) {
         vali displacement_vector = sorted_perimeters[i] - sorted_perimeters[i - 1];
-        if (norm(displacement_vector) > sqrt(2) && !current_subpath.empty()) {
+        if (norm(displacement_vector) > separation_distance && !current_subpath.empty()) {
             separated_perimeters.emplace_back(current_subpath);
             current_subpath.clear();
         } else {
@@ -232,14 +230,14 @@ std::vector<std::vector<vali>> separatePerimeters(std::vector<vali> &sorted_peri
 
 std::vector<vali> findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
-    std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
+    std::vector<vali> sorted_perimeters = sortPoints(unsorted_perimeters, {0, 0});
     return sorted_perimeters;
 }
 
 std::vector<std::vector<vali>>
 findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes);
-    std::vector<vali> sorted_perimeters = sortPerimeters(unsorted_perimeters, 0);
-    std::vector<std::vector<vali>> separated_perimeters = separatePerimeters(sorted_perimeters);
+    std::vector<vali> sorted_perimeters = sortPoints(unsorted_perimeters, {0, 0});
+    std::vector<std::vector<vali>> separated_perimeters = separateLines(sorted_perimeters, sqrt(2));
     return separated_perimeters;
 }

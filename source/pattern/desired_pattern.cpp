@@ -24,6 +24,8 @@
 #include <utility>
 #include <algorithm>
 #include <set>
+#include <iostream>
+#include <fstream>
 
 #include "importing_and_exporting/table_reading.h"
 #include "auxiliary/simple_math_operations.h"
@@ -59,8 +61,8 @@ void DesiredPattern::updateSplayProperties() {
     if (!isSplayGradientProvided()) {
         splay_gradient = gradient(splay_array);
     }
-    int maximal_size = std::max(shape_matrix.size(), shape_matrix[0].size());
-    splay_sorted_empty_spots = binBySplay(maximal_size);
+    int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
+    splay_sorted_empty_spots = binBySplay(100);
     findLineDensityMinima();
 }
 
@@ -248,47 +250,40 @@ vecd DesiredPattern::preferredDirection(const vecd &position, int distance) cons
     return {std::begin(direction), std::end(direction)};
 }
 
-std::set<veci> DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set,
-                                                          bool &is_valid, vecd current_coordinates,
-                                                          vecd previous_displacement,
-                                                          const std::set<veci> &solution_set,
-                                                          const std::set<veci> &incorrect_set) {
-    std::set<veci> current_set = {dtoi(current_coordinates)};
+veci
+DesiredPattern::findLineDensityInDirection(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates) {
+    vecd previous_displacement = getSplayDirection(current_coordinates, 1);
+
+    if (norm(previous_displacement) == 0) {
+        previous_displacement = preferredDirection(current_coordinates, 1);
+    }
+    veci line_minimum = dtoi(current_coordinates);
+    vecd previous_coordinates = current_coordinates;
 
     while (true) {
-        vecd displacement = preferredDirection(current_coordinates, 1);
+        vecd displacement = getSplayDirection(current_coordinates, 1);
         if (dot(displacement, previous_displacement) < 0) {
-            displacement = scale(displacement, -1);
-        }
-        previous_displacement = displacement;
-        vecd previous_coordinates = current_coordinates;
-        current_coordinates = add(current_coordinates, displacement);
-        if (splay(current_coordinates) > last_bin_splay) {
-            vecd splay_vec = getSplayDirection(current_coordinates, 1);
-            if (dot(splay_vec, displacement) < 0) {
-                is_valid = true;
-            } else {
-                is_valid = false;
-            }
-            break;
-        } else if (solution_set.find(dtoi(current_coordinates)) != solution_set.end()) {
             is_valid = true;
+            line_minimum = dtoi(previous_coordinates);
             break;
-        } else if (incorrect_set.find(dtoi(current_coordinates)) != incorrect_set.end()) {
+        }
+        previous_coordinates = current_coordinates;
+        if (norm(displacement) > 0) {
+            previous_displacement = displacement;
+            current_coordinates = add(current_coordinates, displacement);
+        } else {
+            current_coordinates = add(current_coordinates, previous_displacement);
+        }
+
+        if (splay(current_coordinates) > last_bin_splay ||
+            !isInShape(vectoval(current_coordinates))) {
             is_valid = false;
             break;
-        } else if (current_set.find(dtoi(current_coordinates)) != current_set.end() &&
-                   current_coordinates != previous_coordinates) {
-            is_valid = true;
-            break;
-        } else if (!isInShape(vectoval(current_coordinates))) {
-            is_valid = true;
-            break;
         }
-        current_set.insert(dtoi(current_coordinates));
+
         candidate_set.erase(dtoi(current_coordinates));
     }
-    return current_set;
+    return line_minimum;
 }
 
 void DesiredPattern::findLineDensityMinima() {
@@ -299,32 +294,18 @@ void DesiredPattern::findLineDensityMinima() {
     }
 
     std::set<veci> solution_set;
-    std::set<veci> incorrect_set;
     while (!candidate_set.empty()) {
         veci first_coordinate = *candidate_set.begin();
         candidate_set.erase(first_coordinate);
-        bool is_forward_path_valid = true;
-        bool is_backward_path_valid = true;
+        bool is_valid = true;
 
         vecd current_coordinates = itod(first_coordinate);
         vecd previous_displacement = preferredDirection(current_coordinates, 1);
 
-        std::set<veci> forward_set = findLineDensityInDirection(candidate_set, is_forward_path_valid,
-                                                                current_coordinates, previous_displacement,
-                                                                solution_set, incorrect_set);
+        veci line_minimum = findLineDensityInDirection(candidate_set, is_valid, current_coordinates);
 
-        std::set<veci> backward_set = findLineDensityInDirection(candidate_set, is_forward_path_valid,
-                                                                 current_coordinates, scale(previous_displacement, -1),
-                                                                 solution_set, incorrect_set);
-
-
-        bool is_valid_candidate = is_forward_path_valid && is_backward_path_valid;
-        if (is_valid_candidate) {
-            solution_set.insert(forward_set.begin(), forward_set.end());
-            solution_set.insert(backward_set.begin(), backward_set.end());
-        } else {
-            incorrect_set.insert(forward_set.begin(), forward_set.end());
-            incorrect_set.insert(backward_set.begin(), backward_set.end());
+        if (is_valid) {
+            solution_set.insert(line_minimum);
         }
     }
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
@@ -332,7 +313,18 @@ void DesiredPattern::findLineDensityMinima() {
     for (auto &vector: line_density_minima_vectors) {
         line_density_minima_local.emplace_back(vectoval(vector));
     }
-    line_density_minima = line_density_minima_local;
+    lines_of_minimal_density = line_density_minima_local;
+    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+
+
+    if (line_density_minima_file.is_open()) {
+        for (auto &line: lines_of_minimal_density) {
+            line_density_minima_file << line[0] << "," << line[1] << std::endl;
+        }
+        line_density_minima_file.close();
+    } else {
+        std::cout << "File cannot be opened" << std::endl;
+    }
 }
 
 vecd DesiredPattern::getSplayDirection(const vecd &position, double length) const {
@@ -350,5 +342,5 @@ bool DesiredPattern::isLowSplay(const vald &coordinates) const {
 }
 
 const std::vector<vali> &DesiredPattern::getLineDensityMinima() const {
-    return line_density_minima;
+    return lines_of_minimal_density;
 }
