@@ -171,10 +171,10 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     double print_radius = pattern.getConfig().getPrintRadius();
 
     lower_bound[0] = 0; // Min repulsion
-    lower_bound[1] = 1; // Min collision radius
-    lower_bound[2] = print_radius * 1.5; // Min starting point separation
+    lower_bound[1] = 0; // Min collision radius
+    lower_bound[2] = print_radius * 2; // Min starting point separation
 
-    upper_bound[0] = 4;
+    upper_bound[0] = 81;
     upper_bound[1] = print_radius + 1;
     upper_bound[2] = print_radius * 2.5;
 
@@ -201,7 +201,8 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
     FillingConfig initial_config(initial_config_path);
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
+    bool is_splay_filling_enabled = initial_config.getInitialFillingMethod() == Splay;
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
     DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
 
     bayesopt::Parameters parameters;
@@ -245,7 +246,7 @@ void optimisePattern(const fs::path &pattern_path) {
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, false);
     DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
 
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
