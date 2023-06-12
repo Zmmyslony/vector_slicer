@@ -57,13 +57,16 @@ void DesiredPattern::updateSplayProperties() {
     if (!isSplayProvided()) {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
         splay_array = normalizeVectorArray(splay_vector_array);
+        splay_vector_array.clear();
     }
-    if (!isSplayGradientProvided()) {
+    else if (!isSplayGradientProvided()) {
         splay_gradient = gradient(splay_array);
     }
     int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(100);
-    findLineDensityMinima();
+    if (isSplayProvided()){
+        findLineDensityMinima();
+    }
 }
 
 

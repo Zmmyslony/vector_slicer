@@ -23,6 +23,8 @@
 #include "filling_patterns.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
+#include "vector_slicer_config.h"
+#include "auxiliary/configuration_reading.h"
 
 #include <utility>
 #include <cmath>
@@ -226,20 +228,30 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
 
 std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
-    std::vector<std::pair<double, int>> disagreements(seeds);
-    for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds.emplace_back(*this, i);
-    }
+    std::vector<std::pair<double, unsigned int>> disagreements(seeds);
+
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds[i].evaluate();
+        QuantifiedConfig current_config(*this, i);
+        current_config.evaluate();
+        disagreements[i] = {current_config.getDisagreement(), i};
     }
 
-    std::sort(configs_with_various_seeds.begin(), configs_with_various_seeds.end(), [](auto &left, auto&right) {
-        return left.getDisagreement() < right.getDisagreement();
+    std::sort(disagreements.begin(), disagreements.end(), [](auto &left, auto &right) {
+        return (left.first < right.first);
     });
-    return configs_with_various_seeds;
+    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+
+    std::vector<QuantifiedConfig> configs_to_export;
+    for (int i = 0; i < number_of_layers; i++) {
+        configs_to_export.emplace_back(*this, disagreements[i].second);
+    }
+#pragma omp parallel for
+    for (int i = 0; i < number_of_layers; i++) {
+        configs_to_export[i].evaluate();
+    }
+    return configs_to_export;
 }
 
 
