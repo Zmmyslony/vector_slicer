@@ -208,8 +208,6 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-//    parameters.n_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
-//    parameters.n_inner_iterations = 5;
     parameters.n_iter_relearn = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
     parameters.noise = readKeyDouble(BAYESIAN_CONFIG, "noise");
 
@@ -247,12 +245,12 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, false);
-    DisagreementWeights default_weights(10, 2, 8, 2, 100, 2, 10, 2);
+    DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
 
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
-        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], default_weights));
+        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], weights));
     }
 
     int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
@@ -261,6 +259,8 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     for (int i = 0; i < filled_configs.size(); i++) {
         filled_configs[i].evaluate();
     }
+    filled_configs[0].getConfig().printConfig();
+    filled_configs[0].printDisagreement();
     exportPatterns(filled_configs, pattern_path);
     std::cout << "Pattern filled." << std::endl;
 }
