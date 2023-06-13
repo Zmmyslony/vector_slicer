@@ -438,10 +438,14 @@ bool isAlreadyCrossed(vald &coordinates, const std::vector<vali> &line) {
 
 std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
     std::vector<vali> line;
-    while (isFillable(dtoi(coordinates)) && !isAlreadyCrossed(coordinates, line)) {
+    vald dual_director = previous_dual_director;
+    while (isFillable(dtoi(coordinates)) &&
+           !isAlreadyCrossed(coordinates, line) &&
+           dot(previous_dual_director, dual_director) > 0
+           ) {
         line.push_back(dtoi(coordinates));
         vald director = getDirector(coordinates);
-        vald dual_director = normalizedDualVector(director);
+        dual_director = normalizedDualVector(director);
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director *= -1;
         }
