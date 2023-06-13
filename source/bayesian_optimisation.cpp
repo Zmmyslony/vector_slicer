@@ -74,12 +74,13 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
     for (int i = 0; i < max_steps; i++) {
         double minimal_disagreement = getValueAtMinimum();
         stepOptimization();
+        vectord best_configuration = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
         double current_disagreement = getData()->getLastSampleY();
         if (current_disagreement < minimal_disagreement) {
             steps_since_improvement = 0;
         }
         showProgress(mCurrentIter + mParameters.n_init_samples, max_steps + mParameters.n_init_samples,
-                     begin, minimal_disagreement);
+                     begin, minimal_disagreement, best_configuration, steps_since_improvement, max_constant_steps);
         steps_since_improvement++;
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
             std::cout

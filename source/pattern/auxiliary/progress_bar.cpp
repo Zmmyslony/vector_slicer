@@ -22,6 +22,7 @@
 #include "progress_bar.h"
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 void showProgress(double progress) {
     int bar_width = 20;
@@ -44,7 +45,7 @@ void showProgress(int current_step, int max_step) {
 
 void
 showProgress(double progress, std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
-             const std::string& suffix) {
+             const std::string &suffix) {
     int bar_width = 20;
     int pos = (int) (bar_width * progress);
     std::cout << "\r " << std::chrono::duration_cast<std::chrono::seconds>(now - begin).count() << "/" <<
@@ -61,7 +62,16 @@ showProgress(double progress, std::chrono::steady_clock::time_point begin, std::
 }
 
 void
-showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value) {
-    std::string suffix = "Current min: " + std::to_string(min_value);
+showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value,
+             const vectord &best_configuration, int steps_from_improvement, int steps_threshold) {
+    double repulsion = best_configuration[0];
+    double collision_radius = best_configuration[1];
+    double starting_point_separation = best_configuration[2];
+    std::stringstream suffix_stream;
+    suffix_stream << std::setprecision(6) << "Minimal disagreement:" << min_value;
+    suffix_stream << std::setprecision(2) << ", at Rep " << repulsion << ", ColRad " << collision_radius
+                  << ", StaSep " << starting_point_separation << ". Steps since improvement: " << steps_from_improvement
+                  << "/" << steps_threshold;
+    std::string suffix = suffix_stream.str();
     showProgress((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
 }
