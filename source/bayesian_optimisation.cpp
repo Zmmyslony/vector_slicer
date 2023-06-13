@@ -172,9 +172,9 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = print_radius * 2; // Min starting point separation
+    lower_bound[2] = print_radius * 1.5; // Min starting point separation
 
-    upper_bound[0] = 81;
+    upper_bound[0] = 8;
     upper_bound[1] = print_radius + 1;
     upper_bound[2] = print_radius * 2.5;
 
