@@ -534,12 +534,20 @@ bool FilledPattern::isFilled(const vali &coordinates) const {
     return number_of_times_filled[coordinates[0]][coordinates[1]];
 }
 
+bool FilledPattern::isFilled(const vald &coordinates) const {
+    return isFilled(dtoi(coordinates));
+}
+
 
 bool FilledPattern::isFillable(const vali &point) const {
     return desired_pattern.get().isInShape(point) &&
            !isFilled(point) &&
            isPerimeterFree(number_of_times_filled, desired_pattern.get().getShapeMatrix(),
                            collision_list, point, desired_pattern.get().getDimensions());
+}
+
+bool FilledPattern::isFillable(const vald &point) const {
+    return isFillable(dtoi(point));
 }
 
 

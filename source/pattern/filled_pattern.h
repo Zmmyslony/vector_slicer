@@ -149,6 +149,10 @@ public:
     std::vector<Path> getSequenceOfPaths();
 
     void exportFilledMatrix(const fs::path &path) const;
+
+    bool isFilled(const vald &coordinates) const;
+
+    bool isFillable(const vald &point) const;
 };
 
 
