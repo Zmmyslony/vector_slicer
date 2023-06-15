@@ -235,7 +235,7 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
         vald repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
                                                new_step, getPrintRadius(),
                                                new_positions, desired_pattern.get().getDimensions(),
-                                               getRepulsion(), desired_pattern.get().getMaximalRepulsionAngle());
+                                               getRepulsion(), getRepulsionAngle());
         new_positions += repulsion;
         new_step += repulsion;
     }
@@ -442,7 +442,7 @@ std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald
     while (isFillable(dtoi(coordinates)) &&
            !isAlreadyCrossed(coordinates, line) &&
            dot(previous_dual_director, dual_director) > 0
-           ) {
+            ) {
         line.push_back(dtoi(coordinates));
         vald director = getDirector(coordinates);
         dual_director = normalizedDualVector(director);

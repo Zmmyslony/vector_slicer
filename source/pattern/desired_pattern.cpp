@@ -49,7 +49,6 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions);
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
-    maximal_repulsion_angle = readKeyDouble(FILLING_CONFIG, "maximum_repulsion_angle");
 }
 
 
@@ -216,9 +215,6 @@ bool DesiredPattern::isVectorSorted() const {
     return is_vector_sorted;
 }
 
-double DesiredPattern::getMaximalRepulsionAngle() const {
-    return maximal_repulsion_angle;
-}
 
 const vald &DesiredPattern::getSplayGradient(const vali &positions) const {
     return splay_gradient[positions[0]][positions[1]];

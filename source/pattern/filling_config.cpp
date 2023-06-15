@@ -55,6 +55,7 @@ void FillingConfig::printConfig() {
 
     stream << "\t\tCollision radius is " << collision_radius << "." << std::endl;
     stream << "\t\tRepulsion is " << repulsion << "." << std::endl;
+    stream << "\t\tRepulsion angle is " << repulsion_angle << "." << std::endl;
     stream << "\t\tStarting point separation is " << starting_point_separation << "." << std::endl;
     stream << "\t\tSeed is " << seed << "." << std::endl;
 
@@ -100,6 +101,8 @@ std::string FillingConfig::getConfigOption(configOptions option) {
             return std::to_string(seed);
         case RepulsionRadius:
             return std::to_string(repulsion_radius);
+        case RepulsionAngle:
+            return std::to_string(repulsion_angle);
     }
 }
 
@@ -120,7 +123,8 @@ configOptions stringToConfig(const std::string &string_option) {
             {"Repulsion",               configOptions::Repulsion},
             {"StartingPointSeparation", configOptions::StartingPointSeparation},
             {"Seed",                    configOptions::Seed},
-            {"RepulsionRadius",         configOptions::RepulsionRadius}
+            {"RepulsionRadius",         configOptions::RepulsionRadius},
+            {"RepulsionAngle",          configOptions::RepulsionAngle}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -135,7 +139,7 @@ fillingMethod stringToMethod(const std::string &string_option) {
     static std::unordered_map<std::string, fillingMethod> const mapping = {
             {"Perimeter", fillingMethod::Perimeter},
             {"Dual",      fillingMethod::Dual},
-            {"Splay", fillingMethod::Splay}
+            {"Splay",     fillingMethod::Splay}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -174,6 +178,8 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
         case RepulsionRadius:
             repulsion_radius = std::stod(value);
             break;
+        case RepulsionAngle:
+            repulsion_angle = std::stod(value);
     }
 }
 
@@ -236,7 +242,7 @@ std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
         }
     }
 
-    std::vector <FillingConfig> filling_config_list;
+    std::vector<FillingConfig> filling_config_list;
     for (auto &seed: seed_list) {
         filling_config_list.emplace_back(FillingConfig(base_config, seed));
     }
@@ -281,6 +287,7 @@ void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) 
         file << "StartingPointSeparation " << configs[0].getStartingPointSeparation() << std::endl;
         file << "Repulsion " << configs[0].getRepulsion() << std::endl;
         file << "RepulsionRadius " << configs[0].getRepulsionRadius() << std::endl;
+        file << "RepulsionAngle " << configs[0].getRepulsionAngle() << std::endl;
         file << "StepLength " << configs[0].getStepLength() << std::endl;
         file << "PrintRadius " << configs[0].getPrintRadius() << std::endl;
         file << "Seed ";
@@ -302,6 +309,10 @@ FillingConfig::FillingConfig() : FillingConfig(Perimeter, 5,
 
 double FillingConfig::getRepulsionRadius() const {
     return repulsion_radius;
+}
+
+double FillingConfig::getRepulsionAngle() const {
+    return repulsion_angle;
 }
 
 

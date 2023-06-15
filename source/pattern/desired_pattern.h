@@ -55,7 +55,6 @@ class DesiredPattern {
     bool is_vector_sorted = false;
     bool is_splay_provided = false;
     bool is_splay_gradient_provided = false;
-    double maximal_repulsion_angle = M_PI;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
@@ -105,8 +104,6 @@ public:
     [[nodiscard]] bool isInShape(const vali &position) const;
 
     [[nodiscard]] bool isInShape(const vald &position) const;
-
-    [[nodiscard]] double getMaximalRepulsionAngle() const;
 
     [[nodiscard]] const vald &getSplayGradient(const vali &positions) const;
 

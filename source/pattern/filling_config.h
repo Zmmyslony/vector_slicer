@@ -19,9 +19,12 @@
 // Created by Michał Zmyślony on 05/11/2021.
 //
 
+#define _USE_MATH_DEFINES
 #ifndef VECTOR_SLICER_FILLING_CONFIG_H
 #define VECTOR_SLICER_FILLING_CONFIG_H
 
+#include <cmath>
+#include <math.h>
 #include <string>
 #include <vector>
 #include <boost/filesystem/path.hpp>
@@ -40,7 +43,8 @@ enum configOptions {
     Repulsion,
     StartingPointSeparation,
     Seed,
-    RepulsionRadius
+    RepulsionRadius,
+    RepulsionAngle
 };
 
 /// The generating parameters that decide how the pattern will be filled.
@@ -64,6 +68,8 @@ class FillingConfig {
     /// Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
     double repulsion_radius;
 
+    double repulsion_angle = M_PI;
+
     void readLineOfConfig(std::vector<std::string> line);
 
 public:
@@ -84,6 +90,8 @@ public:
     [[nodiscard]] unsigned int getSeed() const;
 
     [[nodiscard]] double getRepulsionRadius() const;
+
+    [[nodiscard]] double getRepulsionAngle() const;
 
     explicit FillingConfig();
 

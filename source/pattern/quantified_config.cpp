@@ -55,7 +55,7 @@ QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord pa
     setConfigOption(CollisionRadius, std::to_string(parameters[1]));
     setConfigOption(StartingPointSeparation, std::to_string(parameters[2]));
     if (dims > 3) {
-        setConfigOption(RepulsionRadius, std::to_string(parameters[3]));
+        setConfigOption(RepulsionAngle, std::to_string(parameters[3]));
     }
 }
 

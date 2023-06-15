@@ -173,15 +173,15 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = print_radius * 1.5; // Min starting point separation
+    lower_bound[2] = print_radius * 2 - 1; // Min starting point separation
 
-    upper_bound[0] = 8;
+    upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
-    upper_bound[2] = print_radius * 2.5;
+    upper_bound[2] = print_radius * 2 + 1;
 
     if (dims > 3) {
-        lower_bound[3] = 0; // RepulsionRadius
-        upper_bound[3] = print_radius;
+        lower_bound[3] = 0; // Maximal repulsion angle
+        upper_bound[3] = M_PI / 2;
     }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
@@ -189,7 +189,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     int max_iterations_without_improvement = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
     pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
 
-    return {pattern, best_config, 3};
+    return {pattern, best_config, dims};
 }
 
 
