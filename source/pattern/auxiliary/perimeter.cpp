@@ -57,7 +57,7 @@ getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &c
                              const std::vector<std::vector<int>> &shape_matrix,
                              const std::vector<std::vector<int>> &filled_table) {
     int number_of_repulsing_coordinates = 0;
-    vald attraction = {0, 0};
+    vald empty_spot_attraction = {0, 0};
 
     for (auto &displacement: current_displacements) {
         vali neighbour = dtoi(coordinates) + displacement;
@@ -65,14 +65,14 @@ getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &c
             !isEmpty(neighbour, shape_matrix) &&
             isEmpty(neighbour, filled_table)) {
 
-            attraction += itod(displacement);
+            empty_spot_attraction += itod(displacement) ;
             number_of_repulsing_coordinates++;
         }
     }
     if (number_of_repulsing_coordinates != 0) {
-        attraction /= number_of_repulsing_coordinates;
+        empty_spot_attraction /= number_of_repulsing_coordinates;
     }
-    return attraction;
+    return empty_spot_attraction;
 }
 
 
