@@ -20,6 +20,7 @@
 //
 
 #include "exporting.h"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <ctime>
@@ -180,7 +181,7 @@ void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<
                         fs::path path, const std::string &suffix, double print_diameter) {
     exportHeaderToFile(generateHeader(suffix, print_diameter), path);
 
-    for (auto &grid : grids_of_paths) {
+    for (auto &grid: grids_of_paths) {
         std::vector<std::vector<int>> x_table = indexTable(grid, 0);
         std::vector<std::vector<int>> y_table = indexTable(grid, 1);
 
@@ -234,3 +235,35 @@ std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path
     return merged_tables;
 }
 
+void exportVector(const std::vector<vali> &vector, const std::string &filename) {
+    std::ofstream file(filename, std::ios_base::app);
+
+    if (file.is_open()) {
+        for (auto &point: vector) {
+//            std::cout << point[0] << "," << point[1] << std::endl;
+            file << point[0] << "," << point[1] << std::endl;
+        }
+    }
+}
+
+void exportVector(const std::vector<vald> &vector, const std::string &filename) {
+    std::ofstream file(filename, std::ios_base::app);
+
+    if (file.is_open()) {
+        for (auto &point: vector) {
+            file << point[0] << "," << point[1] << std::endl;
+        }
+    }
+}
+
+void printVector(const std::vector<vald> &vector) {
+    for (auto &point: vector) {
+        std::cout << point[0] << "," << point[1] << std::endl;
+    }
+}
+
+void printVector(const std::vector<vali> &vector) {
+    for (auto &point: vector) {
+        std::cout << point[0] << "," << point[1] << std::endl;
+    }
+}

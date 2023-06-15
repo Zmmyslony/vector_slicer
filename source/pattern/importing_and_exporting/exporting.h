@@ -29,6 +29,8 @@
 #include <boost/dll.hpp>
 
 namespace fs = boost::filesystem;
+using vali = std::valarray<int>;
+using vald = std::valarray<double>;
 
 
 void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path);
@@ -45,5 +47,13 @@ void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<
                         fs::path path, const std::string &suffix, double print_diameter);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
+
+void exportVector(const std::vector<vali> &vector, const std::string &filename);
+
+void exportVector(const std::vector<vald> &vector, const std::string &filename);
+
+void printVector(const std::vector<vald> &vector);
+
+void printVector(const std::vector<vali> &vector);
 
 #endif //VECTOR_SLICER_EXPORTING_H
