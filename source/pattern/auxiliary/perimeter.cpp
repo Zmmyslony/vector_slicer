@@ -69,25 +69,20 @@ getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &c
             number_of_repulsing_coordinates++;
         }
     }
-    if (number_of_repulsing_coordinates == 0) {
-        return {0, 0};
-    } else {
-        vald repulsion_vector = attraction / number_of_repulsing_coordinates;
-        return repulsion_vector;
+    if (number_of_repulsing_coordinates != 0) {
+        attraction /= number_of_repulsing_coordinates;
     }
+    return attraction;
 }
 
 
-vald
-getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
-                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
-                      double maximal_repulsion_angle) {
-
-
-    std::vector<vali> current_displacements = generateLineDisplacements(tangent, radius);
+vald getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
+                           const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
+                           const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                           double maximal_repulsion_angle) {
+    std::vector<vali> normal_displacements = generateLineDisplacements(tangent, radius);
     vald maximal_repulsion_vector = repulsion_coefficient *
-                                    getRepulsionFromDisplacement(coordinates, current_displacements, sizes,
+                                    getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
                                                                  shape_matrix, filled_table);
 
     double maximal_repulsion_length = norm(maximal_repulsion_vector);
@@ -102,20 +97,21 @@ getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
     for (int i = 1; i <= maximal_repulsion_length_i; i++) {
         vald local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
         vald local_repulsion = repulsion_coefficient *
-                               getRepulsionFromDisplacement(coordinates + local_displacement, current_displacements,
+                               getRepulsionFromDisplacement(coordinates + local_displacement, normal_displacements,
                                                             sizes, shape_matrix, filled_table);
 
         double local_angle = angle(tangent, tangent + local_repulsion);
         bool is_maximal_angle_exceeded = local_angle >= maximal_repulsion_angle;
-        bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) <= 0;
+        // Test to see if the repulsion has changed its sign, resulting in over repulsing
+        bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) < 0;
         if (is_maximal_angle_exceeded || is_repulsion_inverted) {
             return previous_displacement;
         }
         previous_displacement = local_displacement;
     }
-
-    return maximal_repulsion_vector;
+    return previous_displacement;
 }
+
 
 bool
 isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,

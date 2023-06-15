@@ -173,7 +173,7 @@ std::vector<vali> generateLineDisplacements(const vald &tangent, double radius) 
     int distance_i = std::max(abs(normal_i[0]), abs(normal_i[1]));
     std::vector<vali> displacement_list;
     for (int i = -distance_i; i <= distance_i; i++) {
-        vald displacement_d = normal * (double)i / (double)distance_i;
+        vald displacement_d = normal * (double) i / (double) distance_i;
         displacement_list.push_back(dtoi(displacement_d));
     }
     return displacement_list;
