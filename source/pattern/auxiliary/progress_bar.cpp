@@ -63,7 +63,7 @@ showProgress(double progress, std::chrono::steady_clock::time_point begin, std::
 
 void
 showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value,
-             const vectord &best_configuration, int steps_from_improvement, int steps_threshold) {
+             const vectord &best_configuration, int steps_from_improvement, int steps_threshold, int dims) {
     double repulsion = best_configuration[0];
     double collision_radius = best_configuration[1];
     double starting_point_separation = best_configuration[2];
@@ -71,8 +71,15 @@ showProgress(int current_step, int max_step, std::chrono::steady_clock::time_poi
     std::stringstream suffix_stream;
     suffix_stream << std::setprecision(3) << "Minimal disagreement: " << min_value;
     suffix_stream << std::setprecision(2) << ", at Rep " << repulsion << ", ColRad " << collision_radius
-                  << ", StaSep " << starting_point_separation << ", RepAng " << repulsion_angle << ". Steps since improvement: " << steps_from_improvement
-                  << "/" << steps_threshold;
+                  << ", StaSep " << starting_point_separation;
+    if (dims > 3) {
+        suffix_stream << ", RepAng " << repulsion_angle;
+    }
+    suffix_stream << ". Steps since improvement: " << steps_from_improvement;
+    if (steps_threshold > 0) {
+        suffix_stream << "/" << steps_threshold;
+    }
+
     std::string suffix = suffix_stream.str();
     showProgress((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
 }

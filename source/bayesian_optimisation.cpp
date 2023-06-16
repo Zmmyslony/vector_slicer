@@ -80,7 +80,7 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
             steps_since_improvement = 0;
         }
         showProgress(mCurrentIter + mParameters.n_init_samples, max_steps + mParameters.n_init_samples,
-                     begin, minimal_disagreement, best_configuration, steps_since_improvement, max_constant_steps);
+                     begin, minimal_disagreement, best_configuration, steps_since_improvement, max_constant_steps, dims);
         steps_since_improvement++;
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
             std::cout
@@ -144,8 +144,10 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
     int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+    std::cout << "Layer disagreements: " << std::endl;
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
+        std::cout << i << ", " << patterns[i].getDisagreement() << std::endl;
         if (pattern.desired_pattern.get().isVectorSorted()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
@@ -173,7 +175,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     lower_bound[0] = 0; // Min repulsion
     lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = print_radius * 2 - 1; // Min starting point separation
+    lower_bound[2] = print_radius * 2; // Min starting point separation
 
     upper_bound[0] = 4;
     upper_bound[1] = print_radius + 1;
@@ -218,8 +220,13 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
     parameters.log_filename = optimisation_log_path.string();
 
+    bool is_repulsion_angle_optimised = readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised");
+    int dims = 3;
+    if (is_repulsion_angle_optimised) {
+        dims = 4;
+    }
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
-                                                     parameters, 3);
+                                                     parameters, dims);
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
             readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
 
