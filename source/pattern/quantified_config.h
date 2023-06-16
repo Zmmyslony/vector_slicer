@@ -38,6 +38,7 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double paths_number = 0;
     double disagreement = DBL_MAX;
     double total_disagreement = DBL_MAX;
+    double multiplier = 1;
 
     double calculateEmptySpots();
 
@@ -47,7 +48,9 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
 
     double calculatePathLengthDeviation(int order);
 
+    double localDirectorAgreement(int i, int j);
 public:
+
     QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights);
 
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
@@ -78,6 +81,8 @@ public:
     std::vector<QuantifiedConfig> findBestSeeds(int seeds, int threads);
 
     void printDisagreement() const;
+
+    std::vector<std::vector<double>> localDisagreementGrid();
 };
 
 
