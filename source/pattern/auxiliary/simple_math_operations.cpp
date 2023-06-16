@@ -41,16 +41,53 @@ double decimalPart(double number) {
     return number - floor(number);
 }
 
+std::vector<std::vector<vald>>
+joinTables(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
+    assert((x_field.size() == y_field.size()));
+    std::vector<std::vector<vald>> joined_table;
+    for (int i = 0; i < x_field.size(); i++) {
+        assert((x_field[i].size() == y_field[i].size()));
+        std::vector<vald> row;
+        for (int j = 0; j < x_field[i].size(); j++) {
+            row.emplace_back(vald({x_field[i][j], y_field[i][j]}));
+        }
+        joined_table.emplace_back(row);
+    }
+    return joined_table;
+}
+
+std::vector<std::vector<matrix_d>> tensorWithItself(const std::vector<std::vector<std::valarray<double>>> &director) {
+    std::vector<std::vector<matrix_d>> result;
+    for (auto &row: director) {
+        std::vector<matrix_d> tensor_row;
+        for (auto &element: row) {
+            tensor_row.emplace_back(tensor(element, element));
+        }
+    }
+    return result;
+}
+
+
+/// Calculation of the splay from the divergence theorem where Q = n (tensor) n, and splay is Q . Div(Q).
 std::vector<std::vector<std::valarray<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
-    std::vector<std::vector<std::valarray<double>>> splay_table;
+    std::vector<std::vector<vald>> director_field = joinTables(x_field, y_field);
+    std::vector<std::vector<matrix_d>> q_field = tensorWithItself(director_field);
+
+    std::vector<std::vector<vald>> splay_table;
     splay_table.emplace_back(x_field[0].size(), std::valarray<double>{0, 0});
-    assert((x_field.size() == y_field.size()));
-    for (int i = 1; i < x_field.size() - 1; i++) {
-        assert((x_field[i].size() == y_field[i].size()));
+    for (int i = 1; i < director_field.size() - 1; i++) {
         std::vector<std::valarray<double>> splay_row = {{0, 0}};
-        for (int j = 1; j < x_field[i].size() - 1; j++) {
-            std::valarray<double> current_splay = {x_field[i + 1][j] - x_field[i - 1][j], y_field[i][j + 1] - x_field[i][j - 1]};
+        for (int j = 1; j < director_field[i].size() - 1; j++) {
+            std::valarray<double> q_divergence;
+            q_divergence = multiply(q_field[i + 1][j], {1, 0});
+            q_divergence += multiply(q_field[i][j + 1], {0, 1});
+            q_divergence += multiply(q_field[i - 1][j], {-1, 0});
+            q_divergence += multiply(q_field[i][j - 1], {0, -1});
+
+            q_divergence /= 2;
+
+            vald current_splay = multiply(q_field[i][j], q_divergence);
             splay_row.emplace_back(current_splay);
         }
         splay_row.emplace_back(0);

@@ -28,6 +28,8 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
+using matrix_d = std::valarray<vald>;
+
 vald itod(const vali &int_array);
 
 vali dtoi(const vald &double_array);
@@ -55,5 +57,9 @@ void printArray(const std::vector<vali> &array);
 void printArray(const std::vector<vald> &array);
 
 double angle(const vald &array_first, const vald &array_second);
+
+vald multiply(matrix_d mat, vald vec);
+
+matrix_d tensor(vald vec_first, vald vec_second);
 
 #endif //VECTOR_SLICER_VALARRAY_OPERATIONS_H
