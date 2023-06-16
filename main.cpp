@@ -33,7 +33,7 @@ int main() {
     printf("Optimising using %i seeds and %i threads.\n",
            readKeyInt(DISAGREEMENT_CONFIG, "seeds"),
            readKeyInt(DISAGREEMENT_CONFIG, "threads"));
-    printf("There will be %i iterations of optimisation, with relearning every %i iterations.\n",
+    printf("There will be up to %i iterations of optimisation, with relearning every %i iterations.\n",
            readKeyInt(BAYESIAN_CONFIG, "number_of_iterations"),
            readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning"));
 

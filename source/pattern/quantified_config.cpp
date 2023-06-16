@@ -135,7 +135,6 @@ double QuantifiedConfig::calculatePathLengthDeviation(int order) {
     for (auto &path: getSequenceOfPaths()) {
         sum_of_lengths += path.getLength();
     }
-    unsigned int paths_number = getSequenceOfPaths().size();
     double average_length = sum_of_lengths / paths_number;
 
     double deviations_sum = 0;
@@ -153,7 +152,7 @@ void QuantifiedConfig::evaluate() {
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
 
-    paths_number = getSequenceOfPaths().size();
+    paths_number = (double)getSequenceOfPaths().size();
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
@@ -168,19 +167,20 @@ void QuantifiedConfig::printDisagreement() const {
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
 
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(3);
+    stream << std::setprecision(2);
+    double multiplier = pow(paths_number, path_exponent);
 
     stream << std::endl;
-    stream << "Base disagreement " << disagreement << std::endl;
+    stream << "Disagreement " << disagreement * multiplier << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t"
+    stream << "\tEmpty spot\t" << empty_spots * multiplier << "\t" << empty_spot_disagreement << "\t"
            << empty_spot_disagreement / disagreement * 100 << std::endl;
-    stream << "\tOverlap\t\t" << average_overlap << "\t" << overlap_disagreement << "\t"
+    stream << "\tOverlap\t\t" << average_overlap * multiplier<< "\t" << overlap_disagreement << "\t"
            << overlap_disagreement / disagreement * 100 << std::endl;
-    stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
+    stream << "\tDirector\t" << director_disagreement * multiplier << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
     stream << "\n\tPaths\t" << paths_number << std::endl;
-    stream << "\tPaths multiplier\t" << pow(paths_number, path_exponent) << std::endl;
+    stream << "\tPaths multiplier\t" << multiplier << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
