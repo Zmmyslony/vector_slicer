@@ -57,8 +57,6 @@ void DesiredPattern::updateSplayProperties() {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
         splay_array = normalizeVectorArray(splay_vector_array);
         splay_vector_array.clear();
-    } else if (!isSplayGradientProvided()) {
-        splay_gradient = gradient(splay_array);
     }
     int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(100);
@@ -215,22 +213,10 @@ bool DesiredPattern::isVectorSorted() const {
     return is_vector_sorted;
 }
 
-
-const vald &DesiredPattern::getSplayGradient(const vali &positions) const {
-    return splay_gradient[positions[0]][positions[1]];
-}
-
-const vald &DesiredPattern::getSplayGradient(const vald &positions) const {
-    return getSplayGradient(dtoi(positions));
-}
-
 bool DesiredPattern::isSplayProvided() const {
     return is_splay_provided;
 }
 
-bool DesiredPattern::isSplayGradientProvided() const {
-    return is_splay_gradient_provided;
-}
 
 void DesiredPattern::setSplayVector(const std::string &path) {
     splay_vector_array = readFileToTableDoubleVector(path);
@@ -238,10 +224,6 @@ void DesiredPattern::setSplayVector(const std::string &path) {
     is_splay_provided = true;
 }
 
-void DesiredPattern::setSplayGradient(const std::string &path) {
-    splay_gradient = readFileToTableDoubleVector(path);
-    is_splay_gradient_provided = true;
-}
 
 vecd DesiredPattern::preferredDirection(const vecd &position, int distance) const {
     vald direction = preferredDirection(vald(position.data(), position.size()), distance);

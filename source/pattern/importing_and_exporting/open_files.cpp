@@ -53,7 +53,6 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
     fs::path x_field_path = directory_path / "xField.csv";
     fs::path y_field_path = directory_path / "yField.csv";
     fs::path splay_path = directory_path / "splay.csv";
-    fs::path splay_gradient_path = directory_path / "splay_gradient.csv";
 
     if (!fs::exists(shape_path)) {
         throw std::runtime_error("Shape matrix does not exist in the searched directory.");
@@ -70,14 +69,6 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
 
     if (fs::exists(splay_path) && is_splay_filling_enabled) {
         pattern.setSplayVector(splay_path.string());
-        if (fs::exists(splay_gradient_path)) {
-            pattern.setSplayGradient(splay_gradient_path.string());
-        } else {
-            std::cout
-                    << "Splay gradient file not found - quality of output may be decreased. "
-                       "See documentation for more information."
-                    << std::endl;
-        }
     } else if (is_splay_filling_enabled) {
         std::cout
                 << "Splay file not found - quality of output may be decreased. "
