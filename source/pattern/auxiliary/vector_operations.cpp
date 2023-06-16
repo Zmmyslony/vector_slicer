@@ -38,13 +38,13 @@ stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<s
     return stitched_vector;
 }
 
-double mean(const std::vector<double> &data) {
+double mean(const vecd &data) {
     double sum = std::accumulate(std::begin(data), std::end(data), 0.0);
     double mean = sum / data.size();
     return mean;
 }
 
-double standardDeviation(const std::vector<double> &data) {
+double standardDeviation(const vecd &data) {
     double mean_value = mean(data);
     long double variance_sum = 0;
     for (auto &element: data) {
@@ -55,17 +55,17 @@ double standardDeviation(const std::vector<double> &data) {
     return standard_deviation;
 }
 
-std::vector<double> itod(const std::vector<int> &vector) {
+vecd itod(const std::vector<int> &vector) {
     return {vector.begin(), vector.end()};
 }
 
-std::vector<int> dtoi(const std::vector<double> &vector) {
+std::vector<int> dtoi(const vecd &vector) {
     return {vector.begin(), vector.end()};
 }
 
-std::vector<double> add(const std::vector<double> &first, const std::vector<double> &second) {
+vecd add(const vecd &first, const vecd &second) {
     if (first.size() == second.size()) {
-        std::vector<double> sum = first;
+        vecd sum = first;
         for (int i = 0; i < first.size(); i++) {
             sum[i] += second[i];
         }
