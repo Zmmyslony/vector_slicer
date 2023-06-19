@@ -18,8 +18,21 @@
 
 #include "perimeter.h"
 #include "valarray_operations.h"
-#include "line_operations.h"
 #include "geometry.h"
+
+
+std::vector<vali> generateLineDisplacements(const vald &tangent, double radius) {
+    vald normal = normalize(perpendicular(tangent)) * radius;
+    vald normal_abs = std::abs(normal);
+    int distance_i = (int)std::max(normal_abs[0], normal_abs[1]);
+    std::vector<vali> displacement_list;
+    for (int i = -distance_i; i <= distance_i; i++) {
+        vald displacement_d = normal * (double) i / (double) distance_i;
+        displacement_list.push_back(dtoi(displacement_d));
+    }
+    return displacement_list;
+}
+
 
 vald
 getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &current_displacements, const vali &sizes,
@@ -49,7 +62,7 @@ vald getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
                            const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
                            const vald &coordinates, const vali &sizes, double repulsion_coefficient,
                            double maximal_repulsion_angle) {
-    std::vector<vali> normal_displacements = generateLineDisplacements(tangent, radius);
+    std::vector<vali> normal_displacements = generateLineDisplacements(tangent, radius - 1);
     vald maximal_repulsion_vector = repulsion_coefficient *
                                     getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
                                                                  shape_matrix, filled_table);
