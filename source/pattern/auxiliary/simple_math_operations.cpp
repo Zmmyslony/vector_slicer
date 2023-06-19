@@ -63,12 +63,13 @@ std::vector<std::vector<matrix_d>> tensorWithItself(const std::vector<std::vecto
         for (auto &element: row) {
             tensor_row.emplace_back(tensor(element, element));
         }
+        result.emplace_back(tensor_row);
     }
     return result;
 }
 
 
-/// Calculation of the splay from the divergence theorem where Q = n (tensor) n, and splay is Q . Div(Q).
+/// Calculation of the splay from the divergence theorem where Q = n (tensor) n, and splay is Q . Div(Q).b
 std::vector<std::vector<std::valarray<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
     std::vector<std::vector<vald>> director_field = joinTables(x_field, y_field);
