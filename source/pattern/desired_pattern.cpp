@@ -25,11 +25,11 @@
 #include <algorithm>
 #include <set>
 #include <iostream>
-#include <fstream>
 
 #include "importing_and_exporting/table_reading.h"
 #include "auxiliary/simple_math_operations.h"
 #include "auxiliary/perimeter.h"
+#include "auxiliary/line_operations.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/configuration_reading.h"

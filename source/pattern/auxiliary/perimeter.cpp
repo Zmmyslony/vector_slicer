@@ -20,11 +20,8 @@
 //
 
 #include "perimeter.h"
-#include "valarray_operations.h"
+#include "line_operations.h"
 #include "geometry.h"
-
-#include <cfloat>
-#include <iostream>
 
 
 std::vector<vali> generatePerimeterList(double radius) {
@@ -49,67 +46,6 @@ bool isInRange(const vali &position, const vali &dimensions) {
 
 bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table) {
     return (table[position[0]][position[1]] == 0);
-}
-
-
-vald
-getRepulsionFromDisplacement(const vald &coordinates, const std::vector<vali> &current_displacements, const vali &sizes,
-                             const std::vector<std::vector<int>> &shape_matrix,
-                             const std::vector<std::vector<int>> &filled_table) {
-    int number_of_repulsing_coordinates = 0;
-    vald empty_spot_attraction = {0, 0};
-
-    for (auto &displacement: current_displacements) {
-        vali neighbour = dtoi(coordinates) + displacement;
-        if (isInRange(neighbour, sizes) &&
-            !isEmpty(neighbour, shape_matrix) &&
-            isEmpty(neighbour, filled_table)) {
-
-            empty_spot_attraction += itod(displacement) ;
-            number_of_repulsing_coordinates++;
-        }
-    }
-    if (number_of_repulsing_coordinates != 0) {
-        empty_spot_attraction /= number_of_repulsing_coordinates;
-    }
-    return empty_spot_attraction;
-}
-
-
-vald getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                           const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
-                           const vald &coordinates, const vali &sizes, double repulsion_coefficient,
-                           double maximal_repulsion_angle) {
-    std::vector<vali> normal_displacements = generateLineDisplacements(tangent, radius);
-    vald maximal_repulsion_vector = repulsion_coefficient *
-                                    getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
-                                                                 shape_matrix, filled_table);
-
-    double maximal_repulsion_length = norm(maximal_repulsion_vector);
-    if (maximal_repulsion_length < 1) {
-        return maximal_repulsion_vector;
-    }
-    vali maximal_repulsion_vector_i = dtoi(maximal_repulsion_vector);
-    int maximal_repulsion_length_i = std::max(std::abs(maximal_repulsion_vector_i[0]),
-                                              std::abs(maximal_repulsion_vector_i[1]));
-
-    vald previous_displacement = {0, 0};
-    for (int i = 1; i <= maximal_repulsion_length_i; i++) {
-        vald local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
-        vald local_repulsion = repulsion_coefficient *
-                               getRepulsionFromDisplacement(coordinates + local_displacement, normal_displacements,
-                                                            sizes, shape_matrix, filled_table);
-
-        double local_angle = angle(tangent, tangent + local_repulsion);
-        bool is_maximal_angle_exceeded = local_angle >= maximal_repulsion_angle;
-        // Test to see if the repulsion has changed its sign, resulting in over repulsing
-        bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) < 0;
-        if (is_maximal_angle_exceeded || is_repulsion_inverted) {
-            return previous_displacement;
-        }
-        previous_displacement = local_displacement;
-    }
-    return previous_displacement;
 }
 
 
@@ -168,59 +104,6 @@ std::vector<vali> findUnsortedPerimeters(const std::vector<std::vector<int>> &sh
         }
     }
     return unsorted_perimeters;
-}
-
-
-void removeElement(std::vector<vali> &array, int index) {
-    array.erase(array.begin() + index);
-}
-
-
-vali findClosestNeighbour(std::vector<vali> &array, vali &element) {
-    vali closest_element;
-    auto closest_distance = DBL_MAX;
-
-    int i_min = 0;
-    for (int i = 0; i < array.size(); i++) {
-        double distance = norm(array[i] - element);
-        if (distance < closest_distance) {
-            closest_element = array[i];
-            i_min = i;
-            closest_distance = distance;
-        }
-    }
-    removeElement(array, i_min);
-    return closest_element;
-}
-
-
-std::vector<vali> sortPoints(std::vector<vali> &unsorted_perimeters, vali starting_coordinates) {
-    vali current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
-    std::vector<vali> sorted_perimeters = {current_element};
-
-    while (!unsorted_perimeters.empty()) {
-        current_element = findClosestNeighbour(unsorted_perimeters, current_element);
-        sorted_perimeters.push_back(current_element);
-    }
-    return sorted_perimeters;
-}
-
-std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance) {
-    std::vector<std::vector<vali>> separated_perimeters;
-    std::vector<vali> current_subpath = {sorted_perimeters.front()};
-    for (int i = 1; i < sorted_perimeters.size(); i++) {
-        vali displacement_vector = sorted_perimeters[i] - sorted_perimeters[i - 1];
-        if (norm(displacement_vector) > separation_distance && !current_subpath.empty()) {
-            separated_perimeters.emplace_back(current_subpath);
-            current_subpath.clear();
-        } else {
-            current_subpath.emplace_back(sorted_perimeters[i]);
-        }
-    }
-    if (!current_subpath.empty()) {
-        separated_perimeters.emplace_back(current_subpath);
-    }
-    return separated_perimeters;
 }
 
 

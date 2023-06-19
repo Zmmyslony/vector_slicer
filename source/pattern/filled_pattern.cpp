@@ -27,11 +27,10 @@
 #include "importing_and_exporting/exporting.h"
 #include "auxiliary/geometry.h"
 #include "auxiliary/perimeter.h"
-#include "auxiliary/simple_math_operations.h"
+#include "auxiliary/repulsion.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
-#include "auxiliary/configuration_reading.h"
-#include "vector_slicer_config.h"
+
 
 #include <iostream>
 
@@ -285,7 +284,9 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
     vald current_step = itod(starting_step);
 
     for (int length = getStepLength(); length >= getPrintRadius(); length--) {
-        while (tryGeneratingPathWithLength(new_path, current_positions, current_step, length)) {}
+        while (tryGeneratingPathWithLength(new_path, current_positions, current_step, length)) {
+            length = getStepLength();
+        }
     }
     return new_path;
 }
@@ -455,29 +456,6 @@ std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald
     return line;
 }
 
-std::vector<vali> FilledPattern::findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction) {
-    std::vector<vali> line;
-    while (isFillable(dtoi(coordinates)) && !isAlreadyCrossed(coordinates, line) &&
-           desired_pattern.get().isLowSplay(coordinates)) {
-        line.push_back(dtoi(coordinates));
-
-        vald direction = desired_pattern.get().getSplayGradient(coordinates);
-        double direction_norm = norm(direction);
-        if (direction_norm == 0) {
-            direction = normalizedDualVector(getDirector(coordinates));
-        } else {
-            direction /= direction_norm;
-        }
-
-        if (dot(direction, previous_direction) < 0) {
-            direction *= -1;
-        }
-        coordinates += direction;
-        previous_direction = direction;
-    }
-    return line;
-}
-
 
 std::vector<vali>
 FilledPattern::findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald)) {
@@ -491,11 +469,6 @@ FilledPattern::findLineGeneral(const vali &start, std::vector<vali> (FilledPatte
     points_in_dual_line_forward = (this->*line_propagation)(real_coordinates, initial_dual_director);
     points_in_dual_line_backward = (this->*line_propagation)(real_coordinates, -initial_dual_director);
     return stitchTwoVectors(points_in_dual_line_backward, points_in_dual_line_forward);
-}
-
-
-std::vector<vali> FilledPattern::findConstantSplayLine(const vali &start) {
-    return findLineGeneral(start, &FilledPattern::findConstantSplayLineSingleDirection);
 }
 
 
