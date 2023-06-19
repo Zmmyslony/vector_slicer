@@ -20,8 +20,13 @@
 //
 
 #include "perimeter.h"
+
+#include <omp.h>
+
 #include "line_operations.h"
 #include "geometry.h"
+#include "configuration_reading.h"
+#include "vector_slicer_config.h"
 
 
 std::vector<vali> generatePerimeterList(double radius) {
@@ -95,6 +100,11 @@ bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coor
 
 std::vector<vali> findUnsortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters;
+    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    omp_set_num_threads(threads);
+
+#pragma omp declare reduction (merge : std::vector<vali> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
+#pragma omp parallel for reduction(merge: unsorted_perimeters)
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
             vali current_position = {i, j};
