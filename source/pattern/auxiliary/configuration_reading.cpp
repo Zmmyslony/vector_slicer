@@ -40,12 +40,11 @@ std::string readKey(const fs::path &file_path, const std::string &key) {
     std::ifstream file(file_path.string());
     while (std::getline(file, line)) {
         std::string clean_line = cleanString(line);
-
         if (clean_line.find(key) != std::string::npos) {
             return findSuffix(clean_line, '=');
         }
     }
-    throw std::runtime_error("Key " + key + " was not found in the config file " + file_path.string());
+    throw std::runtime_error("Key \"" + key + "\" was not found in the config file " + file_path.string());
 }
 
 
