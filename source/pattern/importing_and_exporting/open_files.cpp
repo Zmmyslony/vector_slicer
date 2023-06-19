@@ -67,13 +67,12 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
         throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
     }
 
-    if (fs::exists(splay_path) && is_splay_filling_enabled) {
+    if (fs::exists(splay_path)) {
         pattern.setSplayVector(splay_path.string());
     } else if (is_splay_filling_enabled) {
         std::cout
-                << "Splay file not found - quality of output may be decreased. "
-                   "See documentation for more information."
-                << std::endl;
+                << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "
+                   "quality may be decreased" << std::endl;
     }
     pattern.updateSplayProperties();
     return pattern;
