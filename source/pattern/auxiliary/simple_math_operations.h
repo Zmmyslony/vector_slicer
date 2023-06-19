@@ -35,7 +35,7 @@ double decimalPart(double number);
 std::vector<std::vector<std::valarray<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
 
-std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field);
+std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std::vector<double>> &field);
 
 std::vector<std::vector<double>>
 normalizeVectorArray(const std::vector<std::vector<std::valarray<double>>> &vector_array);
