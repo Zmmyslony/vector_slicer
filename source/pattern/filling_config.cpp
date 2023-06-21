@@ -165,6 +165,7 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
             break;
         case PrintRadius:
             print_radius = std::stod(value);
+            starting_point_separation = 2 * print_radius;
             break;
         case Repulsion:
             repulsion = std::stod(value);

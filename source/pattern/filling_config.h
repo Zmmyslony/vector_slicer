@@ -54,9 +54,9 @@ class FillingConfig {
     /// a Dual line to it (perpendicular to the vector field) that is also separated into the list of equidistant points.
     fillingMethod filling_method;
     /// Distance between the new point and the nearest filled point deciding when the line will terminate.
-    double collision_radius;
+    double collision_radius = 0;
     /// Multiplier deciding how much the lines will try to avoid one another.
-    double repulsion;
+    double repulsion = 0;
     /// Length of each step in pixels.
     int step_length;
     /// See FillingMethod
@@ -66,8 +66,8 @@ class FillingConfig {
     /// Numerical seed deciding the randomness of the whole algorithm.
     unsigned int seed;
     /// Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
-    double repulsion_radius;
-
+    double repulsion_radius = 0;
+    /// Maximal angle away from the preferred that a line can be repulsed before termination.
     double repulsion_angle = M_PI;
 
     void readLineOfConfig(std::vector<std::string> line);

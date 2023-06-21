@@ -57,7 +57,7 @@ public:
                      DisagreementWeights disagreement_weights);
 
     /// Function allowing BayesianOptimisation to create new FillingConfig using vectord input
-    QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims);
+    QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters);
 
     /// Creating copies of QuantifiedConfig with differing seeds
     QuantifiedConfig(QuantifiedConfig &template_config, int seed);

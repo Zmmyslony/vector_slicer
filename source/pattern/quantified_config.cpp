@@ -46,16 +46,24 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
         DisagreementWeights(disagreement_weights) {
 }
 
-QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims) :
+QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
         QuantifiedConfig(template_config) {
-    if (parameters.size() != dims) {
-        throw std::runtime_error("Config options can only be set with " + std::to_string(dims) + "D vectors.");
+    vecd vector_parameters( parameters.begin(), parameters.end());
+    if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
+        setConfigOption(CollisionRadius, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
     }
-    setConfigOption(Repulsion, std::to_string(parameters[0]));
-    setConfigOption(CollisionRadius, std::to_string(parameters[1]));
-    setConfigOption(StartingPointSeparation, std::to_string(parameters[2]));
-    if (dims > 3) {
-        setConfigOption(RepulsionAngle, std::to_string(parameters[3]));
+    if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+        setConfigOption(StartingPointSeparation, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
+        setConfigOption(Repulsion, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")) {
+        setConfigOption(RepulsionAngle, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
     }
 }
 

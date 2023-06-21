@@ -37,18 +37,24 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     bool is_disagreement_details_printed = false;
     double disagreement_percentile = 0.5;
 
-public:
-    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
-                         bayesopt::Parameters parameters, int dims);
+    bool is_repulsion_angle_optimised = true;
+    bool is_repulsion_magnitude_optimised = true;
+    bool is_starting_point_separation_optimised = true;
+    bool is_collision_radius_optimised = true;
 
+    void showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold);
     /// Evaluates current FillingConfig which is defined and returns disagreement
     double evaluateSample(const vectord &x_in);
 
     bool checkReachability(const vectord &query) { return true; };
+public:
+
+    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
+    bayesopt::Parameters parameters, int dims);
+
 
     /// Optimizes the pattern with a threshold on number of steps without improvement
     void optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps);
-
 };
 
 /// Optimises the pattern from the selected path using the set configuration

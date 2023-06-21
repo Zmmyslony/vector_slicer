@@ -55,7 +55,7 @@ joinTables(const std::vector<std::vector<double>> &x_field, const std::vector<st
     for (int i = 0; i < x_field.size(); i++) {
         assert((x_field[i].size() == y_field[i].size()));
         for (int j = 0; j < x_field[i].size(); j++) {
-            joined_table[i][j] = {(x_field[i][j], y_field[i][j])};
+            joined_table[i][j] = {x_field[i][j], y_field[i][j]};
         }
     }
     return joined_table;

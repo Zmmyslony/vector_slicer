@@ -23,6 +23,9 @@
 #include <utility>
 #include <chrono>
 #include <omp.h>
+#include <iostream>
+#include <string>
+#include <iomanip>
 
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
@@ -51,22 +54,59 @@ BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads
         seeds(seeds),
         begin(std::chrono::steady_clock::now()),
         is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")),
-        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")) {
+        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")),
+        is_collision_radius_optimised(readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")),
+        is_repulsion_angle_optimised(readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")),
+        is_repulsion_magnitude_optimised(readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")),
+        is_starting_point_separation_optimised(
+                readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
 }
 
 
 double BayesianOptimisation::evaluateSample(const vectord &x_in) {
     if (x_in.size() != dims) {
         std::cerr << "ERROR: This only works for " << dims << "D inputs." << std::endl
-                  << "ERROR: Using only first four components." << std::endl;
+                  << "ERROR: Using only first " << dims << " components." << std::endl;
     }
-    problem = QuantifiedConfig(problem, x_in, dims);
+    problem = QuantifiedConfig(problem, x_in);
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
                                                   disagreement_percentile);
 
     return disagreement;
 }
 
+void
+BayesianOptimisation::showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold) {
+    double min_value = getValueAtMinimum();
+    vectord best_configuration = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
+    vecd vector_configuration(best_configuration.begin(), best_configuration.end());
+
+    std::stringstream suffix_stream;
+    suffix_stream << std::setprecision(3) << "Minimal disagreement: " << min_value << ", at:";
+    if (is_collision_radius_optimised) {
+        suffix_stream << " ColRad " << vector_configuration.back() << ";";
+        vector_configuration.pop_back();
+    }
+    if (is_starting_point_separation_optimised) {
+        suffix_stream << " Sep " << vector_configuration.back() << ";";
+        vector_configuration.pop_back();
+    }
+    if (is_repulsion_magnitude_optimised) {
+        suffix_stream << " Rep " << vector_configuration.back() << ";";
+        vector_configuration.pop_back();
+    }
+    if (is_repulsion_angle_optimised) {
+        suffix_stream << " RepAng " << vector_configuration.back() << ";";
+        vector_configuration.pop_back();
+    }
+    suffix_stream << ". Steps since improvement: " << steps_from_improvement;
+    if (steps_threshold > 0) {
+        suffix_stream << "/" << steps_threshold;
+    }
+
+    std::string suffix = suffix_stream.str();
+    showProgressBase((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
+}
 
 void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps) {
     initializeOptimization();
@@ -79,9 +119,9 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         if (current_disagreement < minimal_disagreement) {
             steps_since_improvement = 0;
         }
-        showProgress(mCurrentIter + mParameters.n_init_samples, max_steps + mParameters.n_init_samples,
-                     begin, minimal_disagreement, best_configuration, steps_since_improvement, max_constant_steps, dims);
+        showProgress(i + mParameters.n_init_samples, max_steps + mParameters.n_init_samples, steps_since_improvement, max_constant_steps);
         steps_since_improvement++;
+
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
             std::cout
                     << "\rSteps since last improvement of the disagreement exceeded after " << mCurrentIter
@@ -167,23 +207,37 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 
     QuantifiedConfig pattern(desired_pattern, filling_config, disagreement_weights);
     BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters), dims);
+
+
+    double print_radius = pattern.getConfig().getPrintRadius();
+    vecd lower_bound_vector;
+    vecd upper_bound_vector;
+
+    if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
+        lower_bound_vector.emplace_back(0);
+        upper_bound_vector.emplace_back(print_radius + 1);
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+        lower_bound_vector.emplace_back(print_radius * 2 - 1);
+        upper_bound_vector.emplace_back(print_radius * 2 + 1);
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
+        lower_bound_vector.emplace_back(0);
+        upper_bound_vector.emplace_back(4);
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")) {
+        lower_bound_vector.emplace_back(0);
+        upper_bound_vector.emplace_back(M_PI / 2);
+    }
+
+    std::reverse(lower_bound_vector.begin(), lower_bound_vector.end());
+    std::reverse(upper_bound_vector.begin(), upper_bound_vector.end());
     vectord best_config(dims);
     vectord lower_bound(dims);
     vectord upper_bound(dims);
-
-    double print_radius = pattern.getConfig().getPrintRadius();
-
-    lower_bound[0] = 0; // Min repulsion
-    lower_bound[1] = 0; // Min collision radius
-    lower_bound[2] = print_radius * 2; // Min starting point separation
-
-    upper_bound[0] = 4;
-    upper_bound[1] = print_radius + 1;
-    upper_bound[2] = print_radius * 2 + 1;
-
-    if (dims > 3) {
-        lower_bound[3] = 0; // Maximal repulsion angle
-        upper_bound[3] = M_PI / 2;
+    for (int i = 0; i < dims; i++) {
+        lower_bound[i] = lower_bound_vector[i];
+        upper_bound[i] = upper_bound_vector[i];
     }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
@@ -191,7 +245,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     int max_iterations_without_improvement = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
     pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
 
-    return {pattern, best_config, dims};
+    return {pattern, best_config};
 }
 
 
@@ -213,6 +267,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.l_type = L_MCMC;
     parameters.n_iter_relearn = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
     parameters.noise = readKeyDouble(BAYESIAN_CONFIG, "noise");
+    parameters.n_inner_iterations = 1000;
 
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();
@@ -220,11 +275,10 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
     parameters.log_filename = optimisation_log_path.string();
 
-    bool is_repulsion_angle_optimised = readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised");
-    int dims = 3;
-    if (is_repulsion_angle_optimised) {
-        dims = 4;
-    }
+    int dims = (int)readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised") +
+            (int)readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised") +
+            (int)readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised") +
+            (int)readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised");
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, dims);
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
@@ -241,6 +295,9 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
               << std::endl;
+    std::vector<std::vector<double>> disagreement_grid = best_fills[0].localDisagreementGrid();
+    fs::path disagreement_grid_path = pattern_path / "disagreement_grid";
+    exportVectorTableToFile(disagreement_grid, disagreement_grid_path);
 }
 
 
