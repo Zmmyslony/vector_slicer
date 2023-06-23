@@ -119,7 +119,8 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         if (current_disagreement < minimal_disagreement) {
             steps_since_improvement = 0;
         }
-        showProgress(i + mParameters.n_init_samples, max_steps + mParameters.n_init_samples, steps_since_improvement, max_constant_steps);
+        showProgress(i + mParameters.n_init_samples, max_steps + mParameters.n_init_samples, steps_since_improvement,
+                     max_constant_steps);
         steps_since_improvement++;
 
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
@@ -184,10 +185,8 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
     int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
-    std::cout << "Layer disagreements: " << std::endl;
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
-        std::cout << i << ", " << patterns[i].getDisagreement() << std::endl;
         if (pattern.desired_pattern.get().isVectorSorted()) {
             sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
         } else {
@@ -218,8 +217,8 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
         upper_bound_vector.emplace_back(print_radius + 1);
     }
     if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
-        lower_bound_vector.emplace_back(print_radius * 2 - 1);
-        upper_bound_vector.emplace_back(print_radius * 2 + 1);
+        lower_bound_vector.emplace_back(print_radius * 1.5);
+        upper_bound_vector.emplace_back(print_radius * 2.5);
     }
     if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
         lower_bound_vector.emplace_back(0);
@@ -275,10 +274,14 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
     parameters.log_filename = optimisation_log_path.string();
 
-    int dims = (int)readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised") +
-            (int)readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised") +
-            (int)readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised") +
-            (int)readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised");
+    int dims = (int) readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised") +
+               (int) readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised") +
+               (int) readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised") +
+               (int) readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised");
+    if (dims == 0) {
+        throw std::runtime_error(
+                "No parameter was chosen for optimisation. Please enable at least one of them in bayesian_configuration.cfg");
+    }
     QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
                                                      parameters, dims);
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(

@@ -43,6 +43,8 @@ std::vector<int> dtoi(const vecd &vector);
 
 vecd add(const vecd &first, const vecd &second);
 
+veci add(const veci &first, const veci &second);
+
 double dot(const vecd &first, const vecd &second);
 
 double norm(const vecd& vec);
@@ -55,9 +57,9 @@ vali vectoval(const veci &vec);
 
 vald vectoval(const vecd &vec);
 
-veci valtovac(const vali &vec);
+veci valtovec(const vali &vec);
 
-vecd valtovac(const vald &vec);
+vecd valtovec(const vald &vec);
 
 
 #endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

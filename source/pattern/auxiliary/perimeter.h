@@ -51,6 +51,7 @@ findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const va
 
 
 std::vector<std::vector<vali>>
-findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
+                        const std::vector<std::vector<vald>> &splay_array);
 
 #endif //VECTOR_SLICER_PERIMETER_H

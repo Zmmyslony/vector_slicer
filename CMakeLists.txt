@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(vector_slicer VERSION 0.5.1)
+project(vector_slicer VERSION 0.5.2)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -62,7 +62,7 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/auxiliary/configuration_reading.cpp
-        source/pattern/auxiliary/configuration_reading.h source/pattern/vector_sorted_paths.cpp source/pattern/vector_sorted_paths.h source/pattern/auxiliary/repulsion.cpp source/pattern/auxiliary/repulsion.h source/pattern/auxiliary/line_operations.cpp source/pattern/auxiliary/line_operations.h)
+        source/pattern/auxiliary/configuration_reading.h source/pattern/vector_sorted_paths.cpp source/pattern/vector_sorted_paths.h source/pattern/auxiliary/repulsion.cpp source/pattern/auxiliary/repulsion.h source/pattern/auxiliary/line_operations.cpp source/pattern/auxiliary/line_operations.h source/pattern/auxiliary/line_thinning.cpp source/pattern/auxiliary/line_thinning.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}

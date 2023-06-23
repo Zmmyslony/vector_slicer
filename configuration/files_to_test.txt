@@ -12,7 +12,7 @@
     cylinder_r_inner_5_mm
     evertor_r_inner_5_mm
 
-three_charge_field
+    three_charge_field
     three_charge_field_blob
 
     linear_blob
@@ -21,7 +21,9 @@ three_charge_field
     radial_20_mm
     azimuthal_20_mm
 
+    fan_gripper_6x24mm
     fan_gripper_12x48mm
+    fan_toy_gripper_4x20mm
 
     fan_asymmetric_positive_3_1_cm
     fan_asymmetric_negative_3_1_cm
@@ -39,3 +41,5 @@ three_charge_field
 
     linear_15x075_mm
 
+example_24_24_mm
+    example_24_24_mm_dual

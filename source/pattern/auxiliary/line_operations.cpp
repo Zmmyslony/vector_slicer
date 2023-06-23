@@ -41,15 +41,42 @@ vali findClosestNeighbour(std::vector<vali> &array, vali &element) {
     return closest_element;
 }
 
-std::vector<vali> sortPoints(std::vector<vali> &unsorted_perimeters, vali starting_coordinates) {
+std::vector<std::vector<vali>>
+separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordinates, double separation_distance) {
     vali current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
-    std::vector<vali> sorted_perimeters = {current_element};
+    std::vector<std::vector<vali>> forwards_paths;
+    std::vector<std::vector<vali>> backwards_paths;
 
+    std::vector<vali> current_path = {current_element};
+
+    bool is_backwards_path_filled = false;
     while (!unsorted_perimeters.empty()) {
         current_element = findClosestNeighbour(unsorted_perimeters, current_element);
-        sorted_perimeters.push_back(current_element);
+        double distance = norm(current_element - current_path.back());
+        if (distance > separation_distance) {
+            if (is_backwards_path_filled) {
+                is_backwards_path_filled = false;
+                backwards_paths.push_back(current_path);
+            } else {
+                is_backwards_path_filled = true;
+                forwards_paths.push_back(current_path);
+                current_element = current_path.front();
+            }
+            current_path.clear();
+        }
+        current_path.push_back(current_element);
     }
-    return sorted_perimeters;
+    backwards_paths.push_back(current_path);
+    std::vector<std::vector<vali>> separated_paths;
+    for (int i = 0; i < forwards_paths.size(); i++) {
+        std::vector<vali> joined_path ({forwards_paths[i].begin() + 1, forwards_paths[i].end()});
+        std::reverse(joined_path.begin(), joined_path.end());
+        joined_path.insert(joined_path.end(), backwards_paths[i].begin(), backwards_paths[i].end());
+        if (joined_path.size() > 20) {
+            separated_paths.emplace_back(joined_path);
+        }
+    }
+    return separated_paths;
 }
 
 std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance) {
@@ -64,7 +91,8 @@ std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeter
             current_subpath.emplace_back(sorted_perimeters[i]);
         }
     }
-    if (!current_subpath.empty()) {
+//    if (!current_subpath.empty()) {
+    if (current_subpath.size() > 20) {
         separated_perimeters.emplace_back(current_subpath);
     }
     return separated_perimeters;

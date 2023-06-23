@@ -74,7 +74,7 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
                 << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "
                    "quality may be decreased" << std::endl;
     }
-    pattern.updateSplayProperties();
+    pattern.updateProperties();
     return pattern;
 }
 

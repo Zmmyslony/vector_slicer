@@ -58,13 +58,15 @@ class DesiredPattern {
 
     void findLineDensityMinima();
 
-    [[nodiscard]] vecd preferredDirection(const vecd &position, int distance) const;
+    [[nodiscard]] vecd preferredDirection(const vecd &position, double distance) const;
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
     veci findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
 
     [[nodiscard]] double splay(const vecd &position) const;
+
+    std::set<veci> findSplaySingularities();
 
 public:
 
@@ -98,7 +100,7 @@ public:
 
     [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
 
-    [[nodiscard]] vald preferredDirection(const vald &position, int distance) const;
+    [[nodiscard]] vald preferredDirection(const vald &position, double distance) const;
 
     [[nodiscard]] bool isInShape(const vali &position) const;
 
@@ -112,7 +114,7 @@ public:
 
     [[nodiscard]] const std::vector<std::vector<vali>> &getLineDensityMinima() const;
 
-    void updateSplayProperties();
+    void updateProperties();
 };
 
 

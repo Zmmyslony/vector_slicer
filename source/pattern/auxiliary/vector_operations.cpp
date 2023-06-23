@@ -75,6 +75,18 @@ vecd add(const vecd &first, const vecd &second) {
     }
 }
 
+veci add(const veci &first, const veci &second) {
+    if (first.size() == second.size()) {
+        veci sum = first;
+        for (int i = 0; i < first.size(); i++) {
+            sum[i] += second[i];
+        }
+        return sum;
+    } else {
+        throw std::runtime_error("Adding two vectors of uneven size");
+    }
+}
+
 vali vectoval(const veci &vec) {
     return {vec.data(), vec.size()};
 }
@@ -108,11 +120,11 @@ vecd normalize(const vecd &vec) {
     }
 }
 
-veci valtovac(const vali &vec) {
+veci valtovec(const vali &vec) {
     return {std::begin(vec), std::end(vec)};
 }
 
-vecd valtovac(const vald &vec) {
+vecd valtovec(const vald &vec) {
     return {std::begin(vec), std::end(vec)};
 }
 

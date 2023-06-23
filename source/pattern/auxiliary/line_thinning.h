@@ -11,21 +11,18 @@
 // You should have received a copy of the GNU General Public License along with Vector Slicer. If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 19/06/2023.
+// Created by Michał Zmyślony on 23/06/2023.
 //
 
-#ifndef VECTOR_SLICER_LINE_OPERATIONS_H
-#define VECTOR_SLICER_LINE_OPERATIONS_H
+#ifndef VECTOR_SLICER_LINE_THINNING_H
+#define VECTOR_SLICER_LINE_THINNING_H
 
 #include <vector>
-#include <tuple>
-#include <valarray>
+#include <set>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using veci = std::vector<int>;
 
-std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance);
-std::vector<std::vector<vali>>
-separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordinates, double separation_distance);
+/// Zhang-Suen line thinning algorithm
+std::set<veci> skeletonize(std::set<veci> shape);
 
-#endif //VECTOR_SLICER_LINE_OPERATIONS_H
+#endif //VECTOR_SLICER_LINE_THINNING_H

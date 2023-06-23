@@ -76,7 +76,7 @@ std::vector<std::vector<matrix_d>> tensorWithItself(const std::vector<std::vecto
 }
 
 
-/// Calculation of the splay from the divergence theorem where Q = n (tensor) n, and splay is Q . Div(Q).b
+/// Calculation of the splay from the gradient theorem where Q = n (tensor) n, and splay is Q . Div(Q).b
 std::vector<std::vector<std::valarray<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field) {
     std::vector<std::vector<vald>> director_field = joinTables(x_field, y_field);
@@ -106,26 +106,43 @@ splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<s
     return splay_table;
 }
 
-std::vector<std::vector<std::valarray<double>>> divergence(const std::vector<std::vector<double>> &field) {
-    std::vector<std::vector<std::valarray<double>>> div(field.size(),
-                                                        std::vector<std::valarray<double>>(field[0].size()));
-    div.front() = {field[0].size(), std::valarray<double>{0, 0}};
-    div.back() = {field[0].size(), std::valarray<double>{0, 0}};
+std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field) {
+    std::vector<std::vector<std::valarray<double>>> grad(field.size(),
+                                                         std::vector<std::valarray<double>>(field[0].size()));
+    grad.front() = {field[0].size(), std::valarray<double>{0, 0}};
+    grad.back() = {field[0].size(), std::valarray<double>{0, 0}};
 
     int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 1; i < field.size() - 1; i++) {
         for (int j = 1; j < field[i].size() - 1; j++) {
-            div[i][j] = {field[i + 1][j] - field[i - 1][j],
-                         field[i][j + 1] - field[i][j - 1]};
+            grad[i][j] = {field[i + 1][j] - field[i - 1][j],
+                          field[i][j + 1] - field[i][j - 1]};
+        }
+    }
+    return grad;
+}
+
+std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field) {
+    std::vector<std::vector<double>> div(field.size(), std::vector<double>(field[0].size()));
+    div.front() = std::vector<double>(field[0].size(), 0);
+    div.back() = std::vector<double>(field[0].size(), 0);
+
+    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    omp_set_num_threads(threads);
+#pragma omp parallel for
+    for (int i = 1; i < field.size() - 1; i++) {
+        for (int j = 1; j < field[i].size() - 1; j++) {
+            div[i][j] = field[i + 1][j][0] - field[i - 1][j][0] +
+                        field[i][j + 1][1] - field[i][j - 1][1];
         }
     }
     return div;
 }
 
 std::vector<std::vector<double>>
-normalizeVectorArray(const std::vector<std::vector<std::valarray<double>>> &vector_array) {
+vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array) {
     std::vector<std::vector<double>> norms(vector_array.size(), std::vector<double>(vector_array[0].size()));
 
     int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
@@ -134,6 +151,20 @@ normalizeVectorArray(const std::vector<std::vector<std::valarray<double>>> &vect
     for (int i = 0; i < vector_array.size(); i++) {
         for (int j = 0; j < vector_array[i].size(); j++) {
             norms[i][j] = norm(vector_array[i][j]);
+        }
+    }
+    return norms;
+}
+
+std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array) {
+    std::vector<std::vector<vald>> norms(vector_array.size(), std::vector<vald>(vector_array[0].size()));
+
+    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    omp_set_num_threads(threads);
+#pragma omp parallel for
+    for (int i = 0; i < vector_array.size(); i++) {
+        for (int j = 0; j < vector_array[i].size(); j++) {
+            norms[i][j] = normalize(vector_array[i][j]);
         }
     }
     return norms;
