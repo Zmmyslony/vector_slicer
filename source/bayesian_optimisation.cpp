@@ -259,7 +259,13 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialFillingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
+
     DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
+    fs::path local_disagreement_path = pattern_path / "disagreement_function.cfg";
+    if (fs::exists(local_disagreement_path)) {
+        std::cout << "Local disagreement weights found." << std::endl;
+        weights = DisagreementWeights(local_disagreement_path);
+    }
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
