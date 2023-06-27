@@ -66,9 +66,6 @@ void DesiredPattern::updateProperties() {
     }
     int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
     splay_sorted_empty_spots = binBySplay(100);
-    if (isSplayProvided()) {
-        findLineDensityMinima();
-    }
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
 }
 
@@ -312,7 +309,6 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         }
     }
     is_valid = is_backward_path_valid && is_forward_path_valid;
-//    std::cout << candidate_set.size() << std::endl;
     return coordinate_splay_minimum;
 
 //    vecd previous_displacement = preferredDirection(current_coordinates, 1);
@@ -357,7 +353,7 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 }
 
 
-std::set<veci> DesiredPattern::findSplaySingularities() {
+std::set<veci> DesiredPattern::fillablePointsSet() {
     std::vector<std::vector<vald>> normalised_splay_vector = normalizeVectorArray(splay_vector_array);
     std::vector<std::vector<double>> normalised_splay_divergence = divergence(normalised_splay_vector);
 
@@ -376,12 +372,7 @@ std::set<veci> DesiredPattern::findSplaySingularities() {
 
 
 void DesiredPattern::findLineDensityMinima() {
-//    std::vector<vali> candidate_coordinates = splay_sorted_empty_spots.back();
-//    std::set<veci> candidate_set;
-//    for (auto &vali_coordinates: candidate_coordinates) {
-//        candidate_set.insert(veci(std::begin(vali_coordinates), std::end(vali_coordinates)));
-//    }
-    std::set<veci> candidate_set = findSplaySingularities();
+    std::set<veci> candidate_set = fillablePointsSet();
 
     std::set<veci> solution_set;
     while (!candidate_set.empty()) {
@@ -398,31 +389,30 @@ void DesiredPattern::findLineDensityMinima() {
             solution_set.insert(point_of_minimum_density);
         }
     }
+    std::cout << "Search for points of minimum line density complete" << std::endl;
+
     solution_set = skeletonize(solution_set);
+    std::cout << "Skeletonization complete" << std::endl;
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
     std::vector<vali> line_density_minima_local;
     for (auto &vector: line_density_minima_vectors) {
         line_density_minima_local.emplace_back(vectoval(vector));
     }
-//    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
-//    if (line_density_minima_file.is_open()) {
-//        for (auto &line: line_density_minima_local) {
-//            line_density_minima_file << line[0] << "," << line[1] << std::endl;
-//        }
-//        line_density_minima_file.close();
-//    }
+    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+    if (line_density_minima_file.is_open()) {
+        for (auto &line: line_density_minima_local) {
+            line_density_minima_file << line[0] << "," << line[1] << std::endl;
+        }
+        line_density_minima_file.close();
+    }
 
     if (line_density_minima_local.empty()) {
         return;
     }
     std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
                                                                                           {0, 0}, sqrt(2));
-    for (auto &line: separated_lines_of_minimal_density) {
-        if (line.size() > 2) {
-            lines_of_minimal_density.push_back(line);
-        }
-    }
-
+    std::cout << " \tNumber of separated divergence-lines: " << separated_lines_of_minimal_density.size() << std::endl;
+    lines_of_minimal_density = separated_lines_of_minimal_density;
 }
 
 vecd DesiredPattern::getSplayDirection(const vecd &position, double length) const {

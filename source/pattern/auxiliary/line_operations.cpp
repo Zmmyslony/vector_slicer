@@ -66,7 +66,13 @@ separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordina
         }
         current_path.push_back(current_element);
     }
-    backwards_paths.push_back(current_path);
+    if(is_backwards_path_filled) {
+        backwards_paths.push_back(current_path);
+    } else {
+        forwards_paths.push_back(current_path);
+        backwards_paths.emplace_back();
+    }
+
     std::vector<std::vector<vali>> separated_paths;
     for (int i = 0; i < forwards_paths.size(); i++) {
         std::vector<vali> joined_path ({forwards_paths[i].begin() + 1, forwards_paths[i].end()});

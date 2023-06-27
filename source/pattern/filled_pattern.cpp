@@ -478,15 +478,14 @@ std::vector<vali> FilledPattern::findDualLine(const vali &start) {
 
 
 std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std::vector<vali> &line) {
-    std::vector<vali> reshuffled_starting_points = reshuffle(line, random_engine);
+    std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
+    int starting_index = index_distribution(random_engine);
+    std::vector<vali> separated_starting_points = {line[starting_index]};
 
-    vali previous_position = reshuffled_starting_points[0];
-
-    std::vector<vali> separated_starting_points;
-    separated_starting_points.push_back(previous_position);
     double current_distance = 0;
-
-    for (auto &current_position: reshuffled_starting_points) {
+    vali previous_position = line[starting_index];
+    for (int i = starting_index; i < line.size(); i++) {
+        const vali &current_position = line[i];
         vald current_double_director = normalizedDualVector(getDirector(current_position));
         vald current_displacement = itod(current_position - previous_position);
         current_distance += dot(current_displacement, current_double_director);
@@ -499,6 +498,25 @@ std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std
             current_distance = 0;
         }
     }
+
+    current_distance = 0;
+    previous_position = line[starting_index];
+    for (int i = starting_index; i >= 0; i--) {
+        const vali &current_position = line[i];
+        vald current_double_director = normalizedDualVector(getDirector(current_position));
+        vald current_displacement = itod(current_position - previous_position);
+        current_distance += dot(current_displacement, current_double_director);
+        previous_position = current_position;
+        if (isFilled(current_position)) {
+            current_distance = distance / 2;
+        }
+        if (std::abs(current_distance) >= distance) {
+            separated_starting_points.push_back(current_position);
+            current_distance = 0;
+        }
+    }
+
+
     return separated_starting_points;
 }
 

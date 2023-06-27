@@ -69,6 +69,9 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
 
     if (fs::exists(splay_path)) {
         pattern.setSplayVector(splay_path.string());
+        if (is_splay_filling_enabled) {
+            pattern.findLineDensityMinima();
+        }
     } else if (is_splay_filling_enabled) {
         std::cout
                 << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "

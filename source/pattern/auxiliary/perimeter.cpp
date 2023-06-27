@@ -131,8 +131,8 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
     }
 }
 
-std::vector<vali> findUnsortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
-                                         const std::vector<std::vector<vald>> &splay_array) {
+std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
+                                           const std::vector<std::vector<vald>> &splay_array) {
     std::vector<vali> unsorted_perimeters;
     // It is set to constant radius, maybe add a control over it?
     std::vector<vali> tested_circle = generatePerimeterList(4);
@@ -147,11 +147,33 @@ std::vector<vali> findUnsortedPerimeters(const std::vector<std::vector<int>> &sh
     return unsorted_perimeters;
 }
 
+std::vector<vali> findGeometricalPerimeter(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
+    std::vector<vali> unsorted_perimeters;
+    // It is set to constant radius, maybe add a control over it?
+    std::vector<vali> tested_circle = generatePerimeterList(4);
+    for (int i = 0; i < sizes[0]; i++) {
+        for (int j = 0; j < sizes[1]; j++) {
+            vali current_position = {i, j};
+            if (isOnEdge(shape_matrix, {i, j}, sizes)) {
+                unsorted_perimeters.push_back(current_position);
+            }
+        }
+    }
+    return unsorted_perimeters;
+}
+
 
 std::vector<std::vector<vali>>
 findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
                         const std::vector<std::vector<vald>> &splay_array) {
-    std::vector<vali> unsorted_perimeters = findUnsortedPerimeters(shape_matrix, sizes, splay_array);
+    std::vector<vali> unsorted_perimeters = findValidPerimeterPoints(shape_matrix, sizes, splay_array);
     std::vector<std::vector<vali>> separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, sqrt(2));
+    // If using the splay approach for selecting splay-valid perimeter points yields single points that are unconnected
+    // then separation into perimeters will not detect any lines. Therefore, we revert to the simple geometrical
+    // definition of perimeter, where point within the pattern that neighbours one that is outside is counted as perimeter.
+    if (separated_perimeters.empty()) {
+        unsorted_perimeters = findGeometricalPerimeter(shape_matrix, sizes);
+        separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, sqrt(2));
+    }
     return separated_perimeters;
 }

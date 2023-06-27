@@ -56,8 +56,6 @@ class DesiredPattern {
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
-    void findLineDensityMinima();
-
     [[nodiscard]] vecd preferredDirection(const vecd &position, double distance) const;
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
@@ -66,7 +64,7 @@ class DesiredPattern {
 
     [[nodiscard]] double splay(const vecd &position) const;
 
-    std::set<veci> findSplaySingularities();
+    std::set<veci> fillablePointsSet();
 
 public:
 
@@ -115,6 +113,8 @@ public:
     [[nodiscard]] const std::vector<std::vector<vali>> &getLineDensityMinima() const;
 
     void updateProperties();
+
+    void findLineDensityMinima();
 };
 
 

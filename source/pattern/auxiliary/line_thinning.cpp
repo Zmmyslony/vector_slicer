@@ -120,11 +120,11 @@ std::set<veci> fill_in_gaps(std::set<veci> shape) {
     return shape;
 }
 
-std::set<veci> grow_pattern(const std::set<veci>& shape, double radius) {
+std::set<veci> grow_pattern(const std::set<veci> &shape, double radius) {
     std::vector<vali> circle = findPointsInCircle(radius);
     std::set<veci> grown_pattern;
-    for (auto &element : shape) {
-        for (auto &displacement : circle) {
+    for (auto &element: shape) {
+        for (auto &displacement: circle) {
             grown_pattern.insert(add(element, valtovec(displacement)));
         }
     }
