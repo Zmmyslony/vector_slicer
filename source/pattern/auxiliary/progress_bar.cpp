@@ -44,12 +44,23 @@ void showProgress(int current_step, int max_step) {
 }
 
 void
-showProgressBase(double progress, std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
+showProgressBase(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
+                 std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
                  const std::string &suffix) {
+    double progress = (double) current_step / (double) max_step;
+    long current_time = std::chrono::duration_cast<std::chrono::seconds>(now - begin).count();
+    double time_per_step = (double) current_time / (double) current_step;
+    long estimated_completion_time;
+    if (max_step > 0) {
+        estimated_completion_time = (long) (time_per_step * (double) max_step);
+    } else {
+        estimated_completion_time =
+                current_time + (long) (time_per_step * (double) (steps_threshold - steps_from_improvement));
+    }
+
     int bar_width = 20;
     int pos = (int) (bar_width * progress);
-    std::cout << "\r " << std::chrono::duration_cast<std::chrono::seconds>(now - begin).count() << "/" <<
-              std::chrono::duration_cast<std::chrono::seconds>((now - begin) / progress).count() << " s: \t[";
+    std::cout << "\r " << current_time << "/" << estimated_completion_time << " s: \t[";
     for (int i = 0; i < bar_width; ++i) {
         if (i <= pos) {
             std::cout << "=";

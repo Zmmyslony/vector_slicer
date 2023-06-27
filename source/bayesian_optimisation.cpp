@@ -105,13 +105,20 @@ BayesianOptimisation::showProgress(int current_step, int max_step, int steps_fro
     }
 
     std::string suffix = suffix_stream.str();
-    showProgressBase((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
+    showProgressBase(current_step, max_step, steps_from_improvement, steps_threshold, begin,
+                     std::chrono::steady_clock::now(), suffix);
 }
 
 void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps) {
     initializeOptimization();
+    if (max_steps <= 0 && max_constant_steps <= 0) {
+        throw std::runtime_error(
+                "Optimisation incorrectly set up. At least one of number_of_iterations or "
+                "number_of_improvement_iterations needs to be greater than zero.");
+    }
     int steps_since_improvement = 0;
-    for (int i = 0; i < max_steps; i++) {
+    int i = 0;
+    while (true) {
         double minimal_disagreement = getValueAtMinimum();
         stepOptimization();
         vectord best_configuration = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
@@ -132,6 +139,10 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         } else if (current_disagreement == 0) {
             std::cout << "\rIdeal filling found after " << mCurrentIter << " steps. Finishing optimisation."
                       << std::endl;
+            break;
+        }
+        i++;
+        if (max_steps > 0 && i >= max_steps) {
             break;
         }
     }
