@@ -47,13 +47,15 @@ void
 showProgressBase(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
                  std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
                  const std::string &suffix) {
-    double progress = (double) current_step / (double) max_step;
+    double progress;
     long current_time = std::chrono::duration_cast<std::chrono::seconds>(now - begin).count();
     double time_per_step = (double) current_time / (double) current_step;
     long estimated_completion_time;
     if (max_step > 0) {
+        progress =  (double) current_step / (double) max_step;
         estimated_completion_time = (long) (time_per_step * (double) max_step);
     } else {
+        progress = (double) current_step / (double)(current_step + steps_threshold - steps_from_improvement);
         estimated_completion_time =
                 current_time + (long) (time_per_step * (double) (steps_threshold - steps_from_improvement));
     }

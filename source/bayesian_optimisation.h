@@ -42,7 +42,8 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     bool is_starting_point_separation_optimised = true;
     bool is_collision_radius_optimised = true;
 
-    void showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold);
+    void showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
+                      int step_offset);
     /// Evaluates current FillingConfig which is defined and returns disagreement
     double evaluateSample(const vectord &x_in);
 

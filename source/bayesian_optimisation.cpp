@@ -76,7 +76,8 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
 }
 
 void
-BayesianOptimisation::showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold) {
+BayesianOptimisation::showProgress(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
+                                   int step_offset) {
     double min_value = getValueAtMinimum();
     vectord best_configuration = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
     vecd vector_configuration(best_configuration.begin(), best_configuration.end());
@@ -105,6 +106,10 @@ BayesianOptimisation::showProgress(int current_step, int max_step, int steps_fro
     }
 
     std::string suffix = suffix_stream.str();
+    current_step += step_offset;
+    if (max_step > 0) {
+        max_step += step_offset;
+    }
     showProgressBase(current_step, max_step, steps_from_improvement, steps_threshold, begin,
                      std::chrono::steady_clock::now(), suffix);
 }
@@ -126,8 +131,8 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         if (current_disagreement < minimal_disagreement) {
             steps_since_improvement = 0;
         }
-        showProgress(i + mParameters.n_init_samples, max_steps + mParameters.n_init_samples, steps_since_improvement,
-                     max_constant_steps);
+        showProgress(i, max_steps, steps_since_improvement,
+                     max_constant_steps, mParameters.n_init_samples);
         steps_since_improvement++;
 
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
@@ -253,6 +258,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
     int max_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
     int max_iterations_without_improvement = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
+
     pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
 
     return {pattern, best_config};

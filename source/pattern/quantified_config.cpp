@@ -48,7 +48,7 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
         QuantifiedConfig(template_config) {
-    vecd vector_parameters( parameters.begin(), parameters.end());
+    vecd vector_parameters(parameters.begin(), parameters.end());
     if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
         setConfigOption(CollisionRadius, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
@@ -290,7 +290,8 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
             if (number_of_times_filled[i][j] > 0) {
                 double local_director_disagreement = 1 - localDirectorAgreement(i, j);
                 local_disagreement +=
-                        director_weight * director_exponent * pow(director_disagreement, director_exponent - 1) * local_director_disagreement;
+                        director_weight * director_exponent * pow(director_disagreement, director_exponent - 1) *
+                        local_director_disagreement;
             }
 
             local_disagreement *= multiplier;
