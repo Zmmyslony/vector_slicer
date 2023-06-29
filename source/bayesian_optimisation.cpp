@@ -170,7 +170,8 @@ void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path pat
     exportConfigList(filling_configs, std::move(path));
 }
 
-fs::path createPathWithExtension(std::string directory, std::string filename, std::string extension) {
+fs::path
+createPathWithExtension(const std::string &directory, const std::string &filename, const std::string &extension) {
     fs::path directory_path = directory;
     createDirectory(directory_path);
     fs::path joined_path = directory_path / filename;
@@ -178,12 +179,12 @@ fs::path createPathWithExtension(std::string directory, std::string filename, st
     return joined_path;
 }
 
-fs::path createTxtPath(std::string directory, std::string filename) {
-    return createPathWithExtension(std::move(directory), std::move(filename), "txt");
+fs::path createTxtPath(const std::string &directory, const std::string &filename) {
+    return createPathWithExtension(directory, filename, "txt");
 }
 
-fs::path createCsvPath(std::string directory, std::string filename) {
-    return createPathWithExtension(std::move(directory), std::move(filename), "csv");
+fs::path createCsvPath(const std::string &directory, const std::string &filename) {
+    return createPathWithExtension(directory, filename, "csv");
 }
 
 
