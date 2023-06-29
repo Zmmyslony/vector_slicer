@@ -22,9 +22,11 @@
 #define _USE_MATH_DEFINES
 
 #include "valarray_operations.h"
+
 #include <stdexcept>
 #include <math.h>
 #include <iostream>
+#include <string>
 
 vald itod(const vali &int_array) {
     vald double_array(int_array.size());
@@ -73,7 +75,9 @@ vald normalize(const vali &array) {
 double dot(const vald &array_first, const vald &array_second) {
     double dot_product = 0;
     if (array_first.size() != array_second.size()) {
-        throw std::invalid_argument("Dot: Dotted array are of different size.\n");
+        throw std::invalid_argument(
+                "Dot: Dotted array are of different sizes" + std::to_string(array_first.size()) + " and "
+                + std::to_string(array_second.size()) + "\n");
     }
     for (int i = 0; i < array_first.size(); i++) {
         dot_product += array_first[i] * array_second[i];
@@ -132,4 +136,29 @@ void printArray(const std::vector<vald> &array) {
         std::cout << "), ";
     }
     std::cout << std::endl;
+}
+
+vald multiply(matrix_d mat, vald vec) {
+    vald result(mat.size());
+    for (int i = 0; i < mat.size(); i++) {
+        if (mat[i].size() != vec.size()) {
+            throw std::runtime_error("Uneven sizes in matrix and vector multiplication.");
+        }
+        double element = 0;
+        for (int j = 0; j < mat[i].size(); j++) {
+            element += mat[i][j] * vec[j];
+        }
+        result[i] = element;
+    }
+    return result;
+}
+
+matrix_d tensor(vald vec_first, vald vec_second) {
+    matrix_d result(vald(vec_second.size()), vec_first.size());
+    for (int i = 0; i < vec_first.size(); i++) {
+        for (int j = 0; j < vec_second.size(); j++) {
+            result[i][j] = vec_first[i] * vec_second[j];
+        }
+    }
+    return result;
 }

@@ -28,9 +28,13 @@
 #include <string>
 #include <vector>
 #include <valarray>
+#include <set>
 
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
+
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
 /// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
 /// with the information about its continuous edges
@@ -38,37 +42,53 @@ class DesiredPattern {
     vali dimensions;
     /// Each element is one continuous edge of the pattern
     std::vector<std::vector<vali>> perimeter_list;
-    std::vector<std::vector<int>> shape_matrix;
-    std::vector<std::vector<double>> x_field_preferred;
-    std::vector<std::vector<double>> y_field_preferred;
-    std::vector<std::vector<double>> splay_array;
+    std::vector<veci> shape_matrix;
+    std::vector<vecd> x_field_preferred;
+    std::vector<vecd> y_field_preferred;
+    std::vector<vecd> splay_array;
+    std::vector<std::vector<std::valarray<double>>> splay_vector_array;
     std::vector<std::vector<vali>> splay_sorted_empty_spots;
+    std::vector<std::vector<vali>> lines_of_minimal_density;
+    double last_bin_splay = 0;
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
-    double maximal_repulsion_angle = M_PI;
+    bool is_splay_provided = false;
 
-    [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins) const;
+    [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
+
+    [[nodiscard]] vecd preferredDirection(const vecd &position, double distance) const;
+
+    [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
+
+    veci findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
+
+    [[nodiscard]] double splay(const vecd &position) const;
+
+    std::set<veci> fillablePointsSet();
 
 public:
+
+    DesiredPattern();
+
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                    const std::string &y_field_filename);
 
     DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename);
 
-    DesiredPattern(std::vector<std::vector<int>> shape_field, std::vector<std::vector<double>> x_field,
-                   std::vector<std::vector<double>> y_field);
+    DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field,
+                   std::vector<vecd> y_field);
 
-    [[nodiscard]] const std::vector<std::vector<int>> &getShapeMatrix() const;
+    [[nodiscard]] const std::vector<veci> &getShapeMatrix() const;
 
-    [[nodiscard]] const std::vector<std::vector<double>> &getXFieldPreferred() const;
+    [[nodiscard]] const std::vector<vecd> &getXFieldPreferred() const;
 
-    [[nodiscard]] const std::vector<std::vector<double>> &getYFieldPreferred() const;
+    [[nodiscard]] const std::vector<vecd> &getYFieldPreferred() const;
 
     [[nodiscard]] const vali &getDimensions() const;
 
     [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
 
-    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> & getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> &getPerimeterList() const;
 
     [[nodiscard]] double getSplay(const vali &point) const;
 
@@ -78,13 +98,23 @@ public:
 
     [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
 
-    [[nodiscard]] vald preferredDirection(const vald &position, int distance) const;
+    [[nodiscard]] vald preferredDirection(const vald &position, double distance) const;
 
     [[nodiscard]] bool isInShape(const vali &position) const;
 
     [[nodiscard]] bool isInShape(const vald &position) const;
 
-    [[nodiscard]] double getMaximalRepulsionAngle() const;
+    [[nodiscard]] bool isSplayProvided() const;
+
+    void setSplayVector(const std::string &path);
+
+    [[nodiscard]] bool isLowSplay(const vald &coordinates) const;
+
+    [[nodiscard]] const std::vector<std::vector<vali>> &getLineDensityMinima() const;
+
+    void updateProperties();
+
+    void findLineDensityMinima();
 };
 
 

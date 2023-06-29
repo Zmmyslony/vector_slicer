@@ -23,6 +23,10 @@
 #define VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
 
 #include <vector>
+#include <valarray>
+
+using vald = std::valarray<double>;
+
 
 int roundUp(double);
 
@@ -30,7 +34,16 @@ int sgn(double number);
 
 double decimalPart(double number);
 
+std::vector<std::vector<std::valarray<double>>>
+splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+
+std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field);
+
 std::vector<std::vector<double>>
-splay(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array);
+
+std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array);
+
+std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field);
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

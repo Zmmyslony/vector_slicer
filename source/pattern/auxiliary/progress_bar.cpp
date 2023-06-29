@@ -22,6 +22,7 @@
 #include "progress_bar.h"
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 void showProgress(double progress) {
     int bar_width = 20;
@@ -43,12 +44,25 @@ void showProgress(int current_step, int max_step) {
 }
 
 void
-showProgress(double progress, std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
-             const std::string& suffix) {
+showProgressBase(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
+                 std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
+                 const std::string &suffix) {
+    double progress;
+    long current_time = std::chrono::duration_cast<std::chrono::seconds>(now - begin).count();
+    double time_per_step = (double) current_time / (double) current_step;
+    long estimated_completion_time;
+    if (max_step > 0) {
+        progress =  (double) current_step / (double) max_step;
+        estimated_completion_time = (long) (time_per_step * (double) max_step);
+    } else {
+        progress = (double) current_step / (double)(current_step + steps_threshold - steps_from_improvement);
+        estimated_completion_time =
+                current_time + (long) (time_per_step * (double) (steps_threshold - steps_from_improvement));
+    }
+
     int bar_width = 20;
     int pos = (int) (bar_width * progress);
-    std::cout << "\r " << std::chrono::duration_cast<std::chrono::seconds>(now - begin).count() << "/" <<
-              std::chrono::duration_cast<std::chrono::seconds>((now - begin) / progress).count() << " s: \t[";
+    std::cout << "\r " << current_time << "/" << estimated_completion_time << " s: \t[";
     for (int i = 0; i < bar_width; ++i) {
         if (i <= pos) {
             std::cout << "=";
@@ -58,10 +72,4 @@ showProgress(double progress, std::chrono::steady_clock::time_point begin, std::
     }
     std::cout << "] " << int(progress * 100.0) << "% " << suffix;
     std::cout.flush();
-}
-
-void
-showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value) {
-    std::string suffix = "Current min: " + std::to_string(min_value);
-    showProgress((double) current_step / (double) max_step, begin, std::chrono::steady_clock::now(), suffix);
 }

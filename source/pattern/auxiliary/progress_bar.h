@@ -23,11 +23,15 @@
 #define VECTOR_SLICER_PROGRESS_BAR_H
 
 #include <chrono>
+#include "../quantified_config.h"
 
 void showProgress(double progress);
 
 void showProgress(int current_step, int max_step);
 
-void showProgress(int current_step, int max_step, std::chrono::steady_clock::time_point begin, double min_value);
+void
+showProgressBase(int current_step, int max_step, int steps_from_improvement, int steps_threshold,
+                 std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point now,
+                 const std::string &suffix);
 
 #endif //VECTOR_SLICER_PROGRESS_BAR_H

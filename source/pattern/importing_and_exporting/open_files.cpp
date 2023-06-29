@@ -47,28 +47,43 @@ std::vector<int> readConfigTable(const fs::path &config_path) {
     return config_variables;
 }
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path) {
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled) {
     fs::path shape_path = directory_path / "shape.csv";
-    fs::path theta_field_path = directory_path / "thetaField.csv";
+    fs::path theta_field_path = directory_path / "theta_field.csv";
     fs::path x_field_path = directory_path / "xField.csv";
     fs::path y_field_path = directory_path / "yField.csv";
+    fs::path splay_path = directory_path / "splay.csv";
 
     if (!fs::exists(shape_path)) {
         throw std::runtime_error("Shape matrix does not exist in the searched directory.");
     }
 
+    DesiredPattern pattern;
     if (fs::exists(theta_field_path)) {
-        return {shape_path.string(), theta_field_path.string()};
+        pattern = {shape_path.string(), theta_field_path.string()};
     } else if (fs::exists(x_field_path) && fs::exists(y_field_path)) {
-        return {shape_path.string(), x_field_path.string(), y_field_path.string()};
+        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string()};
     } else {
         throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
     }
+
+    if (fs::exists(splay_path)) {
+        pattern.setSplayVector(splay_path.string());
+        if (is_splay_filling_enabled) {
+            pattern.findLineDensityMinima();
+        }
+    } else if (is_splay_filling_enabled) {
+        std::cout
+                << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "
+                   "quality may be decreased" << std::endl;
+    }
+    pattern.updateProperties();
+    return pattern;
 }
 
 
 FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed) {
-    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path);
+    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path, false);
     fs::path config_path = directory_path / "config.txt";
     std::vector<int> config = readConfigTable(config_path);
     FilledPattern pattern(desired_pattern, config[0], config[1], config[2], seed);

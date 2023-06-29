@@ -25,13 +25,41 @@
 #include <valarray>
 #include <vector>
 
-std::vector<std::valarray<int>>
-stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector);
+using vald = std::valarray<double>;
+using vali = std::valarray<int>;
 
-double mean(const std::vector<double> &data);
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-double standardDeviation(const std::vector<double> &data);
+std::vector<vali> stitchTwoVectors(std::vector<vali> backwards_vector, std::vector<vali> forwards_vector);
 
+double mean(const vecd &data);
+
+double standardDeviation(const vecd &data);
+
+vecd itod(const std::vector<int> &vector);
+
+std::vector<int> dtoi(const vecd &vector);
+
+vecd add(const vecd &first, const vecd &second);
+
+veci add(const veci &first, const veci &second);
+
+double dot(const vecd &first, const vecd &second);
+
+double norm(const vecd& vec);
+
+vecd scale(const vecd &vec, double scale);
+
+vecd normalize(const vecd &vec);
+
+vali vectoval(const veci &vec);
+
+vald vectoval(const vecd &vec);
+
+veci valtovec(const vali &vec);
+
+vecd valtovec(const vald &vec);
 
 
 #endif //VECTOR_SLICER_VECTOR_OPERATIONS_H

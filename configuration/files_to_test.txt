@@ -1,34 +1,45 @@
-    azimuthal_05_cm
-    radial_05_cm
-    diagonal_1x05_cm
-    linear_1x05_cm
+    azimuthal_5_mm
+    radial_5_mm
+    diagonal_10x5_mm
+    linear_10x5_mm
 
-    azimuthal_1_cm
-    radial_1_cm
-    diagonal_2x1_cm
-    linear_2x1_cm
+    azimuthal_10_mm
+    radial_10_mm
+    diagonal_20x10_mm
+    linear_20x10_mm
 
     iris_r_inner_5_mm
     cylinder_r_inner_5_mm
     evertor_r_inner_5_mm
 
-    radial_2_cm
-    azimuthal_2_cm
-
-    fan_asymmetric_positive_3x1_cm
-    fan_asymmetric_negative_3x1_cm
-    fan_symmetric_positive_3x1_cm
-    fan_symmetric_negative_3x1_cm
-
-    fan_asymmetric_positive_4x1_cm
-    fan_asymmetric_negative_4x1_cm
-    fan_symmetric_positive_4x1_cm
-    fan_symmetric_negative_4x1_cm
-
     three_charge_field
     three_charge_field_blob
 
-iris_r_inner_10_mm
-linear_blob
+    linear_blob
+    azimuthal_1_cm_square
 
-azimuthal_1_cm_square
+    radial_20_mm
+    azimuthal_20_mm
+
+    fan_gripper_6x24mm
+    fan_gripper_12x48mm
+    fan_toy_gripper_4x20mm
+
+    fan_asymmetric_positive_3_1_cm
+    fan_asymmetric_negative_3_1_cm
+    fan_symmetric_positive_3_1_cm
+    fan_symmetric_negative_3_1_cm
+
+    fan_asymmetric_positive_4_1_cm
+    fan_asymmetric_negative_4_1_cm
+    fan_symmetric_positive_4_1_cm
+    fan_symmetric_negative_4_1_cm
+
+    iris_r_inner_10_mm
+    cylinder_r_inner_10_mm
+    evertor_r_inner_10_mm
+
+    linear_15x075_mm
+
+example_24_24_mm
+    example_24_24_mm_dual

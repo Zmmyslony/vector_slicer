@@ -23,6 +23,8 @@
 #include "filling_patterns.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
+#include "vector_slicer_config.h"
+#include "auxiliary/configuration_reading.h"
 
 #include <utility>
 #include <cmath>
@@ -44,16 +46,24 @@ QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, Fillin
         DisagreementWeights(disagreement_weights) {
 }
 
-QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters, int dims) :
+QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
         QuantifiedConfig(template_config) {
-    if (parameters.size() != dims) {
-        throw std::runtime_error("Config options can only be set with " + std::to_string(dims) + "D vectors.");
+    vecd vector_parameters(parameters.begin(), parameters.end());
+    if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
+        setConfigOption(CollisionRadius, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
     }
-    setConfigOption(Repulsion, std::to_string(parameters[0]));
-    setConfigOption(CollisionRadius, std::to_string(parameters[1]));
-    setConfigOption(StartingPointSeparation, std::to_string(parameters[2]));
-    if (dims > 3) {
-        setConfigOption(RepulsionRadius, std::to_string(parameters[3]));
+    if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+        setConfigOption(StartingPointSeparation, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
+        setConfigOption(Repulsion, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
+    }
+    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")) {
+        setConfigOption(RepulsionAngle, std::to_string(vector_parameters.back()));
+        vector_parameters.pop_back();
     }
 }
 
@@ -100,6 +110,23 @@ double QuantifiedConfig::calculateAverageOverlap() {
     return (double) total_overlap / (double) total_filled_elements;
 }
 
+
+double QuantifiedConfig::localDirectorAgreement(int i, int j) {
+    double local_director_agreement = 0;
+    vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
+    vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
+                             desired_pattern.get().getYFieldPreferred()[i][j]};
+    double filled_director_norm = norm(filled_director);
+    double desired_director_norm = norm(desired_director);
+    double current_director_agreement = dot(filled_director, desired_director);
+    if (desired_director_norm != 0 && filled_director_norm != 0) {
+        local_director_agreement += std::abs(current_director_agreement) /
+                                    (filled_director_norm * desired_director_norm);
+    }
+    return local_director_agreement;
+}
+
+
 double QuantifiedConfig::calculateDirectorDisagreement() {
     double director_agreement = 0;
     int x_size = desired_pattern.get().getDimensions()[0];
@@ -109,18 +136,8 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
             if (number_of_times_filled[i][j] > 0) {
-                vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
-                vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
-                                         desired_pattern.get().getYFieldPreferred()[i][j]};
-                double filled_director_norm = norm(filled_director);
-                double desired_director_norm = norm(desired_director);
-                double current_director_agreement = dot(filled_director, desired_director);
-                if (desired_director_norm != 0 && filled_director_norm != 0) {
-                    director_agreement +=
-                            std::abs(current_director_agreement) /
-                            (filled_director_norm * desired_director_norm);
-                    number_of_filled_elements++;
-                }
+                director_agreement += localDirectorAgreement(i, j);
+                number_of_filled_elements++;
             }
         }
     }
@@ -133,7 +150,6 @@ double QuantifiedConfig::calculatePathLengthDeviation(int order) {
     for (auto &path: getSequenceOfPaths()) {
         sum_of_lengths += path.getLength();
     }
-    unsigned int paths_number = getSequenceOfPaths().size();
     double average_length = sum_of_lengths / paths_number;
 
     double deviations_sum = 0;
@@ -151,13 +167,14 @@ void QuantifiedConfig::evaluate() {
     average_overlap = calculateAverageOverlap();
     director_disagreement = calculateDirectorDisagreement();
 
-    paths_number = getSequenceOfPaths().size();
+    paths_number = (double) getSequenceOfPaths().size();
+    multiplier = fmax(pow(paths_number, path_exponent), 1);
 
     disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
                    overlap_weight * pow(average_overlap, overlap_exponent) +
                    director_weight * pow(director_disagreement, director_exponent);
 
-    total_disagreement = disagreement * fmax(pow(paths_number, path_exponent), 1);
+    total_disagreement = disagreement * multiplier;
 }
 
 void QuantifiedConfig::printDisagreement() const {
@@ -166,19 +183,19 @@ void QuantifiedConfig::printDisagreement() const {
     double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
 
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(3);
+    stream << std::setprecision(2);
 
     stream << std::endl;
-    stream << "Base disagreement " << disagreement << std::endl;
+    stream << "Disagreement " << disagreement * multiplier << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spots << "\t" << empty_spot_disagreement << "\t"
+    stream << "\tEmpty spot\t" << empty_spots * multiplier << "\t" << empty_spot_disagreement << "\t"
            << empty_spot_disagreement / disagreement * 100 << std::endl;
-    stream << "\tOverlap\t\t" << average_overlap << "\t" << overlap_disagreement << "\t"
+    stream << "\tOverlap\t\t" << average_overlap * multiplier << "\t" << overlap_disagreement << "\t"
            << overlap_disagreement / disagreement * 100 << std::endl;
-    stream << "\tDirector\t" << director_disagreement << "\t" << director_disagreement_value << "\t"
+    stream << "\tDirector\t" << director_disagreement * multiplier << "\t" << director_disagreement_value << "\t"
            << director_disagreement_value / disagreement * 100 << std::endl;
     stream << "\n\tPaths\t" << paths_number << std::endl;
-    stream << "\tPaths multiplier\t" << pow(paths_number, path_exponent) << std::endl;
+    stream << "\tPaths multiplier\t" << multiplier << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
@@ -206,43 +223,83 @@ FilledPattern QuantifiedConfig::getFilledPattern() const {
 
 double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagreement_details_printed,
                                          double disagreement_percentile) {
-    std::vector<QuantifiedConfig> configs_with_various_seeds;
     std::vector<double> disagreements(seeds);
-    for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds.emplace_back(*this, i);
-    }
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds[i].evaluate();
-        disagreements[i] = configs_with_various_seeds[i].getDisagreement();
+        QuantifiedConfig current_config(*this, i);
+        current_config.evaluate();
+        disagreements[i] = current_config.getDisagreement();
     }
+
     if (is_disagreement_details_printed) {
         std::cout << "Mean " << mean(disagreements) << ", standard deviation " << standardDeviation(disagreements)
                   << ", noise " << standardDeviation(disagreements) / mean(disagreements) << std::endl;
     }
     std::sort(disagreements.begin(), disagreements.end());
     int return_index = disagreements.size() * (1 - disagreement_percentile);
-//    return mean(disagreements);
     return disagreements[return_index];
 }
 
 std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;
-    std::vector<std::pair<double, int>> disagreements(seeds);
-    for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds.emplace_back(*this, i);
-    }
+    std::vector<std::pair<double, unsigned int>> disagreements(seeds);
+
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 0; i < seeds; i++) {
-        configs_with_various_seeds[i].evaluate();
+        QuantifiedConfig current_config(*this, i);
+        current_config.evaluate();
+        disagreements[i] = {current_config.getDisagreement(), i};
     }
 
-    std::sort(configs_with_various_seeds.begin(), configs_with_various_seeds.end(), [](auto &left, auto&right) {
-        return left.getDisagreement() < right.getDisagreement();
+    std::sort(disagreements.begin(), disagreements.end(), [](auto &left, auto &right) {
+        return (left.first < right.first);
     });
-    return configs_with_various_seeds;
+    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+
+    std::vector<QuantifiedConfig> configs_to_export;
+    for (int i = 0; i < number_of_layers; i++) {
+        configs_to_export.emplace_back(*this, disagreements[i].second);
+    }
+#pragma omp parallel for
+    for (int i = 0; i < number_of_layers; i++) {
+        configs_to_export[i].evaluate();
+    }
+    return configs_to_export;
+}
+
+std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
+    int x_size = desired_pattern.get().getDimensions()[0];
+    int y_size = desired_pattern.get().getDimensions()[1];
+
+    std::vector<std::vector<double>> disagreement_grid;
+    for (int i = 0; i < x_size; i++) {
+        std::vector<double> disagreement_row;
+        for (int j = 0; j < y_size; j++) {
+            double local_disagreement = 0;
+            if (desired_pattern.get().getShapeMatrix()[i][j] == 1 && number_of_times_filled[i][j] == 0) {
+                local_disagreement +=
+                        empty_spot_weight * empty_spot_exponent * pow(empty_spots, empty_spot_exponent - 1);
+            }
+            if (number_of_times_filled[i][j] > 1) {
+                int local_overlap = number_of_times_filled[i][j] - 1;
+                local_disagreement +=
+                        overlap_weight * overlap_exponent * pow(average_overlap, overlap_exponent - 1) * local_overlap;
+            }
+            if (number_of_times_filled[i][j] > 0) {
+                double local_director_disagreement = 1 - localDirectorAgreement(i, j);
+                local_disagreement +=
+                        director_weight * director_exponent * pow(director_disagreement, director_exponent - 1) *
+                        local_director_disagreement;
+            }
+
+            local_disagreement *= multiplier;
+            disagreement_row.emplace_back(local_disagreement);
+        }
+        disagreement_grid.emplace_back(disagreement_row);
+    }
+    return disagreement_grid;
 }
 
 

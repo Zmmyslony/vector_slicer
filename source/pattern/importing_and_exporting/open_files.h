@@ -31,7 +31,7 @@
 
 namespace fs = boost::filesystem;
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path);
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled);
 
 FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path);
 

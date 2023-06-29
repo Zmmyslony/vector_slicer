@@ -47,6 +47,22 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
     return table;
 }
 
+std::vector<std::vector<std::valarray<double>>> readFileToTableDoubleVector(const std::string &filename) {
+
+    std::vector<std::vector<double>> table = readFileToTableDouble(filename);
+
+    std::vector<std::vector<std::valarray<double>>> vector_table;
+    for (auto &row: table) {
+        std::vector<std::valarray<double>> vector_row;
+        for (int i = 0; i < row.size(); i += 2) {
+            vector_row.emplace_back(std::valarray<double>{row[i], row[i + 1]});
+        }
+        vector_table.emplace_back(vector_row);
+    }
+
+    return vector_table;
+}
+
 std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table) {
     std::vector<std::vector<int>> int_table;
     for (auto &row: double_table) {
@@ -98,7 +114,7 @@ std::valarray<int> getTableDimensions(std::string &filename) {
 
 std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table) {
     std::valarray<int> size;
-    size = {(int)table.size(), (int)table[0].size()};
+    size = {(int) table.size(), (int) table[0].size()};
     return size;
 }
 
