@@ -114,45 +114,38 @@ void FilledPattern::setupRootPoints() {
     binned_root_points = root_points;
 }
 
-std::vector<vali> FilledPattern::findSeedLine() {
+void FilledPattern::updateSeedPoints() {
     if (search_stage == SplayFilling) {
         if (!zero_splay_seeds.empty()) {
-            std::vector<vali> seed_line = zero_splay_seeds.back();
+            seed_points = zero_splay_seeds.back();
             zero_splay_seeds.pop_back();
-            return seed_line;
+            return;
         } else {
-            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
+//            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
             search_stage = PerimeterFilling;
         }
     }
 
     if (search_stage == PerimeterFilling) {
-        std::vector<vali> seed_line = perimeter_seeds.back();
+        seed_points = perimeter_seeds.back();
         perimeter_seeds.pop_back();
 
         if (perimeter_seeds.empty()) {
             search_stage = RemainingFilling;
         }
 
-        return seed_line;
+        return;
     }
 
     vali root_point = findRemainingRootPoint();
     if (root_point[0] == -1) {
-        return {root_point};
-    }
-    return findDualLine(root_point);
-}
-
-
-void FilledPattern::updateSeedPoints() {
-    std::vector<vali> seed_line = findSeedLine();
-    if (seed_line[0][0] == -1 || seed_line.empty()) {
         seed_points = {{-1, -1}};
         return;
     }
-    seed_points = getSpacedLine(getStartingPointSeparation(), seed_line);
-    std::shuffle(seed_points.begin(), seed_points.end(), random_engine);
+    std::vector<vali> dual_line = findDualLine(root_point);
+    std::vector<vali> spaced_dual_line = getSpacedLine(getStartingPointSeparation(), dual_line);
+    std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
+    seed_points = spaced_dual_line;
 }
 
 
@@ -477,46 +470,55 @@ std::vector<vali> FilledPattern::findDualLine(const vali &start) {
 }
 
 
-std::vector<vali> FilledPattern::getSpacedLine(const double &distance, const std::vector<vali> &line) {
+matrix_d FilledPattern::getDualTensor(const vali &coordinates) const {
+    vald dual_director = normalizedDualVector(getDirector(coordinates));
+    return tensor(dual_director, dual_director);
+}
+
+double FilledPattern::distance(const vali &first_point, const vali &second_point) {
+    vald connecting_vector = itod(second_point - first_point);
+    matrix_d first_dual_tensor = getDualTensor(first_point);
+    matrix_d second_dual_tensor = getDualTensor(second_point);
+    double first_distance = sqrt(dot(connecting_vector, multiply(first_dual_tensor, connecting_vector)));
+    double second_distance = sqrt(dot(connecting_vector, multiply(second_dual_tensor, connecting_vector)));
+    return 2 * first_distance * second_distance / (first_distance + second_distance);
+}
+
+
+std::vector<vali> FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &line) {
     std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
     int starting_index = index_distribution(random_engine);
     std::vector<vali> separated_starting_points = {line[starting_index]};
 
-    double current_distance = 0;
+    bool is_filled_coordinate_encountered = false;
+
     vali previous_position = line[starting_index];
     for (int i = starting_index; i < line.size(); i++) {
         const vali &current_position = line[i];
-        vald current_double_director = normalizedDualVector(getDirector(current_position));
-        vald current_displacement = itod(current_position - previous_position);
-        current_distance += dot(current_displacement, current_double_director);
-        previous_position = current_position;
+        double current_distance = distance(current_position, previous_position);
         if (isFilled(current_position)) {
-            current_distance = distance / 2;
-        }
-        if (std::abs(current_distance) >= distance) {
+            is_filled_coordinate_encountered = true;
+            previous_position = current_position;
+        } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
+                   is_filled_coordinate_encountered && current_distance >= separation / 2) {
             separated_starting_points.push_back(current_position);
-            current_distance = 0;
+            previous_position = current_position;
         }
     }
 
-    current_distance = 0;
     previous_position = line[starting_index];
-    for (int i = starting_index; i >= 0; i--) {
+    for (int i = starting_index; i < line.size(); i--) {
         const vali &current_position = line[i];
-        vald current_double_director = normalizedDualVector(getDirector(current_position));
-        vald current_displacement = itod(current_position - previous_position);
-        current_distance += dot(current_displacement, current_double_director);
-        previous_position = current_position;
+        double current_distance = distance(current_position, previous_position);
         if (isFilled(current_position)) {
-            current_distance = distance / 2;
-        }
-        if (std::abs(current_distance) >= distance) {
+            is_filled_coordinate_encountered = true;
+            previous_position = current_position;
+        } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
+                   is_filled_coordinate_encountered && current_distance >= separation / 2) {
             separated_starting_points.push_back(current_position);
-            current_distance = 0;
+            previous_position = current_position;
         }
     }
-
-
     return separated_starting_points;
 }
 

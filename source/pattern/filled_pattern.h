@@ -25,6 +25,7 @@
 #include "desired_pattern.h"
 #include "path.h"
 #include "filling_config.h"
+#include "auxiliary/valarray_operations.h"
 #include <string>
 #include <random>
 
@@ -67,6 +68,10 @@ class FilledPattern : public FillingConfig {
 
     [[nodiscard]] vald getDirector(const vali &positions) const;
 
+    matrix_d getDualTensor(const vali &coordinates) const;
+
+    double distance(const vali &first_point, const vali &second_point);
+
     vald getDirector(const vald &positions);
 
     std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
@@ -86,7 +91,7 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> findDualLine(const vali &start);
 
-    std::vector<vali> getSpacedLine(const double &distance, const std::vector<vali> &line);
+    std::vector<vali> getSpacedLine(const double &separation, const std::vector<vali> &line);
 
     std::vector<vali> findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction);
 
@@ -95,7 +100,7 @@ class FilledPattern : public FillingConfig {
 
     void updateSeedPoints();
 
-    std::vector<vali> findSeedLine();
+    void findSeedPoints();
 
     std::vector<vali> findConstantSplayLine(const vali &start);
 
