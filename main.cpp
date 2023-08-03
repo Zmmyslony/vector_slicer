@@ -33,9 +33,24 @@ int main() {
     printf("Optimising using %i seeds and %i threads.\n",
            readKeyInt(DISAGREEMENT_CONFIG, "seeds"),
            readKeyInt(DISAGREEMENT_CONFIG, "threads"));
-    printf("There will be up to %i iterations of optimisation, with relearning every %i iterations.\n",
-           readKeyInt(BAYESIAN_CONFIG, "number_of_iterations"),
-           readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning"));
+    int number_of_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
+    int iterations_between_relearning = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
+    int cut_off_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
+
+    if (number_of_iterations > 0 && cut_off_iterations > 0) {
+        printf("Optimisation will terminate after %i iterations or %i iterations without improvement, with relearning every %i iterations.\n",
+               number_of_iterations,
+               cut_off_iterations,
+               iterations_between_relearning);
+    } else if (number_of_iterations <= 0 && cut_off_iterations > 0) {
+        printf("Optimisation will terminate after %i iterations without improvement with relearning every %i iterations.\n",
+               cut_off_iterations,
+               iterations_between_relearning);
+    } else if (number_of_iterations > 0 && cut_off_iterations <= 0) {
+        printf("Optimisation will terminate after %i iterations with relearning every %i iterations.\n",
+               number_of_iterations,
+               iterations_between_relearning);
+    }
 
     std::vector<fs::path> patterns = getPatterns(PATTERNS_PATH);
 
