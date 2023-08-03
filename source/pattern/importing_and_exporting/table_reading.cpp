@@ -40,7 +40,13 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
         std::vector<double> row;
 
         while (std::getline(line_stream, element, ',')) {
-            row.push_back(std::stod(element));
+            try {
+                row.push_back(std::stod(element));
+            }
+            catch (std::invalid_argument) {
+                std::cout << "Invalid element in imported double table: " << element << " in " << filename << std::endl;
+                throw;
+            }
         }
         table.push_back(row);
     }
