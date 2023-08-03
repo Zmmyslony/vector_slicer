@@ -46,4 +46,18 @@ std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vecto
 
 std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field);
 
+std::vector<int> findNullRows(const std::vector<std::vector<int>> &array);
+
+std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array);
+
+template<typename T>
+std::vector<std::vector<T>> removeRows(std::vector<std::vector<T>> &array, const std::vector<int> &rows_to_remove);
+
+template<typename T>
+std::vector<std::vector<T>>
+removeColumns(std::vector<std::vector<T>> &array, const std::vector<int> &columns_to_remove);
+
+template<typename T>
+void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<int> &rows_to_remove,
+                          const std::vector<int> &columns_to_remove);
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

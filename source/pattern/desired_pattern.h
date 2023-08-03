@@ -66,6 +66,8 @@ class DesiredPattern {
 
     std::set<veci> fillablePointsSet();
 
+//    void adjustMargins();
+
 public:
 
     DesiredPattern();

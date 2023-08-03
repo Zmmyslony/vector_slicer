@@ -40,8 +40,10 @@
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 
-
 const double SPLAY_SINGULARITY_THRESHOLD = 0.005;
+
+// TODO Write a preprocessing function that removes margins from the pattern
+// TODO Make all functions out-of-bounds safe so that the margins are not required (OOB = unfilled)
 
 
 DesiredPattern::DesiredPattern() = default;
@@ -60,6 +62,7 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
 
 
 void DesiredPattern::updateProperties() {
+//    adjustMargins();
     if (!isSplayProvided()) {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
         splay_array = vectorArrayNorm(splay_vector_array);
@@ -69,6 +72,19 @@ void DesiredPattern::updateProperties() {
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
 }
 
+
+//void DesiredPattern::adjustMargins() {
+//    veci null_rows = findNullRows(shape_matrix);
+//    veci null_columns = findNullColumns(shape_matrix);
+//
+//    adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
+//    adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);
+//    adjustRowsAndColumns(y_field_preferred, null_rows, null_columns);
+//    adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
+//    adjustRowsAndColumns(splay_array, null_rows, null_columns);
+//
+//    dimensions = getTableDimensions(shape_matrix);
+//}
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
                                const std::string &y_field_filename) :
@@ -310,46 +326,6 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
     }
     is_valid = is_backward_path_valid && is_forward_path_valid;
     return coordinate_splay_minimum;
-
-//    vecd previous_displacement = preferredDirection(current_coordinates, 1);
-//
-//    // If we start in the minimum of line density we need to start away from it, so that the later algorithm will work
-//    if (norm(previous_displacement) == 0) {
-//        previous_displacement = preferredDirection(current_coordinates, 1);
-//        current_coordinates = add(current_coordinates, previous_displacement);
-//        previous_displacement = preferredDirection(current_coordinates, 1);
-//    }
-//
-//    veci line_minimum = dtoi(current_coordinates);
-//    vecd previous_coordinates = current_coordinates;
-//
-//    std::set<veci> current_set = {dtoi(current_coordinates)};
-//
-//    while (true) {
-//        vecd displacement = getSplayDirection(current_coordinates, 1);
-//        if (dot(displacement, previous_displacement) < 0) {
-//            is_valid = true;
-//            line_minimum = dtoi(previous_coordinates);
-//            break;
-//        }
-//        previous_coordinates = current_coordinates;
-//        if (norm(displacement) > 0) {
-//            previous_displacement = displacement;
-//            current_coordinates = add(current_coordinates, displacement);
-//        } else {
-//            current_coordinates = add(current_coordinates, previous_displacement);
-//        }
-//
-//        if (splay(current_coordinates) > last_bin_splay ||
-//            !isInShape(vectoval(current_coordinates))) {
-//            is_valid = false;
-//            break;
-//        }
-//        current_set.insert(dtoi(current_coordinates));
-//        candidate_set.erase(dtoi(current_coordinates));
-//    }
-
-
 }
 
 
