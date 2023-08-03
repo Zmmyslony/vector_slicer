@@ -68,8 +68,8 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
     }
 
     if (fs::exists(splay_path)) {
-        pattern.setSplayVector(splay_path.string());
         if (is_splay_filling_enabled) {
+            pattern.setSplayVector(splay_path.string());
             pattern.findLineDensityMinima();
         }
     } else if (is_splay_filling_enabled) {
