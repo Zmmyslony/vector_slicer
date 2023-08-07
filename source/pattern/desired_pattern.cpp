@@ -49,17 +49,42 @@ const double SPLAY_SINGULARITY_THRESHOLD = 0.005;
 DesiredPattern::DesiredPattern() = default;
 
 
-DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field,
-                               std::vector<vecd> y_field) :
+DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
+                               bool is_splay_filling_enabled) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
         y_field_preferred(std::move(y_field)),
-        dimensions(getTableDimensions(shape_field)) {
+        dimensions(getTableDimensions(shape_field)),
+        is_splay_filling_enabled(is_splay_filling_enabled) {
 
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
 }
 
+
+DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
+                               const std::string &y_field_filename, bool is_splay_filling_enabled) :
+        DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
+                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled) {}
+
+
+DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
+                               bool is_splay_filling_enabled) {
+    std::vector<vecd> theta_field = readFileToTableDouble(theta_field_filename);
+    std::vector<vecd> x_field;
+    std::vector<vecd> y_field;
+    for (const auto &theta_row: theta_field) {
+        vecd x_row;
+        vecd y_row;
+        for (const auto &theta: theta_row) {
+            x_row.push_back(cos(theta));
+            y_row.push_back(sin(theta));
+        }
+        x_field.push_back(x_row);
+        y_field.push_back(y_row);
+    }
+    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled);
+}
 
 void DesiredPattern::updateProperties() {
     if (!isSplayProvided()) {
@@ -67,9 +92,19 @@ void DesiredPattern::updateProperties() {
         splay_array = vectorArrayNorm(splay_vector_array);
     }
     adjustMargins();
-    int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
-    splay_sorted_empty_spots = binBySplay(100);
+    if (is_splay_filling_enabled) {
+        findLineDensityMinima();
+    }
+    int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size()) / 10;
+    splay_sorted_empty_spots = binBySplay(bin_number);
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
+    is_pattern_updated = true;
+}
+
+void DesiredPattern::isPatternUpdated() const {
+    if (!is_pattern_updated) {
+        throw std::runtime_error("Desired pattern has not been updated prior to using it for filling.");
+    }
 }
 
 
@@ -84,29 +119,6 @@ void DesiredPattern::adjustMargins() {
     adjustRowsAndColumns(splay_array, null_rows, null_columns);
 
     dimensions = getTableDimensions(shape_matrix);
-}
-
-DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                               const std::string &y_field_filename) :
-        DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
-                       readFileToTableDouble(y_field_filename)) {}
-
-
-DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename) {
-    std::vector<vecd> theta_field = readFileToTableDouble(theta_field_filename);
-    std::vector<vecd> x_field;
-    std::vector<vecd> y_field;
-    for (const auto &theta_row: theta_field) {
-        vecd x_row;
-        vecd y_row;
-        for (const auto &theta: theta_row) {
-            x_row.push_back(cos(theta));
-            y_row.push_back(sin(theta));
-        }
-        x_field.push_back(x_row);
-        y_field.push_back(y_row);
-    }
-    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field);
 }
 
 
@@ -276,6 +288,11 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         candidate_set.erase(current_coordinates_i);
         current_coordinates = add(current_coordinates, current_displacement);
 
+        if (!isInShape(vectoval(current_coordinates))) {
+            is_forward_path_valid = false;
+            break;
+        }
+
         double current_splay = getSplay(vectoval(current_coordinates_i));
         if (current_splay < minimum_splay) {
             minimum_splay = current_splay;
@@ -288,10 +305,8 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
                 is_forward_path_valid = false;
             }
             break;
-        } else if (!isInShape(vectoval(current_coordinates))) {
-            is_forward_path_valid = false;
-            break;
         }
+
 
         vecd previous_displacement = current_displacement;
         current_displacement = getDirector(current_coordinates, sqrt(2));
@@ -309,6 +324,11 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         candidate_set.erase(current_coordinates_i);
         current_coordinates = add(current_coordinates, current_displacement);
 
+        if (!isInShape(vectoval(current_coordinates))) {
+            is_backward_path_valid = false;
+            break;
+        }
+
         double current_splay = getSplay(vectoval(current_coordinates_i));
         if (current_splay < minimum_splay) {
             minimum_splay = current_splay;
@@ -321,9 +341,6 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
                 is_backward_path_valid = false;
 
             }
-            break;
-        } else if (!isInShape(vectoval(current_coordinates))) {
-            is_backward_path_valid = false;
             break;
         }
 

@@ -38,6 +38,7 @@
 FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
         desired_pattern(std::cref(new_desired_pattern)),
         FillingConfig(new_config) {
+    desired_pattern.get().isPatternUpdated();
     int x_dim = desired_pattern.get().getDimensions()[0];
     int y_dim = desired_pattern.get().getDimensions()[1];
 
