@@ -51,13 +51,30 @@ std::vector<int> findNullRows(const std::vector<std::vector<int>> &array);
 std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array);
 
 template<typename T>
-std::vector<std::vector<T>> removeRows(std::vector<std::vector<T>> &array, const std::vector<int> &rows_to_remove);
+std::vector<T> removeRows(std::vector<T> &array, const std::vector<int> &rows_to_remove)  {
+    if (rows_to_remove[0] > 0) {
+        array.erase(array.begin(), array.begin() + rows_to_remove[0]);
+    }
+    if (rows_to_remove[1] > 0) {
+        array.erase(array.end() - rows_to_remove[1], array.end());
+    }
+    return array;
+}
 
 template<typename T>
 std::vector<std::vector<T>>
-removeColumns(std::vector<std::vector<T>> &array, const std::vector<int> &columns_to_remove);
+removeColumns(std::vector<std::vector<T>> &array, const std::vector<int> &columns_to_remove) {
+    for (auto &row: array) {
+        removeRows(row, columns_to_remove);
+    }
+    return array;
+}
 
 template<typename T>
 void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<int> &rows_to_remove,
-                          const std::vector<int> &columns_to_remove);
+                          const std::vector<int> &columns_to_remove) {
+    removeRows(array, rows_to_remove);
+    removeColumns(array, columns_to_remove);
+
+}
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

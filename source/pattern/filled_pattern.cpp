@@ -171,9 +171,11 @@ vald normalizeDirection(const vali &previous_step) {
 
 
 void FilledPattern::fillPoint(const vali &point, const vald &normalized_direction, int value) {
-    number_of_times_filled[point[0]][point[1]] += value;
-    x_field_filled[point[0]][point[1]] += normalized_direction[0] * value;
-    y_field_filled[point[0]][point[1]] += normalized_direction[1] * value;
+    if (isInRange(point, desired_pattern.get().getDimensions())) {
+        number_of_times_filled[point[0]][point[1]] += value;
+        x_field_filled[point[0]][point[1]] += normalized_direction[0] * value;
+        y_field_filled[point[0]][point[1]] += normalized_direction[1] * value;
+    }
 }
 
 
@@ -207,7 +209,7 @@ void FilledPattern::fillPointsFromDisplacement(const vali &starting_position,
 
 
 vald FilledPattern::getNewStep(vald &real_coordinates, int &length, vald &previous_move) const {
-    vald new_move = desired_pattern.get().preferredDirection(real_coordinates, length);
+    vald new_move = desired_pattern.get().getDirector(real_coordinates) * length;
     double is_opposite_to_previous_step = dot(new_move, previous_move);
 
     if (is_opposite_to_previous_step >= 0) {
@@ -234,16 +236,19 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
 
     vali new_coordinates = dtoi(new_positions);
 
-    // Check if repulsion has cancelled the step, inverted the step, or the step is too short
+    // Check if repulsion has cancelled the step, inverted the step, the step is too short, or moved the position out
+    // of the shape
     if (new_coordinates[0] == current_coordinates[0] && new_coordinates[1] == current_coordinates[1] ||
-        dot(new_step, previous_step) <= 0 || norm(new_step) <= 2) {
+        dot(new_step, previous_step) <= 0 ||
+        norm(new_step) <= 2 ||
+        !desired_pattern.get().isInShape(new_coordinates)) {
         return false;
     }
 
     // If vector filling is enabled, check if we are moving in the constant direction
     if (desired_pattern.get().isVectorFilled()) {
-        double previous_sign = dot(getDirector(current_coordinates), previous_step);
-        double new_sign = dot(getDirector(new_coordinates), new_step);
+        double previous_sign = dot(desired_pattern.get().getDirector(current_coordinates), previous_step);
+        double new_sign = dot(desired_pattern.get().getDirector(new_coordinates), new_step);
         if (previous_sign * new_sign <= 0) {
             return false;
         }
@@ -286,7 +291,7 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
 
 
 Path FilledPattern::generateNewPath(vali &starting_coordinates) {
-    vali starting_step = desired_pattern.get().preferredDirection(starting_coordinates, getStepLength());
+    vali starting_step = dtoi(desired_pattern.get().getDirector(starting_coordinates) * getStepLength());
 
     Path forward_path = generateNewPathForDirection(starting_coordinates, starting_step);
     Path backward_path = generateNewPathForDirection(starting_coordinates, -starting_step);
@@ -385,26 +390,7 @@ std::vector<vali> reshuffle(const std::vector<vali> &initial_vector, std::mt1993
 }
 
 
-vald FilledPattern::getDirector(const vali &positions) const {
-    return vald({desired_pattern.get().getXFieldPreferred()[positions[0]][positions[1]],
-                 desired_pattern.get().getYFieldPreferred()[positions[0]][positions[1]]});
-}
 
-
-vald FilledPattern::getDirector(const vald &positions) {
-    int x_base = (int) positions[0];
-    int y_base = (int) positions[1];
-    double x_fraction = positions[0] - floor(positions[0]);
-    double y_fraction = positions[1] - floor(positions[1]);
-
-    vald director = {0, 0};
-    director += x_fraction * y_fraction * getDirector(vali{x_base, y_base});
-    director += (1 - x_fraction) * y_fraction * getDirector(vali{x_base + 1, y_base});
-    director += (1 - x_fraction) * (1 - y_fraction) * getDirector(vali{x_base + 1, y_base + 1});
-    director += x_fraction * (1 - y_fraction) * getDirector(vali{x_base, y_base + 1});
-
-    return director;
-}
 
 
 vald normalizedDualVector(const vald &vector) {
@@ -438,7 +424,7 @@ std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald
            dot(previous_dual_director, dual_director) > 0
             ) {
         line.push_back(dtoi(coordinates));
-        vald director = getDirector(coordinates);
+        vald director = desired_pattern.get().getDirector(coordinates);
         dual_director = normalizedDualVector(director);
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director *= -1;
@@ -453,7 +439,7 @@ std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald
 std::vector<vali>
 FilledPattern::findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald)) {
     vald real_coordinates = itod(start);
-    vald previous_director = getDirector(real_coordinates);
+    vald previous_director = desired_pattern.get().getDirector(real_coordinates);
     vald initial_dual_director = normalizedDualVector(previous_director);
 
     std::vector<vali> points_in_dual_line_forward;
@@ -471,7 +457,7 @@ std::vector<vali> FilledPattern::findDualLine(const vali &start) {
 
 
 matrix_d FilledPattern::getDualTensor(const vali &coordinates) const {
-    vald dual_director = normalizedDualVector(getDirector(coordinates));
+    vald dual_director = normalizedDualVector(desired_pattern.get().getDirector(coordinates));
     return tensor(dual_director, dual_director);
 }
 

@@ -66,13 +66,10 @@ class FilledPattern : public FillingConfig {
 
     bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
 
-    [[nodiscard]] vald getDirector(const vali &positions) const;
 
     matrix_d getDualTensor(const vali &coordinates) const;
 
     double distance(const vali &first_point, const vali &second_point);
-
-    vald getDirector(const vald &positions);
 
     std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 

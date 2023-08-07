@@ -20,6 +20,7 @@
 //
 
 #include "perimeter.h"
+#include <iostream>
 
 #include "line_operations.h"
 #include "geometry.h"
@@ -42,7 +43,8 @@ std::vector<vali> generatePerimeterList(double radius) {
 
 
 bool isInRange(const vali &position, const vali &dimensions) {
-    return (0 <= position[0] && position[0] < dimensions[0] && 0 <= position[1] && position[1] < dimensions[1]);
+    return (0 <= position[0] && position[0] < dimensions[0] &&
+            0 <= position[1] && position[1] < dimensions[1]);
 }
 
 
@@ -86,7 +88,7 @@ bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coor
 
     for (auto &neighbour_displacement: neighbour_displacements_list) {
         vali neighbour_positions = neighbour_displacement + coordinates;
-        if (isInRange(neighbour_positions, sizes) &&
+        if (!isInRange(neighbour_positions, sizes) ||
             isEmpty(neighbour_positions, shape_table)) {
             return true;
         }

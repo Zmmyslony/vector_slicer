@@ -56,7 +56,7 @@ class DesiredPattern {
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
-    [[nodiscard]] vecd preferredDirection(const vecd &position, double distance) const;
+    [[nodiscard]] vecd getDirector(const vecd &position, double distance) const;
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
@@ -66,7 +66,7 @@ class DesiredPattern {
 
     std::set<veci> fillablePointsSet();
 
-//    void adjustMargins();
+    void adjustMargins();
 
 public:
 
@@ -98,9 +98,9 @@ public:
 
     [[nodiscard]] bool isVectorSorted() const;
 
-    [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
+    vald getDirector(vali positions) const;
 
-    [[nodiscard]] vald preferredDirection(const vald &position, double distance) const;
+    vald getDirector(const vald &positions) const;
 
     [[nodiscard]] bool isInShape(const vali &position) const;
 
