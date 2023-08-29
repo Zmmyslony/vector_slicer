@@ -468,9 +468,26 @@ double FilledPattern::distance(const vali &first_point, const vali &second_point
     matrix_d second_dual_tensor = getDualTensor(second_point);
     double first_distance = sqrt(dot(connecting_vector, multiply(first_dual_tensor, connecting_vector)));
     double second_distance = sqrt(dot(connecting_vector, multiply(second_dual_tensor, connecting_vector)));
-    return 2 * first_distance * second_distance / (first_distance + second_distance);
+
+    double dist = 2 * first_distance * second_distance / (first_distance + second_distance);
+    return std::max({first_distance, second_distance, dist});
 }
 
+
+void FilledPattern::tryAddingPointToSpacedLine(const vali &current_position, vali &previous_position,
+                                               bool &is_filled_coordinate_encountered, double separation,
+                                               std::vector<vali> &separated_starting_points) {
+    double current_distance = distance(current_position, previous_position);
+    if (isFilled(current_position)) {
+        is_filled_coordinate_encountered = true;
+        previous_position = current_position;
+    } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
+               is_filled_coordinate_encountered && current_distance >= separation / 2) {
+        separated_starting_points.push_back(current_position);
+        previous_position = current_position;
+        is_filled_coordinate_encountered = false;
+    }
+}
 
 std::vector<vali> FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &line) {
     std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
@@ -480,31 +497,16 @@ std::vector<vali> FilledPattern::getSpacedLine(const double &separation, const s
     bool is_filled_coordinate_encountered = false;
 
     vali previous_position = line[starting_index];
-    for (int i = starting_index; i < line.size(); i++) {
-        const vali &current_position = line[i];
-        double current_distance = distance(current_position, previous_position);
-        if (isFilled(current_position)) {
-            is_filled_coordinate_encountered = true;
-            previous_position = current_position;
-        } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
-                   is_filled_coordinate_encountered && current_distance >= separation / 2) {
-            separated_starting_points.push_back(current_position);
-            previous_position = current_position;
-        }
+    for (int i = starting_index + 1; i < line.size(); i++) {
+        tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
+                                   separated_starting_points);
     }
 
+    is_filled_coordinate_encountered = false;
     previous_position = line[starting_index];
-    for (int i = starting_index; i < line.size(); i--) {
-        const vali &current_position = line[i];
-        double current_distance = distance(current_position, previous_position);
-        if (isFilled(current_position)) {
-            is_filled_coordinate_encountered = true;
-            previous_position = current_position;
-        } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
-                   is_filled_coordinate_encountered && current_distance >= separation / 2) {
-            separated_starting_points.push_back(current_position);
-            previous_position = current_position;
-        }
+    for (int i = starting_index - 1; i >= 0; i--) {
+        tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
+                                   separated_starting_points);
     }
     return separated_starting_points;
 }
