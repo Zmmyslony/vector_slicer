@@ -68,9 +68,7 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
     }
 
     if (fs::exists(splay_path)) {
-        if (is_splay_filling_enabled) {
-            pattern.setSplayVector(splay_path.string());
-        }
+        pattern.setSplayVector(splay_path.string());
     } else if (is_splay_filling_enabled) {
         std::cout
                 << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "
