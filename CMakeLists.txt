@@ -62,7 +62,15 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/auxiliary/configuration_reading.cpp
-        source/pattern/auxiliary/configuration_reading.h source/pattern/vector_sorted_paths.cpp source/pattern/vector_sorted_paths.h source/pattern/auxiliary/repulsion.cpp source/pattern/auxiliary/repulsion.h source/pattern/auxiliary/line_operations.cpp source/pattern/auxiliary/line_operations.h source/pattern/auxiliary/line_thinning.cpp source/pattern/auxiliary/line_thinning.h)
+        source/pattern/auxiliary/configuration_reading.h
+        source/pattern/vector_sorted_paths.cpp
+        source/pattern/vector_sorted_paths.h
+        source/pattern/auxiliary/repulsion.cpp
+        source/pattern/auxiliary/repulsion.h
+        source/pattern/auxiliary/line_operations.cpp
+        source/pattern/auxiliary/line_operations.h
+        source/pattern/auxiliary/line_thinning.cpp
+        source/pattern/auxiliary/line_thinning.h)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
