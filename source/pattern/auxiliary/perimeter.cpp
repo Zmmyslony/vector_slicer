@@ -126,11 +126,10 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
 
     vald outward_pointing_vector = getOutwardPointingVector(positions, shape_matrix, sizes, tested_circle);
     vald current_splay = splay_array[positions[0]][positions[1]];
-    if (dot(outward_pointing_vector, current_splay) < 0) {
-        return false;
-    } else {
-        return true;
-    }
+
+    // Threshold is set slightly below zero to improve stability for numerically calculated splay
+    double zero_splay_threshold = -1e-10;
+    return dot(outward_pointing_vector, current_splay) > zero_splay_threshold;
 }
 
 std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
