@@ -25,6 +25,7 @@
 #include "desired_pattern.h"
 #include "path.h"
 #include "filling_config.h"
+#include "auxiliary/valarray_operations.h"
 #include <string>
 #include <random>
 
@@ -65,9 +66,10 @@ class FilledPattern : public FillingConfig {
 
     bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
 
-    [[nodiscard]] vald getDirector(const vali &positions) const;
 
-    vald getDirector(const vald &positions);
+    matrix_d getDualTensor(const vali &coordinates) const;
+
+    double distance(const vali &first_point, const vali &second_point);
 
     std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
 
@@ -86,7 +88,11 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> findDualLine(const vali &start);
 
-    std::vector<vali> getSpacedLine(const double &distance, const std::vector<vali> &line);
+    void tryAddingPointToSpacedLine(const vali &current_position, vali &previous_position,
+                                    bool &is_filled_coordinate_encountered, double separation,
+                                    std::vector<vali> &separated_starting_points);
+
+    std::vector<vali> getSpacedLine(const double &separation, const std::vector<vali> &line);
 
     std::vector<vali> findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction);
 
@@ -95,7 +101,7 @@ class FilledPattern : public FillingConfig {
 
     void updateSeedPoints();
 
-    std::vector<vali> findSeedLine();
+    void findSeedPoints();
 
     std::vector<vali> findConstantSplayLine(const vali &start);
 
@@ -105,6 +111,10 @@ class FilledPattern : public FillingConfig {
     void setupRootPoints();
 
     std::vector<std::vector<vali>> separateLines(std::vector<std::vector<vali>> list_of_lines);
+
+    vald calculateNextPosition(vald &positions, vald &previous_step, int length);
+
+    bool isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const;
 
 public:
 

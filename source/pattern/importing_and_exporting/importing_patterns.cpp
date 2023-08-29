@@ -47,8 +47,12 @@ std::vector<fs::path> getPatterns(const fs::path& list_of_patterns_path) {
         convertSlashesOperatingSystem(line);
 
         fs::path test_path = patterns_directory / line;
-        if (exists(test_path) && !line.empty() > 0 && !isspace(line[0]) ) {
-            patterns.emplace_back(test_path);
+        if (!line.empty() && !isspace(line[0]) ) {
+            if (exists(test_path)) {
+                patterns.emplace_back(test_path);
+            } else {
+                std::cout << "Directory " << test_path << " does not exist." << std::endl;
+            }
 
         }
     }

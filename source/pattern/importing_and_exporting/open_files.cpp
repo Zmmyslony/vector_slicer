@@ -60,18 +60,15 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
 
     DesiredPattern pattern;
     if (fs::exists(theta_field_path)) {
-        pattern = {shape_path.string(), theta_field_path.string()};
+        pattern = {shape_path.string(), theta_field_path.string(), is_splay_filling_enabled};
     } else if (fs::exists(x_field_path) && fs::exists(y_field_path)) {
-        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string()};
+        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string(), is_splay_filling_enabled};
     } else {
         throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
     }
 
     if (fs::exists(splay_path)) {
         pattern.setSplayVector(splay_path.string());
-        if (is_splay_filling_enabled) {
-            pattern.findLineDensityMinima();
-        }
     } else if (is_splay_filling_enabled) {
         std::cout
                 << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "

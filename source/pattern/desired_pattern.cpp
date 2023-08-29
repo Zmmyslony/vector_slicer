@@ -41,42 +41,30 @@
 #include "vector_slicer_config.h"
 
 
-const double SPLAY_SINGULARITY_THRESHOLD = 0.005;
-
-
 DesiredPattern::DesiredPattern() = default;
 
 
-DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field,
-                               std::vector<vecd> y_field) :
+DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
+                               bool is_splay_filling_enabled) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
         y_field_preferred(std::move(y_field)),
-        dimensions(getTableDimensions(shape_field)) {
+        dimensions(getTableDimensions(shape_field)),
+        is_splay_filling_enabled(is_splay_filling_enabled) {
 
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
 }
 
 
-void DesiredPattern::updateProperties() {
-    if (!isSplayProvided()) {
-        splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
-        splay_array = vectorArrayNorm(splay_vector_array);
-    }
-    int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size());
-    splay_sorted_empty_spots = binBySplay(100);
-    perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
-}
-
-
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                               const std::string &y_field_filename) :
+                               const std::string &y_field_filename, bool is_splay_filling_enabled) :
         DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
-                       readFileToTableDouble(y_field_filename)) {}
+                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled) {}
 
 
-DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename) {
+DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
+                               bool is_splay_filling_enabled) {
     std::vector<vecd> theta_field = readFileToTableDouble(theta_field_filename);
     std::vector<vecd> x_field;
     std::vector<vecd> y_field;
@@ -90,45 +78,89 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
         x_field.push_back(x_row);
         y_field.push_back(y_row);
     }
-    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field);
+    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled);
 }
 
-
-std::valarray<int> DesiredPattern::preferredDirection(const std::valarray<int> &position, int distance) const {
-    return std::valarray<int>{roundUp(distance * x_field_preferred[position[0]][position[1]]),
-                              roundUp(distance * y_field_preferred[position[0]][position[1]])};
-}
-
-
-std::valarray<double> DesiredPattern::preferredDirection(const std::valarray<double> &position, double distance) const {
-    double x_position_fraction = decimalPart(position[0]);
-    double y_position_fraction = decimalPart(position[1]);
-    unsigned int x_position = (int) floor(position[0]);
-    unsigned int y_position = (int) floor(position[1]);
-    double x_field = (x_position_fraction * y_position_fraction * x_field_preferred[x_position][y_position] +
-                      (1 - x_position_fraction) * y_position_fraction * x_field_preferred[x_position + 1][y_position] +
-                      (1 - x_position_fraction) * (1 - y_position_fraction) *
-                      x_field_preferred[x_position + 1][y_position + 1] +
-                      x_position_fraction * (1 - y_position_fraction) * x_field_preferred[x_position][y_position + 1]);
-
-    double y_field = (x_position_fraction * y_position_fraction * y_field_preferred[x_position][y_position] +
-                      (1 - x_position_fraction) * y_position_fraction * y_field_preferred[x_position + 1][y_position] +
-                      (1 - x_position_fraction) * (1 - y_position_fraction) *
-                      y_field_preferred[x_position + 1][y_position + 1] +
-                      x_position_fraction * (1 - y_position_fraction) * y_field_preferred[x_position][y_position + 1]);
-
-    if (x_field == 0 && y_field == 0) {
-        return std::valarray<double>{x_field_preferred[x_position - 1][y_position],
-                                     y_field_preferred[x_position - 1][y_position]};
+void DesiredPattern::updateProperties() {
+    if (!isSplayProvided()) {
+        splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
+        splay_array = vectorArrayNorm(splay_vector_array);
     }
-    std::valarray<double> new_step = {x_field, y_field};
-    new_step = distance * normalize(new_step);
-    return new_step;
+    adjustMargins();
+    if (is_splay_filling_enabled) {
+        findLineDensityMinima();
+    }
+    int bin_number = std::min(shape_matrix.size(), shape_matrix[0].size()) / 10;
+    splay_sorted_empty_spots = binBySplay(bin_number);
+    perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
+    is_pattern_updated = true;
+}
+
+void DesiredPattern::isPatternUpdated() const {
+    if (!is_pattern_updated) {
+        throw std::runtime_error("Desired pattern has not been updated prior to using it for filling.");
+    }
+}
+
+
+void DesiredPattern::adjustMargins() {
+    veci null_rows = findNullRows(shape_matrix);
+    veci null_columns = findNullColumns(shape_matrix);
+
+    adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
+    adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);
+    adjustRowsAndColumns(y_field_preferred, null_rows, null_columns);
+    adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
+    adjustRowsAndColumns(splay_array, null_rows, null_columns);
+
+    dimensions = getTableDimensions(shape_matrix);
+}
+
+
+vald DesiredPattern::getDirector(vali positions) const {
+    while (positions[0] < 0) {
+        positions[0]++;
+    }
+    while (positions[0] >= dimensions[0]) {
+        positions[0]--;
+    }
+    while (positions[1] < 0) {
+        positions[1]++;
+    }
+    while (positions[1] >= dimensions[1]) {
+        positions[1]--;
+    }
+    return vald({x_field_preferred[positions[0]][positions[1]],
+                 y_field_preferred[positions[0]][positions[1]]});
+}
+
+
+vald DesiredPattern::getDirector(const vald &positions) const {
+    int x_base = (int) positions[0];
+    int y_base = (int) positions[1];
+    double x_fraction = 1 - (positions[0] - floor(positions[0]));
+    double y_fraction = 1 - (positions[1] - floor(positions[1]));
+
+    vald director = {0, 0};
+    director += x_fraction * y_fraction * getDirector(vali{x_base, y_base});
+    if (x_fraction < 1) {
+        director += (1 - x_fraction) * y_fraction * getDirector(vali{x_base + 1, y_base});
+    }
+    if (x_fraction < 1 && y_fraction < 1) {
+        director += (1 - x_fraction) * (1 - y_fraction) * getDirector(vali{x_base + 1, y_base + 1});
+    }
+    if (y_fraction < 1) {
+        director += x_fraction * (1 - y_fraction) * getDirector(vali{x_base, y_base + 1});
+    }
+
+    return director;
 }
 
 
 bool DesiredPattern::isInShape(const std::valarray<int> &position) const {
-    return 0 <= position[0] && 0 <= position[1] && shape_matrix[position[0]][position[1]];
+    return 0 <= position[0] && position[0] < dimensions[0] &&
+           0 <= position[1] && position[1] < dimensions[1] &&
+           shape_matrix[position[0]][position[1]];
 }
 
 
@@ -229,15 +261,15 @@ void DesiredPattern::setSplayVector(const std::string &path) {
 }
 
 
-vecd DesiredPattern::preferredDirection(const vecd &position, double distance) const {
-    vald direction = preferredDirection(vald(position.data(), position.size()), distance);
+vecd DesiredPattern::getDirector(const vecd &position, double distance) const {
+    vald direction = getDirector(vald(position.data(), position.size())) * distance;
     return {std::begin(direction), std::end(direction)};
 }
 
 veci
 DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates) {
     vecd starting_coordinates = current_coordinates;
-    vecd starting_vector = preferredDirection(current_coordinates, sqrt(2));
+    vecd starting_vector = getDirector(current_coordinates, sqrt(2));
 
     std::set<veci> current_set;
     veci coordinate_splay_minimum = dtoi(current_coordinates);
@@ -251,6 +283,11 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         candidate_set.erase(current_coordinates_i);
         current_coordinates = add(current_coordinates, current_displacement);
 
+        if (!isInShape(vectoval(current_coordinates))) {
+            is_forward_path_valid = true;
+            break;
+        }
+
         double current_splay = getSplay(vectoval(current_coordinates_i));
         if (current_splay < minimum_splay) {
             minimum_splay = current_splay;
@@ -259,17 +296,17 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 
         if (current_splay > last_bin_splay) {
             vecd current_splay_vector = getSplayDirection(current_coordinates, 1);
-            if (dot(current_splay_vector, current_displacement) > 0) {
+            double dot_product = dot(current_splay_vector, current_displacement) > 0;
+            if (dot_product > 0) {
                 is_forward_path_valid = false;
+            } else {
+                is_forward_path_valid = true;
             }
-            break;
-        } else if (!isInShape(vectoval(current_coordinates))) {
-            is_forward_path_valid = false;
             break;
         }
 
         vecd previous_displacement = current_displacement;
-        current_displacement = preferredDirection(current_coordinates, sqrt(2));
+        current_displacement = getDirector(current_coordinates, sqrt(2));
         if (dot(current_displacement, previous_displacement) < 0) {
             current_displacement = scale(current_displacement, -1);
         }
@@ -284,6 +321,11 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         candidate_set.erase(current_coordinates_i);
         current_coordinates = add(current_coordinates, current_displacement);
 
+        if (!isInShape(vectoval(current_coordinates))) {
+            is_backward_path_valid = false;
+            break;
+        }
+
         double current_splay = getSplay(vectoval(current_coordinates_i));
         if (current_splay < minimum_splay) {
             minimum_splay = current_splay;
@@ -292,64 +334,23 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 
         if (current_splay > last_bin_splay) {
             vecd current_splay_vector = getSplayDirection(current_coordinates, 1);
-            if (dot(current_splay_vector, current_displacement) > 0) {
+            double dot_product = dot(current_splay_vector, current_displacement) > 0;
+            if (dot_product > 0) {
                 is_backward_path_valid = false;
-
+            } else {
+                is_backward_path_valid = true;
             }
-            break;
-        } else if (!isInShape(vectoval(current_coordinates))) {
-            is_backward_path_valid = false;
             break;
         }
 
         vecd previous_displacement = current_displacement;
-        current_displacement = preferredDirection(current_coordinates, sqrt(2));
+        current_displacement = getDirector(current_coordinates, sqrt(2));
         if (dot(current_displacement, previous_displacement) < 0) {
             current_displacement = scale(current_displacement, -1);
         }
     }
     is_valid = is_backward_path_valid && is_forward_path_valid;
     return coordinate_splay_minimum;
-
-//    vecd previous_displacement = preferredDirection(current_coordinates, 1);
-//
-//    // If we start in the minimum of line density we need to start away from it, so that the later algorithm will work
-//    if (norm(previous_displacement) == 0) {
-//        previous_displacement = preferredDirection(current_coordinates, 1);
-//        current_coordinates = add(current_coordinates, previous_displacement);
-//        previous_displacement = preferredDirection(current_coordinates, 1);
-//    }
-//
-//    veci line_minimum = dtoi(current_coordinates);
-//    vecd previous_coordinates = current_coordinates;
-//
-//    std::set<veci> current_set = {dtoi(current_coordinates)};
-//
-//    while (true) {
-//        vecd displacement = getSplayDirection(current_coordinates, 1);
-//        if (dot(displacement, previous_displacement) < 0) {
-//            is_valid = true;
-//            line_minimum = dtoi(previous_coordinates);
-//            break;
-//        }
-//        previous_coordinates = current_coordinates;
-//        if (norm(displacement) > 0) {
-//            previous_displacement = displacement;
-//            current_coordinates = add(current_coordinates, displacement);
-//        } else {
-//            current_coordinates = add(current_coordinates, previous_displacement);
-//        }
-//
-//        if (splay(current_coordinates) > last_bin_splay ||
-//            !isInShape(vectoval(current_coordinates))) {
-//            is_valid = false;
-//            break;
-//        }
-//        current_set.insert(dtoi(current_coordinates));
-//        candidate_set.erase(dtoi(current_coordinates));
-//    }
-
-
 }
 
 
@@ -381,7 +382,7 @@ void DesiredPattern::findLineDensityMinima() {
         bool is_valid = true;
 
         vecd current_coordinates = itod(first_coordinate);
-        vecd previous_displacement = preferredDirection(current_coordinates, 1);
+        vecd previous_displacement = getDirector(current_coordinates, 1);
 
         veci point_of_minimum_density = findPointOfMinimumDensity(candidate_set, is_valid, current_coordinates);
 
@@ -389,10 +390,10 @@ void DesiredPattern::findLineDensityMinima() {
             solution_set.insert(point_of_minimum_density);
         }
     }
-    std::cout << "Search for points of minimum line density complete" << std::endl;
+    std::cout << "Search for points of minimum line density complete." << std::endl;
 
     solution_set = skeletonize(solution_set);
-    std::cout << "Skeletonization complete" << std::endl;
+    std::cout << "Skeletonization complete." << std::endl;
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
     std::vector<vali> line_density_minima_local;
     for (auto &vector: line_density_minima_vectors) {
@@ -411,7 +412,8 @@ void DesiredPattern::findLineDensityMinima() {
     }
     std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
                                                                                           {0, 0}, sqrt(2));
-    std::cout << " \tNumber of separated divergence-lines: " << separated_lines_of_minimal_density.size() << std::endl;
+    std::cout << " \t" << separated_lines_of_minimal_density.size() << " separate lines of divergent origin found."
+              << std::endl;
     lines_of_minimal_density = separated_lines_of_minimal_density;
 }
 

@@ -22,6 +22,7 @@
 #include <cmath>
 #include <cassert>
 #include <omp.h>
+#include <iostream>
 
 #include "simple_math_operations.h"
 #include "valarray_operations.h"
@@ -169,3 +170,46 @@ std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vecto
     }
     return norms;
 }
+
+std::vector<int> findNullRows(const std::vector<std::vector<int>> &array) {
+    int top_empty_rows = 0;
+    while (std::all_of(array[top_empty_rows].begin(),
+                       array[top_empty_rows].end(),
+                       [](int i) { return i == 0; }
+    )) {
+        top_empty_rows++;
+    }
+
+    int row_count = array.size() - 1;
+    int bottom_empty_rows = 0;
+    while (std::all_of(array[row_count - bottom_empty_rows].begin(),
+                       array[row_count - bottom_empty_rows].end(),
+                       [](int i) { return i == 0; }
+    )) {
+        bottom_empty_rows++;
+    }
+    return {top_empty_rows, bottom_empty_rows};
+}
+
+std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array) {
+    int left_empty_columns = 0;
+    while (std::all_of(array.begin(),
+                       array.end(),
+                       [left_empty_columns](std::vector<int> vec) { return vec[left_empty_columns] == 0; }
+    )) {
+        left_empty_columns++;
+    }
+
+    int column_count = array[0].size();
+    int right_empty_columns = 0;
+    while (std::all_of(array.begin(),
+                       array.end(),
+                       [column_count, right_empty_columns](std::vector<int> vec) {
+                           return vec[column_count - right_empty_columns - 1] == 0;
+                       }
+    )) {
+        right_empty_columns++;
+    }
+    return {left_empty_columns, right_empty_columns};
+}
+

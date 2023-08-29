@@ -20,6 +20,7 @@
 //
 
 #include "perimeter.h"
+#include <iostream>
 
 #include "line_operations.h"
 #include "geometry.h"
@@ -42,7 +43,8 @@ std::vector<vali> generatePerimeterList(double radius) {
 
 
 bool isInRange(const vali &position, const vali &dimensions) {
-    return (0 <= position[0] && position[0] < dimensions[0] && 0 <= position[1] && position[1] < dimensions[1]);
+    return (0 <= position[0] && position[0] < dimensions[0] &&
+            0 <= position[1] && position[1] < dimensions[1]);
 }
 
 
@@ -86,7 +88,7 @@ bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coor
 
     for (auto &neighbour_displacement: neighbour_displacements_list) {
         vali neighbour_positions = neighbour_displacement + coordinates;
-        if (isInRange(neighbour_positions, sizes) &&
+        if (!isInRange(neighbour_positions, sizes) ||
             isEmpty(neighbour_positions, shape_table)) {
             return true;
         }
@@ -124,11 +126,10 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
 
     vald outward_pointing_vector = getOutwardPointingVector(positions, shape_matrix, sizes, tested_circle);
     vald current_splay = splay_array[positions[0]][positions[1]];
-    if (dot(outward_pointing_vector, current_splay) < 0) {
-        return false;
-    } else {
-        return true;
-    }
+
+    // Threshold is set slightly below zero to improve stability for numerically calculated splay
+    double zero_splay_threshold = -1e-10;
+    return dot(outward_pointing_vector, current_splay) > zero_splay_threshold;
 }
 
 std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,

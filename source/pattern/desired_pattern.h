@@ -53,10 +53,12 @@ class DesiredPattern {
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
     bool is_splay_provided = false;
+    bool is_splay_filling_enabled = false;
+    bool is_pattern_updated = false;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
-    [[nodiscard]] vecd preferredDirection(const vecd &position, double distance) const;
+    [[nodiscard]] vecd getDirector(const vecd &position, double distance) const;
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
@@ -66,17 +68,20 @@ class DesiredPattern {
 
     std::set<veci> fillablePointsSet();
 
+    void adjustMargins();
+
 public:
 
     DesiredPattern();
 
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                   const std::string &y_field_filename);
+                   const std::string &y_field_filename, bool is_splay_filling_enabled);
 
-    DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename);
+    DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
+                   bool is_splay_filling_enabled);
 
-    DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field,
-                   std::vector<vecd> y_field);
+    DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
+                   bool is_splay_filling_enabled);
 
     [[nodiscard]] const std::vector<veci> &getShapeMatrix() const;
 
@@ -96,9 +101,9 @@ public:
 
     [[nodiscard]] bool isVectorSorted() const;
 
-    [[nodiscard]] vali preferredDirection(const vali &position, int distance) const;
+    vald getDirector(vali positions) const;
 
-    [[nodiscard]] vald preferredDirection(const vald &position, double distance) const;
+    vald getDirector(const vald &positions) const;
 
     [[nodiscard]] bool isInShape(const vali &position) const;
 
@@ -115,6 +120,8 @@ public:
     void updateProperties();
 
     void findLineDensityMinima();
+
+    void isPatternUpdated() const;
 };
 
 
