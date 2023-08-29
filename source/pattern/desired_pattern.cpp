@@ -40,11 +40,6 @@
 #include "auxiliary/configuration_reading.h"
 #include "vector_slicer_config.h"
 
-const double SPLAY_SINGULARITY_THRESHOLD = 0.005;
-
-// TODO Write a preprocessing function that removes margins from the pattern
-// TODO Make all functions out-of-bounds safe so that the margins are not required (OOB = unfilled)
-
 
 DesiredPattern::DesiredPattern() = default;
 
@@ -289,7 +284,7 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
         current_coordinates = add(current_coordinates, current_displacement);
 
         if (!isInShape(vectoval(current_coordinates))) {
-            is_forward_path_valid = false;
+            is_forward_path_valid = true;
             break;
         }
 
@@ -301,12 +296,14 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 
         if (current_splay > last_bin_splay) {
             vecd current_splay_vector = getSplayDirection(current_coordinates, 1);
-            if (dot(current_splay_vector, current_displacement) > 0) {
+            double dot_product = dot(current_splay_vector, current_displacement) > 0;
+            if (dot_product > 0) {
                 is_forward_path_valid = false;
+            } else {
+                is_forward_path_valid = true;
             }
             break;
         }
-
 
         vecd previous_displacement = current_displacement;
         current_displacement = getDirector(current_coordinates, sqrt(2));
@@ -337,9 +334,11 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 
         if (current_splay > last_bin_splay) {
             vecd current_splay_vector = getSplayDirection(current_coordinates, 1);
-            if (dot(current_splay_vector, current_displacement) > 0) {
+            double dot_product = dot(current_splay_vector, current_displacement) > 0;
+            if (dot_product > 0) {
                 is_backward_path_valid = false;
-
+            } else {
+                is_backward_path_valid = true;
             }
             break;
         }
@@ -391,10 +390,10 @@ void DesiredPattern::findLineDensityMinima() {
             solution_set.insert(point_of_minimum_density);
         }
     }
-    std::cout << "Search for points of minimum line density complete" << std::endl;
+    std::cout << "Search for points of minimum line density complete." << std::endl;
 
     solution_set = skeletonize(solution_set);
-    std::cout << "Skeletonization complete" << std::endl;
+    std::cout << "Skeletonization complete." << std::endl;
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
     std::vector<vali> line_density_minima_local;
     for (auto &vector: line_density_minima_vectors) {
@@ -413,7 +412,8 @@ void DesiredPattern::findLineDensityMinima() {
     }
     std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
                                                                                           {0, 0}, sqrt(2));
-    std::cout << " \tNumber of separated divergence-lines: " << separated_lines_of_minimal_density.size() << std::endl;
+    std::cout << " \t" << separated_lines_of_minimal_density.size() << " separate lines of divergent origin found."
+              << std::endl;
     lines_of_minimal_density = separated_lines_of_minimal_density;
 }
 
