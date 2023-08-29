@@ -88,6 +88,10 @@ class FilledPattern : public FillingConfig {
 
     std::vector<vali> findDualLine(const vali &start);
 
+    void tryAddingPointToSpacedLine(const vali &current_position, vali &previous_position,
+                                    bool &is_filled_coordinate_encountered, double separation,
+                                    std::vector<vali> &separated_starting_points);
+
     std::vector<vali> getSpacedLine(const double &separation, const std::vector<vali> &line);
 
     std::vector<vali> findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction);
@@ -107,6 +111,10 @@ class FilledPattern : public FillingConfig {
     void setupRootPoints();
 
     std::vector<std::vector<vali>> separateLines(std::vector<std::vector<vali>> list_of_lines);
+
+    vald calculateNextPosition(vald &positions, vald &previous_step, int length);
+
+    bool isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const;
 
 public:
 

@@ -34,6 +34,8 @@
 
 #include <iostream>
 
+#define INVALID_POSITION {-1, -1}
+#define DIRECTOR_DISCONTINUITY_THRESHOLD 0.7
 
 FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
         desired_pattern(std::cref(new_desired_pattern)),
@@ -140,7 +142,7 @@ void FilledPattern::updateSeedPoints() {
 
     vali root_point = findRemainingRootPoint();
     if (root_point[0] == -1) {
-        seed_points = {{-1, -1}};
+        seed_points = {INVALID_POSITION};
         return;
     }
     std::vector<vali> dual_line = findDualLine(root_point);
@@ -157,7 +159,8 @@ vali FilledPattern::findRemainingRootPoint() {
             return test_point;
         }
     }
-    return {-1, -1};
+    // If there are no remaining root points, return invalid position.
+    return INVALID_POSITION;
 }
 
 
@@ -220,8 +223,15 @@ vald FilledPattern::getNewStep(vald &real_coordinates, int &length, vald &previo
     }
 }
 
+bool is_unchanged(const vali &first_position, const vali &second_position) {
+    return first_position[0] == second_position[0] && first_position[1] == second_position[1];
+}
 
-bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
+bool is_reversed(const vald &first_step, const vald &second_step) {
+    return dot(first_step, second_step) <= 0;
+}
+
+vald FilledPattern::calculateNextPosition(vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
     vald new_step = getNewStep(positions, length, previous_step);
     vald new_positions = positions + new_step;
@@ -237,43 +247,64 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
 
     vali new_coordinates = dtoi(new_positions);
 
-    // Check if repulsion has cancelled the step, inverted the step, the step is too short, or moved the position out
-    // of the shape
-    if (new_coordinates[0] == current_coordinates[0] && new_coordinates[1] == current_coordinates[1] ||
-        dot(new_step, previous_step) <= 0 ||
-        norm(new_step) <= 2 ||
-        !desired_pattern.get().isInShape(new_coordinates)) {
+    // Check if newly generated position is valid
+    if (isFillable(new_coordinates) &&
+        isDirectorContinuous(current_coordinates, new_coordinates) &&
+        !is_unchanged(current_coordinates, new_coordinates) &&
+        !is_reversed(previous_step, new_step)) {
+        return new_positions;
+    } else {
+        return INVALID_POSITION;
+    }
+}
+
+bool FilledPattern::isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const {
+    vald previous_director = desired_pattern.get().getDirector(previous_coordinates);
+    vald new_director = desired_pattern.get().getDirector(new_coordinates);
+    double product = dot(previous_director, new_director) / (norm(previous_director) * norm(new_director));
+
+    if (desired_pattern.get().isVectorFilled()) {
+        return product > DIRECTOR_DISCONTINUITY_THRESHOLD;
+    } else {
+        return abs(product) > DIRECTOR_DISCONTINUITY_THRESHOLD;
+    }
+}
+
+bool is_valid(const vald &positions) {
+    return positions[0] > 0;
+}
+
+bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
+    vali current_coordinates = dtoi(positions);
+    vald new_positions = calculateNextPosition(positions, previous_step, length);
+
+    // Try creating the longest possible step
+    while (length > 0 && !is_valid(new_positions)) {
+        new_positions = calculateNextPosition(positions, previous_step, length);
+        length--;
+    }
+
+    // Check if new position is valid
+    if (!is_valid(new_positions)) {
         return false;
     }
+    previous_step = new_positions - positions;
+    positions = new_positions;
+    vali new_coordinates = dtoi(new_positions);
 
-    // If vector filling is enabled, check if we are moving in the constant direction
-    if (desired_pattern.get().isVectorFilled()) {
-        double previous_sign = dot(desired_pattern.get().getDirector(current_coordinates), previous_step);
-        double new_sign = dot(desired_pattern.get().getDirector(new_coordinates), new_step);
-        if (previous_sign * new_sign <= 0) {
-            return false;
-        }
+    std::vector<vali> current_points_to_fill;
+    if (current_path.size() >= 2) {
+        current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates,
+                                                  new_coordinates, getPrintRadius(),
+                                                  isFilled(current_coordinates));
+    } else {
+        current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates, getPrintRadius(),
+                                                  isFilled(current_coordinates));
     }
-
-    if (isFillable(new_coordinates)) {
-        std::vector<vali> current_points_to_fill;
-        if (current_path.size() >= 2) {
-            current_points_to_fill = findPointsToFill(current_path.secondToLast(), current_coordinates,
-                                                      new_coordinates, getPrintRadius(),
-                                                      isFilled(current_coordinates));
-        } else {
-            current_points_to_fill = findPointsToFill(current_coordinates, new_coordinates, getPrintRadius(),
-                                                      isFilled(current_coordinates));
-        }
-        vali new_step_int = new_coordinates - current_coordinates;
-        fillPointsFromList(current_points_to_fill, new_step_int, 1);
-        current_path.addPoint(new_coordinates);
-
-        positions = new_positions;
-        previous_step = new_step;
-        return true;
-    }
-    return false;
+    vali new_step_int = new_coordinates - current_coordinates;
+    fillPointsFromList(current_points_to_fill, new_step_int, 1);
+    current_path.addPoint(new_coordinates);
+    return true;
 }
 
 
@@ -389,9 +420,6 @@ std::vector<vali> reshuffle(const std::vector<vali> &initial_vector, std::mt1993
     }
     return new_vector;
 }
-
-
-
 
 
 vald normalizedDualVector(const vald &vector) {
@@ -538,7 +566,7 @@ vali FilledPattern::getFillablePoint() {
         binned_root_points.pop_back();
     }
     if (binned_root_points.empty()) {
-        return {-1, -1};
+        return INVALID_POSITION;
     }
     vali last_element = binned_root_points.back().back();
     binned_root_points.back().pop_back();
