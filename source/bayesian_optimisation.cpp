@@ -329,6 +329,10 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 
 
 void optimisePattern(const fs::path &pattern_path) {
+    if (!fs::exists("./output")) {
+        std::cout << "Output directory does not exists. Creating it." << std::endl;
+        fs::create_directory("output");
+    }
     optimisePattern(pattern_path, readKeyInt(DISAGREEMENT_CONFIG, "seeds"), readKeyInt(DISAGREEMENT_CONFIG, "threads"));
 }
 
