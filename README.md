@@ -3,7 +3,7 @@
 ## About
 Vector Slicer is a program for generation of print paths for 2D planar patterns in which both the shape 
 and the preferred printing direction is defined. It allows both vector and director operation making it suitable
-for 3D printing of anisotropic materials such as liquid crystal elastomers (LCEs). 
+for 3D printing of anisotropic materials such as liquid crystal elastomers (LCEs) or polymers (LCPs). 
 
 The program by default uses splay-based seeding which analyses the pattern in order to find regions where the paths 
 has locally diverged the most, and seeds paths there. Furthermore, the filling is determined via generating parameters
@@ -13,6 +13,18 @@ to minimise the penalty function.
 As an ideal slicing of a pattern where the direction is prescribed is not generally possible, one has to trade 
 the amount of holes, overlaps and director agreement in order to obtain the best slicing for the application. This
 can be done by changing the weights of the penalty function. 
+
+## Requirements
+Boost library - https://www.boost.org/.
+
+## Installation guide
+### Windows
+In the directory where the program will be installed run a command
+````asm
+    git pull https://github.com/Zmmyslony/vector_slicer/
+````
+
+### Linux
 
 ## Input format
 The program requires the input director pattern to be a directory containing two matrices - one boolean which needs to be named
@@ -45,7 +57,6 @@ Additionally, **config.txt** needs to be provided in order to control the fillin
   further than print radius away from itself.
 
 ## Configuration
-
 There are five text files which configure the execution of the program and they are all contained
 in the <b>configuration</b> directory:
 
@@ -74,17 +85,9 @@ of subsequent points alternate (that is: x1,y1,x2,y2,x3,y3, etc.). Each of the p
 pattern which used different seeds, so that in the case of multi-layer prints there is some variability between layers
 to avoid systematic errors.
 
+The simplest way of translating the output file into .gcode is to use an associated program Vector Slicer GCode generator
+(https://github.com/Zmmyslony/Vector_Slicer_GCode). It was designed to be used with the Hyrel printer for DIW writing 
+and the gcode headers and footers are Hyrel specific, but the body of the gcode is rather universal. 
+
 Best configuration file is saved for future use.
 
-## Requirements
-Boost library - https://www.boost.org/.
-
-## Installation guide
-### Windows
-In the directory where the program will be installed run a command
-````asm
-    git pull https:\\www.github.com\zmmyslony\vector_slicer
-```` 
-
-
-### Linux 
