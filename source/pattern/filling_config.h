@@ -37,7 +37,7 @@ enum fillingMethod {
 };
 enum configOptions {
     InitialSeedingMethod,
-    CollisionRadius,
+    TerminationRadius,
     StepLength,
     PrintRadius,
     Repulsion,
@@ -79,7 +79,7 @@ public:
 
     [[nodiscard]] fillingMethod getInitialSeedingMethod() const;
 
-    [[nodiscard]] double getCollisionRadius() const;
+    [[nodiscard]] double getTerminationRadius() const;
 
     [[nodiscard]] double getRepulsion() const;
 

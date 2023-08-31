@@ -67,7 +67,7 @@ fillingMethod FillingConfig::getInitialSeedingMethod() const {
     return filling_method;
 }
 
-double FillingConfig::getCollisionRadius() const {
+double FillingConfig::getTerminationRadius() const {
     return collision_radius;
 }
 
@@ -87,7 +87,7 @@ std::string FillingConfig::getConfigOption(configOptions option) {
     switch (option) {
         case InitialSeedingMethod:
             return std::to_string(filling_method);
-        case CollisionRadius:
+        case TerminationRadius:
             return std::to_string(collision_radius);
         case StepLength:
             return std::to_string(step_length);
@@ -117,7 +117,7 @@ double FillingConfig::getPrintRadius() const {
 configOptions stringToConfig(const std::string &string_option) {
     static std::unordered_map<std::string, configOptions> const mapping = {
             {"InitialSeedingMethod",    configOptions::InitialSeedingMethod},
-            {"CollisionRadius",         configOptions::CollisionRadius},
+            {"TerminationRadius",         configOptions::TerminationRadius},
             {"StepLength",              configOptions::StepLength},
             {"PrintRadius",             configOptions::PrintRadius},
             {"Repulsion",               configOptions::Repulsion},
@@ -155,7 +155,7 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
         case InitialSeedingMethod:
             filling_method = stringToMethod(value);
             break;
-        case CollisionRadius:
+        case TerminationRadius:
             if (std::stod(value) > 0) {
                 collision_radius = std::stod(value);
             } else collision_radius = 0;
@@ -284,7 +284,7 @@ void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path 
                 break;
         }
         file << std::endl;
-        file << "CollisionRadius " << configs[0].getCollisionRadius() << std::endl;
+        file << "TerminationRadius " << configs[0].getTerminationRadius() << std::endl;
         file << "StartingPointSeparation " << configs[0].getStartingPointSeparation() << std::endl;
         file << "Repulsion " << configs[0].getRepulsion() << std::endl;
         file << "RepulsionRadius " << configs[0].getRepulsionRadius() << std::endl;

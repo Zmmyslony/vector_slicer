@@ -50,7 +50,7 @@ QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord pa
         QuantifiedConfig(template_config) {
     vecd vector_parameters(parameters.begin(), parameters.end());
     if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
-        setConfigOption(CollisionRadius, std::to_string(vector_parameters.back()));
+        setConfigOption(TerminationRadius, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
     if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
