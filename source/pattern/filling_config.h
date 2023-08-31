@@ -36,7 +36,7 @@ enum fillingMethod {
     Splay, Perimeter, Dual
 };
 enum configOptions {
-    InitialFillingMethod,
+    InitialSeedingMethod,
     CollisionRadius,
     StepLength,
     PrintRadius,
@@ -77,7 +77,7 @@ public:
 
     void setConfigOption(const configOptions &option, const std::string &value);
 
-    [[nodiscard]] fillingMethod getInitialFillingMethod() const;
+    [[nodiscard]] fillingMethod getInitialSeedingMethod() const;
 
     [[nodiscard]] double getCollisionRadius() const;
 

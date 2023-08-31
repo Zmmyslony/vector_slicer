@@ -70,7 +70,7 @@ void FilledPattern::setup() {
     zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima());
     perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
 
-    switch (getInitialFillingMethod()) {
+    switch (getInitialSeedingMethod()) {
         case Splay:
             if (desired_pattern.get().isSplayProvided()) {
                 search_stage = SplayFilling;

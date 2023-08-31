@@ -63,7 +63,7 @@ void FillingConfig::printConfig() {
     std::cout << message << std::endl;
 }
 
-fillingMethod FillingConfig::getInitialFillingMethod() const {
+fillingMethod FillingConfig::getInitialSeedingMethod() const {
     return filling_method;
 }
 
@@ -85,7 +85,7 @@ double FillingConfig::getStartingPointSeparation() const {
 
 std::string FillingConfig::getConfigOption(configOptions option) {
     switch (option) {
-        case InitialFillingMethod:
+        case InitialSeedingMethod:
             return std::to_string(filling_method);
         case CollisionRadius:
             return std::to_string(collision_radius);
@@ -116,7 +116,7 @@ double FillingConfig::getPrintRadius() const {
 
 configOptions stringToConfig(const std::string &string_option) {
     static std::unordered_map<std::string, configOptions> const mapping = {
-            {"InitialFillingMethod",    configOptions::InitialFillingMethod},
+            {"InitialSeedingMethod",    configOptions::InitialSeedingMethod},
             {"CollisionRadius",         configOptions::CollisionRadius},
             {"StepLength",              configOptions::StepLength},
             {"PrintRadius",             configOptions::PrintRadius},
@@ -152,7 +152,7 @@ fillingMethod stringToMethod(const std::string &string_option) {
 
 void FillingConfig::setConfigOption(const configOptions &option, const std::string &value) {
     switch (option) {
-        case InitialFillingMethod:
+        case InitialSeedingMethod:
             filling_method = stringToMethod(value);
             break;
         case CollisionRadius:
@@ -271,8 +271,8 @@ void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path 
     std::ofstream file(path.string());
 
     if (file.is_open()) {
-        file << "InitialFillingMethod ";
-        switch (configs[0].getInitialFillingMethod()) {
+        file << "InitialSeedingMethod ";
+        switch (configs[0].getInitialSeedingMethod()) {
             case Perimeter:
                 file << "Perimeter";
                 break;
