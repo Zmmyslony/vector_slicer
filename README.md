@@ -20,8 +20,9 @@ The program requires the input director pattern to be a directory containing two
 that director makes with x-axis. Alternatively, **thetaField.csv** can be replaced by two matrices called **xField.csv**
 and **yField.csv**  which  are respectively x and y components of the vector field dictating the preferred direction.
 
-Optionally, analytically calculated splay vector $\bf s = \bf n (\nabla \cdot) \bf n$ can be provided as **splay.csv** 
-matrix which improves the accuracy of seeding.
+Optionally, analytically calculated splay vector $\bf s = \bf n (\nabla \cdot \bf n)$ can be provided as **splay.csv** 
+matrix which improves the accuracy of seeding. Alternatively, if the vector field $\bf n$ is discontinuous or changes 
+its direction, a better formulation is $Q = \bf n \otimes \bf n$ and $\bf s = Q \cdot (\nabla \cdot Q)$
 
 Additionally, **config.txt** needs to be provided in order to control the filling. Options are 
 * _PrintRadius_ (default=5, isOptimisable=False) - defines the relation between grid spacing and path width. Small
