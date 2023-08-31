@@ -113,7 +113,7 @@ public:
 
 configOptions stringToConfig(const std::string &string_option);
 
-void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path);
+void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path& path);
 
 std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 
