@@ -275,7 +275,7 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
     FillingConfig initial_config(initial_config_path);
-    bool is_splay_filling_enabled = initial_config.getInitialFillingMethod() == Splay;
+    bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
 
     DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);

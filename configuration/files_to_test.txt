@@ -4,13 +4,20 @@
     linear_10x5_mm
 
     azimuthal_10_mm
-    radial_10_mm
+radial_10_mm
     diagonal_20x10_mm
     linear_20x10_mm
 
     iris_r_inner_5_mm
     cylinder_r_inner_5_mm
     evertor_r_inner_5_mm
+    iris_r_inner_5_mm_40
+    iris_r_inner_5_mm_45
+    iris_r_inner_5_mm_50
+
+    evertor_r_inner_10_mm_40
+    evertor_r_inner_10_mm_45
+    evertor_r_inner_10_mm_50
 
     three_charge_field
     three_charge_field_blob
@@ -23,7 +30,15 @@
 
     fan_gripper_6x24mm
     fan_gripper_12x48mm
+    fan_gripper_12x48mm_asymmetric_negative
     fan_toy_gripper_4x20mm
+    fan_gripper_8x48mm_weak_positive
+    fan_gripper_8x48mm_weak_negative
+    fan_gripper_12x48mm_TN_first
+    fan_gripper_12x48mm_TN_second
+
+    square_12_mm_first
+    square_12_mm_second
 
     fan_asymmetric_positive_3_1_cm
     fan_asymmetric_negative_3_1_cm
@@ -41,5 +56,14 @@
 
     linear_15x075_mm
 
-example_24_24_mm
+    example_24_24_mm
     example_24_24_mm_dual
+
+    radial_10_mm_strong_holes_strong_overlap
+    radial_10_mm_strong_holes
+    radial_10_mm_strong_holes_weak_overlap
+    radial_10_mm_weak_overlap
+    radial_10_mm_weak_holes_weak_overlap
+    radial_10_mm_weak_holes
+    radial_10_mm_weak_holes_strong_overlap
+    radial_10_mm_strong_overlap

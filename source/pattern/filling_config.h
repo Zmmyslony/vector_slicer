@@ -36,12 +36,12 @@ enum fillingMethod {
     Splay, Perimeter, Dual
 };
 enum configOptions {
-    InitialFillingMethod,
-    CollisionRadius,
+    InitialSeedingMethod,
+    TerminationRadius,
     StepLength,
     PrintRadius,
     Repulsion,
-    StartingPointSeparation,
+    SeedSpacing,
     Seed,
     RepulsionRadius,
     RepulsionAngle
@@ -77,13 +77,13 @@ public:
 
     void setConfigOption(const configOptions &option, const std::string &value);
 
-    [[nodiscard]] fillingMethod getInitialFillingMethod() const;
+    [[nodiscard]] fillingMethod getInitialSeedingMethod() const;
 
-    [[nodiscard]] double getCollisionRadius() const;
+    [[nodiscard]] double getTerminationRadius() const;
 
     [[nodiscard]] double getRepulsion() const;
 
-    [[nodiscard]] double getStartingPointSeparation() const;
+    [[nodiscard]] double getSeedSpacing() const;
 
     [[nodiscard]] double getPrintRadius() const;
 
@@ -113,7 +113,7 @@ public:
 
 configOptions stringToConfig(const std::string &string_option);
 
-void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path);
+void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path& path);
 
 std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path);
 

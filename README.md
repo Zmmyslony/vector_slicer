@@ -1,31 +1,48 @@
 # Vector Slicer
 
 ## About
+Vector Slicer is a program for generation of print paths for 2D planar patterns in which both the shape 
+and the preferred printing direction is defined. It allows both vector and director operation making it suitable
+for 3D printing of anisotropic materials such as liquid crystal elastomers (LCEs). 
 
-Vector Slicer is a program which is used to generate a set of coordinates forming a print
-path which at each point tries to follow the preferred direction defined by the vector (director) field.
-The slicer was designed to be used for 3D printing of liquid crystal elastomers, in which the
-direction of printing decides the deformation of the material when heated.
+The program by default uses splay-based seeding which analyses the pattern in order to find regions where the paths 
+has locally diverged the most, and seeds paths there. Furthermore, the filling is determined via generating parameters
+(GPs) which are optimised using Bayesian optimisation (Bayesopt, https://github.com/rmcantin/bayesopt) in order
+to minimise the penalty function. 
 
-The slicer generates the print patterns from a set of generating parameters, and then optimises
-the generating parameters using the Bayesopt library (https://github.com/rmcantin/bayesopt)
-in order to minimise the penalising function. Penalising function
-can be tuned so that the overlap, number of empty spots, agreement with the desired director or
-total number of lines are minimised. Each set of generating parameters is calculated for
-a number of seeds in order to avoid locking on local minima.
+As an ideal slicing of a pattern where the direction is prescribed is not generally possible, one has to trade 
+the amount of holes, overlaps and director agreement in order to obtain the best slicing for the application. This
+can be done by changing the weights of the penalty function. 
 
 ## Input format
+The program requires the input director pattern to be a directory containing two matrices - one boolean which needs to be named
+**shape.csv** which tells which pixels ought to be filled, and another  called **thetaField.csv** which is the angle 
+that director makes with x-axis. Alternatively, **thetaField.csv** can be replaced by two matrices called **xField.csv**
+and **yField.csv**  which  are respectively x and y components of the vector field dictating the preferred direction.
 
-The program requires the input director pattern to be in form of three matrices - one boolean which needs to be named
-**shape.csv** which tells which pixels ought to be filled, and two more called **xField.csv** and **yField.csv**  which
-are respectively x and y components of the vector field dictating the preferred direction.
+Optionally, analytically calculated splay vector $\bf s = \bf n (\nabla \cdot \bf n)$ can be provided as **splay.csv** 
+matrix which improves the accuracy of seeding. Alternatively, if the vector field $\bf n$ is discontinuous or changes 
+its direction, a better formulation is $Q = \bf n \otimes \bf n$ and $\bf s = Q \cdot (\nabla \cdot Q)$
 
-In addition to that, **config.txt** is **required** to be defined with _InitialFillingMethod_, _StepLength_ and _
-PrintRadius_. _InitialFillingMethod_ can either be _Perimeter_ or _Dual_, where the perimeter approach
-starts by separating the boundary of the shape into equidistant points, from which lines will be started,
-while the dual approach starts the line in a random point within the pattern that has low splay. _StepLength_ is
-an integer telling how long is each step in pixels, and _PrintRadius_ is a double variable deciding the radius of
-where the points will be filled.
+Additionally, **config.txt** needs to be provided in order to control the filling. Options are 
+* _PrintRadius_ (default=5, isOptimisable=False) - defines the relation between grid spacing and path width. Small
+  values (<4) as they introduce numerical errors, likewise large values (>10) offer little improvement.
+* _InitialSeedingMethod_ (optional, default=Splay, isOptimisable=False) - options: _Splay_, _Perimeter_, _Dual_; Splay filling first searches 
+  regions of maximum divergence and seeds lines there, after that it switches to Perimeter which finds areas on the 
+  perimeter where either the splay is zero or the splay vector points outwards and then seeds them, and then dual line 
+  approach is taken in order to ensure complete filling. 
+* _StepLength_ (default=10, isOptimisable=False) - maximal (and usual) length of each segment of the path. Too short segements will 
+  create patterns that are too dense for the printer buffer to handle.
+
+
+* _Repulsion_ (default=0, isOptimisable=True) - strength of repulsion from preexisting paths in range _RepulsionRadius_.
+* _RepulsionAngle_ (default=3.14, isOptimisable=True) - maximum angle between repulsed direction and preferred. 
+* _SeedSpacing_ (default=2 * PrintRadius, isOptimisable=True)
+* _Seed_ (default=0, isOptimisable=True, listable=True) -  used only when using the function "recalculateBestConfig".
+* _TerminationRadius_ (default=5, isOptimisable=True) - minimal distance between two separate paths for 
+  propagation to continue.
+* _RepulsionRadius_ (default=0, isOptimisable=False) - legacy, allows the pattern to repulse from paths further
+  further than print radius away from itself.
 
 ## Configuration
 
@@ -38,7 +55,7 @@ in the <b>configuration</b> directory:
 * <b>bayesian_optimisation.cfg</b> - configures the number of iterations, relearning period and other basic
   configurations.
 * <b>disagreement_function.cfg</b> - defines the disagreement function used in the optimisation.
-* <b>filling.cfg</b> - controls the filling algorithm.
+* <b>filling.cfg</b> - switching between vector and director operation, control over removal of points and short lines.
 
 The locations of each of the configuration files together with the directories used for importing and exporting can
 be modified in the **vector_slicer_config.h.in** file.
@@ -57,8 +74,17 @@ of subsequent points alternate (that is: x1,y1,x2,y2,x3,y3, etc.). Each of the p
 pattern which used different seeds, so that in the case of multi-layer prints there is some variability between layers
 to avoid systematic errors.
 
-Best config can be used to recalculate the optimised system once again.
+Best configuration file is saved for future use.
 
 ## Requirements
+Boost library - https://www.boost.org/.
 
-The only requirement to run this code is to have the boost library, although OpenMP is highly recommended.
+## Installation guide
+### Windows
+In the directory where the program will be installed run a command
+````asm
+    git pull https:\\www.github.com\zmmyslony\vector_slicer
+```` 
+
+
+### Linux 

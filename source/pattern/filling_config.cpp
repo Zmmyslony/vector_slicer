@@ -63,11 +63,11 @@ void FillingConfig::printConfig() {
     std::cout << message << std::endl;
 }
 
-fillingMethod FillingConfig::getInitialFillingMethod() const {
+fillingMethod FillingConfig::getInitialSeedingMethod() const {
     return filling_method;
 }
 
-double FillingConfig::getCollisionRadius() const {
+double FillingConfig::getTerminationRadius() const {
     return collision_radius;
 }
 
@@ -79,15 +79,15 @@ int FillingConfig::getStepLength() const {
     return step_length;
 }
 
-double FillingConfig::getStartingPointSeparation() const {
+double FillingConfig::getSeedSpacing() const {
     return starting_point_separation;
 }
 
 std::string FillingConfig::getConfigOption(configOptions option) {
     switch (option) {
-        case InitialFillingMethod:
+        case InitialSeedingMethod:
             return std::to_string(filling_method);
-        case CollisionRadius:
+        case TerminationRadius:
             return std::to_string(collision_radius);
         case StepLength:
             return std::to_string(step_length);
@@ -95,7 +95,7 @@ std::string FillingConfig::getConfigOption(configOptions option) {
             return std::to_string(print_radius);
         case Repulsion:
             return std::to_string(repulsion);
-        case StartingPointSeparation:
+        case SeedSpacing:
             return std::to_string(starting_point_separation);
         case Seed:
             return std::to_string(seed);
@@ -116,12 +116,12 @@ double FillingConfig::getPrintRadius() const {
 
 configOptions stringToConfig(const std::string &string_option) {
     static std::unordered_map<std::string, configOptions> const mapping = {
-            {"InitialFillingMethod",    configOptions::InitialFillingMethod},
-            {"CollisionRadius",         configOptions::CollisionRadius},
+            {"InitialSeedingMethod",    configOptions::InitialSeedingMethod},
+            {"TerminationRadius",         configOptions::TerminationRadius},
             {"StepLength",              configOptions::StepLength},
             {"PrintRadius",             configOptions::PrintRadius},
             {"Repulsion",               configOptions::Repulsion},
-            {"StartingPointSeparation", configOptions::StartingPointSeparation},
+            {"SeedSpacing", configOptions::SeedSpacing},
             {"Seed",                    configOptions::Seed},
             {"RepulsionRadius",         configOptions::RepulsionRadius},
             {"RepulsionAngle",          configOptions::RepulsionAngle}
@@ -152,10 +152,10 @@ fillingMethod stringToMethod(const std::string &string_option) {
 
 void FillingConfig::setConfigOption(const configOptions &option, const std::string &value) {
     switch (option) {
-        case InitialFillingMethod:
+        case InitialSeedingMethod:
             filling_method = stringToMethod(value);
             break;
-        case CollisionRadius:
+        case TerminationRadius:
             if (std::stod(value) > 0) {
                 collision_radius = std::stod(value);
             } else collision_radius = 0;
@@ -170,7 +170,7 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
         case Repulsion:
             repulsion = std::stod(value);
             break;
-        case StartingPointSeparation:
+        case SeedSpacing:
             starting_point_separation = std::stod(value);
             break;
         case Seed:
@@ -267,12 +267,12 @@ FillingConfig::FillingConfig(fillingMethod new_perimeter_filling_method, int new
     seed = new_seed;
 }
 
-void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) {
+void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path &path) {
     std::ofstream file(path.string());
 
     if (file.is_open()) {
-        file << "InitialFillingMethod ";
-        switch (configs[0].getInitialFillingMethod()) {
+        file << "InitialSeedingMethod ";
+        switch (configs[0].getInitialSeedingMethod()) {
             case Perimeter:
                 file << "Perimeter";
                 break;
@@ -284,8 +284,8 @@ void exportConfigList(const std::vector<FillingConfig> &configs, fs::path path) 
                 break;
         }
         file << std::endl;
-        file << "CollisionRadius " << configs[0].getCollisionRadius() << std::endl;
-        file << "StartingPointSeparation " << configs[0].getStartingPointSeparation() << std::endl;
+        file << "TerminationRadius " << configs[0].getTerminationRadius() << std::endl;
+        file << "SeedSpacing " << configs[0].getSeedSpacing() << std::endl;
         file << "Repulsion " << configs[0].getRepulsion() << std::endl;
         file << "RepulsionRadius " << configs[0].getRepulsionRadius() << std::endl;
         file << "RepulsionAngle " << configs[0].getRepulsionAngle() << std::endl;
@@ -304,7 +304,7 @@ void FillingConfig::exportConfig(const fs::path &directory, const std::string &s
     exportConfigList({*this}, directory);
 }
 
-FillingConfig::FillingConfig() : FillingConfig(Perimeter, 5,
+FillingConfig::FillingConfig() : FillingConfig(Splay, 5,
                                                5, 0, 10,
                                                5, 0, 0) {}
 
