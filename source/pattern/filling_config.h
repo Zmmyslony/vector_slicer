@@ -41,7 +41,7 @@ enum configOptions {
     StepLength,
     PrintRadius,
     Repulsion,
-    StartingPointSeparation,
+    SeedSpacing,
     Seed,
     RepulsionRadius,
     RepulsionAngle
@@ -83,7 +83,7 @@ public:
 
     [[nodiscard]] double getRepulsion() const;
 
-    [[nodiscard]] double getStartingPointSeparation() const;
+    [[nodiscard]] double getSeedSpacing() const;
 
     [[nodiscard]] double getPrintRadius() const;
 

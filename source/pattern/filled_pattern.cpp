@@ -54,7 +54,7 @@ std::vector<std::vector<vali>> FilledPattern::separateLines(std::vector<std::vec
     std::vector<std::vector<vali>> separated_lines;
     std::shuffle(list_of_lines.begin(), list_of_lines.end(), random_engine);
     for (auto &line: list_of_lines) {
-        std::vector<vali> spaced_line = getSpacedLine(getStartingPointSeparation(), line);
+        std::vector<vali> spaced_line = getSpacedLine(getSeedSpacing(), line);
         std::shuffle(spaced_line.begin(), spaced_line.end(), random_engine);
         separated_lines.emplace_back(spaced_line);
     }
@@ -146,7 +146,7 @@ void FilledPattern::updateSeedPoints() {
         return;
     }
     std::vector<vali> dual_line = findDualLine(root_point);
-    std::vector<vali> spaced_dual_line = getSpacedLine(getStartingPointSeparation(), dual_line);
+    std::vector<vali> spaced_dual_line = getSpacedLine(getSeedSpacing(), dual_line);
     std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
     seed_points = spaced_dual_line;
 }

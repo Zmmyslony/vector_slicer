@@ -54,7 +54,7 @@ QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord pa
         vector_parameters.pop_back();
     }
     if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
-        setConfigOption(StartingPointSeparation, std::to_string(vector_parameters.back()));
+        setConfigOption(SeedSpacing, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
     if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {

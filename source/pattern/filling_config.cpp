@@ -79,7 +79,7 @@ int FillingConfig::getStepLength() const {
     return step_length;
 }
 
-double FillingConfig::getStartingPointSeparation() const {
+double FillingConfig::getSeedSpacing() const {
     return starting_point_separation;
 }
 
@@ -95,7 +95,7 @@ std::string FillingConfig::getConfigOption(configOptions option) {
             return std::to_string(print_radius);
         case Repulsion:
             return std::to_string(repulsion);
-        case StartingPointSeparation:
+        case SeedSpacing:
             return std::to_string(starting_point_separation);
         case Seed:
             return std::to_string(seed);
@@ -121,7 +121,7 @@ configOptions stringToConfig(const std::string &string_option) {
             {"StepLength",              configOptions::StepLength},
             {"PrintRadius",             configOptions::PrintRadius},
             {"Repulsion",               configOptions::Repulsion},
-            {"StartingPointSeparation", configOptions::StartingPointSeparation},
+            {"SeedSpacing", configOptions::SeedSpacing},
             {"Seed",                    configOptions::Seed},
             {"RepulsionRadius",         configOptions::RepulsionRadius},
             {"RepulsionAngle",          configOptions::RepulsionAngle}
@@ -170,7 +170,7 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
         case Repulsion:
             repulsion = std::stod(value);
             break;
-        case StartingPointSeparation:
+        case SeedSpacing:
             starting_point_separation = std::stod(value);
             break;
         case Seed:
@@ -285,7 +285,7 @@ void exportConfigList(const std::vector<FillingConfig> &configs, const fs::path 
         }
         file << std::endl;
         file << "TerminationRadius " << configs[0].getTerminationRadius() << std::endl;
-        file << "StartingPointSeparation " << configs[0].getStartingPointSeparation() << std::endl;
+        file << "SeedSpacing " << configs[0].getSeedSpacing() << std::endl;
         file << "Repulsion " << configs[0].getRepulsion() << std::endl;
         file << "RepulsionRadius " << configs[0].getRepulsionRadius() << std::endl;
         file << "RepulsionAngle " << configs[0].getRepulsionAngle() << std::endl;
