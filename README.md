@@ -14,17 +14,48 @@ As an ideal slicing of a pattern where the direction is prescribed is not genera
 the amount of holes, overlaps and director agreement in order to obtain the best slicing for the application. This
 can be done by changing the weights of the penalty function. 
 
-## Requirements
-Boost library - https://www.boost.org/.
+[//]: # (## Requirements)
+
+[//]: # (Boost library - https://www.boost.org/.)
 
 ## Installation guide
+Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
+boost (https://www.boost.org/) are installed. 
+
 ### Windows
-In the directory where the program will be installed run a command
+If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in terminal
 ````asm
-    git pull https://github.com/Zmmyslony/vector_slicer/
+git clone https://github.com/Microsoft/vcpkg.git
+.\vcpkg\bootstrap-vcpkg.bat
+cd vcpkg
+vcpkg install boost:x64-windows
+vcpkg integrate install 
 ````
+and note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... .
+
+-DCMAKE_TOOLCHAIN_FILE=C:/source/vcpkg/scripts/buildsystems/vcpkg.cmake
+Once boost is installed go to the desired parent directory and run in terminal
+````asm
+git clone https://github.com/Zmmyslony/vector_slicer.git
+cd vector_slicer
+cmake ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
+cmake --build ./build --config Release
+````
+This will build the executable in the ./build/Release directory.
+
 
 ### Linux
+In the desired parent directory run in terminal
+````asm
+git clone https://github.com/Zmmyslony/vector_slicer.git
+cd vector_slicer
+cmake -S ./ -B ./build
+cd build
+make
+````
+
+### macOS
+
 
 ## Input format
 The program requires the input director pattern to be a directory containing two matrices - one boolean which needs to be named
