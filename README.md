@@ -24,35 +24,35 @@ boost (https://www.boost.org/) are installed.
 
 ### Windows
 If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in terminal
-````asm
+```
 git clone https://github.com/Microsoft/vcpkg.git
 .\vcpkg\bootstrap-vcpkg.bat
 cd vcpkg
 vcpkg install boost:x64-windows
 vcpkg integrate install 
-````
+```
 and note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... .
 
 -DCMAKE_TOOLCHAIN_FILE=C:/source/vcpkg/scripts/buildsystems/vcpkg.cmake
 Once boost is installed go to the desired parent directory and run in terminal
-````asm
+```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
 cmake ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
 cmake --build ./build --config Release
-````
+```
 This will build the executable in the ./build/Release directory.
 
 
 ### Linux
 In the desired parent directory run in terminal
-````asm
+```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
 cmake -S ./ -B ./build
 cd build
 make
-````
+```
 
 ### macOS
 
