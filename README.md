@@ -14,6 +14,8 @@ As an ideal slicing of a pattern where the direction is prescribed is not genera
 the amount of holes, overlaps and director agreement in order to obtain the best slicing for the application. This
 can be done by changing the weights of the penalty function. 
 
+Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and suggestions.
+
 [//]: # (## Requirements)
 
 [//]: # (Boost library - https://www.boost.org/.)
