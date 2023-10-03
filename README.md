@@ -69,23 +69,25 @@ matrix which improves the accuracy of seeding. Alternatively, if the vector fiel
 its direction, a better formulation is $Q = \bf n \otimes \bf n$ and $\bf s = Q \cdot (\nabla \cdot Q)$
 
 Additionally, **config.txt** needs to be provided in order to control the filling. Options are 
-* _PrintRadius_ (default=5, isOptimisable=False) – defines the relation between grid spacing and path width. Small
+
+Unoptimisable:
+* _PrintRadius_ (default=5) – defines the relation between grid spacing and path width. Small
   values (<4) as they introduce numerical errors, likewise large values (>10) offer little improvement.
-* _InitialSeedingMethod_ (optional, default=Splay, isOptimisable=False) – options: _Splay_, _Perimeter_, _Dual_; Splay filling first searches 
+* _InitialSeedingMethod_ (optional, default=Spla) – options: _Splay_, _Perimeter_, _Dual_; Splay filling first searches 
   regions of maximum divergence and seeds lines there, after that it switches to Perimeter which finds areas on the 
   perimeter where either the splay is zero or the splay vector points outwards and then seeds them, and then dual line 
   the approach is taken in order to ensure complete filling. 
-* _StepLength_ (default=10, isOptimisable=False) – maximal (and usual) length of each segment of the path. Too short segments will 
+* _StepLength_ (default=10) – maximal (and usual) length of each segment of the path. Too short segments will 
   create patterns that are too dense for the printer buffer to handle.
 
-
-* _Repulsion_ (default=0, isOptimisable=True) – strength of repulsion from preexisting paths in range _RepulsionRadius_.
-* _RepulsionAngle_ (default=3.14, isOptimisable=True) – the maximum angle between repulsed direction and preferred. 
-* _SeedSpacing_ (default=2 * PrintRadius, isOptimisable=True)
-* _Seed_ (default=0, isOptimisable=True, listable=True) –  used only when using the function "recalculateBestConfig".
-* _TerminationRadius_ (default=5, isOptimisable=True) – minimal distance between two separate paths for 
+Optimisable:
+* _Repulsion_ (default=0) – strength of repulsion from preexisting paths in range _RepulsionRadius_.
+* _RepulsionAngle_ (default=3.14) – the maximum angle between repulsed direction and preferred. 
+* _SeedSpacing_ (default=2 * PrintRadius)
+* _Seed_ (default=0, isOptimisable=True) –  used only when using the function "recalculateBestConfig".
+* _TerminationRadius_ (default=5) – minimal distance between two separate paths for 
   propagation to continue.
-* _RepulsionRadius_ (default=0, isOptimisable=False) – legacy, allows the pattern to repulse from paths further
+* _RepulsionRadius_ (default=0) – legacy, allows the pattern to repulse from paths further
  than the print radius away from itself.
 
 ## Configuration
@@ -111,14 +113,14 @@ the paths. The resulting files will be named based on the name of the input dire
 The filled matrix shows how many times was each pixel filled which is a fast test for the quality.
 
 The paths file contains the main output of the
-program. The header contains some relevant information as to how it was sliced, and then the between "#Start of pattern"
-and "# End of pattern" is the sequence of paths. Each line corresponds to a single line, where the x and y coordinates
+program. The header contains some relevant information as to how it was sliced, and then the between "# Start of pattern"
+and "# End of pattern" is the sequence of paths corresponding to a single layer. Each line corresponds to a single line, where the x and y coordinates
 of subsequent points alternate (that is: x1,y1,x2,y2,x3,y3, etc.). Each of the patterns corresponds to a fully sliced
 pattern which uses different seeds so that in the case of multi-layer prints there is some variability between layers
 to avoid systematic errors.
 
 The simplest way of translating the output file into .gcode is to use an associated program Vector Slicer GCode generator
-(https://github.com/Zmmyslony/Vector_Slicer_GCode). It was designed to be used with the Hyrel printer for DIW writing 
+(https://github.com/Zmmyslony/Vector_Slicer_GCode). It was designed to be used with the Hyrel printer (System 30M) for DIW writing 
 and the gcode headers and footers are Hyrel-specific, but the body of the gcode is rather universal. 
 
 The best configuration file is saved for future use so it can be used for recalculation.
