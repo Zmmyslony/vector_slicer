@@ -40,6 +40,9 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
         std::vector<double> row;
 
         while (std::getline(line_stream, element, ',')) {
+            if (element == "#") {
+                break;
+            }
             try {
                 row.push_back(std::stod(element));
             }
