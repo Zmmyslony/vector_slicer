@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(vector_slicer VERSION 0.5.3)
+project(vector_slicer VERSION 0.5.4)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
