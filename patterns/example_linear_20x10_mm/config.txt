@@ -1,8 +1,0 @@
-InitialSeedingMethod Perimeter
-StepLength 10
-PrintRadius 4.5
-
-TerminationRadius 2
-Repulsion 0
-SeedSpacing 10
-Seed 0

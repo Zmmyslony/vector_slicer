@@ -1,4 +1,9 @@
+example_longitudinal_20_10_mm
+example_diagonal_20_10_mm
+
+example_longitudinal_cross_20_5_mm
+example_transverse_cross_20_5_mm
+
 example_azimuthal_10_mm
 example_azimuthal_10_mm_square
-example_linear_20x10_mm
 example_radial_10_mm
