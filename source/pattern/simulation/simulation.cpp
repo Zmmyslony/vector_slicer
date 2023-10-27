@@ -8,7 +8,8 @@
 Simulation::Simulation(const fs::path &pattern_directory, bool is_default_used) :
         BayesianOptimisationConfig(pattern_directory / "config.cfg", BAYESIAN_CONFIG),
         DisagreementConfig(pattern_directory / "disagreement.cfg", DISAGREEMENT_CONFIG),
-        DisagreementFunctionConfig(pattern_directory / "disagreement_function.cfg", DISAGREEMENT_FUNCTION_CONFIG)
+        DisagreementFunctionConfig(pattern_directory / "disagreement_function.cfg", DISAGREEMENT_FUNCTION_CONFIG),
+        FillingMethodConfig(pattern_directory / "filling.cfg", FILLING_CONFIG)
         {
 
 }
