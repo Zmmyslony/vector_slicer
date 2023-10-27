@@ -13,12 +13,8 @@
 
 namespace fs = boost::filesystem;
 
-class Simulation {
+class Simulation : BayesianOptimisationConfig, DisagreementConfig, DisagreementFunctionConfig, FillingMethodConfig{
     fs::path pattern_directory;
-    BayesianOptimisationConfig bayesian_optimisation_config;
-    DisagreementConfig disagreement_config;
-    DisagreementFunctionConfig disagreement_function_config;
-    FillingMethodConfig filling_method_config;
 
 public:
     Simulation(const fs::path &pattern_directory, bool is_default_used);

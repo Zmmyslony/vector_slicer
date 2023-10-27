@@ -10,19 +10,21 @@
 namespace fs = boost::filesystem;
 
 class BayesianOptimisationConfig {
-    int total_iterations;
-    int improvement_iterations;
-    int relearning_iterations;
-    double noise;
-    int print_verbose;
+    int total_iterations{};
+    int improvement_iterations{};
+    int relearning_iterations{};
+    double noise{};
+    int print_verbose{};
 
-    bool is_collision_radius_optimised;
-    bool is_starting_point_separation_optimised;
-    bool is_repulsion_magnitude_optimised;
-    bool is_repulsion_angle_optimised;
+    bool is_collision_radius_optimised{};
+    bool is_starting_point_separation_optimised{};
+    bool is_repulsion_magnitude_optimised{};
+    bool is_repulsion_angle_optimised{};
 
 public:
     explicit BayesianOptimisationConfig(const fs::path &config_path);
+
+    BayesianOptimisationConfig(const fs::path &local_path, const fs::path &default_path);
 
     void saveToFile(const fs::path &config_path);
 

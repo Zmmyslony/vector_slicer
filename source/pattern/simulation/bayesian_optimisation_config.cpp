@@ -20,6 +20,17 @@ BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &config_pa
     is_repulsion_angle_optimised = readKeyBool(config_path, "is_repulsion_angle_optimised");
 }
 
+
+BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &local_path, const fs::path &config_path) {
+    if (fs::exists(local_path)) {
+        std::cout << "Local Bayesian optimisation configuration file found." << std::endl;
+        *this = BayesianOptimisationConfig(local_path);
+    } else {
+        *this = BayesianOptimisationConfig(config_path);
+    }
+}
+
+
 void BayesianOptimisationConfig::saveToFile(const fs::path &config_path) {
     std::ofstream file;
     file.open(config_path.string());
