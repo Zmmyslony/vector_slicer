@@ -22,7 +22,7 @@ set(CMAKE_C_STANDARD C17)
 configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
 include_directories(${PROJECT_BINARY_DIR})
 
-add_executable(Vector_Slicer main.cpp
+set(SOURCES
         source/pattern/auxiliary/simple_math_operations.cpp
         source/pattern/auxiliary/simple_math_operations.h
         source/pattern/importing_and_exporting/table_reading.cpp
@@ -72,8 +72,22 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/auxiliary/line_thinning.cpp
         source/pattern/auxiliary/line_thinning.h)
 
+add_executable(Vector_Slicer main.cpp
+        ${SOURCES})
+
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}  -ldl
         bayesopt
 )
+
+add_library(vector_slicer_api SHARED
+        ${SOURCES}
+        source/vector_slicer_api.h
+        source/vector_slicer_api.cpp)
+
+target_link_libraries(vector_slicer_api
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY}  -ldl
+        bayesopt
+        )

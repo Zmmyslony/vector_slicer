@@ -64,6 +64,9 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads);
 /// Optimises the pattern from the selected path using .cfg configuration
 void optimisePattern(const fs::path &pattern_path);
 
+/// Fills a pattern using provided config.
+void fillPattern(const fs::path &pattern_path, const fs::path &config_path);
+
 /// Recalculates the best config using a config from output/best_configs
 void recalculateBestConfig(const fs::path &pattern_path);
 
