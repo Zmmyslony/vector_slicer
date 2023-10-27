@@ -70,7 +70,21 @@ set(SOURCES
         source/pattern/auxiliary/line_operations.cpp
         source/pattern/auxiliary/line_operations.h
         source/pattern/auxiliary/line_thinning.cpp
-        source/pattern/auxiliary/line_thinning.h)
+        source/pattern/auxiliary/line_thinning.h
+        source/pattern/simulation/interactive_input.cpp
+        source/pattern/simulation/interactive_input.h
+        source/pattern/simulation/simulation.cpp
+        source/pattern/simulation/simulation.h
+        source/pattern/simulation/bayesian_optimisation_config.cpp
+        source/pattern/simulation/bayesian_optimisation_config.h
+        source/pattern/simulation/disagreement_config.cpp
+        source/pattern/simulation/disagreement_config.h
+        source/pattern/simulation/disagreement_function_config.cpp
+        source/pattern/simulation/disagreement_function_config.h
+        source/pattern/simulation/filling_config.cpp
+        source/pattern/simulation/filling_config.h
+        source/pattern/simulation/initial_filling_config.cpp
+        source/pattern/simulation/initial_filling_config.h source/pattern/simulation/filling_method_config.cpp source/pattern/simulation/filling_method_config.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})
