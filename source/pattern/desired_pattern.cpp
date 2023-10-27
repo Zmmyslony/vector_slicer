@@ -37,7 +37,7 @@
 #include "auxiliary/line_thinning.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
-#include "auxiliary/configuration_reading.h"
+#include "simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 

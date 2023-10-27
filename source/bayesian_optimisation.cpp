@@ -34,7 +34,7 @@
 #include "pattern/importing_and_exporting/open_files.h"
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
-#include "pattern/auxiliary/configuration_reading.h"
+#include "pattern/simulation/configuration_reading.h"
 #include "dataset.hpp"
 
 namespace fs = boost::filesystem;

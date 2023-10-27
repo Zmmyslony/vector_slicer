@@ -24,7 +24,7 @@
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
 #include "vector_slicer_config.h"
-#include "auxiliary/configuration_reading.h"
+#include "simulation/configuration_reading.h"
 
 #include <utility>
 #include <cmath>

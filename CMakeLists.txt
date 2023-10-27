@@ -61,8 +61,8 @@ set(SOURCES
         source/pattern/disagreement_weights.h
         source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
-        source/pattern/auxiliary/configuration_reading.cpp
-        source/pattern/auxiliary/configuration_reading.h
+        source/pattern/simulation/configuration_reading.cpp
+        source/pattern/simulation/configuration_reading.h
         source/pattern/vector_sorted_paths.cpp
         source/pattern/vector_sorted_paths.h
         source/pattern/auxiliary/repulsion.cpp

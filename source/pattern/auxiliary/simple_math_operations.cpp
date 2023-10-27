@@ -26,7 +26,7 @@
 
 #include "simple_math_operations.h"
 #include "valarray_operations.h"
-#include "configuration_reading.h"
+#include "../simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 int roundUp(double number) {

@@ -25,7 +25,7 @@
 #include <sstream>
 #include <ctime>
 #include "vector_slicer_config.h"
-#include "../auxiliary/configuration_reading.h"
+#include "../simulation/configuration_reading.h"
 
 
 std::string readRowToString(const std::vector<int> &row) {
