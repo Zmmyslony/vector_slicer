@@ -32,9 +32,15 @@ std::string readKey(const fs::path &file_path, const std::string &key);
 
 int readKeyInt(const fs::path &file_path, const std::string &key);
 
+int readKeyInt(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key);
+
 double readKeyDouble(const fs::path &file_path, const std::string &key);
 
+double readKeyDouble(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key);
+
 bool readKeyBool(const fs::path &file_path, const std::string &key);
+
+bool readKeyBool(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key);
 
 
 #endif //VECTOR_SLICER_CONFIGURATION_READING_H

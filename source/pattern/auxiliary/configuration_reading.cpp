@@ -52,14 +52,36 @@ int readKeyInt(const fs::path &file_path, const std::string &key) {
     return std::stoi(readKey(file_path, key));
 }
 
+int readKeyInt(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key) {
+    if (fs::exists(local_file_path)) {
+        return readKeyInt(local_file_path, key);
+    } else {
+        return readKeyInt(default_file_path, key);
+    }
+}
 
 double readKeyDouble(const fs::path &file_path, const std::string &key) {
     return std::stod(readKey(file_path, key));
 }
 
+double readKeyDouble(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key) {
+    if (fs::exists(local_file_path)) {
+        return readKeyDouble(local_file_path, key);
+    } else {
+        return readKeyDouble(default_file_path, key);
+    }
+}
 
 bool readKeyBool(const fs::path &file_path, const std::string &key) {
     bool b;
     std::istringstream(readKey(file_path, key)) >> std::boolalpha >> b;
     return b;
+}
+
+bool readKeyBool(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key) {
+    if (fs::exists(local_file_path)) {
+        return readKeyBool(local_file_path, key);
+    } else {
+        return readKeyBool(default_file_path, key);
+    }
 }
