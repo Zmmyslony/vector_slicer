@@ -31,7 +31,7 @@ BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &local_pat
 }
 
 
-void BayesianOptimisationConfig::saveToFile(const fs::path &config_path) {
+void BayesianOptimisationConfig::saveBayesianOptimisationConfig(const fs::path &config_path) {
     std::ofstream file;
     file.open(config_path.string());
     file << "# Number of sets of generating parameters to iterate over in Bayesian optimisation."

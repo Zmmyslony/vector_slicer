@@ -26,7 +26,7 @@ public:
 
     BayesianOptimisationConfig(const fs::path &local_path, const fs::path &default_path);
 
-    void saveToFile(const fs::path &config_path);
+    void saveBayesianOptimisationConfig(const fs::path &config_path);
 
     int getTotalIterations() const;
 
