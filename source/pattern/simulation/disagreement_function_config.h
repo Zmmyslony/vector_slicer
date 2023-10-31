@@ -19,12 +19,19 @@ private:
     double director_power;
     double paths_power;
 
+    std::string textDisagreementFunctionConfig() const;
 public:
     explicit DisagreementFunctionConfig(const fs::path &config_path);
 
     DisagreementFunctionConfig(const fs::path &local_path, const fs::path &default_path);
 
     void saveDisagreementFunctionConfig(const fs::path &config_path);
+
+    void saveDisagreementFunctionConfig(const fs::path &local_path, const fs::path &default_path);
+
+    void printDisagreementFunctionConfig() const;
+
+    void editDisagreementFunctionConfig();
 
     double getEmptySpotWeight() const;
 

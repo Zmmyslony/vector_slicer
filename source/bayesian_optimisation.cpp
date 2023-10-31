@@ -280,7 +280,7 @@ void optimisePattern(const fs::path &pattern_path) {
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
-    Simulation simulation(pattern_path, true);
+    Simulation simulation(pattern_path, false);
 
     QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 

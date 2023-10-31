@@ -4,7 +4,10 @@
 
 #include "bayesian_optimisation_config.h"
 #include "configuration_reading.h"
+#include "interactive_input.h"
+
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &config_path) {
@@ -31,25 +34,86 @@ BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &local_pat
 }
 
 
+std::string BayesianOptimisationConfig::textBayesianOptimisationConfig() const {
+    std::ostringstream textForm;
+    textForm << "# Number of sets of generating parameters to iterate over in Bayesian optimisation."
+             << "\nnumber_of_iteration = " << total_iterations
+             << "\n\n# If the disagreement does not improve in this many iterations, then the algorithm finishes. Set to 0 to disable it."
+             << "\nnumber_of_improvement_iterations = " << improvement_iterations
+             << "\n\n# Number of iterations after which the model relearns based on all previous data points."
+             << "\niterations_between_relearning = " << relearning_iterations
+             << "\n\n# Assumed data noise. Larger values looks for new global minima while lower values probes the local minimum more precisely."
+             << "\nnoise = " << noise
+             << "\n\n# How to print logs. - (0 - error, 1 - info, 2 - debug) to std::cout, (3, 4, 5) same but to log.txt"
+             << "\nprint_verbose = " << print_verbose
+             << "\n\n# Settings to choose which parameters are optimised"
+             << "\nis_collision_radius_optimised = " << is_collision_radius_optimised
+             << "\nis_starting_point_separation_optimised = " << is_starting_point_separation_optimised
+             << "\nis_repulsion_magnitude_optimised = " << is_repulsion_magnitude_optimised
+             << "\nis_repulsion_angle_optimised = " << is_repulsion_angle_optimised;
+    return textForm.str();
+}
+
+void BayesianOptimisationConfig::printBayesianOptimisationConfig() const {
+    std::cout << textBayesianOptimisationConfig();
+}
+
 void BayesianOptimisationConfig::saveBayesianOptimisationConfig(const fs::path &config_path) {
     std::ofstream file;
     file.open(config_path.string());
-    file << "# Number of sets of generating parameters to iterate over in Bayesian optimisation."
-         << "\nnumber_of_iteration = " << total_iterations
-         << "\n\n# If the disagreement does not improve in this many iterations, then the algorithm finishes. Set to 0 to disable it."
-         << "\nnumber_of_improvement_iterations = " << improvement_iterations
-         << "\n\n# Number of iterations after which the model relearns based on all previous data points."
-         << "\niterations_between_relearning = " << relearning_iterations
-         << "\n\n# Assumed data noise. Larger values looks for new global minima while lower values probes the local minimum more precisely."
-         << "\nnoise = " << noise
-         << "\n\n# How to print logs. - (0 - error, 1 - info, 2 - debug) to std::cout, (3, 4, 5) same but to log.txt"
-         << "\nprint_verbose = " << print_verbose
-         << "\n\n# Settings to choose which parameters are optimised"
-         << "\nis_collision_radius_optimised" << is_collision_radius_optimised
-         << "\nis_starting_point_separation_optimised" << is_starting_point_separation_optimised
-         << "\nis_repulsion_magnitude_optimised" << is_repulsion_magnitude_optimised
-         << "\nis_repulsion_angle_optimised" << is_repulsion_angle_optimised;
+    file << textBayesianOptimisationConfig();
     file.close();
+}
+
+void BayesianOptimisationConfig::saveBayesianOptimisationConfig(const fs::path &local_path, const fs::path &default_path) {
+    std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
+    bool is_saving_complete = false;
+    while(!is_saving_complete) {
+        int saving_destination = readInt(0);
+        switch(saving_destination) {
+            case 0:
+                std::cout << "Config is going to be not saved, do you confirm?" << std::endl;
+                is_saving_complete = readBool(true);
+                break;
+            case 1:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveBayesianOptimisationConfig(local_path);
+                }
+                break;
+            case 2:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveBayesianOptimisationConfig(default_path);
+                }
+                break;
+            default:
+                std::cout << "Invalid value! Select values from range 0-2" << std::endl;
+                break;
+        }
+    }
+}
+
+void BayesianOptimisationConfig::editBayesianOptimisationConfig() {
+    bool is_editing_finished = false;
+    while (!is_editing_finished) {
+        std::cout << "Editing Bayesian optimisation config." << std::endl;
+        editInt(total_iterations, "total_iterations");
+        editInt(improvement_iterations, "improvement_iterations");
+        editInt(relearning_iterations, "relearning_iterations");
+        editDouble(noise, "noise");
+        editInt(print_verbose, "print_verbose");
+        editBool(is_collision_radius_optimised, "is_collision_radius_optimised");
+        editBool(is_starting_point_separation_optimised, "is_starting_point_separation_optimised");
+        editBool(is_repulsion_magnitude_optimised, "is_repulsion_magnitude_optimised");
+        editBool(is_repulsion_angle_optimised, "is_repulsion_angle_optimised");
+
+        std::cout << std::endl << "Current configuration:" << std::endl;
+        printBayesianOptimisationConfig();
+
+        std::cout << std::endl << std::endl << "Finish editing? (default: true)";
+        is_editing_finished = readBool(true);
+    }
 }
 
 int BayesianOptimisationConfig::getTotalIterations() const {

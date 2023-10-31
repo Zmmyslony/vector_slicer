@@ -7,11 +7,16 @@
 
 #include <sstream>
 
-class InteractiveInput {
-    std::stringstream new_file_content;
+void editInt(int &variable, const std::string &variable_name);
 
-    std::string clean(const std::string &input, const std::string &type);
-};
+void editDouble(double &variable, const std::string &variable_name);
 
+void editBool(bool &variable, const std::string &variable_name);
+
+int readInt(int default_value);
+
+bool readBool(bool default_value);
+
+bool confirmation();
 
 #endif //VECTOR_SLICER_INTERACTIVE_INPUT_H

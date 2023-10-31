@@ -4,7 +4,10 @@
 
 #include "disagreement_config.h"
 #include "configuration_reading.h"
+#include "interactive_input.h"
+
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 
@@ -31,7 +34,42 @@ DisagreementConfig::DisagreementConfig(const fs::path &local_path, const fs::pat
 void DisagreementConfig::saveDisagreementConfig(const fs::path &config_path) {
     std::ofstream file;
     file.open(config_path.string());
-    file
+    file << textDisagreementConfig();
+    file.close();
+}
+
+void DisagreementConfig::saveDisagreementConfig(const fs::path &local_path, const fs::path &default_path) {
+    std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
+    bool is_saving_complete = false;
+    while(!is_saving_complete) {
+        int saving_destination = readInt(0);
+        switch(saving_destination) {
+            case 0:
+                std::cout << "Config is going to be not saved, do you confirm?" << std::endl;
+                is_saving_complete = readBool(true);
+                break;
+            case 1:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveDisagreementConfig(local_path);
+                }
+                break;
+            case 2:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveDisagreementConfig(default_path);
+                }
+                break;
+            default:
+                std::cout << "Invalid value! Select values from range 0-2" << std::endl;
+                break;
+        }
+    }
+}
+
+std::string DisagreementConfig::textDisagreementConfig() const {
+    std::ostringstream textForm;
+    textForm
             << "# Maximum number of concurrent configurations that are calculated during calculation of the disagreement of given"
             << "\n# generating parameters. Should not exceed the number of physical cores of CPU."
             << "\nthreads = " << threads
@@ -48,10 +86,32 @@ void DisagreementConfig::saveDisagreementConfig(const fs::path &config_path) {
             << "\nnumber_of_layers = " << number_of_layers
             << "\n\n# Switch to print mean disagreement, standard deviation and noise for generating parameters. Used to identify whether"
             << "\n# the noise parameter in Bayesian optimisation is correct, mostly for debugging."
-            << "\nis_disagreement_details_printed" << is_disagreement_details_printed;
-    file.close();
+            << "\nis_disagreement_details_printed = " << is_disagreement_details_printed;
+    return textForm.str();
 }
 
+void DisagreementConfig::printDisagreementConfig() const {
+    std::cout << textDisagreementConfig() << std::endl;
+}
+
+void DisagreementConfig::editDisagreementConfig() {
+    bool is_editing_finished = false;
+    while (!is_editing_finished) {
+        std::cout << "Editing disagreement config." << std::endl;
+        editInt(threads, "threads");
+        editInt(optimisation_seeds, "optimisation_seeds");
+        editInt(final_seeds, "final_seeds");
+        editDouble(agreement_percentile, "agreement_percentile");
+        editInt(number_of_layers, "number_of_layers");
+        editBool(is_disagreement_details_printed, "is_disagreement_details_printed");
+
+        std::cout << std::endl << "Current configuration:" << std::endl;
+        printDisagreementConfig();
+
+        std::cout << std::endl << std::endl << "Finish editing? (default: true)";
+        is_editing_finished = readBool(true);
+    }
+}
 
 int DisagreementConfig::getThreads() const {
     return threads;
@@ -76,3 +136,4 @@ int DisagreementConfig::getNumberOfLayers() const {
 bool DisagreementConfig::isDisagreementDetailsPrinted() const {
     return is_disagreement_details_printed;
 }
+

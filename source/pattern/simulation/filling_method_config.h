@@ -15,12 +15,19 @@ class FillingMethodConfig {
     bool is_points_removed;
     double minimal_line_length;
 
+    std::string textFillingMethodConfig() const;
 public:
     explicit FillingMethodConfig(const fs::path &config_path);
 
     FillingMethodConfig(const fs::path &local_path, const fs::path &default_path);
 
     void saveFillingMethodConfig(const fs::path &config_path);
+
+    void saveFillingMethodConfig(const fs::path &local_path, const fs::path &default_path);
+
+    void printFillingMethodConfig() const;
+
+    void editFillingMethodConfig();
 
     bool isVectorFillingEnabled() const;
 

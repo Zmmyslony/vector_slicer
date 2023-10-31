@@ -22,6 +22,8 @@ class Simulation
 
 public:
     Simulation(const fs::path &pattern_directory, bool is_default_used);
+
+    void editSimulationConfiguration();
 };
 
 

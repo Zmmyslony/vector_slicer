@@ -17,12 +17,19 @@ class DisagreementConfig {
     int number_of_layers;
     bool is_disagreement_details_printed;
 
+    std::string textDisagreementConfig() const;
 public:
     explicit DisagreementConfig(const fs::path &config_path);
 
     DisagreementConfig(const fs::path &local_path, const fs::path &global_path);
 
     void saveDisagreementConfig(const fs::path &config_path);
+
+    void saveDisagreementConfig(const fs::path &local_path, const fs::path &default_path);
+
+    void printDisagreementConfig() const;
+
+    void editDisagreementConfig();
 
     int getThreads() const;
 

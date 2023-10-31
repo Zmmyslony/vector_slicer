@@ -21,12 +21,20 @@ class BayesianOptimisationConfig {
     bool is_repulsion_magnitude_optimised{};
     bool is_repulsion_angle_optimised{};
 
+    std::string textBayesianOptimisationConfig() const;
 public:
+
     explicit BayesianOptimisationConfig(const fs::path &config_path);
 
     BayesianOptimisationConfig(const fs::path &local_path, const fs::path &default_path);
 
     void saveBayesianOptimisationConfig(const fs::path &config_path);
+
+    void saveBayesianOptimisationConfig(const fs::path &local_path, const fs::path &default_path);
+
+    void printBayesianOptimisationConfig() const;
+
+    void editBayesianOptimisationConfig();
 
     int getTotalIterations() const;
 

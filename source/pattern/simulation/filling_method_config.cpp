@@ -4,7 +4,10 @@
 
 #include "filling_method_config.h"
 #include "configuration_reading.h"
+#include "interactive_input.h"
+
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 FillingMethodConfig::FillingMethodConfig(const fs::path &config_path) :
@@ -25,23 +28,79 @@ FillingMethodConfig::FillingMethodConfig(const fs::path &local_path, const fs::p
 }
 
 
+void FillingMethodConfig::printFillingMethodConfig() const {
+    std::cout << textFillingMethodConfig();
+}
+
 void FillingMethodConfig::saveFillingMethodConfig(const fs::path &config_path) {
     std::ofstream file;
     file.open(config_path.string());
-    file << "# Switch between vector filling, where a path cannot continue if the desired director has inverted its direction and\n"
-            "# director operation where it does not matter."
-         << "\nis_vector_filling_enabled = " << is_vector_filling_enabled
-         << "\n\n# Switch for vector sorting, where the start and end points are distinguished through the vector field, and the director\n"
-            "# sorting where a path can start from either direction."
-         << "\nis_vector_sorting_enabled = " << is_vector_sorting_enabled
-         << "\n\n# Switch for removing the points from the filled pattern, as they do not have the required directionality, but can\n"
-            "# be used in order to fill the pattern more. It occurs before the disagreement calculation so the optimisation will try\n"
-            "# to remove the holes existing after the removal of points."
-         << "\nis_points_removed = " << is_points_removed
-         << "\n\n# Lines shorter than minimal_line_length * print_radius will be removed. Happens before the disagreement calculation,\n"
-            "# same as point removal."
-         << "\nminimal_line_length = " << minimal_line_length;
+    file << textFillingMethodConfig();
     file.close();
+}
+
+void FillingMethodConfig::saveFillingMethodConfig(const fs::path &local_path, const fs::path &default_path) {
+    std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
+    bool is_saving_complete = false;
+    while(!is_saving_complete) {
+        int saving_destination = readInt(0);
+        switch(saving_destination) {
+            case 0:
+                std::cout << "Config is going to be not saved, do you confirm?" << std::endl;
+                is_saving_complete = readBool(true);
+                break;
+            case 1:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveFillingMethodConfig(local_path);
+                }
+                break;
+            case 2:
+                if(confirmation()) {
+                    is_saving_complete = true;
+                    saveFillingMethodConfig(default_path);
+                }
+                break;
+            default:
+                std::cout << "Invalid value! Select values from range 0-2" << std::endl;
+                break;
+        }
+    }
+}
+
+std::string FillingMethodConfig::textFillingMethodConfig() const {
+    std::ostringstream textForm;
+    textForm << "# Switch between vector filling, where a path cannot continue if the desired director has inverted its direction and\n"
+                "# director operation where it does not matter."
+             << "\nis_vector_filling_enabled = " << is_vector_filling_enabled
+             << "\n\n# Switch for vector sorting, where the start and end points are distinguished through the vector field, and the director\n"
+                "# sorting where a path can start from either direction."
+             << "\nis_vector_sorting_enabled = " << is_vector_sorting_enabled
+             << "\n\n# Switch for removing the points from the filled pattern, as they do not have the required directionality, but can\n"
+                "# be used in order to fill the pattern more. It occurs before the disagreement calculation so the optimisation will try\n"
+                "# to remove the holes existing after the removal of points."
+             << "\nis_points_removed = " << is_points_removed
+             << "\n\n# Lines shorter than minimal_line_length * print_radius will be removed. Happens before the disagreement calculation,\n"
+                "# same as point removal."
+             << "\nminimal_line_length = " << minimal_line_length;
+    return textForm.str();
+}
+
+void FillingMethodConfig::editFillingMethodConfig() {
+    bool is_editing_finished = false;
+    while (!is_editing_finished) {
+        std::cout << "Editing filling method config." << std::endl;
+        editBool(is_vector_filling_enabled, "is_vector_filling_enabled");
+        editBool(is_vector_sorting_enabled, "is_vector_sorting_enabled");
+        editBool(is_points_removed, "is_points_removed");
+        editDouble(minimal_line_length, "minimal_line_length");
+
+        std::cout << std::endl << "Current configuration:" << std::endl;
+        printFillingMethodConfig();
+
+        std::cout << std::endl << std::endl << "Finish editing? (default: true)";
+        is_editing_finished = readBool(true);
+    }
 }
 
 bool FillingMethodConfig::isVectorFillingEnabled() const {
