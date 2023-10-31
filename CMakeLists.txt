@@ -57,8 +57,6 @@ set(SOURCES
         source/bayesian_optimisation.h
         source/pattern/auxiliary/vector_operations.cpp
         source/pattern/auxiliary/vector_operations.h
-        source/pattern/disagreement_weights.cpp
-        source/pattern/disagreement_weights.h
         source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/simulation/configuration_reading.cpp
@@ -81,10 +79,8 @@ set(SOURCES
         source/pattern/simulation/disagreement_config.h
         source/pattern/simulation/disagreement_function_config.cpp
         source/pattern/simulation/disagreement_function_config.h
-        source/pattern/simulation/filling_config.cpp
-        source/pattern/simulation/filling_config.h
-        source/pattern/simulation/initial_filling_config.cpp
-        source/pattern/simulation/initial_filling_config.h source/pattern/simulation/filling_method_config.cpp source/pattern/simulation/filling_method_config.h)
+        source/pattern/simulation/filling_method_config.cpp
+        source/pattern/simulation/filling_method_config.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})

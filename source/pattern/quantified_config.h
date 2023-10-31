@@ -23,7 +23,7 @@
 #define VECTOR_SLICER_QUANTIFIED_CONFIG_H
 
 #include "filled_pattern.h"
-#include "disagreement_weights.h"
+#include "simulation/simulation.h"
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <cfloat>
@@ -31,7 +31,7 @@
 typedef boost::numeric::ublas::vector<double> vectord;
 
 /// Class quantifying how given FillingConfig works for a number of seeds
-class QuantifiedConfig : FilledPattern, DisagreementWeights {
+class QuantifiedConfig : FilledPattern, public Simulation {
     double empty_spots = 0;
     double average_overlap = 0;
     double director_disagreement = 0;
@@ -49,12 +49,13 @@ class QuantifiedConfig : FilledPattern, DisagreementWeights {
     double calculatePathLengthDeviation(int order);
 
     double localDirectorAgreement(int i, int j);
+
 public:
 
-    QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights);
+    QuantifiedConfig(const FilledPattern &pattern, const Simulation &simulation);
 
     QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
-                     DisagreementWeights disagreement_weights);
+                     const Simulation &simulation);
 
     /// Function allowing BayesianOptimisation to create new FillingConfig using vectord input
     QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters);
@@ -62,7 +63,7 @@ public:
     /// Creating copies of QuantifiedConfig with differing seeds
     QuantifiedConfig(QuantifiedConfig &template_config, int seed);
 
-    FilledPattern getFilledPattern() const;
+    [[nodiscard]] FilledPattern getFilledPattern() const;
 
     DesiredPattern getDesiredPattern();
 

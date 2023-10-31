@@ -10,6 +10,7 @@
 namespace fs = boost::filesystem;
 
 class DisagreementFunctionConfig {
+private:
     double empty_spot_weight;
     double empty_spot_power;
     double overlap_weight;

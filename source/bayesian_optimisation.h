@@ -50,8 +50,7 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     bool checkReachability(const vectord &query) { return true; };
 public:
 
-    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
-    bayesopt::Parameters parameters, int dims);
+    BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims);
 
 
     /// Optimizes the pattern with a threshold on number of steps without improvement
