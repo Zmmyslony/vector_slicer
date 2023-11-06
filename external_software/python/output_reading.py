@@ -39,7 +39,7 @@ def read_fill_matrix(pattern_name):
     discrete_colormap = mpl.colors.ListedColormap(color_list)
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, max_value + 1), discrete_colormap.N)
 
-    plt.matshow(data, cmap=discrete_colormap, norm=colormap_bounds)
+    plt.matshow(data, cmap=discrete_colormap, norm=colormap_bounds, origin="lower")
     plt.colorbar(ticks=np.arange(max_value + 1), label="number of times filled", fraction=0.035, pad=0.04)
     plt.title(pattern_name)
     plt.xlabel("x [pixel]")
