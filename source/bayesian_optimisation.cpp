@@ -265,7 +265,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
 }
 
 
-void optimisePattern(const fs::path &pattern_path) {
+void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     std::string pattern_name = pattern_path.stem().string();
@@ -280,7 +280,7 @@ void optimisePattern(const fs::path &pattern_path) {
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
-    Simulation simulation(pattern_path, false);
+    Simulation simulation(pattern_path, is_default_used);
 
     QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 

@@ -28,8 +28,8 @@ SLICER_DLLEXPORT void slice_pattern_with_config(const char *pattern_directory, c
     fillPattern(pattern_path_fs, config_path_fs);
 }
 
-SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory) {
+SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory, bool is_default_used) {
     fs::path pattern_path_fs(pattern_directory);
-    optimisePattern(pattern_path_fs);
+    optimisePattern(pattern_path_fs, is_default_used);
 }
 

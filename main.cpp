@@ -62,7 +62,7 @@ int main() {
 
     for (auto &pattern_type: patterns) {
         try {
-            optimisePattern(pattern_type);
+            optimisePattern(pattern_type, true);
 //            recalculateBestConfig(pattern_type);
         }
         catch (std::runtime_error &error) {

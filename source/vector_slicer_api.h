@@ -29,7 +29,7 @@
 SLICER_DLLEXPORT void slice_pattern_with_config(const char *pattern_directory, const char *config_path);
 
 /// Slices director pattern contained in pattern_directory and optimises it according to default penalty function
-SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory);
+SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory, bool is_default_used);
 
 
 
