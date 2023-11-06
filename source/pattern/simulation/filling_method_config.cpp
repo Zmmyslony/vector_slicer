@@ -57,9 +57,9 @@ void FillingMethodConfig::saveFillingMethodConfig(const fs::path &config_path) {
 }
 
 void FillingMethodConfig::saveFillingMethodConfig(const fs::path &local_path, const fs::path &default_path) {
-    std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
     bool is_saving_complete = false;
     while(!is_saving_complete) {
+        std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
         int saving_destination = readInt(0);
         switch(saving_destination) {
             case 0:
