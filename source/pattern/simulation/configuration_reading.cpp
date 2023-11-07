@@ -73,9 +73,14 @@ double readKeyDouble(const fs::path &local_file_path, const fs::path &default_fi
 }
 
 bool readKeyBool(const fs::path &file_path, const std::string &key) {
-    bool b;
-    std::istringstream(readKey(file_path, key)) >> std::boolalpha >> b;
-    return b;
+    std::string value = readKey(file_path, key);
+    if (value == "True" || value == "true" || value == "1") {
+        return true;
+    } else if (value == "False" || value == "false" || value == "0"){
+        return false;
+    } else {
+        throw (std::runtime_error("Invalid value of the key " + key + " in file " + file_path.string()));
+    }
 }
 
 bool readKeyBool(const fs::path &local_file_path, const fs::path &default_file_path, const std::string &key) {
