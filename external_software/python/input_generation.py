@@ -28,7 +28,7 @@ def generate_shape_matrix(shape: Shape, pixel_size):
     y_grid = np.arange(shape.y_min, shape.y_max + pixel_size, pixel_size)
 
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid)
-    mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
+    mesh = np.transpose([x_mesh, y_mesh], [2, 1, 0])
     shape_grid = shape.shape_function(mesh)
     return mesh, shape_grid
 

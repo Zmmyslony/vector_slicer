@@ -33,17 +33,19 @@ if __name__ == "__main__":
     uniaxial_alignment = director.uniaxial_alignment(0)
     uniaxial_perpendicular_alignment = director.uniaxial_alignment(np.pi / 2)
 
-    radial_alignemnt = director.radial_symmetry(uniaxial_alignment)
+    radial_alignment = director.radial_symmetry(uniaxial_alignment)
     azimuthal_director = director.radial_symmetry(uniaxial_perpendicular_alignment)
 
     input_generation.generate_input("example_longitudinal_20_10_mm", rectangle, 0.2, 9, uniaxial_alignment,
                                     filling_method="Perimeter")
-    input_generation.generate_input("example_azimuthal_10_mm", disk, 0.2, 9, azimuthal_director, filling_method="Dual")
+    input_generation.generate_input("example_azimuthal_10_mm", disk, 0.2, 9,
+                                    azimuthal_director, filling_method="Perimeter", is_plotting_shown=False)
 
     pattern_names = ["example_azimuthal_10_mm", "example_longitudinal_20_10_mm"]
+    # pattern_names = ["example_azimuthal_10_mm"]
     for pattern_name in pattern_names:
         input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
-        slicer.slice_pattern(input_name)
+        slicer.slice_pattern(input_name, True)
 
     for pattern_name in pattern_names:
         output_reading.read_fill_matrix(pattern_name)

@@ -42,6 +42,6 @@ def radial_symmetry(director, x_offset=0, y_offset=0):
         v -= np.array([x_offset, y_offset])[np.newaxis, np.newaxis, :]
         d = np.linalg.norm(v, axis=2)
         radial_angle = np.arctan2(v[:, :, 1], v[:, :, 0])
-        return director(d) + radial_angle
+        return np.mod(director(d) + radial_angle, np.pi)
 
     return symmetric_director
