@@ -54,7 +54,7 @@ BayesianOptimisationConfig::BayesianOptimisationConfig(const fs::path &local_pat
 std::string BayesianOptimisationConfig::textBayesianOptimisationConfig() const {
     std::ostringstream textForm;
     textForm << "# Number of sets of generating parameters to iterate over in Bayesian optimisation."
-             << "\nnumber_of_iteration = " << total_iterations
+             << "\nnumber_of_iterations = " << total_iterations
              << "\n\n# If the disagreement does not improve in this many iterations, then the algorithm finishes. Set to 0 to disable it."
              << "\nnumber_of_improvement_iterations = " << improvement_iterations
              << "\n\n# Number of iterations after which the model relearns based on all previous data points."

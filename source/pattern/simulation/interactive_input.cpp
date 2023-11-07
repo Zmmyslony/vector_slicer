@@ -26,7 +26,7 @@
 
 void editInt(int &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (int, current: " << variable << "), press enter for default." << std::endl;
+    std::cout << variable_name << " (int, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         variable = std::stoi(input);
@@ -35,7 +35,7 @@ void editInt(int &variable, const std::string &variable_name) {
 
 void editDouble(double &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (double, current: " << variable << "), press enter for default." << std::endl;
+    std::cout << variable_name << " (double, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         variable = std::stod(input);
@@ -44,7 +44,7 @@ void editDouble(double &variable, const std::string &variable_name) {
 
 void editBool(bool &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (bool, current: " << variable << "), press enter for default." << std::endl;
+    std::cout << variable_name << " (bool, current: " << variable << "), leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         std::istringstream(input) >> variable;
@@ -68,10 +68,11 @@ bool readBool(bool default_value) {
     if (!input.empty() || input == "\n") {
         std::istringstream(input) >> value;
     }
+    std::cout << value << std::endl;
     return value;
 }
 
 bool confirmation() {
-    std::cout << "Do you confirm (default: false)" << std::endl;
+    std::cout << "Do you confirm (0/1 default: 0)" << std::endl;
     return readBool(false);
 }

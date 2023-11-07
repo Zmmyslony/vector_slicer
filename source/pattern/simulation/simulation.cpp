@@ -25,7 +25,8 @@
 #include "interactive_input.h"
 
 Simulation::Simulation(const fs::path &pattern_directory, bool is_default_used) :
-        BayesianOptimisationConfig(pattern_directory / "config.cfg", BAYESIAN_CONFIG),
+        pattern_directory(pattern_directory),
+        BayesianOptimisationConfig(pattern_directory / "bayesian_optimisation.cfg", BAYESIAN_CONFIG),
         DisagreementConfig(pattern_directory / "disagreement.cfg", DISAGREEMENT_CONFIG),
         DisagreementFunctionConfig(pattern_directory / "disagreement_function.cfg", DISAGREEMENT_FUNCTION_CONFIG),
         FillingMethodConfig(pattern_directory / "filling.cfg", FILLING_CONFIG) {
@@ -51,7 +52,7 @@ void Simulation::editSimulationConfiguration() {
                 break;
             case 1:
                 editBayesianOptimisationConfig();
-                saveBayesianOptimisationConfig(pattern_directory / "config.cfg", BAYESIAN_CONFIG);
+                saveBayesianOptimisationConfig(pattern_directory / "bayesian_optimisation.cfg", BAYESIAN_CONFIG);
                 break;
             case 2:
                 editDisagreementConfig();
