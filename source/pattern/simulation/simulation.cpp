@@ -71,4 +71,5 @@ void Simulation::editSimulationConfiguration() {
                 break;
         }
     }
+    std::cout << "Editing configuration complete. Beginning optimisation." << std::endl;
 }
