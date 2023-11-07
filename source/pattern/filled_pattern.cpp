@@ -31,7 +31,6 @@
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
 
-
 #include <iostream>
 
 #define INVALID_POSITION {-1, -1}
@@ -446,20 +445,29 @@ bool isAlreadyCrossed(vald &coordinates, const std::vector<vali> &line) {
 
 
 std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
-    std::vector<vali> line;
+    veci coordinates_i = valtovec(dtoi(coordinates));
+    std::set<veci> line_set;
     vald dual_director = previous_dual_director;
-    while (isFillable(dtoi(coordinates)) &&
-           !isAlreadyCrossed(coordinates, line) &&
-           dot(previous_dual_director, dual_director) > 0
+    while (
+            isFillable(dtoi(coordinates)) &&
+            line_set.find(coordinates_i) == line_set.end() &&
+            dot(previous_dual_director, dual_director) > 0
             ) {
-        line.push_back(dtoi(coordinates));
+
+        line_set.insert(coordinates_i);
         vald director = desired_pattern.get().getDirector(coordinates);
         dual_director = normalizedDualVector(director);
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director *= -1;
         }
         coordinates += dual_director;
+        coordinates_i = valtovec(dtoi(coordinates));
         previous_dual_director = dual_director;
+    }
+    std::vector<vali> line;
+    line.reserve(line_set.size());
+    for (auto &element: line_set) {
+        line.push_back(vectoval(element));
     }
     return line;
 }
