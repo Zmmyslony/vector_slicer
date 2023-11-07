@@ -1,2 +1,2 @@
 PrintRadius 4.5
-InitialSeedingMethod Dual
+InitialSeedingMethod Perimeter
