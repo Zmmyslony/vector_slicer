@@ -68,7 +68,6 @@ bool readBool(bool default_value) {
     if (!input.empty() || input == "\n") {
         std::istringstream(input) >> value;
     }
-    std::cout << value << std::endl;
     return value;
 }
 
