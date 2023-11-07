@@ -26,6 +26,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <chrono>
 
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
@@ -67,9 +68,12 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "ERROR: Using only first " << dims << " components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in);
+//    auto start = std::chrono::high_resolution_clock::now();
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
                                                   disagreement_percentile);
-
+//    auto finish = std::chrono::high_resolution_clock::now();
+//    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds >(finish-start);
+//    std::cout << " Iteration time: " << milliseconds.count() << " ms" << std::endl;
     return disagreement;
 }
 
