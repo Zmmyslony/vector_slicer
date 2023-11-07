@@ -23,7 +23,7 @@
 #include "source/bayesian_optimisation.h"
 #include "source/pattern/importing_and_exporting/importing_patterns.h"
 #include "vector_slicer_config.h"
-#include "source/pattern/auxiliary/configuration_reading.h"
+#include "source/pattern/simulation/configuration_reading.h"
 
 namespace fs = boost::filesystem;
 
@@ -46,7 +46,7 @@ int main() {
         printf("Optimisation will terminate after %i iterations without improvement with relearning every %i iterations.\n",
                cut_off_iterations,
                iterations_between_relearning);
-    } else if (number_of_iterations > 0 && cut_off_iterations <= 0) {
+    } else if (number_of_iterations > 0) {
         printf("Optimisation will terminate after %i iterations with relearning every %i iterations.\n",
                number_of_iterations,
                iterations_between_relearning);
@@ -62,7 +62,7 @@ int main() {
 
     for (auto &pattern_type: patterns) {
         try {
-            optimisePattern(pattern_type);
+            optimisePattern(pattern_type, true);
 //            recalculateBestConfig(pattern_type);
         }
         catch (std::runtime_error &error) {

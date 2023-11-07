@@ -20,7 +20,7 @@
 //
 
 #include "filling_patterns.h"
-#include "auxiliary/configuration_reading.h"
+#include "simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 bool tryGeneratingNewPath(FilledPattern &pattern) {

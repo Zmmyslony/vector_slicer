@@ -26,7 +26,7 @@
 
 #include "simple_math_operations.h"
 #include "valarray_operations.h"
-#include "configuration_reading.h"
+#include "../simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 int roundUp(double number) {
@@ -85,11 +85,14 @@ splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<s
 
     std::vector<std::vector<vald>> splay_table(x_field.size(), std::vector<vald>(x_field[0].size()));
     splay_table.front() = {x_field[0].size(), std::valarray<double>{0, 0}};
+    splay_table.back() = {x_field[0].size(), std::valarray<double>{0, 0}};
 
     int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 1; i < director_field.size() - 1; i++) {
+        splay_table[i].front() = {0, 0};
+        splay_table[i].back() = {0, 0};
         for (int j = 1; j < director_field[i].size() - 1; j++) {
             std::valarray<double> q_divergence;
             q_divergence = multiply(q_field[i + 1][j], {1, 0});
@@ -103,7 +106,6 @@ splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<s
             splay_table[i][j] = current_splay;
         }
     }
-    splay_table.back() = {x_field[0].size(), std::valarray<double>{0, 0}};
     return splay_table;
 }
 

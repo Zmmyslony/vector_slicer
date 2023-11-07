@@ -37,7 +37,7 @@
 #include "auxiliary/line_thinning.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
-#include "auxiliary/configuration_reading.h"
+#include "simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
 
 
@@ -85,6 +85,11 @@ void DesiredPattern::updateProperties() {
     if (!isSplayProvided()) {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
         splay_array = vectorArrayNorm(splay_vector_array);
+        if (shape_matrix.size() != splay_array.size()){
+            throw std::runtime_error("Incompatible x-size of splay array and shape array.");
+        } else if (shape_matrix.front().size() != splay_array.front().size()) {
+            throw std::runtime_error("Incompatible y-size of splay array and shape array.");
+        }
     }
     adjustMargins();
     if (is_splay_filling_enabled) {
@@ -256,8 +261,15 @@ bool DesiredPattern::isSplayProvided() const {
 
 void DesiredPattern::setSplayVector(const std::string &path) {
     splay_vector_array = readFileToTableDoubleVector(path);
-    splay_array = vectorArrayNorm(splay_vector_array);
-    is_splay_provided = true;
+
+    if (shape_matrix.size() != splay_vector_array.size()) {
+        std::cout <<"Incompatible x-size of splay array and shape array. Defaulting to numerical calculation." << std::endl;
+    } else if (shape_matrix.front().size() != splay_vector_array.front().size()) {
+        std::cout <<"Incompatible y-size of splay array and shape array. Defaulting to numerical calculation." << std::endl;
+    } else {
+        splay_array = vectorArrayNorm(splay_vector_array);
+        is_splay_provided = true;
+    }
 }
 
 

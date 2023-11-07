@@ -23,8 +23,6 @@
 #include "filling_patterns.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
-#include "vector_slicer_config.h"
-#include "auxiliary/configuration_reading.h"
 
 #include <utility>
 #include <cmath>
@@ -34,34 +32,34 @@
 #include <vector>
 
 
-QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, const DisagreementWeights &disagreement_weights) :
+QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, 
+                                   const Simulation &simulation) :
         FilledPattern(pattern),
-        DisagreementWeights(disagreement_weights) {
-
+        Simulation(simulation) {
 }
 
 QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
-                                   DisagreementWeights disagreement_weights) :
+                                   const Simulation &simulation) :
         FilledPattern(desired_pattern, filling_config),
-        DisagreementWeights(disagreement_weights) {
+        Simulation(simulation) {
 }
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord parameters) :
         QuantifiedConfig(template_config) {
     vecd vector_parameters(parameters.begin(), parameters.end());
-    if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
+    if (isCollisionRadiusOptimised()) {
         setConfigOption(TerminationRadius, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+    if (isStartingPointSeparationOptimised()) {
         setConfigOption(SeedSpacing, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
+    if (isRepulsionMagnitudeOptimised()) {
         setConfigOption(Repulsion, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")) {
+    if (isRepulsionAngleOptimised()) {
         setConfigOption(RepulsionAngle, std::to_string(vector_parameters.back()));
         vector_parameters.pop_back();
     }
@@ -168,19 +166,19 @@ void QuantifiedConfig::evaluate() {
     director_disagreement = calculateDirectorDisagreement();
 
     paths_number = (double) getSequenceOfPaths().size();
-    multiplier = fmax(pow(paths_number, path_exponent), 1);
+    multiplier = fmax(pow(paths_number, getPathsPower()), 1);
 
-    disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent) +
-                   overlap_weight * pow(average_overlap, overlap_exponent) +
-                   director_weight * pow(director_disagreement, director_exponent);
+    disagreement = getEmptySpotWeight() * pow(empty_spots, getEmptySpotPower()) +
+                   getOverlapWeight() * pow(average_overlap, getOverlapPower()) +
+                   getDirectorWeight() * pow(director_disagreement, getDirectorPower());
 
     total_disagreement = disagreement * multiplier;
 }
 
 void QuantifiedConfig::printDisagreement() const {
-    double empty_spot_disagreement = empty_spot_weight * pow(empty_spots, empty_spot_exponent);
-    double overlap_disagreement = overlap_weight * pow(average_overlap, overlap_exponent);
-    double director_disagreement_value = director_weight * pow(director_disagreement, director_exponent);
+    double empty_spot_disagreement = getEmptySpotWeight() * pow(empty_spots, getEmptySpotPower());
+    double overlap_disagreement = getOverlapWeight() * pow(average_overlap, getOverlapPower());
+    double director_disagreement_value = getDirectorWeight() * pow(director_disagreement, getDirectorPower());
 
     std::stringstream stream;
     stream << std::setprecision(2);
@@ -256,7 +254,7 @@ std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int thr
     std::sort(disagreements.begin(), disagreements.end(), [](auto &left, auto &right) {
         return (left.first < right.first);
     });
-    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+    int number_of_layers = getNumberOfLayers();
 
     std::vector<QuantifiedConfig> configs_to_export;
     for (int i = 0; i < number_of_layers; i++) {
@@ -280,17 +278,17 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
             double local_disagreement = 0;
             if (desired_pattern.get().getShapeMatrix()[i][j] == 1 && number_of_times_filled[i][j] == 0) {
                 local_disagreement +=
-                        empty_spot_weight * empty_spot_exponent * pow(empty_spots, empty_spot_exponent - 1);
+                        getEmptySpotWeight() * getEmptySpotPower() * pow(empty_spots, getEmptySpotPower() - 1);
             }
             if (number_of_times_filled[i][j] > 1) {
                 int local_overlap = number_of_times_filled[i][j] - 1;
                 local_disagreement +=
-                        overlap_weight * overlap_exponent * pow(average_overlap, overlap_exponent - 1) * local_overlap;
+                        getOverlapWeight() * getOverlapPower() * pow(average_overlap, getOverlapPower() - 1) * local_overlap;
             }
             if (number_of_times_filled[i][j] > 0) {
                 double local_director_disagreement = 1 - localDirectorAgreement(i, j);
                 local_disagreement +=
-                        director_weight * director_exponent * pow(director_disagreement, director_exponent - 1) *
+                        getDirectorWeight() * getDirectorPower() * pow(director_disagreement, getDirectorPower() - 1) *
                         local_director_disagreement;
             }
 

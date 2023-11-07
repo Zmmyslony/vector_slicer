@@ -50,8 +50,7 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     bool checkReachability(const vectord &query) { return true; };
 public:
 
-    BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
-    bayesopt::Parameters parameters, int dims);
+    BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims);
 
 
     /// Optimizes the pattern with a threshold on number of steps without improvement
@@ -62,7 +61,10 @@ public:
 void optimisePattern(const fs::path &pattern_path, int seeds, int threads);
 
 /// Optimises the pattern from the selected path using .cfg configuration
-void optimisePattern(const fs::path &pattern_path);
+void optimisePattern(const fs::path &pattern_path, bool is_default_used);
+
+/// Fills a pattern using provided config.
+void fillPattern(const fs::path &pattern_path, const fs::path &config_path);
 
 /// Recalculates the best config using a config from output/best_configs
 void recalculateBestConfig(const fs::path &pattern_path);

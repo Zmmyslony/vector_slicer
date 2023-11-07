@@ -26,6 +26,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <chrono>
 
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
@@ -34,7 +35,7 @@
 #include "pattern/importing_and_exporting/open_files.h"
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
-#include "pattern/auxiliary/configuration_reading.h"
+#include "pattern/simulation/configuration_reading.h"
 #include "dataset.hpp"
 
 namespace fs = boost::filesystem;
@@ -45,21 +46,19 @@ using vali = std::valarray<int>;
 using pattern = std::vector<std::vector<vali>>;
 
 
-BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, int threads, int seeds,
-                                           bayesopt::Parameters parameters, int dims) :
+BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims) :
         ContinuousModel(dims, std::move(parameters)),
         dims(dims),
         problem(std::move(problem)),
-        threads(threads),
-        seeds(seeds),
+        threads(problem.getThreads()),
+        seeds(problem.getOptimisationSeeds()),
         begin(std::chrono::steady_clock::now()),
-        is_disagreement_details_printed(readKeyBool(DISAGREEMENT_CONFIG, "is_disagreement_details_printed")),
-        disagreement_percentile(readKeyDouble(DISAGREEMENT_CONFIG, "agreement_percentile")),
-        is_collision_radius_optimised(readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")),
-        is_repulsion_angle_optimised(readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")),
-        is_repulsion_magnitude_optimised(readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")),
-        is_starting_point_separation_optimised(
-                readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+        is_disagreement_details_printed(problem.isDisagreementDetailsPrinted()),
+        disagreement_percentile(problem.getAgreementPercentile()),
+        is_collision_radius_optimised(problem.isCollisionRadiusOptimised()),
+        is_repulsion_angle_optimised(problem.isRepulsionAngleOptimised()),
+        is_repulsion_magnitude_optimised(problem.isRepulsionMagnitudeOptimised()),
+        is_starting_point_separation_optimised(problem.isStartingPointSeparationOptimised()) {
 }
 
 
@@ -69,9 +68,12 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "ERROR: Using only first " << dims << " components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in);
+//    auto start = std::chrono::high_resolution_clock::now();
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
                                                   disagreement_percentile);
-
+//    auto finish = std::chrono::high_resolution_clock::now();
+//    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds >(finish-start);
+//    std::cout << " Iteration time: " << milliseconds.count() << " ms" << std::endl;
     return disagreement;
 }
 
@@ -167,7 +169,7 @@ void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path pat
     for (int i = 0; i < number_of_configs; i++) {
         filling_configs.push_back(configs[i].getConfig());
     }
-    exportConfigList(filling_configs, std::move(path));
+    exportConfigList(filling_configs, path);
 }
 
 fs::path
@@ -201,7 +203,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
-    int number_of_layers = readKeyInt(DISAGREEMENT_CONFIG, "number_of_layers");
+    int number_of_layers = patterns[0].getNumberOfLayers();
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         if (pattern.desired_pattern.get().isVectorSorted()) {
@@ -217,31 +219,32 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter);
 }
 
-QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &desired_pattern,
-                                  DisagreementWeights disagreement_weights, FillingConfig filling_config,
+QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
+                                  FillingConfig filling_config,
+                                  Simulation &simulation,
                                   bayesopt::Parameters optimisation_parameters, int dims) {
 
-    QuantifiedConfig pattern(desired_pattern, filling_config, disagreement_weights);
-    BayesianOptimisation pattern_optimisation(pattern, threads, seeds, std::move(optimisation_parameters), dims);
+    QuantifiedConfig pattern(desired_pattern, filling_config, simulation);
+    BayesianOptimisation pattern_optimisation(pattern, std::move(optimisation_parameters), dims);
 
 
     double print_radius = pattern.getConfig().getPrintRadius();
     vecd lower_bound_vector;
     vecd upper_bound_vector;
 
-    if (readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised")) {
+    if (pattern.isCollisionRadiusOptimised()) {
         lower_bound_vector.emplace_back(0);
         upper_bound_vector.emplace_back(print_radius + 1);
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised")) {
+    if (pattern.isStartingPointSeparationOptimised()) {
         lower_bound_vector.emplace_back(print_radius * 1.5);
         upper_bound_vector.emplace_back(print_radius * 2.5);
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised")) {
+    if (pattern.isRepulsionMagnitudeOptimised()) {
         lower_bound_vector.emplace_back(0);
         upper_bound_vector.emplace_back(4);
     }
-    if (readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised")) {
+    if (pattern.isRepulsionAngleOptimised()) {
         lower_bound_vector.emplace_back(0);
         upper_bound_vector.emplace_back(M_PI / 2);
     }
@@ -257,8 +260,8 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
     }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
-    int max_iterations = readKeyInt(BAYESIAN_CONFIG, "number_of_iterations");
-    int max_iterations_without_improvement = readKeyInt(BAYESIAN_CONFIG, "number_of_improvement_iterations");
+    int max_iterations = pattern.getTotalIterations();
+    int max_iterations_without_improvement = pattern.getImprovementIterations();
 
     pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
 
@@ -266,7 +269,7 @@ QuantifiedConfig generalOptimiser(int seeds, int threads, const DesiredPattern &
 }
 
 
-void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
+void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
     std::string pattern_name = pattern_path.stem().string();
@@ -281,39 +284,37 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
+    Simulation simulation(pattern_path, is_default_used);
 
-    DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
-    fs::path local_disagreement_path = pattern_path / "disagreement_function.cfg";
-    if (fs::exists(local_disagreement_path)) {
-        std::cout << "Local disagreement weights found." << std::endl;
-        weights = DisagreementWeights(local_disagreement_path);
-    }
+    QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
-    parameters.n_iter_relearn = readKeyInt(BAYESIAN_CONFIG, "iterations_between_relearning");
-    parameters.noise = readKeyDouble(BAYESIAN_CONFIG, "noise");
+    parameters.n_iter_relearn = best_pattern.getRelearningIterations();
+    parameters.noise = best_pattern.getNoise();
     parameters.n_inner_iterations = 1000;
 
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();
 
-    parameters.verbose_level = readKeyInt(BAYESIAN_CONFIG, "print_verbose");
+    parameters.verbose_level = best_pattern.getPrintVerbose();
     parameters.log_filename = optimisation_log_path.string();
 
-    int dims = (int) readKeyBool(BAYESIAN_CONFIG, "is_collision_radius_optimised") +
-               (int) readKeyBool(BAYESIAN_CONFIG, "is_repulsion_angle_optimised") +
-               (int) readKeyBool(BAYESIAN_CONFIG, "is_repulsion_magnitude_optimised") +
-               (int) readKeyBool(BAYESIAN_CONFIG, "is_starting_point_separation_optimised");
+    int dims = (int) best_pattern.isRepulsionAngleOptimised() +
+               (int) best_pattern.isRepulsionMagnitudeOptimised() +
+               (int) best_pattern.isCollisionRadiusOptimised() +
+               (int) best_pattern.isStartingPointSeparationOptimised();
     if (dims == 0) {
         throw std::runtime_error(
                 "No parameter was chosen for optimisation. Please enable at least one of them in bayesian_configuration.cfg");
     }
-    QuantifiedConfig best_pattern = generalOptimiser(seeds, threads, desired_pattern, weights, initial_config,
-                                                     parameters, dims);
+
+    best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
+                                    parameters, dims);
+
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
-            readKeyInt(DISAGREEMENT_CONFIG, "final_seeds"), threads);
+            best_pattern.getFinalSeeds(), best_pattern.getThreads());
 
     exportPatterns(best_fills, pattern_path);
     std::vector<FillingConfig> config_list;
@@ -332,21 +333,17 @@ void optimisePattern(const fs::path &pattern_path, int seeds, int threads) {
 }
 
 
-void optimisePattern(const fs::path &pattern_path) {
-    optimisePattern(pattern_path, readKeyInt(DISAGREEMENT_CONFIG, "seeds"), readKeyInt(DISAGREEMENT_CONFIG, "threads"));
-}
-
 
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, false);
-    DisagreementWeights weights(DISAGREEMENT_FUNCTION_CONFIG);
-
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
+    bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
+    Simulation simulation(pattern_path, true);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
-        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], weights));
+        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], simulation));
     }
 
     int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");

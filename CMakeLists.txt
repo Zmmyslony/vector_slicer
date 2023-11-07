@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(vector_slicer VERSION 0.5.3)
+project(vector_slicer VERSION 0.5.4)
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -22,7 +22,7 @@ set(CMAKE_C_STANDARD C17)
 configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
 include_directories(${PROJECT_BINARY_DIR})
 
-add_executable(Vector_Slicer main.cpp
+set(SOURCES
         source/pattern/auxiliary/simple_math_operations.cpp
         source/pattern/auxiliary/simple_math_operations.h
         source/pattern/importing_and_exporting/table_reading.cpp
@@ -57,12 +57,10 @@ add_executable(Vector_Slicer main.cpp
         source/bayesian_optimisation.h
         source/pattern/auxiliary/vector_operations.cpp
         source/pattern/auxiliary/vector_operations.h
-        source/pattern/disagreement_weights.cpp
-        source/pattern/disagreement_weights.h
         source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
-        source/pattern/auxiliary/configuration_reading.cpp
-        source/pattern/auxiliary/configuration_reading.h
+        source/pattern/simulation/configuration_reading.cpp
+        source/pattern/simulation/configuration_reading.h
         source/pattern/vector_sorted_paths.cpp
         source/pattern/vector_sorted_paths.h
         source/pattern/auxiliary/repulsion.cpp
@@ -70,10 +68,36 @@ add_executable(Vector_Slicer main.cpp
         source/pattern/auxiliary/line_operations.cpp
         source/pattern/auxiliary/line_operations.h
         source/pattern/auxiliary/line_thinning.cpp
-        source/pattern/auxiliary/line_thinning.h)
+        source/pattern/auxiliary/line_thinning.h
+        source/pattern/simulation/interactive_input.cpp
+        source/pattern/simulation/interactive_input.h
+        source/pattern/simulation/simulation.cpp
+        source/pattern/simulation/simulation.h
+        source/pattern/simulation/bayesian_optimisation_config.cpp
+        source/pattern/simulation/bayesian_optimisation_config.h
+        source/pattern/simulation/disagreement_config.cpp
+        source/pattern/simulation/disagreement_config.h
+        source/pattern/simulation/disagreement_function_config.cpp
+        source/pattern/simulation/disagreement_function_config.h
+        source/pattern/simulation/filling_method_config.cpp
+        source/pattern/simulation/filling_method_config.h)
+
+add_executable(Vector_Slicer main.cpp
+        ${SOURCES})
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}  -ldl
         bayesopt
 )
+
+add_library(vector_slicer_api SHARED
+        ${SOURCES}
+        source/vector_slicer_api.h
+        source/vector_slicer_api.cpp)
+
+target_link_libraries(vector_slicer_api
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY}  -ldl
+        bayesopt
+        )

@@ -23,7 +23,7 @@
 
 #include "vector_slicer_config.h"
 #include "importing_patterns.h"
-#include "../auxiliary/configuration_reading.h"
+#include "../simulation/configuration_reading.h"
 
 void convertSlashesOperatingSystem(std::string &string) {
 #ifdef _WIN32
