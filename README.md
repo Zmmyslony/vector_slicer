@@ -125,3 +125,6 @@ and the gcode headers and footers are Hyrel-specific, but the body of the gcode 
 
 The best configuration file is saved for future use so it can be used for recalculation.
 
+
+## Funding
+This Project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 956150.
