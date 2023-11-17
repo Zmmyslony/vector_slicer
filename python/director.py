@@ -45,3 +45,22 @@ def radial_symmetry(director, x_offset=0, y_offset=0):
         return np.mod(director(d) + radial_angle, np.pi)
 
     return symmetric_director
+
+
+def single_charge_field(position, charge):
+    def director_vector(v):
+        v -= position
+        d = np.linalg.norm(v, axis=2)
+        return charge * v / np.power(d, 3)
+
+    return director_vector
+
+
+def charge_field(position_list, charge_list):
+    def director(v):
+        director_vector_sum = np.zeros_like(v[:, :, 0])
+        for i in enumerate(position_list):
+            current_director = single_charge_field(position_list[i], charge_list[i])
+            director_vector_sum += current_director(v)
+        return np.arctan2(director_vector_sum[:, :, 1], director_vector_sum[:, :, 0])
+    return director

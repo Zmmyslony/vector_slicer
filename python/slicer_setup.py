@@ -21,7 +21,7 @@ import sys
 
 
 def get_project_directory():
-    return pathlib.Path().absolute().parent.parent
+    return pathlib.Path().absolute().parent
 
 
 def get_patterns_directory():

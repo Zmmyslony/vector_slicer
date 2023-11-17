@@ -40,4 +40,16 @@
 
 #define SLICER_DLLEXPORT extern "C" __declspec( dllexport )
 
+// #define SLICER_DLLEXPORT extern "C" __declspec( dllexport )
+#pragma once
+
+#if defined(_MSC_VER)
+    #define SLICER_DLLEXPORT extern "C" __declspec(dllexport) // Microsoft
+#elif defined(__GNUC__)
+    #define SLICER_DLLEXPORT extern "C" __attribute__((visibility("default"))) // GCC
+#else
+    #define SLICER_DLLEXPORT extern "C" // Most compilers export all the symbols by default. We hope for the best here.
+    #pragma warning Unknown dynamic link import/export semantics.
+#endif
+
 #endif // INCLUDE_GUARD
