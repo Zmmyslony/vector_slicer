@@ -45,7 +45,7 @@ DesiredPattern::DesiredPattern() = default;
 
 
 DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
-                               bool is_splay_filling_enabled) :
+                               bool is_splay_filling_enabled, int threads) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
         y_field_preferred(std::move(y_field)),
@@ -58,13 +58,13 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
 
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                               const std::string &y_field_filename, bool is_splay_filling_enabled) :
+                               const std::string &y_field_filename, bool is_splay_filling_enabled, int threads) :
         DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
-                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled) {}
+                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled, threads) {}
 
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
-                               bool is_splay_filling_enabled) {
+                               bool is_splay_filling_enabled, int threads) {
     std::vector<vecd> theta_field = readFileToTableDouble(theta_field_filename);
     std::vector<vecd> x_field;
     std::vector<vecd> y_field;
@@ -78,13 +78,13 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
         x_field.push_back(x_row);
         y_field.push_back(y_row);
     }
-    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled);
+    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled, threads);
 }
 
 void DesiredPattern::updateProperties() {
     if (!isSplayProvided()) {
-        splay_vector_array = splayVector(x_field_preferred, y_field_preferred);
-        splay_array = vectorArrayNorm(splay_vector_array);
+        splay_vector_array = splayVector(x_field_preferred, y_field_preferred, threads);
+        splay_array = vectorArrayNorm(splay_vector_array, threads);
         if (shape_matrix.size() != splay_array.size()){
             throw std::runtime_error("Incompatible x-size of splay array and shape array.");
         } else if (shape_matrix.front().size() != splay_array.front().size()) {
@@ -267,7 +267,7 @@ void DesiredPattern::setSplayVector(const std::string &path) {
     } else if (shape_matrix.front().size() != splay_vector_array.front().size()) {
         std::cout <<"Incompatible y-size of splay array and shape array. Defaulting to numerical calculation." << std::endl;
     } else {
-        splay_array = vectorArrayNorm(splay_vector_array);
+        splay_array = vectorArrayNorm(splay_vector_array, threads);
         is_splay_provided = true;
     }
 }
@@ -367,8 +367,8 @@ DesiredPattern::findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &i
 
 
 std::set<veci> DesiredPattern::fillablePointsSet() {
-    std::vector<std::vector<vald>> normalised_splay_vector = normalizeVectorArray(splay_vector_array);
-    std::vector<std::vector<double>> normalised_splay_divergence = divergence(normalised_splay_vector);
+    std::vector<std::vector<vald>> normalised_splay_vector = normalizeVectorArray(splay_vector_array, threads);
+    std::vector<std::vector<double>> normalised_splay_divergence = divergence(normalised_splay_vector, threads);
 
     std::set<veci> candidate_set;
 

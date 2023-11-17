@@ -35,16 +35,17 @@ int sgn(double number);
 double decimalPart(double number);
 
 std::vector<std::vector<std::valarray<double>>>
-splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field);
+splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
+            int threads);
 
-std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field);
+std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field, int threads);
 
 std::vector<std::vector<double>>
-vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array);
+vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array, int threads);
 
-std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array);
+std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array, int threads);
 
-std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field);
+std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field, int threads);
 
 std::vector<int> findNullRows(const std::vector<std::vector<int>> &array);
 

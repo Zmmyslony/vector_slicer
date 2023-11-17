@@ -281,10 +281,10 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     fs::path optimisation_log_path = createTxtPath(LOGS_EXPORT_PATH, pattern_name);
     fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
 
+    Simulation simulation(pattern_path, is_default_used);
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
-    Simulation simulation(pattern_path, is_default_used);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled, simulation.getThreads());
 
     QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 
@@ -337,10 +337,10 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
+    Simulation simulation(pattern_path, true);
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled);
-    Simulation simulation(pattern_path, true);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled, simulation.getThreads());
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
         filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], simulation));

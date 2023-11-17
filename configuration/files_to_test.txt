@@ -6,4 +6,6 @@
     example_transverse_cross_20_5_mm
 
     example_azimuthal_10_mm_square
-example_radial_10_mm
+    example_radial_10_mm
+
+example_three_charge_field

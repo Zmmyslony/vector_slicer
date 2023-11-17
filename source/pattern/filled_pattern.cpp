@@ -31,8 +31,6 @@
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
 
-#include <iostream>
-
 #define INVALID_POSITION {-1, -1}
 #define DIRECTOR_DISCONTINUITY_THRESHOLD 0.7
 
@@ -62,7 +60,6 @@ std::vector<std::vector<vali>> FilledPattern::separateLines(std::vector<std::vec
 
 void FilledPattern::setup() {
     print_circle = findPointsInCircle(getPrintRadius());
-    repulsion_circle = findPointsInCircle(getPrintRadius() + getRepulsionRadius());
     collision_list = generatePerimeterList(getTerminationRadius());
     random_engine = std::mt19937(getSeed());
 
@@ -123,7 +120,6 @@ void FilledPattern::updateSeedPoints() {
             zero_splay_seeds.pop_back();
             return;
         } else {
-//            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
             search_stage = PerimeterFilling;
         }
     }
@@ -174,7 +170,7 @@ vald normalizeDirection(const vali &previous_step) {
 
 
 void FilledPattern::fillPoint(const vali &point, const vald &normalized_direction, int value) {
-    if (isInRange(point, desired_pattern.get().getDimensions())) {
+    if (isInRange(point)) {
         number_of_times_filled[point[0]][point[1]] += value;
         x_field_filled[point[0]][point[1]] += normalized_direction[0] * value;
         y_field_filled[point[0]][point[1]] += normalized_direction[1] * value;
@@ -182,9 +178,9 @@ void FilledPattern::fillPoint(const vali &point, const vald &normalized_directio
 }
 
 
-void FilledPattern::fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value) {
+void FilledPattern::fillPointsFromList(const std::vector<vali> &points_to_fill, const vali &direction, int value) {
     vald normalized_direction = normalizeDirection(direction);
-    for (auto &point: list_of_points) {
+    for (auto &point: points_to_fill) {
         fillPoint(point, normalized_direction, value);
     }
 }
@@ -269,22 +265,29 @@ bool FilledPattern::isDirectorContinuous(const vali &previous_coordinates, const
     }
 }
 
-bool is_valid(const vald &positions) {
-    return positions[0] > 0;
+bool FilledPattern::isInRange(const vali &index) const {
+    return ::isInRange(index, desired_pattern.get().getDimensions());
+}
+
+bool FilledPattern::isInRange(const vald &index) const {
+    return ::isInRange(dtoi(index), desired_pattern.get().getDimensions());
 }
 
 bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
     vald new_positions = calculateNextPosition(positions, previous_step, length);
 
+    if (!isInRange(current_coordinates)) {
+        return false;
+    }
     // Try creating the longest possible step
-    while (length > 0 && !is_valid(new_positions)) {
+    while (length > 0 && !isInRange(new_positions)) {
         new_positions = calculateNextPosition(positions, previous_step, length);
         length--;
     }
 
     // Check if new position is valid
-    if (!is_valid(new_positions)) {
+    if (!isInRange(new_positions)) {
         return false;
     }
     previous_step = new_positions - positions;
@@ -410,39 +413,9 @@ void FilledPattern::addNewPath(Path &new_path) {
 }
 
 
-std::vector<vali> reshuffle(const std::vector<vali> &initial_vector, std::mt19937 &random_engine) {
-    std::vector<vali> new_vector(initial_vector.size());
-    std::uniform_int_distribution<unsigned int> distribution(0, initial_vector.size() - 1);
-    unsigned int elements_to_push = distribution(random_engine);
-    for (int i = 0; i < initial_vector.size(); i++) {
-        new_vector[i] = initial_vector[(i + elements_to_push) % initial_vector.size()];
-    }
-    return new_vector;
-}
-
-
 vald normalizedDualVector(const vald &vector) {
     return normalize(perpendicular(vector));
 }
-
-
-bool isAlreadyCrossed(vald &coordinates, const std::vector<vali> &line) {
-    if (line.empty()) {
-        return false;
-    }
-    bool is_different_point_found = false;
-    vali coords = dtoi(coordinates);
-    for (int i = line.size() - 1; i >= 0; i--) {
-        if (line[i][0] != coords[0] || line[i][1] != coords[1]) {
-            is_different_point_found = true;
-        }
-        if (is_different_point_found && line[i][0] == coords[0] && line[i][1] == coords[1]) {
-            return true;
-        }
-    }
-    return false;
-}
-
 
 std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
     veci coordinates_i = valtovec(dtoi(coordinates));
@@ -514,7 +487,8 @@ void FilledPattern::tryAddingPointToSpacedLine(const vali &current_position, val
                                                bool &is_filled_coordinate_encountered, double separation,
                                                std::vector<vali> &separated_starting_points) {
     double current_distance = distance(current_position, previous_position);
-    if (isFilled(current_position)) {
+    if (!isInRange(current_position) ||
+        isFilled(current_position)) {
         is_filled_coordinate_encountered = true;
         previous_position = current_position;
     } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
@@ -552,20 +526,12 @@ bool FilledPattern::isFilled(const vali &coordinates) const {
     return number_of_times_filled[coordinates[0]][coordinates[1]];
 }
 
-bool FilledPattern::isFilled(const vald &coordinates) const {
-    return isFilled(dtoi(coordinates));
-}
-
 
 bool FilledPattern::isFillable(const vali &point) const {
     return desired_pattern.get().isInShape(point) &&
            !isFilled(point) &&
            isPerimeterFree(number_of_times_filled, desired_pattern.get().getShapeMatrix(),
                            collision_list, point, desired_pattern.get().getDimensions());
-}
-
-bool FilledPattern::isFillable(const vald &point) const {
-    return isFillable(dtoi(point));
 }
 
 

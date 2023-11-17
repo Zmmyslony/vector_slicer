@@ -55,6 +55,7 @@ class DesiredPattern {
     bool is_splay_provided = false;
     bool is_splay_filling_enabled = false;
     bool is_pattern_updated = false;
+    int threads = 1;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
@@ -75,13 +76,13 @@ public:
     DesiredPattern();
 
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                   const std::string &y_field_filename, bool is_splay_filling_enabled);
+                   const std::string &y_field_filename, bool is_splay_filling_enabled, int threads);
 
     DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
-                   bool is_splay_filling_enabled);
+                   bool is_splay_filling_enabled, int threads);
 
     DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
-                   bool is_splay_filling_enabled);
+                   bool is_splay_filling_enabled, int threads);
 
     [[nodiscard]] const std::vector<veci> &getShapeMatrix() const;
 

@@ -54,7 +54,7 @@ class FilledPattern : public FillingConfig {
 
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
 
-    void fillPointsFromList(const std::vector<vali> &list_of_points, const vali &direction, int value);
+    void fillPointsFromList(const std::vector<vali> &points_to_fill, const vali &direction, int value);
 
     void fillPointsFromDisplacement(const vali &starting_position, const std::vector<vali> &list_of_displacements,
                                     const vali &previous_step, int value);
@@ -67,7 +67,7 @@ class FilledPattern : public FillingConfig {
     bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
 
 
-    matrix_d getDualTensor(const vali &coordinates) const;
+    [[nodiscard]] matrix_d getDualTensor(const vali &coordinates) const;
 
     double distance(const vali &first_point, const vali &second_point);
 
@@ -93,17 +93,10 @@ class FilledPattern : public FillingConfig {
                                     std::vector<vali> &separated_starting_points);
 
     std::vector<vali> getSpacedLine(const double &separation, const std::vector<vali> &line);
-
-    std::vector<vali> findConstantSplayLineSingleDirection(vald coordinates, vald previous_direction);
-
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
     Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
 
     void updateSeedPoints();
-
-    void findSeedPoints();
-
-    std::vector<vali> findConstantSplayLine(const vali &start);
 
     std::vector<vali>
     findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald));
@@ -114,7 +107,11 @@ class FilledPattern : public FillingConfig {
 
     vald calculateNextPosition(vald &positions, vald &previous_step, int length);
 
-    bool isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const;
+    [[nodiscard]] bool isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const;
+
+    [[nodiscard]] bool isInRange(const vali &index) const;
+
+    [[nodiscard]] bool isInRange(const vald &index) const;
 
 public:
 
@@ -159,10 +156,6 @@ public:
     std::vector<Path> getSequenceOfPaths();
 
     void exportFilledMatrix(const fs::path &path) const;
-
-    bool isFilled(const vald &coordinates) const;
-
-    bool isFillable(const vald &point) const;
 };
 
 

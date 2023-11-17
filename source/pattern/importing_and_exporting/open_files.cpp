@@ -47,7 +47,7 @@ std::vector<int> readConfigTable(const fs::path &config_path) {
     return config_variables;
 }
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled) {
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled, int threads) {
     fs::path shape_path = directory_path / "shape.csv";
     fs::path theta_field_path = directory_path / "theta_field.csv";
     fs::path x_field_path = directory_path / "xField.csv";
@@ -60,9 +60,9 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
 
     DesiredPattern pattern;
     if (fs::exists(theta_field_path)) {
-        pattern = {shape_path.string(), theta_field_path.string(), is_splay_filling_enabled};
+        pattern = {shape_path.string(), theta_field_path.string(), is_splay_filling_enabled, threads};
     } else if (fs::exists(x_field_path) && fs::exists(y_field_path)) {
-        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string(), is_splay_filling_enabled};
+        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string(), is_splay_filling_enabled, threads};
     } else {
         throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
     }
@@ -79,8 +79,8 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
 }
 
 
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed) {
-    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path, false);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed, int threads) {
+    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path, false, threads);
     fs::path config_path = directory_path / "config.txt";
     std::vector<int> config = readConfigTable(config_path);
     FilledPattern pattern(desired_pattern, config[0], config[1], config[2], seed);
@@ -88,8 +88,8 @@ FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, uns
 }
 
 
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path) {
-    return openFilledPatternFromDirectory(directory_path, 0);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, int threads) {
+    return openFilledPatternFromDirectory(directory_path, 0, threads);
 }
 
 FilledPattern

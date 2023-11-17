@@ -31,11 +31,11 @@
 
 namespace fs = boost::filesystem;
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled);
+DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled, int threads);
 
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, int threads);
 
-FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed);
+FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed, int threads);
 
 std::vector<int> readConfigTable(const fs::path &config_path);
 
