@@ -27,17 +27,29 @@ def generate_shape_matrix(shape: Shape, pixel_size):
     x_grid = np.arange(shape.x_min, shape.x_max + pixel_size, pixel_size)
     y_grid = np.arange(shape.y_min, shape.y_max + pixel_size, pixel_size)
 
-    x_mesh, y_mesh = np.meshgrid(x_grid, y_grid)
-    mesh = np.transpose([x_mesh, y_mesh], [2, 1, 0])
+    x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
+    mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
     shape_grid = shape.shape_function(mesh)
     return mesh, shape_grid
 
 
-def plot_shape_matrix(shape_grid, shape):
+def plot_shape_matrix(shape_grid, shape: Shape):
     plt.imshow(shape_grid, cmap="Greys", extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max], origin="lower")
     plt.title("Shape array")
     plt.xlabel("x [mm]")
     plt.ylabel("y [mm]")
+    plt.show()
+
+
+def plot_director(mesh, theta_grid):
+    x_vector = np.sin(theta_grid)
+    y_vector = np.cos(theta_grid)
+    plt.streamplot(mesh[:, 0, 0], mesh[0, :, 1], x_vector, y_vector, density=2)
+    plt.title("Director")
+    plt.xlabel("x [mm]")
+    plt.ylabel("y [mm]")
+    ax = plt.gca()
+    ax.set_aspect('equal')
     plt.show()
 
 
@@ -72,8 +84,8 @@ def generate_input(pattern_name, shape: Shape, line_width_millimetre, line_width
     np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.3f")
     if splay_grid is not None:
         flattened_splay = np.transpose(splay_grid, [0, 2, 1])
-        flattened_director = np.reshape(flattened_splay, [flattened_splay.shape[0], flattened_splay.shape[2] * 2])
-        np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.3f")
+        flattened_splay = np.reshape(flattened_splay, [flattened_splay.shape[0], flattened_splay.shape[2] * 2])
+        np.savetxt(pattern_directory / "theta_field.csv", flattened_splay, delimiter=',', fmt="%.3f")
 
     config_file = open(pattern_directory / "config.txt", "w")
     config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
@@ -82,4 +94,4 @@ def generate_input(pattern_name, shape: Shape, line_width_millimetre, line_width
 
     if is_plotting_shown:
         plot_shape_matrix(shape_grid, shape)
-        plot_shape_matrix(director_grid, shape)
+        plot_director(mesh, director_grid)

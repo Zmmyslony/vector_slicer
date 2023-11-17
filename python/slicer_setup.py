@@ -18,6 +18,7 @@
 import ctypes
 import pathlib
 import sys
+import os
 
 
 def get_project_directory():
@@ -41,6 +42,11 @@ def import_slicer(build_directory):
     else:
         library_name = "vector_slicer_api.so"
     vector_slicer_lib_path = project_directory / build_directory / library_name
+    if not os.path.exists(vector_slicer_lib_path):
+        print(f"Vector Slicer Api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose "
+              f"correct build directory.")
+        raise Exception('api_not_found')
+
     slicer = ctypes.CDLL(str(vector_slicer_lib_path))
 
     configure_slicer(slicer)
@@ -49,6 +55,6 @@ def import_slicer(build_directory):
 
 def convert_pattern_name_into_input_name(pattern_name):
     patterns_directory = get_patterns_directory()
-    pattern_name = patterns_directory / "example_azimuthal_10_mm"
+    pattern_name = patterns_directory / pattern_name
     pattern_name_b = str(pattern_name).encode('utf-8')
     return pattern_name_b
