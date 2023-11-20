@@ -45,7 +45,7 @@ if __name__ == "__main__":
     input_generation.generate_input("example_radial_10_mm", disk, 0.2, 9,
                                     radial_alignment, filling_method="Perimeter", is_plotting_shown=False)
     input_generation.generate_input("example_three_charge_field", square, 0.2, 9,
-                                    three_charge_field_alignment, filling_method="Splay", is_plotting_shown=False)
+                                    three_charge_field_alignment, filling_method="Splay", is_plotting_shown=True)
 
 
     pattern_names = ["example_azimuthal_10_mm", "example_radial_10_mm"]

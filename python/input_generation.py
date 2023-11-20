@@ -42,9 +42,9 @@ def plot_shape_matrix(shape_grid, shape: Shape):
 
 
 def plot_director(mesh, theta_grid):
-    x_vector = np.sin(theta_grid)
-    y_vector = np.cos(theta_grid)
-    plt.streamplot(mesh[:, 0, 0], mesh[0, :, 1], x_vector, y_vector, density=2)
+    x_vector = np.cos(theta_grid)
+    y_vector = np.sin(theta_grid)
+    plt.streamplot(mesh[:, 0, 0].transpose(), mesh[0, :, 1].transpose(), x_vector.transpose(), y_vector.transpose(), density=2)
     plt.title("Director")
     plt.xlabel("x [mm]")
     plt.ylabel("y [mm]")
