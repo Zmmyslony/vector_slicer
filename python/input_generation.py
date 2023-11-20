@@ -81,11 +81,11 @@ def generate_input(pattern_name, shape: Shape, line_width_millimetre, line_width
         filling_method = "Splay"
 
     np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")
-    np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.3f")
+    np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
     if splay_grid is not None:
         flattened_splay = np.transpose(splay_grid, [0, 2, 1])
         flattened_splay = np.reshape(flattened_splay, [flattened_splay.shape[0], flattened_splay.shape[2] * 2])
-        np.savetxt(pattern_directory / "theta_field.csv", flattened_splay, delimiter=',', fmt="%.3f")
+        np.savetxt(pattern_directory / "theta_field.csv", flattened_splay, delimiter=',', fmt="%.10f")
 
     config_file = open(pattern_directory / "config.txt", "w")
     config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
