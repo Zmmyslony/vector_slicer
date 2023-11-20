@@ -39,7 +39,11 @@
 
 using veci = std::vector<int>;
 
+
 /// Zhang-Suen line thinning algorithm
-std::set<veci> skeletonize(std::set<veci> shape);
+std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads);
+
+std::set<veci> grow_pattern(const std::set<veci> &shape, double radius);
+
 
 #endif //VECTOR_SLICER_LINE_THINNING_H

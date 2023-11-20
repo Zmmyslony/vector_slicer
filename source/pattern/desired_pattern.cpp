@@ -404,7 +404,8 @@ void DesiredPattern::findLineDensityMinima() {
     }
     std::cout << "Search for points of minimum line density complete." << std::endl;
 
-    solution_set = skeletonize(solution_set);
+    solution_set = skeletonize(solution_set, 5, 1);
+//    solution_set = grow_pattern(solution_set, 3);
     std::cout << "Skeletonization complete." << std::endl;
     std::vector<veci> line_density_minima_vectors(solution_set.begin(), solution_set.end());
     std::vector<vali> line_density_minima_local;

@@ -34,64 +34,72 @@
 #include "line_thinning.h"
 
 #include <iostream>
+#include <omp.h>
+#include <fstream>
 
 #include "geometry.h"
 #include "vector_operations.h"
 
+/// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
 bool isRemovedEastSouth(const std::set<veci> &shape, const veci &coordinate) {
-    bool north = shape.find(add(coordinate, {1, 0})) != shape.end();
-    bool north_east = shape.find(add(coordinate, {1, 1})) != shape.end();
-    bool east = shape.find(add(coordinate, {0, 1})) != shape.end();
-    bool south_east = shape.find(add(coordinate, {-1, 1})) != shape.end();
-    bool south = shape.find(add(coordinate, {-1, 0})) != shape.end();
-    bool south_west = shape.find(add(coordinate, {-1, -1})) != shape.end();
-    bool west = shape.find(add(coordinate, {0, -1})) != shape.end();
-    bool north_west = shape.find(add(coordinate, {1, -1})) != shape.end();
+    bool P1 = shape.find(coordinate) != shape.end();
+    bool P2 = shape.find(add(coordinate, {1, 0})) != shape.end();
+    bool P3 = shape.find(add(coordinate, {1, 1})) != shape.end();
+    bool P4 = shape.find(add(coordinate, {0, 1})) != shape.end();
+    bool P5 = shape.find(add(coordinate, {-1, 1})) != shape.end();
+    bool P6 = shape.find(add(coordinate, {-1, 0})) != shape.end();
+    bool P7 = shape.find(add(coordinate, {-1, -1})) != shape.end();
+    bool P8 = shape.find(add(coordinate, {0, -1})) != shape.end();
+    bool P9 = shape.find(add(coordinate, {1, -1})) != shape.end();
 
-    int filled_neighbours = north + north_east + east + south_east + south + south_west + west + north_west;
-    int number_of_ordered_neighbours = (!north && north_east) +
-                                       (!north_east && east) +
-                                       (!east && south_east) +
-                                       (!south_east && south) +
-                                       (!south && south_west) +
-                                       (!south_west && west) +
-                                       (!west && north_west) +
-                                       (!north_west && north);
+    int filled_neighbours = P2 + P3 + P4 + P5 + P6 + P7 + P8 + P9;
+    int number_of_colour_transitions = (!P2 && P3) +
+                                       (!P3 && P4) +
+                                       (!P4 && P5) +
+                                       (!P5 && P6) +
+                                       (!P6 && P7) +
+                                       (!P7 && P8) +
+                                       (!P8 && P9) +
+                                       (!P9 && P2);
 
-    bool first_condition = north && east && south;
-    bool second_condition = east && south && west;
+    bool first_condition = !P2 || !P4 || !P6;
+    bool second_condition = !P4 || !P6 || !P8;
 
-    return (2 <= filled_neighbours && filled_neighbours <= 6 &&
-            number_of_ordered_neighbours == 1 &&
+    return (P1 &&
+            2 <= filled_neighbours && filled_neighbours <= 6 &&
+            number_of_colour_transitions == 1 &&
             first_condition &&
             second_condition);
 }
 
+/// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
 bool isRemovedNorthWest(const std::set<veci> &shape, const veci &coordinate) {
-    bool north = shape.find(add(coordinate, {1, 0})) != shape.end();
-    bool north_east = shape.find(add(coordinate, {1, 1})) != shape.end();
-    bool east = shape.find(add(coordinate, {0, 1})) != shape.end();
-    bool south_east = shape.find(add(coordinate, {-1, 1})) != shape.end();
-    bool south = shape.find(add(coordinate, {-1, 0})) != shape.end();
-    bool south_west = shape.find(add(coordinate, {-1, -1})) != shape.end();
-    bool west = shape.find(add(coordinate, {0, -1})) != shape.end();
-    bool north_west = shape.find(add(coordinate, {1, -1})) != shape.end();
+    bool P1 = shape.find(coordinate) != shape.end();
+    bool P2 = shape.find(add(coordinate, {1, 0})) != shape.end();
+    bool P3 = shape.find(add(coordinate, {1, 1})) != shape.end();
+    bool P4 = shape.find(add(coordinate, {0, 1})) != shape.end();
+    bool P5 = shape.find(add(coordinate, {-1, 1})) != shape.end();
+    bool P6 = shape.find(add(coordinate, {-1, 0})) != shape.end();
+    bool P7 = shape.find(add(coordinate, {-1, -1})) != shape.end();
+    bool P8 = shape.find(add(coordinate, {0, -1})) != shape.end();
+    bool P9 = shape.find(add(coordinate, {1, -1})) != shape.end();
 
-    int filled_neighbours = north + north_east + east + south_east + south + south_west + west + north_west;
-    int number_of_ordered_neighbours = (!north && north_east) +
-                                       (!north_east && east) +
-                                       (!east && south_east) +
-                                       (!south_east && south) +
-                                       (!south && south_west) +
-                                       (!south_west && west) +
-                                       (!west && north_west) +
-                                       (!north_west && north);
+    int filled_neighbours = P2 + P3 + P4 + P5 + P6 + P7 + P8 + P9;
+    int number_of_colour_transitions = (!P2 && P3) +
+                                       (!P3 && P4) +
+                                       (!P4 && P5) +
+                                       (!P5 && P6) +
+                                       (!P6 && P7) +
+                                       (!P7 && P8) +
+                                       (!P8 && P9) +
+                                       (!P9 && P2);
 
-    bool first_condition = !(north && east && west);
-    bool second_condition = !(north && south && west);
+    bool first_condition = !P2 || !P4 || !P8;
+    bool second_condition = !P2 || !P6 || !P8;
 
-    return (2 <= filled_neighbours && filled_neighbours <= 6 &&
-            number_of_ordered_neighbours == 1 &&
+    return (P1 &&
+            2 <= filled_neighbours && filled_neighbours <= 6 &&
+            number_of_colour_transitions == 1 &&
             first_condition &&
             second_condition);
 }
@@ -148,23 +156,29 @@ std::set<veci> grow_pattern(const std::set<veci> &shape, double radius) {
     return grown_pattern;
 }
 
-std::set<veci> skeletonize(std::set<veci> shape) {
-//    shape = fill_in_gaps(shape);
-    shape = grow_pattern(shape, 3);
+std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
+    shape = grow_pattern(shape, grow_size);
+    std::ofstream line_density_minima_file("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/grown_line_density_minima.csv");
+    if (line_density_minima_file.is_open()) {
+        for (auto &line: shape) {
+            line_density_minima_file << line[0] << "," << line[1] << std::endl;
+        }
+        line_density_minima_file.close();
+    }
 
-    bool is_algorithm_in_progress = true;
-    while (is_algorithm_in_progress) {
-        is_algorithm_in_progress = false;
+    bool is_any_pixel_removed_in_step = true;
+    while (is_any_pixel_removed_in_step) {
+        is_any_pixel_removed_in_step = false;
 
-        std::set<veci> removed_coordinates_east_south;
+        std::set<veci> coordinates_to_remove;
         for (auto &coordinate: shape) {
             if (isRemovedEastSouth(shape, coordinate)) {
-                removed_coordinates_east_south.insert(coordinate);
-                is_algorithm_in_progress = true;
+                coordinates_to_remove.insert(coordinate);
+                is_any_pixel_removed_in_step = true;
             }
         }
 
-        for (auto &coordinate: removed_coordinates_east_south) {
+        for (auto &coordinate: coordinates_to_remove) {
             shape.erase(coordinate);
         }
 
@@ -172,7 +186,7 @@ std::set<veci> skeletonize(std::set<veci> shape) {
         for (auto &coordinate: shape) {
             if (isRemovedNorthWest(shape, coordinate)) {
                 removed_coordinates_north_west.insert(coordinate);
-                is_algorithm_in_progress = true;
+                is_any_pixel_removed_in_step = true;
             }
         }
 
