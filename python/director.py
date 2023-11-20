@@ -51,7 +51,7 @@ def single_charge_field(position, charge):
     def director_vector(v):
         v_offset = v - position
         d = np.linalg.norm(v_offset, axis=2)
-        return charge * v_offset / np.power(d, 3)[:, :, None]
+        return charge * v_offset / np.power(d, 2)[:, :, None]
 
     return director_vector
 
