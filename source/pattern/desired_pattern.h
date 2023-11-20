@@ -63,9 +63,9 @@ class DesiredPattern {
 
     [[nodiscard]] vecd getSplayDirection(const vecd &position, double length) const;
 
-    veci findPointOfMinimumDensity(std::set<veci> &candidate_set, bool &is_valid, vecd current_coordinates);
+    veci findInnerPointsOfMinimumDensity(std::set<veci> &candidate_set, bool &is_minimum_density, vecd current_coordinates);
 
-    [[nodiscard]] double splay(const vecd &position) const;
+    [[nodiscard]] double getSplay(const vecd &position) const;
 
     std::set<veci> fillablePointsSet();
 
