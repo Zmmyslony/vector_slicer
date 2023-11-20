@@ -22,12 +22,10 @@
 #include <cmath>
 #include <cassert>
 #include <omp.h>
-#include <iostream>
+#include <algorithm>
 
 #include "simple_math_operations.h"
 #include "valarray_operations.h"
-#include "../simulation/configuration_reading.h"
-#include "vector_slicer_config.h"
 
 int roundUp(double number) {
     if (number > 0) {
@@ -81,66 +79,50 @@ tensorWithItself(const std::vector<std::vector<std::valarray<double>>> &director
 std::vector<std::vector<std::valarray<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
             int threads) {
-    std::vector<std::vector<vald>> director_field = joinTables(x_field, y_field, threads);
-    std::vector<std::vector<matrix_d>> q_field = tensorWithItself(director_field, threads);
+    std::vector<std::vector<vald>> director = normalizeVectorArray(joinTables(x_field, y_field, threads), threads);
+    std::vector<std::vector<matrix_d>> q_tensor = tensorWithItself(director, threads);
 
     std::vector<std::vector<vald>> splay_table(x_field.size(), std::vector<vald>(x_field[0].size()));
+    // Temporarily use 0 splay values
     splay_table.front() = {x_field[0].size(), std::valarray<double>{0, 0}};
     splay_table.back() = {x_field[0].size(), std::valarray<double>{0, 0}};
 
     omp_set_num_threads(threads);
 #pragma omp parallel for
-    for (int i = 1; i < director_field.size() - 1; i++) {
+    for (int i = 1; i < director.size() - 1; i++) {
+        // Temporarily use 0 splay values
         splay_table[i].front() = {0, 0};
         splay_table[i].back() = {0, 0};
-        for (int j = 1; j < director_field[i].size() - 1; j++) {
+        for (int j = 1; j < director[i].size() - 1; j++) {
             std::valarray<double> q_divergence;
-            q_divergence = multiply(q_field[i + 1][j], {1, 0});
-            q_divergence += multiply(q_field[i][j + 1], {0, 1});
-            q_divergence += multiply(q_field[i - 1][j], {-1, 0});
-            q_divergence += multiply(q_field[i][j - 1], {0, -1});
+            q_divergence = multiply(q_tensor[i + 1][j], {1, 0});
+            q_divergence += multiply(q_tensor[i][j + 1], {0, 1});
+            q_divergence += multiply(q_tensor[i - 1][j], {-1, 0});
+            q_divergence += multiply(q_tensor[i][j - 1], {0, -1});
 
-            q_divergence /= 2;
+            q_divergence += multiply(q_tensor[i + 1][j + 1], {0.5, 0.5});
+            q_divergence += multiply(q_tensor[i - 1][j + 1], {-0.5, 0.5});
+            q_divergence += multiply(q_tensor[i + 1][j - 1], {0.5, -0.5});
+            q_divergence += multiply(q_tensor[i - 1][j - 1], {-0.5, -0.5});
 
-            vald current_splay = multiply(q_field[i][j], q_divergence);
+            vald current_splay = multiply(q_tensor[i][j], q_divergence);
             splay_table[i][j] = current_splay;
         }
+    }
+    // Use splay vector values from edge adjacent elements
+    size_t x_size = splay_table.size();
+    size_t y_size = splay_table[0].size();
+    for (int i = 0; i < x_size; i++) {
+        splay_table[i][0] = splay_table[i][1];
+        splay_table[i][y_size - 1] = splay_table[i][y_size - 2];
+    }
+    for (int i = 0; i < y_size; i++) {
+        splay_table[0][i] = splay_table[1][i];
+        splay_table[x_size - 1][i] = splay_table[x_size - 2][i];
     }
     return splay_table;
 }
 
-std::vector<std::vector<std::valarray<double>>> gradient(const std::vector<std::vector<double>> &field, int threads) {
-    std::vector<std::vector<std::valarray<double>>> grad(field.size(),
-                                                         std::vector<std::valarray<double>>(field[0].size()));
-    grad.front() = {field[0].size(), std::valarray<double>{0, 0}};
-    grad.back() = {field[0].size(), std::valarray<double>{0, 0}};
-
-    omp_set_num_threads(threads);
-#pragma omp parallel for
-    for (int i = 1; i < field.size() - 1; i++) {
-        for (int j = 1; j < field[i].size() - 1; j++) {
-            grad[i][j] = {field[i + 1][j] - field[i - 1][j],
-                          field[i][j + 1] - field[i][j - 1]};
-        }
-    }
-    return grad;
-}
-
-std::vector<std::vector<double>> divergence(const std::vector<std::vector<vald>> &field, int threads) {
-    std::vector<std::vector<double>> div(field.size(), std::vector<double>(field[0].size()));
-    div.front() = std::vector<double>(field[0].size(), 0);
-    div.back() = std::vector<double>(field[0].size(), 0);
-
-    omp_set_num_threads(threads);
-#pragma omp parallel for
-    for (int i = 1; i < field.size() - 1; i++) {
-        for (int j = 1; j < field[i].size() - 1; j++) {
-            div[i][j] = field[i + 1][j][0] - field[i - 1][j][0] +
-                        field[i][j + 1][1] - field[i][j - 1][1];
-        }
-    }
-    return div;
-}
 
 std::vector<std::vector<double>>
 vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array, int threads) {
