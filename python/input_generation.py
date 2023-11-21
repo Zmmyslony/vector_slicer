@@ -21,6 +21,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import slicer_setup as slicer
 import os
+import matplotlib.colors as colors
 
 
 def generate_shape_matrix(shape: Shape, pixel_size):
@@ -44,7 +45,8 @@ def plot_shape_matrix(shape_grid, shape: Shape):
 def plot_director(mesh, theta_grid):
     x_vector = np.cos(theta_grid)
     y_vector = np.sin(theta_grid)
-    plt.streamplot(mesh[:, 0, 0].transpose(), mesh[0, :, 1].transpose(), x_vector.transpose(), y_vector.transpose(), density=2)
+    plt.streamplot(mesh[:, 0, 0].transpose(), mesh[0, :, 1].transpose(), x_vector.transpose(), y_vector.transpose(),
+                   density=2)
     plt.title("Director")
     plt.xlabel("x [mm]")
     plt.ylabel("y [mm]")
@@ -53,12 +55,57 @@ def plot_director(mesh, theta_grid):
     plt.show()
 
 
-def generate_director_field(mesh, director_function, splay_function=None):
-    director = director_function(mesh)
-    if splay_function is not None:
-        splay = splay_function(mesh)
+def plot_splay(mesh, splay):
+    splay_norm = np.linalg.norm(splay, axis=2)
+    if splay_norm.min() == 0 or splay_norm.max() < splay_norm.min() * 10:
+        plt.pcolormesh(mesh[:, 0, 0].transpose(),
+                       mesh[0, :, 1].transpose(),
+                       splay_norm.transpose(),
+                       cmap='bwr')
     else:
-        splay = None
+        plt.pcolormesh(mesh[:, 0, 0].transpose(),
+                       mesh[0, :, 1].transpose(),
+                       splay_norm.transpose(),
+                       norm=colors.LogNorm(vmin=splay_norm.min(), vmax=np.median(splay_norm) * 10), cmap='bwr')
+    plt.colorbar()
+    plt.streamplot(mesh[:, 0, 0].transpose(),
+                   mesh[0, :, 1].transpose(),
+                   splay[:, :, 0].transpose(),
+                   splay[:, :, 1].transpose(),
+                   density=2)
+    plt.title("Splay")
+    plt.xlabel("x [mm]")
+    plt.ylabel("y [mm]")
+    ax = plt.gca()
+    ax.set_aspect('equal')
+    plt.show()
+
+
+def x_derivative(mesh, director_function, delta):
+    return (director_function(mesh + [delta / 2, 0]) - director_function(mesh - [delta / 2, 0])) / delta
+
+
+def y_derivative(mesh, director_function, delta):
+    return (director_function(mesh + [0, delta / 2]) - director_function(mesh - [0, delta / 2])) / delta
+
+
+def splay_numeric(mesh, director_function, delta):
+    x_der = x_derivative(mesh, director_function, delta)
+    y_der = y_derivative(mesh, director_function, delta)
+    director = director_function(mesh)
+    div = np.cos(director) * y_der - np.sin(director) * x_der
+    x_splay = np.cos(director) * div
+    y_splay = np.sin(director) * div
+    splay = np.transpose([x_splay, y_splay], [1, 2, 0])
+    return splay
+
+
+def generate_director_field(mesh, director_function, analytic_splay_function=None):
+    director = director_function(mesh)
+    if analytic_splay_function is not None:
+        splay = analytic_splay_function(mesh)
+    else:
+        splay = splay_numeric(mesh, director_function, 1e-9)
     return director, splay
 
 
@@ -85,7 +132,7 @@ def generate_input(pattern_name, shape: Shape, line_width_millimetre, line_width
     if splay_grid is not None:
         flattened_splay = np.transpose(splay_grid, [0, 2, 1])
         flattened_splay = np.reshape(flattened_splay, [flattened_splay.shape[0], flattened_splay.shape[2] * 2])
-        np.savetxt(pattern_directory / "theta_field.csv", flattened_splay, delimiter=',', fmt="%.10f")
+        np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
 
     config_file = open(pattern_directory / "config.txt", "w")
     config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
@@ -95,3 +142,5 @@ def generate_input(pattern_name, shape: Shape, line_width_millimetre, line_width
     if is_plotting_shown:
         plot_shape_matrix(shape_grid, shape)
         plot_director(mesh, director_grid)
+        if splay_grid is not None:
+            plot_splay(mesh, splay_grid)

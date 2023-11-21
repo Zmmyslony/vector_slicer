@@ -39,17 +39,18 @@ if __name__ == "__main__":
     three_charge_field_alignment = director.charge_field([[-5, -5], [-5, 5], [5, 3]], [1, -1, 1])
 
     input_generation.generate_input("example_longitudinal_20_10_mm", rectangle, 0.2, 9, uniaxial_alignment,
-                                    filling_method="Perimeter")
+                                    filling_method="Perimeter", is_plotting_shown=False)
     input_generation.generate_input("example_azimuthal_10_mm", disk, 0.2, 9,
                                     azimuthal_director, filling_method="Perimeter", is_plotting_shown=False)
     input_generation.generate_input("example_radial_10_mm", disk, 0.2, 9,
                                     radial_alignment, filling_method="Perimeter", is_plotting_shown=False)
     input_generation.generate_input("example_three_charge_field", square, 0.2, 9,
-                                    three_charge_field_alignment, filling_method="Splay", is_plotting_shown=True)
+                                    three_charge_field_alignment, filling_method="Splay", is_plotting_shown=False)
 
-
-    pattern_names = ["example_azimuthal_10_mm", "example_radial_10_mm"]
-    pattern_names = ["three_charge_field"]
+    pattern_names = ["example_longitudinal_20_10_mm",
+                     "example_azimuthal_10_mm",
+                     "example_radial_10_mm"
+                     "example_three_charge_field"]
 
     for pattern_name in pattern_names:
         input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
