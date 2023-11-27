@@ -16,35 +16,55 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import shape
+
+
+def x_derivative(mesh, director_function, delta):
+    return (director_function(mesh + [delta / 2, 0]) - director_function(mesh - [delta / 2, 0])) / delta
+
+
+def y_derivative(mesh, director_function, delta):
+    return (director_function(mesh + [0, delta / 2]) - director_function(mesh - [0, delta / 2])) / delta
+
+
+def splay_numeric(director_function, derivative_delta):
+    def splay(mesh):
+        x_der = x_derivative(mesh, director_function, derivative_delta)
+        y_der = y_derivative(mesh, director_function, derivative_delta)
+        director = director_function(mesh)
+        div = np.cos(director) * y_der - np.sin(director) * x_der
+        x_splay = np.cos(director) * div
+        y_splay = np.sin(director) * div
+        splay_grid = np.transpose([x_splay, y_splay], [1, 2, 0])
+        return splay_grid
+
+    return splay
 
 
 class Director:
-    def __init__(self, function, domain=None):
-        self.function = function
-        self.domain = domain
-
-    # TODO Add addition of director patterns - most likely director will be defined for a given domain and addition
-    #  will overwrite the old one
-    # def __add__(self, other):
-    #     def new_function(v):
-    #         np.where(v)
+    def __init__(self, director, splay_function=None, derivative_delta=1e-9):
+        self.director = director
+        if splay_function is None:
+            self.splay = splay_numeric(director, derivative_delta)
+        else:
+            self.splay = splay_function
 
 
 def uniaxial_alignment(theta):
     def director(v):
         return theta * np.ones(v.shape[0:2])
 
-    return director
+    return Director(director)
 
 
-def radial_symmetry(director, x_offset=0, y_offset=0):
+def radial_symmetry(director: Director, x_offset=0, y_offset=0):
     def symmetric_director(v):
         v -= np.array([x_offset, y_offset])[np.newaxis, np.newaxis, :]
         d = np.linalg.norm(v, axis=2)
         radial_angle = np.arctan2(v[:, :, 1], v[:, :, 0])
-        return np.mod(director(d) + radial_angle, np.pi)
+        return np.mod(director.director(d) + radial_angle, np.pi)
 
-    return symmetric_director
+    return Director(symmetric_director)
 
 
 def single_charge_field(position, charge):
@@ -64,4 +84,4 @@ def charge_field(position_list, charge_list):
             director_vector_sum += current_director(v)
         return np.arctan2(director_vector_sum[:, :, 1], director_vector_sum[:, :, 0])
 
-    return director
+    return Director(director)

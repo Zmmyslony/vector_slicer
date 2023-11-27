@@ -34,8 +34,8 @@ class Shape:
         y_min = min(self.y_min, shape.y_min)
         x_max = max(self.x_max, shape.x_max)
         y_max = max(self.y_max, shape.y_max)
-
-        return Shape(new_shape_function, [x_min, y_min, x_max, y_max])
+        bounds = [x_min, y_min, x_max, y_max]
+        return Shape(new_shape_function, bounds)
 
     def intersection(self, shape):
         def new_shape_function(v):

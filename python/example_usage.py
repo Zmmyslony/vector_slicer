@@ -18,45 +18,81 @@
 
 import slicer_setup
 import output_reading
-import input_generation
 import shape
+from pattern import Pattern
 import director
 import numpy as np
 
 if __name__ == "__main__":
     slicer = slicer_setup.import_slicer("cmake-build-release")
 
+    # Define domains that are used for pattern generation
     annulus = shape.annulus(5, 10)
     disk = shape.disk(10)
     rectangle = shape.rectangle(0, 0, 20, 10)
     square = shape.rectangle(-10, -10, 10, 10)
 
-    uniaxial_alignment = director.uniaxial_alignment(0)
-    uniaxial_perpendicular_alignment = director.uniaxial_alignment(np.pi / 2)
+    # Domains can be added or subtracted from another to create new shapes
+    cross = shape.rectangle(-30, -10, 30, 10) + shape.rectangle(-10, -30, 10, 30)
+    intersection_square_disk = square - disk
 
-    radial_alignment = director.radial_symmetry(uniaxial_alignment)
-    azimuthal_director = director.radial_symmetry(uniaxial_perpendicular_alignment)
+    # Define director patterns used for pattern generation
+    uniaxial_longitudinal_director = director.uniaxial_alignment(0)
+    uniaxial_diagonal_director = director.uniaxial_alignment(np.pi / 4)
+    uniaxial_transverse_director = director.uniaxial_alignment(np.pi / 2)
+
+    radial_alignment = director.radial_symmetry(uniaxial_longitudinal_director)
+    azimuthal_director = director.radial_symmetry(uniaxial_transverse_director)
     three_charge_field_alignment = director.charge_field([[-5, -5], [-5, 5], [5, 3]], [1, -1, 1])
 
-    input_generation.generate_input("example_longitudinal_20_10_mm", rectangle, 0.2, 9, uniaxial_alignment,
-                                    filling_method="Perimeter", is_plotting_shown=False)
-    input_generation.generate_input("example_azimuthal_10_mm", disk, 0.2, 9,
-                                    azimuthal_director, filling_method="Perimeter", is_plotting_shown=False)
-    input_generation.generate_input("example_radial_10_mm", disk, 0.2, 9,
-                                    radial_alignment, filling_method="Perimeter", is_plotting_shown=False)
-    input_generation.generate_input("example_three_charge_field", square, 0.2, 9,
-                                    three_charge_field_alignment, filling_method="Splay", is_plotting_shown=False)
+    # Combine domains and directors to create patterns
+    uniaxial_longitudinal_pattern = Pattern(rectangle, uniaxial_longitudinal_director)
+    uniaxial_diagonal_pattern = Pattern(rectangle, uniaxial_diagonal_director)
+    uniaxial_transverse_pattern = Pattern(rectangle, uniaxial_transverse_director)
+    azimuthal_pattern = Pattern(disk, azimuthal_director)
+    radial_pattern = Pattern(disk, radial_alignment)
+    three_charge_pattern = Pattern(square, three_charge_field_alignment)
 
+    # Patterns can be combined such that the second pattern overwrites the first one in the domain where it's defined
+    first_composite_pattern = three_charge_pattern + azimuthal_pattern
+    second_composite_pattern = (Pattern(cross, uniaxial_longitudinal_director) +
+                                Pattern(intersection_square_disk, azimuthal_director))
+
+    # Generate input files for defined patterns
+    line_width_mm = 0.2
+    line_width_pixel = 9
+    uniaxial_longitudinal_pattern.generateInputFiles("example_longitudinal_20_10_mm", line_width_mm, line_width_pixel,
+                                                     filling_method="Perimeter", is_plotting_shown=True)
+    uniaxial_diagonal_pattern.generateInputFiles("example_diagonal_20_10_mm", line_width_mm, line_width_pixel,
+                                                 filling_method="Perimeter", is_plotting_shown=True)
+    uniaxial_transverse_pattern.generateInputFiles("example_transverse_20_10_mm", line_width_mm, line_width_pixel,
+                                                   filling_method="Perimeter", is_plotting_shown=True)
+    azimuthal_pattern.generateInputFiles("example_azimuthal_10_mm", line_width_mm, line_width_pixel,
+                                         filling_method="Perimeter", is_plotting_shown=True)
+    radial_pattern.generateInputFiles("example_radial_10_mm", line_width_mm, line_width_pixel,
+                                      filling_method="Perimeter", is_plotting_shown=True)
+
+    three_charge_pattern.generateInputFiles("example_three_charge_field", line_width_mm, line_width_pixel,
+                                            filling_method="Splay", is_plotting_shown=True)
+    first_composite_pattern.generateInputFiles("example_first_composite_pattern", line_width_mm, line_width_pixel,
+                                               filling_method="Perimeter", is_plotting_shown=True)
+    second_composite_pattern.generateInputFiles("example_second_composite_pattern", line_width_mm, line_width_pixel,
+                                                filling_method="Perimeter", is_plotting_shown=True)
+
+    # Slice patterns
     pattern_names = ["example_longitudinal_20_10_mm",
+                     "example_diagonal_20_10_mm",
+                     "example_transverse_20_10_mm",
                      "example_azimuthal_10_mm",
-                     "example_radial_10_mm"
+                     "example_radial_10_mm",
                      "example_three_charge_field"]
 
-    for pattern_name in pattern_names:
-        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
-        slicer.slice_pattern(input_name, True)
-
-    for pattern_name in pattern_names:
-        output_reading.read_fill_matrix(pattern_name)
-        output_reading.read_optimisation_sequence(pattern_name)
-        output_reading.read_paths(pattern_name)
+    # for pattern_name in pattern_names:
+    #     input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
+    #     slicer.slice_pattern(input_name, True)
+    #
+    # # View sliced patterns
+    # for pattern_name in pattern_names:
+    #     output_reading.read_fill_matrix(pattern_name)
+    #     output_reading.read_optimisation_sequence(pattern_name)
+    #     output_reading.read_paths(pattern_name)
