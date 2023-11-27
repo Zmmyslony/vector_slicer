@@ -15,14 +15,14 @@
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
 
-import slicer_setup
+import source.slicer_setup as slicer
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
 
 def get_output_directory():
-    slicer_directory = slicer_setup.get_project_directory()
+    slicer_directory = slicer.get_project_directory()
     output_directory = slicer_directory / "output"
     return output_directory
 

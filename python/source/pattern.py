@@ -16,15 +16,16 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 from copy import copy
-from director import Director
-from shape import Shape
 import numpy as np
 import time
 import os
-import slicer_setup as slicer
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+from source.director import Director
+from source.shape import Shape
+import source.slicer_setup as slicer
 
 
 def domain_director(domain, director_function, default_director=lambda mesh: 0):
@@ -48,6 +49,10 @@ def generate_shape_matrix(shape: Shape, pixel_size):
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
     mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
     shape_grid = shape.shape_function(mesh)
+
+    if shape.is_defined_explicitly:
+        # Importing has xy indexing instead of ij indexing so transposition is necessary for consistency.
+        shape_grid = np.transpose(shape_grid)
     return mesh, shape_grid
 
 

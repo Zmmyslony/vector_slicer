@@ -16,30 +16,39 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import imageio.v3 as iio
+import os
 
 
 class Shape:
-    def __init__(self, shape_function, bounds):
+    def __init__(self, shape_function, bounds, is_defined_explicitly=False):
         self.shape_function = shape_function
         self.x_min = bounds[0]
         self.y_min = bounds[1]
         self.x_max = bounds[2]
         self.y_max = bounds[3]
+        self.is_defined_explicitly = is_defined_explicitly
 
-    def union(self, shape):
+    def union(self, other):
+        if self.is_defined_explicitly or other.is_defined_explicitly:
+            raise Exception("Cannot add explicitly defined shapes.")
+
         def new_shape_function(v):
-            return np.logical_or(self.shape_function(v), shape.shape_function(v))
+            return np.logical_or(self.shape_function(v), other.shape_function(v))
 
-        x_min = min(self.x_min, shape.x_min)
-        y_min = min(self.y_min, shape.y_min)
-        x_max = max(self.x_max, shape.x_max)
-        y_max = max(self.y_max, shape.y_max)
+        x_min = min(self.x_min, other.x_min)
+        y_min = min(self.y_min, other.y_min)
+        x_max = max(self.x_max, other.x_max)
+        y_max = max(self.y_max, other.y_max)
         bounds = [x_min, y_min, x_max, y_max]
         return Shape(new_shape_function, bounds)
 
-    def intersection(self, shape):
+    def intersection(self, other):
+        if self.is_defined_explicitly or other.is_defined_explicitly:
+            raise Exception("Cannot subtract explicitly defined shapes.")
+
         def new_shape_function(v):
-            return np.logical_and(self.shape_function(v), np.logical_not(shape.shape_function(v)))
+            return np.logical_and(self.shape_function(v), np.logical_not(other.shape_function(v)))
 
         return Shape(new_shape_function, [self.x_min, self.y_min, self.x_max, self.y_max])
 
@@ -73,3 +82,35 @@ def rectangle(x_min, y_min, x_max, y_max):
 
     bounds = [x_min, y_min, x_max, y_max]
     return Shape(shape_function, bounds)
+
+
+def import_image(file_path, line_width_mm, line_width_pixel, centre_origin=None):
+    if centre_origin is None:
+        centre_origin = [0, 0]
+    extension = os.path.splitext(file_path)[-1]
+    if extension == ".png":
+        shape_matrix = np.array(iio.imread(file_path, mode='L'), dtype=float)
+        shape_matrix *= -1
+        shape_matrix = np.flip(shape_matrix, axis=0)
+    elif extension == ".csv":
+        shape_matrix = np.genfromtxt(file_path, delimiter=',')
+    else:
+        raise Exception(f"Unimplemented image extension {extension}. Use .png or .csv.")
+
+    # Normalize shape matrix
+    shape_matrix -= shape_matrix.min()
+    shape_matrix /= shape_matrix.max()
+
+    pixel_width = line_width_mm / line_width_pixel
+    bounds = [centre_origin[0] - (shape_matrix.shape[0] - 1) * pixel_width / 2,
+              centre_origin[1] - (shape_matrix.shape[1] - 1) * pixel_width / 2,
+              centre_origin[0] + (shape_matrix.shape[0] - 1) * pixel_width / 2,
+              centre_origin[1] + (shape_matrix.shape[1] - 1) * pixel_width / 2]
+
+    def shape_function(v):
+        if v.shape[0:2] == shape_matrix.shape:
+            return shape_matrix
+        else:
+            raise Exception(f"Incompatible mesh shape. Mesh: {v.shape[0:2]}. Image: {shape_matrix.shape}")
+
+    return Shape(shape_function, bounds, is_defined_explicitly=True)
