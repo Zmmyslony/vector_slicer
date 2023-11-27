@@ -16,7 +16,6 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-import shape
 
 
 def x_derivative(mesh, director_function, delta):

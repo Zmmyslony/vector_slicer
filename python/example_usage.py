@@ -16,11 +16,8 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 
-import slicer_setup
-import output_reading
-import shape
-from pattern import Pattern
-import director
+from source import shape, director, slicer_setup, output_reading
+from source.pattern import Pattern
 import numpy as np
 
 if __name__ == "__main__":
@@ -87,12 +84,12 @@ if __name__ == "__main__":
                      "example_radial_10_mm",
                      "example_three_charge_field"]
 
-    # for pattern_name in pattern_names:
-    #     input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
-    #     slicer.slice_pattern(input_name, True)
-    #
-    # # View sliced patterns
-    # for pattern_name in pattern_names:
-    #     output_reading.read_fill_matrix(pattern_name)
-    #     output_reading.read_optimisation_sequence(pattern_name)
-    #     output_reading.read_paths(pattern_name)
+    for pattern_name in pattern_names:
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
+        slicer.slice_pattern(input_name, True)
+
+    # View sliced patterns
+    for pattern_name in pattern_names:
+        output_reading.read_fill_matrix(pattern_name)
+        output_reading.read_optimisation_sequence(pattern_name)
+        output_reading.read_paths(pattern_name)
