@@ -92,6 +92,7 @@ def import_image(file_path, line_width_mm, line_width_pixel, centre_origin=None)
         shape_matrix = np.array(iio.imread(file_path, mode='L'), dtype=float)
         shape_matrix *= -1
         shape_matrix = np.flip(shape_matrix, axis=0)
+        shape_matrix = np.transpose(shape_matrix)
     elif extension == ".csv":
         shape_matrix = np.genfromtxt(file_path, delimiter=',')
     else:
