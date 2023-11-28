@@ -21,69 +21,44 @@ import time
 import os
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from source.director import Director
-from source.shape import Shape
-import source.slicer_setup as slicer
-
-
-def domain_director(domain, director_function, default_director=lambda mesh: 0):
-    def local_director(mesh):
-        return np.where(domain.shape_function(mesh), director_function(mesh), default_director(mesh))
-
-    return local_director
-
-
-def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_like(mesh)):
-    def local_splay(mesh):
-        return np.where(domain.shape_function(mesh)[:, :, None], splay_function(mesh), default_splay(mesh))
-
-    return local_splay
-
-
-def generate_shape_matrix(shape: Shape, pixel_size):
-    x_grid = np.arange(shape.x_min, shape.x_max + pixel_size, pixel_size)
-    y_grid = np.arange(shape.y_min, shape.y_max + pixel_size, pixel_size)
-
-    x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
-    mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
-    shape_grid = shape.shape_function(mesh)
-
-    if shape.is_defined_explicitly:
-        # Importing has xy indexing instead of ij indexing so transposition is necessary for consistency.
-        shape_grid = np.transpose(shape_grid)
-    return mesh, shape_grid
-
-
-def generate_director_field(mesh, director_function, splay_function):
-    director = director_function(mesh)
-    splay = splay_function(mesh)
-    return director, splay
-
-
-def validate_filling_method(filling_method):
-    return filling_method in ["Splay", "Perimeter", "Dual"]
+from .director import Director
+from .shape import Shape
+from . import slicer_setup as slicer
 
 
 def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
     fig = plt.figure(figsize=[6, 4], dpi=300)
-    plt.imshow(shape_grid, vmin=0, vmax=4, cmap="Greys", extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
-               origin="lower")
-    x_vector = np.cos(theta_grid)
-    y_vector = np.sin(theta_grid)
-    plt.streamplot(mesh[:, 0, 0].transpose(),
-                   mesh[0, :, 1].transpose(),
-                   x_vector.transpose(),
-                   y_vector.transpose(),
-                   density=1)
-    plt.title("Pattern")
-    plt.xlabel("x [mm]")
-    plt.ylabel("y [mm]")
+    color_values = np.linspace(1, 0.75, 2)
+    color_list = np.char.mod('%f', color_values)
+
+    discrete_colormap = mpl.colors.ListedColormap(color_list)
+    colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, 2), discrete_colormap.N)
+
+    plt.imshow(shape_grid, extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
+               origin="lower", cmap=discrete_colormap, norm=colormap_bounds)
+
     ax = plt.gca()
     ax.set_aspect('equal')
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    plt.colorbar(ticks=np.arange(2), label="is filled", cax=cax)
     ax.set_xlim(shape.x_min - (shape.x_max - shape.x_min) * 0.05, shape.x_max + (shape.x_max - shape.x_min) * 0.05)
     ax.set_ylim(shape.y_min - (shape.y_max - shape.y_min) * 0.05, shape.y_max + (shape.y_max - shape.y_min) * 0.05)
+
+    x_vector = np.cos(theta_grid)
+    y_vector = np.sin(theta_grid)
+    ax.streamplot(mesh[:, 0, 0].transpose(),
+                  mesh[0, :, 1].transpose(),
+                  x_vector.transpose(),
+                  y_vector.transpose(),
+                  density=1)
+    ax.set_title("Pattern")
+    ax.set_xlabel("x [mm]")
+    ax.set_ylabel("y [mm]")
+
     plt.show()
 
 
@@ -117,7 +92,7 @@ def plot_splay(mesh, splay):
     ax.set_ylim(y_min - (y_max - y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(im, cax=cax)
+    plt.colorbar(im, cax=cax, label="splay")
 
     ax.streamplot(mesh[:, 0, 0].transpose(),
                   mesh[0, :, 1].transpose(),
@@ -126,6 +101,44 @@ def plot_splay(mesh, splay):
                   density=1)
     plt.show()
     plt.close()
+
+
+def domain_director(domain, director_function, default_director=lambda mesh: 0):
+    def local_director(mesh):
+        return np.where(domain.shape_function(mesh), director_function(mesh), default_director(mesh))
+
+    return local_director
+
+
+def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_like(mesh)):
+    def local_splay(mesh):
+        return np.where(domain.shape_function(mesh)[:, :, None], splay_function(mesh), default_splay(mesh))
+
+    return local_splay
+
+
+def generate_shape_matrix(shape: Shape, pixel_size):
+    x_grid = np.arange(shape.x_min, shape.x_max + pixel_size, pixel_size)
+    y_grid = np.arange(shape.y_min, shape.y_max + pixel_size, pixel_size)
+
+    x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
+    mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
+    shape_grid = shape.shape_function(mesh)
+
+    # if shape.is_defined_explicitly:
+    # Importing has xy indexing instead of ij indexing so transposition is necessary for consistency.
+    # shape_grid = np.transpose(shape_grid)
+    return mesh, shape_grid
+
+
+def generate_director_field(mesh, director_function, splay_function):
+    director = director_function(mesh)
+    splay = splay_function(mesh)
+    return director, splay
+
+
+def validate_filling_method(filling_method):
+    return filling_method in ["Splay", "Perimeter", "Dual"]
 
 
 class Pattern:
@@ -154,6 +167,8 @@ class Pattern:
 
         pattern_directory = slicer.get_patterns_directory() / pattern_name
         if not pattern_directory.exists():
+            if not slicer.get_patterns_directory().exists():
+                os.mkdir(slicer.get_patterns_directory())
             os.mkdir(pattern_directory)
 
         np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")

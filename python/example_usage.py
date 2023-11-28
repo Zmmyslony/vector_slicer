@@ -90,6 +90,5 @@ if __name__ == "__main__":
 
     # View sliced patterns
     for pattern_name in pattern_names:
-        output_reading.read_fill_matrix(pattern_name)
-        output_reading.read_optimisation_sequence(pattern_name)
-        output_reading.read_paths(pattern_name)
+        output_reading.plot_pattern(pattern_name)
+        output_reading.plot_disagreement_progress(pattern_name)

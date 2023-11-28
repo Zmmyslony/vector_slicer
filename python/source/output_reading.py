@@ -15,10 +15,11 @@
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
 
-import source.slicer_setup as slicer
+from . import slicer_setup as slicer
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def get_output_directory():
@@ -31,6 +32,10 @@ def read_fill_matrix(pattern_name):
     input_path = get_output_directory() / "filled_matrices" / pattern_name
     input_path = input_path.with_suffix(".csv")
     data = np.genfromtxt(input_path, dtype=int, delimiter=",").transpose()
+    return data
+
+
+def plot_fill_matrix(axis, data):
     max_value = max(3, np.max(data))
 
     color_values = np.linspace(1, 0, max_value + 1)
@@ -39,13 +44,11 @@ def read_fill_matrix(pattern_name):
     discrete_colormap = mpl.colors.ListedColormap(color_list)
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, max_value + 1), discrete_colormap.N)
 
-    plt.matshow(data, cmap=discrete_colormap, norm=colormap_bounds, origin="lower")
-    plt.colorbar(ticks=np.arange(max_value + 1), label="number of times filled", fraction=0.035, pad=0.04)
-    plt.title(pattern_name)
-    plt.xlabel("x [pixel]")
-    plt.ylabel("y [pixel]")
-    plt.gca().set_aspect('equal')
-    plt.show()
+    pcm = axis.matshow(data, cmap=discrete_colormap, norm=colormap_bounds, origin="lower")
+    divider = make_axes_locatable(axis)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    plt.colorbar(pcm, ticks=np.arange(max_value + 1), label="number of times filled", cax=cax)
+    return axis
 
 
 def obtain_lowest_reached_value(data):
@@ -67,10 +70,12 @@ def read_optimisation_sequence(pattern_name):
             finishing_index = line.find(")")
             string_sequence = line[starting_index + 1: finishing_index]
             optimisation_sequence = np.fromstring(string_sequence, dtype=float, sep=',')
+    return optimisation_sequence
 
+
+def plot_optimisation_sequence(fig, optimisation_sequence):
     min_value_sequence = obtain_lowest_reached_value(optimisation_sequence)
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
+    ax = fig.gca()
     ax.plot(optimisation_sequence, 'o', label="iteration disagreement")
     ax.plot(min_value_sequence, label="minimal disagreement")
 
@@ -78,11 +83,7 @@ def read_optimisation_sequence(pattern_name):
     max_value = np.max(optimisation_sequence)
     if max_value / min_value > 10:
         ax.set_yscale("log")
-    ax.set_title(pattern_name)
-    ax.set_xlabel("iteration")
-    ax.set_ylabel("disagreement")
-    ax.legend()
-    plt.show()
+    return fig
 
 
 def convert_to_coordinates(string_data):
@@ -105,19 +106,47 @@ def read_paths(pattern_name):
             break
         elif is_start_found:
             list_of_lines.append(convert_to_coordinates(line))
+    return list_of_lines
 
+
+def plot_paths(axis, list_of_lines):
     for path in list_of_lines:
         path = np.array(path)
-        plt.plot(path[:, 0], path[:, 1], color="C0")
+        axis.plot(path[:, 0], path[:, 1], color="C0")
 
     if len(list_of_lines) > 1:
         for i in range(1, len(list_of_lines)):
             connecting_path = np.array([list_of_lines[i - 1][-1], list_of_lines[i][0]])
-            plt.plot(connecting_path[:, 0], connecting_path[:, 1], color="C1")
+            axis.plot(connecting_path[:, 0], connecting_path[:, 1], color="C1")
 
-    ax = plt.gca()
+    return axis
+
+
+def plot_pattern(pattern_name):
+    fill_matrix = read_fill_matrix(pattern_name)
+    paths = read_paths(pattern_name)
+
+    fig = plt.figure(figsize=[6, 4], dpi=300)
+    axis = fig.gca()
+    axis = plot_fill_matrix(axis, fill_matrix)
+    axis = plot_paths(axis, paths)
+
+    axis.set_title(pattern_name)
+    axis.set_xlabel("x [pixel]")
+    axis.set_ylabel("y [pixel]")
+    axis.set_aspect('equal')
+    plt.show()
+
+
+def plot_disagreement_progress(pattern_name):
+    optimisation_sequence = read_optimisation_sequence(pattern_name)
+
+    fig = plt.figure(figsize=[6, 4], dpi=300)
+    plot_optimisation_sequence(fig, optimisation_sequence)
+
+    ax = fig.gca()
     ax.set_title(pattern_name)
-    ax.set_xlabel("x [pixel]")
-    ax.set_ylabel("y [pixel]")
-    ax.set_aspect('equal')
+    ax.set_xlabel("iteration")
+    ax.set_ylabel("disagreement")
+    ax.legend()
     plt.show()
