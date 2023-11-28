@@ -18,30 +18,39 @@
 import numpy as np
 
 
-def x_derivative(mesh, director_function, delta):
-    return (director_function(mesh + [delta / 2, 0]) - director_function(mesh - [delta / 2, 0])) / delta
+def q_tensor(director_function, mesh, offset):
+    director = director_function(mesh + offset)
+    q_tensor_value = np.transpose(np.array(
+        [[np.cos(director) * np.cos(director), np.sin(director) * np.cos(director)],
+         [np.sin(director) * np.cos(director), np.sin(director) * np.sin(director)]]), [2, 3, 0, 1])
+    return q_tensor_value
 
 
-def y_derivative(mesh, director_function, delta):
-    return (director_function(mesh + [0, delta / 2]) - director_function(mesh - [0, delta / 2])) / delta
+def div_q_tensor(director_function, mesh, delta):
+    return (np.dot(q_tensor(director_function, mesh, [delta / 2, 0]), np.array([1, 0])) +
+            np.dot(q_tensor(director_function, mesh, [-delta / 2, 0]), np.array([-1, 0])) +
+            np.dot(q_tensor(director_function, mesh, [0, delta / 2]), np.array([0, 1])) +
+            np.dot(q_tensor(director_function, mesh, [0, -delta / 2]), np.array([0, -1]))
+            ) / delta
 
 
 def splay_numeric(director_function, derivative_delta):
+    if derivative_delta < 1e-13:
+        print("Derivative delta lower than 1e-13 will yield inaccurate results due to 52 bit long mantissa of float. ")
+        derivative_delta = 1e-13
+
     def splay(mesh):
-        x_der = x_derivative(mesh, director_function, derivative_delta)
-        y_der = y_derivative(mesh, director_function, derivative_delta)
-        director = director_function(mesh)
-        div = np.cos(director) * y_der - np.sin(director) * x_der
-        x_splay = np.cos(director) * div
-        y_splay = np.sin(director) * div
-        splay_grid = np.transpose([x_splay, y_splay], [1, 2, 0])
-        return splay_grid
+        q_tensor_grid = q_tensor(director_function, mesh, [0, 0])
+        div_q_tensor_grid = div_q_tensor(director_function, mesh, derivative_delta)
+        q_div_q = np.matmul(q_tensor_grid, div_q_tensor_grid[:, :, :, None])[:, :, :, 0]
+
+        return q_div_q
 
     return splay
 
 
 class Director:
-    def __init__(self, director, splay_function=None, derivative_delta=1e-9):
+    def __init__(self, director, splay_function=None, derivative_delta=1e-11):
         self.director = director
         if splay_function is None:
             self.splay = splay_numeric(director, derivative_delta)
