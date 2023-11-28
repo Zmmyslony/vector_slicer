@@ -31,13 +31,17 @@ from . import slicer_setup as slicer
 
 def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
     fig = plt.figure(figsize=[6, 4], dpi=300)
-    color_values = np.linspace(1, 0.75, 2)
+    color_values = np.linspace(1, 0.666, 2)
     color_list = np.char.mod('%f', color_values)
 
     discrete_colormap = mpl.colors.ListedColormap(color_list)
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, 2), discrete_colormap.N)
 
-    plt.imshow(shape_grid, extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
+    local_shape_grid = copy(shape_grid)
+    if shape.is_defined_explicitly:
+        local_shape_grid = np.transpose(shape_grid)
+
+    plt.imshow(local_shape_grid, extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
                origin="lower", cmap=discrete_colormap, norm=colormap_bounds)
 
     ax = plt.gca()
