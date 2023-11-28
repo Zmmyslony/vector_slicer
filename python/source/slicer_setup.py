@@ -40,7 +40,7 @@ def import_slicer(build_directory):
     if sys.platform == "win32":
         library_name = "vector_slicer_api.dll"
     else:
-        library_name = "vector_slicer_api.so"
+        library_name = "libvector_slicer_api.so"
     vector_slicer_lib_path = project_directory / build_directory / library_name
     if not os.path.exists(vector_slicer_lib_path):
         print(f"Vector Slicer Api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose "
