@@ -181,8 +181,7 @@ class Pattern:
         np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
         print(f"{time.time() - begin_time:.3f}s: Theta grid saved.")
 
-        flattened_splay = np.transpose(splay_grid, [0, 2, 1])
-        flattened_splay = np.reshape(flattened_splay, [flattened_splay.shape[0], flattened_splay.shape[2] * 2])
+        flattened_splay = np.reshape(splay_grid, [splay_grid.shape[0], splay_grid.shape[1] * 2])
         np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
         print(f"{time.time() - begin_time:.3f}s: Splay grid saved.")
 
