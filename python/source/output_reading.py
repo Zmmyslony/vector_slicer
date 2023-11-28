@@ -112,12 +112,12 @@ def read_paths(pattern_name):
 def plot_paths(axis, list_of_lines):
     for path in list_of_lines:
         path = np.array(path)
-        axis.plot(path[:, 0], path[:, 1], color="C0")
+        axis.plot(path[:, 0], path[:, 1], color="C0", linewidth=0.5)
 
     if len(list_of_lines) > 1:
         for i in range(1, len(list_of_lines)):
             connecting_path = np.array([list_of_lines[i - 1][-1], list_of_lines[i][0]])
-            axis.plot(connecting_path[:, 0], connecting_path[:, 1], color="C1")
+            axis.plot(connecting_path[:, 0], connecting_path[:, 1], color="C1", linewidth=0.5)
 
     return axis
 
