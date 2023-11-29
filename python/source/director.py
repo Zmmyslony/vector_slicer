@@ -16,6 +16,7 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import copy
 
 
 def q_tensor(director_function, mesh, offset):
@@ -68,6 +69,19 @@ class Director:
             self.splay = splay_numeric(director, derivative_delta)
         else:
             self.splay = splay_function
+
+    def rotate(self, angle):
+        rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)],
+                                    [np.sin(angle), np.cos(angle)]])
+
+        def rotated_director(v):
+            rotation = np.transpose(rotation_matrix)[None, None, :, :]
+            v_copy = copy.copy(v)[:, :, :, None]
+            v_rotated = np.matmul(rotation, v_copy)[:, :, :, 0]
+            return self.director(v_rotated) + angle
+
+        return Director(rotated_director)
+
 
 
 def uniaxial_alignment(theta: float) -> Director:

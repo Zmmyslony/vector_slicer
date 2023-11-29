@@ -25,7 +25,7 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .director import Director
-from .shape import Shape
+from .shape import Shape, pacman_shape
 from . import slicer_setup as slicer
 
 
@@ -38,10 +38,7 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, 2), discrete_colormap.N)
 
     local_shape_grid = copy(shape_grid)
-    if shape.is_defined_explicitly:
-        local_shape_grid = np.transpose(shape_grid)
-
-    plt.imshow(local_shape_grid, extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
+    plt.imshow(np.transpose(local_shape_grid), extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
                origin="lower", cmap=discrete_colormap, norm=colormap_bounds)
 
     ax = plt.gca()
@@ -217,3 +214,29 @@ class Pattern:
             if splay_grid is not None:
                 plot_splay(mesh, splay_grid)
             print(f"{time.time() - begin_time:.3f}s: Plotting complete.")
+
+
+def symmetrise(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
+    """
+    Creates a symmetric pattern with a selected number of arms, where each arm is copy of the initial one.
+    E.g. 4-armed symmetrisation of a rectangle is a cross.
+    :param shape:
+    :param director:
+    :param arm_number:
+    :param begin_angle: defines initial arm which will range between begin_angle and begin_angle + 2 pi / arm_number
+    :return:
+    """
+    if arm_number <= 1:
+        return Pattern(shape, director)
+    sector_size = 2 * np.pi / arm_number
+    if begin_angle is None:
+        begin_angle = -1 / 2 * sector_size
+
+    base_domain = shape - pacman_shape(begin_angle, begin_angle + sector_size)
+    symmetrised_pattern = Pattern(base_domain, director)
+    for i in range(1, arm_number):
+        segment_domain = base_domain.rotate(sector_size * i)
+        segment_director = director.rotate(sector_size * i)
+        segment = Pattern(segment_domain, segment_director)
+        symmetrised_pattern += segment
+    return symmetrised_pattern

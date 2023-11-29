@@ -59,7 +59,7 @@ class Shape:
 
         return Shape(new_shape_function, [self.x_min, self.y_min, self.x_max, self.y_max])
 
-    def rotation(self, angle: float):
+    def rotate(self, angle: float):
         rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)],
                                     [np.sin(angle), np.cos(angle)]])
 
@@ -98,7 +98,7 @@ class Shape:
         base_segment = self - pacman_shape(begin_angle, begin_angle + sector_size)
         symmetrised_pattern = base_segment
         for i in range(1, arm_number):
-            symmetrised_pattern = symmetrised_pattern + base_segment.rotation(sector_size * i)
+            symmetrised_pattern = symmetrised_pattern + base_segment.rotate(sector_size * i)
         return symmetrised_pattern
 
     def __add__(self, other):
