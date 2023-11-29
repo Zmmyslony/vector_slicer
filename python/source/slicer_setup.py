@@ -22,19 +22,35 @@ import os
 
 
 def get_project_directory():
+    """
+    :return: Vector Slicer directory
+    """
     return pathlib.Path().absolute().parent
 
 
 def get_patterns_directory():
+    """
+    :return: Patterns (input) directory.
+    """
     return get_project_directory() / "patterns"
 
 
 def configure_slicer(slicer):
+    """
+    Defines the types used by slicer library functions.
+    :param slicer:
+    :return:
+    """
     slicer.slice_pattern.argtypes = [ctypes.c_char_p]
     slicer.slice_pattern_with_config.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 
 
 def import_slicer(build_directory):
+    """
+    Imports slicer library and configures it for operation.
+    :param build_directory:
+    :return:
+    """
     project_directory = get_project_directory()
 
     if sys.platform == "win32":
@@ -53,7 +69,12 @@ def import_slicer(build_directory):
     return slicer
 
 
-def convert_pattern_name_into_input_name(pattern_name):
+def convert_pattern_name_into_input_name(pattern_name: str):
+    """
+    Converts string filename to binary format used by the library.
+    :param pattern_name:
+    :return: UTF-8 encoded path.
+    """
     patterns_directory = get_patterns_directory()
     pattern_name = patterns_directory / pattern_name
     pattern_name_b = str(pattern_name).encode('utf-8')

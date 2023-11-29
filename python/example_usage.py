@@ -59,22 +59,22 @@ if __name__ == "__main__":
     line_width_mm = 0.2
     line_width_pixel = 9
     uniaxial_longitudinal_pattern.generateInputFiles("example_longitudinal_20_10_mm", line_width_mm, line_width_pixel,
-                                                     filling_method="Perimeter", is_plotting_shown=True)
+                                                     filling_method="Perimeter", is_displayed=True)
     uniaxial_diagonal_pattern.generateInputFiles("example_diagonal_20_10_mm", line_width_mm, line_width_pixel,
-                                                 filling_method="Perimeter", is_plotting_shown=True)
+                                                 filling_method="Perimeter", is_displayed=True)
     uniaxial_transverse_pattern.generateInputFiles("example_transverse_20_10_mm", line_width_mm, line_width_pixel,
-                                                   filling_method="Perimeter", is_plotting_shown=True)
+                                                   filling_method="Perimeter", is_displayed=True)
     azimuthal_pattern.generateInputFiles("example_azimuthal_10_mm", line_width_mm, line_width_pixel,
-                                         filling_method="Perimeter", is_plotting_shown=True)
+                                         filling_method="Perimeter", is_displayed=True)
     radial_pattern.generateInputFiles("example_radial_10_mm", line_width_mm, line_width_pixel,
-                                      filling_method="Perimeter", is_plotting_shown=True)
+                                      filling_method="Perimeter", is_displayed=True)
 
     three_charge_pattern.generateInputFiles("example_three_charge_field", line_width_mm, line_width_pixel,
-                                            filling_method="Splay", is_plotting_shown=True)
+                                            filling_method="Splay", is_displayed=True)
     first_composite_pattern.generateInputFiles("example_first_composite_pattern", line_width_mm, line_width_pixel,
-                                               filling_method="Perimeter", is_plotting_shown=True)
+                                               filling_method="Perimeter", is_displayed=True)
     second_composite_pattern.generateInputFiles("example_second_composite_pattern", line_width_mm, line_width_pixel,
-                                                filling_method="Perimeter", is_plotting_shown=True)
+                                                filling_method="Perimeter", is_displayed=True)
 
     # Slice patterns
     pattern_names = ["example_longitudinal_20_10_mm",

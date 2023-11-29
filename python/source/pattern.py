@@ -74,6 +74,7 @@ def plot_splay(mesh, splay):
                             mesh[0, :, 1].transpose(),
                             splay_norm.transpose(),
                             vmin=0,
+                            vmax=1,
                             cmap='OrRd')
     else:
         im = plt.pcolormesh(mesh[:, 0, 0].transpose(),
@@ -147,13 +148,21 @@ def validate_filling_method(filling_method):
 
 class Pattern:
     def __init__(self, domain: Shape, director: Director):
+        """
+        Combination of the Director and Shape, where the director is defined over the domain.
+        :param domain:
+        :param director:
+        """
         self.domain = domain
         self.domain_director = domain_director(domain, director.director)
         self.domain_splay = domain_splay(domain, director.splay)
 
-    # NOTE Pattern addition is non-commutative, that is P1 + P2 != P2 + P1, as the second pattern in the pair overwrites
-    # the first in the common domain.
     def __add__(self, other):
+        """
+        WARNING: Addition is non-commutative as the second pattern overwrites the first in common domain.
+        :param other:
+        :return:
+        """
         shape_copy = copy(self)
         shape_copy.domain = self.domain + other.domain
         shape_copy.domain_director = domain_director(other.domain, other.domain_director, self.domain_director)
@@ -161,7 +170,16 @@ class Pattern:
         return shape_copy
 
     def generateInputFiles(self, pattern_name, line_width_millimetre, line_width_pixel, filling_method=None,
-                           is_plotting_shown=False):
+                           is_displayed=False):
+        """
+        Generates theta, splay and config files for the pattern.
+        :param pattern_name: directory name.
+        :param line_width_millimetre: printing line width used for meshing.
+        :param line_width_pixel: printing line width used for meshing and slicing.
+        :param filling_method: Splay, Perimeter or Dual.
+        :param is_displayed: Is the pattern displayed after the generation.
+        :return: None
+        """
         begin_time = time.time()
         print(f"\n{time.time() - begin_time:.3f}s: Generating input files for {pattern_name}.")
         mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
@@ -194,7 +212,7 @@ class Pattern:
         config_file.close()
         print(f"{time.time() - begin_time:.3f}s: Configuration file saved.")
 
-        if is_plotting_shown:
+        if is_displayed:
             plot_pattern(shape_grid, mesh, director_grid, self.domain)
             if splay_grid is not None:
                 plot_splay(mesh, splay_grid)
