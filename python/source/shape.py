@@ -18,6 +18,7 @@
 import numpy as np
 import imageio.v3 as iio
 import os
+import copy
 
 
 class Shape:
@@ -58,6 +59,48 @@ class Shape:
 
         return Shape(new_shape_function, [self.x_min, self.y_min, self.x_max, self.y_max])
 
+    def rotation(self, angle: float):
+        rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)],
+                                    [np.sin(angle), np.cos(angle)]])
+
+        def new_shape_function(v):
+            rotation = np.transpose(rotation_matrix)[None, None, :, :]
+            v_copy = copy.copy(v)[:, :, :, None]
+            v_rotated = np.matmul(rotation, v_copy)[:, :, :, 0]
+            return self.shape_function(v_rotated)
+
+        corners = np.array([[self.x_min, self.y_min],
+                            [self.x_min, self.y_max],
+                            [self.x_max, self.y_min],
+                            [self.x_max, self.y_max]])
+        rotated_corners = np.matmul(rotation_matrix[None, :, :], corners[:, :, None])
+
+        bounds = [np.min(rotated_corners[:, 0]),
+                  np.min(rotated_corners[:, 1]),
+                  np.max(rotated_corners[:, 0]),
+                  np.max(rotated_corners[:, 1])]
+        return Shape(new_shape_function, bounds)
+
+    def symmetrise(self, arm_number: int, begin_angle: float = None):
+        """
+        Creates a symmetric pattern with a selected number of arms, where each arm is copy of the initial one.
+        E.g. 4-armed symmetrisation of a rectangle is a cross.
+        :param arm_number:
+        :param begin_angle: defines initial arm which will range between begin_angle and begin_angle + 2 pi / arm_number
+        :return:
+        """
+        if arm_number <= 1:
+            return self
+        sector_size = 2 * np.pi / arm_number
+        if begin_angle is None:
+            begin_angle = -1 / 2 * sector_size
+
+        base_segment = self - pacman_shape(begin_angle, begin_angle + sector_size)
+        symmetrised_pattern = base_segment
+        for i in range(1, arm_number):
+            symmetrised_pattern = symmetrised_pattern + base_segment.rotation(sector_size * i)
+        return symmetrised_pattern
+
     def __add__(self, other):
         return self.union(other)
 
@@ -74,6 +117,7 @@ def annulus(r_min, r_max, x_centre=0, y_centre=0):
     :param y_centre:
     :return:
     """
+
     def shape_function(v):
         v -= np.array([x_centre, y_centre])[np.newaxis, np.newaxis, :]
         d = np.linalg.norm(v, axis=2)
@@ -96,6 +140,24 @@ def rectangle(x_min, y_min, x_max, y_max):
 
     bounds = [x_min, y_min, x_max, y_max]
     return Shape(shape_function, bounds)
+
+
+def pacman_shape(opening_angle: float, closing_angle: float, centre=np.array([0, 0])):
+    """
+    This shape is meant for localising the shapes into a slice-type shape through substraction. It is not meant for use
+    by itself
+    :param opening_angle:
+    :param closing_angle:
+    :param centre:
+    :return:
+    """
+
+    def shape_function(v):
+        v_offset = copy.copy(v) - centre
+        phi = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0])
+        return np.logical_and(phi < opening_angle % (2 * np.pi), phi > closing_angle % (2 * np.pi))
+
+    return Shape(shape_function, [0, 0, 0, 0])
 
 
 def import_image(file_path, line_width_mm, line_width_pixel, centre_origin=None):
