@@ -22,6 +22,12 @@ import os
 
 class Shape:
     def __init__(self, shape_function, bounds, is_defined_explicitly=False):
+        """
+        Shape class for creation of domains that are to be printed.
+        :param shape_function: function defining which coordinates are to be filled: mesh [x_dim, y_dim, 2] -> bool [x_dim, y_dim]
+        :param bounds: [x_min, y_min, x_max, y_max]
+        :param is_defined_explicitly: indicator whether the object is defined as binary array or numpy logic conditions.
+        """
         self.shape_function = shape_function
         self.x_min = bounds[0]
         self.y_min = bounds[1]
@@ -59,18 +65,26 @@ class Shape:
         return self.intersection(other)
 
 
-def annulus(r_min, r_max, x_offset=0, y_offset=0):
+def annulus(r_min, r_max, x_centre=0, y_centre=0):
+    """
+    Annulus with offset centre.
+    :param r_min:
+    :param r_max:
+    :param x_centre:
+    :param y_centre:
+    :return:
+    """
     def shape_function(v):
-        v -= np.array([x_offset, y_offset])[np.newaxis, np.newaxis, :]
+        v -= np.array([x_centre, y_centre])[np.newaxis, np.newaxis, :]
         d = np.linalg.norm(v, axis=2)
         return np.logical_and(r_min <= d, d <= r_max)
 
-    bounds = [-r_max + x_offset, -r_max + y_offset, r_max + x_offset, r_max + y_offset]
+    bounds = [-r_max + x_centre, -r_max + y_centre, r_max + x_centre, r_max + y_centre]
     return Shape(shape_function, bounds)
 
 
-def disk(r, x_offset=0, y_offset=0):
-    return annulus(0, r, x_offset, y_offset)
+def disk(r, x_centre=0, y_centre=0):
+    return annulus(0, r, x_centre, y_centre)
 
 
 def rectangle(x_min, y_min, x_max, y_max):
@@ -85,6 +99,14 @@ def rectangle(x_min, y_min, x_max, y_max):
 
 
 def import_image(file_path, line_width_mm, line_width_pixel, centre_origin=None):
+    """
+    Imports image to be used as shape array.
+    :param file_path:
+    :param line_width_mm: WARNING: has to agree with what is later used for slicing.
+    :param line_width_pixel: WARNING: has to agree with what is later used for slicing.
+    :param centre_origin:
+    :return:
+    """
     if centre_origin is None:
         centre_origin = [0, 0]
     extension = os.path.splitext(file_path)[-1]

@@ -70,7 +70,7 @@ class Director:
             self.splay = splay_function
 
 
-def uniaxial_alignment(theta) -> Director:
+def uniaxial_alignment(theta: float) -> Director:
     """
     :param theta: angle between director and x-axis
     :return: uniaxial director
