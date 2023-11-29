@@ -35,7 +35,7 @@ def read_fill_matrix(pattern_name):
     return data
 
 
-def plot_fill_matrix(axis, data):
+def plot_fill_matrix(axis: plt.axis, data: np.ndarray):
     max_value = max(3, np.max(data))
 
     color_values = np.linspace(1, 0, max_value + 1)
@@ -58,7 +58,11 @@ def obtain_lowest_reached_value(data):
     return min_value_array
 
 
-def read_optimisation_sequence(pattern_name):
+def read_optimisation_sequence(pattern_name) -> list:
+    """
+    :param pattern_name:
+    :return: List of disagreements in each optimisation iteration.
+    """
     input_path = get_output_directory() / "optimisation_save" / pattern_name
     input_path = input_path.with_suffix(".txt")
 
@@ -73,7 +77,7 @@ def read_optimisation_sequence(pattern_name):
     return optimisation_sequence
 
 
-def plot_optimisation_sequence(fig, optimisation_sequence):
+def plot_optimisation_sequence(fig: plt.figure, optimisation_sequence):
     min_value_sequence = obtain_lowest_reached_value(optimisation_sequence)
     ax = fig.gca()
     ax.plot(optimisation_sequence, 'o', label="iteration disagreement")
@@ -109,7 +113,7 @@ def read_paths(pattern_name):
     return list_of_lines
 
 
-def plot_paths(axis, list_of_lines):
+def plot_paths(axis: plt.axis, list_of_lines):
     for path in list_of_lines:
         path = np.array(path)
         axis.plot(path[:, 0], path[:, 1], color="C0", linewidth=0.5)
@@ -122,23 +126,43 @@ def plot_paths(axis, list_of_lines):
     return axis
 
 
-def plot_pattern(pattern_name):
+def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_matrix_shown=True, is_paths_shown=True):
+    """
+    Plots pattern read from the default vector slicer output director for pattern_name.
+    :param pattern_name:
+    :param axis: If specified the plots will not be immediately shown but returned for further manipulation.
+    :param is_fill_matrix_shown:
+    :param is_paths_shown:
+    :return:
+    """
     fill_matrix = read_fill_matrix(pattern_name)
     paths = read_paths(pattern_name)
 
-    fig = plt.figure(figsize=[6, 4], dpi=300)
-    axis = fig.gca()
-    axis = plot_fill_matrix(axis, fill_matrix)
-    axis = plot_paths(axis, paths)
+    if axis is None:
+        fig = plt.figure(figsize=[6, 4], dpi=300)
+        plotting_axis = fig.gca()
+    else:
+        plotting_axis = axis
+    if is_fill_matrix_shown:
+        plotting_axis = plot_fill_matrix(plotting_axis, fill_matrix)
+    if is_paths_shown:
+        plotting_axis = plot_paths(plotting_axis, paths)
 
-    axis.set_title(pattern_name)
-    axis.set_xlabel("x [pixel]")
-    axis.set_ylabel("y [pixel]")
-    axis.set_aspect('equal')
-    plt.show()
+    plotting_axis.set_title(pattern_name)
+    plotting_axis.set_xlabel("x [pixel]")
+    plotting_axis.set_ylabel("y [pixel]")
+    plotting_axis.set_aspect('equal')
+    if axis is None:
+        plt.show()
+    return axis
 
 
 def plot_disagreement_progress(pattern_name):
+    """
+    Plots how the disagreement developed throughout optimisation.
+    :param pattern_name:
+    :return:
+    """
     optimisation_sequence = read_optimisation_sequence(pattern_name)
 
     fig = plt.figure(figsize=[6, 4], dpi=300)
