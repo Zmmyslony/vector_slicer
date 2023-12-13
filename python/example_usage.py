@@ -16,32 +16,35 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 
-from source import shape, director, slicer_setup, output_reading
+from source import slicer_setup, output_reading
+from source import directors
+from source import shapes
 from source.pattern import Pattern
 import numpy as np
 
 if __name__ == "__main__":
-    # Use the name of the directory in which the slicer has been built in relation to the Vector Slicer source directory.
+    # Use the name of the directory in which the slicer has been built in relation to the Vector Slicer source
+    # directory.
     slicer = slicer_setup.import_slicer("cmake-build-release")
 
-    # Define domains that are used for pattern generation
-    annulus = shape.annulus(5, 10)
-    disk = shape.disk(10)
-    rectangle = shape.rectangle(0, 0, 20, 10)
-    square = shape.rectangle(-10, -10, 10, 10)
+    # Define domains that are used for pattern generation. See shapes.py for predefined shapes.
+    annulus = shapes.annulus(5, 10)
+    disk = shapes.disk(10)
+    rectangle = shapes.rectangle(0, 0, 20, 10)
+    square = shapes.rectangle(-10, -10, 10, 10)
 
-    # Domains can be added or subtracted from another to create new shapes
-    cross = shape.rectangle(-30, -10, 30, 10) + shape.rectangle(-10, -30, 10, 30)
+    # Domains can be added or subtracted from another to create new shapes.
+    cross = shapes.rectangle(-30, -10, 30, 10) + shapes.rectangle(-10, -30, 10, 30)
     intersection_square_disk = square - disk
 
-    # Define director patterns used for pattern generation
-    uniaxial_longitudinal_director = director.uniaxial_alignment(0)
-    uniaxial_diagonal_director = director.uniaxial_alignment(np.pi / 4)
-    uniaxial_transverse_director = director.uniaxial_alignment(np.pi / 2)
+    # Define director patterns used for pattern generation. See directors.py for predefined directors.
+    uniaxial_longitudinal_director = directors.uniaxial_alignment(0)
+    uniaxial_diagonal_director = directors.uniaxial_alignment(np.pi / 4)
+    uniaxial_transverse_director = directors.uniaxial_alignment(np.pi / 2)
 
-    radial_alignment = director.radial_symmetry(uniaxial_longitudinal_director)
-    azimuthal_director = director.radial_symmetry(uniaxial_transverse_director)
-    three_charge_field_alignment = director.charge_field([[-5, -5], [-5, 5], [5, 3]], [1, -1, 1])
+    radial_alignment = directors.radial()
+    azimuthal_director = directors.azimuthal()
+    three_charge_field_alignment = directors.charge_field([[-5, -5], [-5, 5], [5, 3]], [1, -1, 1])
 
     # Combine domains and directors to create patterns
     uniaxial_longitudinal_pattern = Pattern(rectangle, uniaxial_longitudinal_director)

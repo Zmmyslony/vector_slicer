@@ -216,7 +216,7 @@ class Pattern:
             print(f"{time.time() - begin_time:.3f}s: Plotting complete.")
 
 
-def symmetrise(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
+def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
     """
     Creates a symmetric pattern with a selected number of arms, where each arm is copy of the initial one.
     E.g. 4-armed symmetrisation of a rectangle is a cross.

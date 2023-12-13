@@ -38,7 +38,7 @@ def div_q_tensor(director_function, mesh, delta):
 def splay_numeric(director_function, derivative_delta):
     """
     Calculates numerically the splay function based on the director function as s = Q (Div Q), where Q = n tensor n.
-    :param director_function: Function returning angle theta when provided with xy mesh [x_dim, y_dim, 2]
+    :param director_function: numpy compatible function returning angle theta when provided with xy mesh [x_dim, y_dim, 2]
     :param derivative_delta: Numerical delta used for calculation.
     :return: Grid of splay vectors [x_dim, y_dim, 2].
     """
@@ -50,7 +50,7 @@ def splay_numeric(director_function, derivative_delta):
         q_tensor_grid = q_tensor(director_function, mesh, [0, 0])
         div_q_tensor_grid = div_q_tensor(director_function, mesh, derivative_delta)
         q_div_q = np.matmul(q_tensor_grid, div_q_tensor_grid[:, :, :, None])[:, :, :, 0]
-
+        q_div_q = np.nan_to_num(q_div_q)
         return q_div_q
 
     return splay
@@ -82,81 +82,3 @@ class Director:
 
         return Director(rotated_director)
 
-
-
-def uniaxial_alignment(theta: float) -> Director:
-    """
-    :param theta: angle between director and x-axis
-    :return: uniaxial director
-    """
-
-    def director(v):
-        return theta * np.ones(v.shape[0:2])
-
-    return Director(director)
-
-
-def radial_symmetry(director: Director, x_centre=0, y_centre=0) -> Director:
-    """
-    Radially symmetrises the director field, where the radial function corresponds to the (x, 0) coordinates.
-    :param director: original xy defined director field.
-    :param x_centre: coordinates of symmetry centre.
-    :param y_centre:
-    :return:
-    """
-
-    def symmetric_director(v):
-        v_offset = v - np.array([x_centre, y_centre])
-        radial_angle = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0])
-
-        r = np.linalg.norm(v_offset, axis=2)
-        # Append y-coordinates as 0 everywhere.
-        r = r[:, :, None]
-        r = np.append(r, np.zeros_like(r), axis=2)
-        return np.mod(director.director(r) + radial_angle, np.pi)
-
-    return Director(symmetric_director)
-
-
-def intermediate_charge_field(position, charge):
-    """
-    Vector field from an electric charge.
-    :param position:
-    :param charge:
-    :return: function: mesh [x_dim, y_dim, 2] -> field [x_dim, y_dim, 2]
-    """
-
-    def director_vector(v):
-        v_offset = v - position
-        d = np.linalg.norm(v_offset, axis=2)
-        return charge * v_offset / np.power(d, 2)[:, :, None]
-
-    return director_vector
-
-
-def charge_field(position_list, charge_list) -> Director:
-    """
-    Director field resulting from superposition of a number of charges
-    :param position_list: float [n_charge, 2]
-    :param charge_list: float [n_charge]
-    :return:
-    """
-
-    def director(v):
-        director_vector_sum = np.zeros_like(v)
-        for i in range(len(position_list)):
-            current_director = intermediate_charge_field(position_list[i], charge_list[i])
-            director_vector_sum += current_director(v)
-        return np.arctan2(director_vector_sum[:, :, 1], director_vector_sum[:, :, 0])
-
-    return Director(director)
-
-
-def single_charge_field(position, charge) -> Director:
-    """
-    Director field resulting from a single electric charge
-    :param position: float [2]
-    :param charge: float
-    :return:
-    """
-    return charge_field([position], [charge])
