@@ -272,7 +272,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
 void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
-    std::string pattern_name = pattern_path.stem().string();
+    std::string pattern_name = pattern_path.filename().string();
     fs::path initial_config_path = pattern_path / "config.txt";
 
     createDirectory(pattern_path.parent_path().parent_path() / "output");
