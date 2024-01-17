@@ -3,8 +3,8 @@ from scipy.interpolate import griddata
 import vtk
 from vtk.util import numpy_support as vtk_np
 from source.director import Director
-from shape import Shape
-from pattern import Pattern
+from source.shape import Shape
+from source.pattern import Pattern
 
 
 def read_vtk(filename, field="theta"):
@@ -33,18 +33,48 @@ def read_vtk(filename, field="theta"):
     triangles = vtk_np.vtk_to_numpy(data.GetPoints().GetData())
     centroids = vtk_np.vtk_to_numpy(centroid_filter.GetOutput().GetPoints().GetData())
     thetas = vtk_np.vtk_to_numpy(data.GetCellData().GetArray(field))
+
     if thetas.shape[0] == triangles.shape[0]:
-        return triangles, thetas, bounds
+        return triangles[:, :2], thetas, bounds
     elif thetas.shape[0] == centroids.shape[0]:
-        return centroids, thetas, bounds
+        return centroids[:, :2], thetas, bounds
     else:
         raise RuntimeError("Length of director array does not match neither the number of cells nor points. Ensure "
                            "that it is properly defined in the input file.")
 
 
-def interpolate_director_pattern(coordinates: np.ndarray, theta_at_coordinate: np.ndarray, bounds, scale: float = 1):
+def interpolate_with_offset(coordinates: np.ndarray, thetas: np.ndarray, xi: np.ndarray, offset: float = 0,
+                            method="linear"):
+    """ Interpolates thetas with an offset, so that the points where the angle jumps from Pi to 0, are in a different
+    part of the pattern. """
+    offset_thetas = np.remainder(thetas + offset, np.pi)
+
+    interpolated_data = griddata(coordinates, offset_thetas, xi, method=method)
+    return np.remainder(interpolated_data - offset, np.pi)
+
+
+def median_interpolate(coordinates: np.ndarray, thetas: np.ndarray, xi: np.ndarray, segments: int = 7,
+                       method="linear"):
+    """ Interpolates the director pattern with angular offsets so that the numerical errors resulting
+    from theta jumping from Pi to 0 are in different places, and then takes their median to keep the well-behaved data.
+    """
+    interpolated_data_sequence = np.empty(shape=[xi.shape[0], segments])
+    for i in range(segments):
+        interpolated_data_sequence[:, i] = interpolate_with_offset(coordinates, thetas, xi, method=method,
+                                                                   offset=np.pi * i / segments)
+    return np.median(interpolated_data_sequence, axis=1)
+
+
+def interpolate_director_pattern(coordinates: np.ndarray, thetas: np.ndarray, bounds, scale: float = 1,
+                                 method="linear", segments: int = 7):
     coordinates *= scale
     bounds *= scale
+
+    def interpolated_shape_function(v):
+        v_griddata = np.array([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
+        shape_array = griddata(coordinates, thetas, v_griddata, fill_value=0, method=method)
+        reshaped_shape_array = np.array(np.reshape(shape_array, v.shape[0:2]), dtype=bool)
+        return reshaped_shape_array
 
     def interpolated_director_function(v):
         """
@@ -52,22 +82,13 @@ def interpolate_director_pattern(coordinates: np.ndarray, theta_at_coordinate: n
         :return: director function resulting from interpolation
         """
         v_griddata = np.array([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
-
-        director_array = griddata(coordinates[:, 0:2], theta_at_coordinate, v_griddata,
-                                  method="cubic", fill_value=0)
+        director_array = median_interpolate(coordinates, thetas, v_griddata, method=method, segments=segments)
         reshaped_director_array = np.reshape(director_array, v.shape[0:2])
-        # print(reshaped_director_array.shape)
+
         return reshaped_director_array
 
-    def interpolated_shape_function(v):
-        v_griddata = np.array([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
-        shape_array = griddata(coordinates[:, 0:2], np.ones(coordinates.shape[0]), v_griddata,
-                               method="cubic", fill_value=0)
-        reshaped_shape_array = np.array(np.reshape(shape_array, v.shape[0:2]), dtype=bool)
-        return reshaped_shape_array
-
     interpolated_director = Director(interpolated_director_function, derivative_delta=1e-6)
-    interpolated_shape = Shape(interpolated_shape_function, bounds)
+    interpolated_shape = Shape(interpolated_shape_function, bounds, is_defined_explicitly=True)
     interpolated_pattern = Pattern(interpolated_shape, interpolated_director)
     return interpolated_pattern
 
@@ -77,8 +98,3 @@ def read_vtk_pattern(filename, field="theta", scale: float = 1):
     return interpolate_director_pattern(coordinates, thetas, bounds, scale)
 
 
-if __name__ == "__main__":
-    patt = read_vtk_pattern(r"C:\Users\zmmys\CLionProjects\ShelloMorph\results\splay_8_5mm_bottom_ansatz.vtk",
-                            "progTaus_1", scale=2)
-    patt.generateInputFiles("vtk", 0.2, 4, filling_method="splay",
-                            is_displayed=True)
