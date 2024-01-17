@@ -24,9 +24,9 @@ import matplotlib.colors as colors
 import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from .director import Director
-from .shape import Shape, pacman_shape
-from . import slicer_setup as slicer
+from source.director import Director
+from source.shape import Shape, pacman_shape
+from source import slicer_setup as slicer
 
 
 def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
@@ -140,7 +140,7 @@ def generate_director_field(mesh, director_function, splay_function):
 
 
 def validate_filling_method(filling_method):
-    return filling_method in ["Splay", "Perimeter", "Dual"]
+    return filling_method.lower() in ["splay", "perimeter", "dual"]
 
 
 class Pattern:
@@ -202,10 +202,10 @@ class Pattern:
 
         if not validate_filling_method(filling_method):
             print("\tUndefined filling method. Defaulting to Splay")
-        filling_method = "Splay"
+            filling_method = "Splay"
         config_file = open(pattern_directory / "config.txt", "w")
         config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
-        config_file.write("InitialSeedingMethod " + filling_method)
+        config_file.write("InitialSeedingMethod " + filling_method.capitalize())
         config_file.close()
         print(f"{time.time() - begin_time:.3f}s: Configuration file saved.")
 
