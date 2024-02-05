@@ -19,6 +19,7 @@ from .shape import Shape
 import imageio.v3 as iio
 import os
 import numpy as np
+import copy
 
 
 def annulus(r_min, r_max, x_centre=0, y_centre=0):
@@ -32,8 +33,9 @@ def annulus(r_min, r_max, x_centre=0, y_centre=0):
     """
 
     def shape_function(v):
-        v -= np.array([x_centre, y_centre])[np.newaxis, np.newaxis, :]
-        d = np.linalg.norm(v, axis=2)
+        v_copy = copy.copy(v)
+        v_copy -= np.array([x_centre, y_centre])[np.newaxis, np.newaxis, :]
+        d = np.linalg.norm(v_copy, axis=2)
         return np.logical_and(r_min <= d, d <= r_max)
 
     bounds = [-r_max + x_centre, -r_max + y_centre, r_max + x_centre, r_max + y_centre]

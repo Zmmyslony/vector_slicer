@@ -120,16 +120,12 @@ def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_lik
 
 
 def generate_shape_matrix(shape: Shape, pixel_size):
-    x_grid = np.arange(shape.x_min, shape.x_max + pixel_size, pixel_size)
-    y_grid = np.arange(shape.y_min, shape.y_max + pixel_size, pixel_size)
+    x_grid = np.arange(shape.x_min, shape.x_max + pixel_size / 2, pixel_size)
+    y_grid = np.arange(shape.y_min, shape.y_max + pixel_size / 2, pixel_size)
 
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
     mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
     shape_grid = shape.shape_function(mesh)
-
-    # if shape.is_defined_explicitly:
-    # Importing has xy indexing instead of ij indexing so transposition is necessary for consistency.
-    # shape_grid = np.transpose(shape_grid)
     return mesh, shape_grid
 
 
@@ -228,15 +224,15 @@ def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_an
     """
     if arm_number <= 1:
         return Pattern(shape, director)
-    sector_size = 2 * np.pi / arm_number
+    sector_angular_size = 2 * np.pi / arm_number
     if begin_angle is None:
-        begin_angle = -1 / 2 * sector_size
+        begin_angle = -1 / 2 * sector_angular_size
 
-    base_domain = shape - pacman_shape(begin_angle, begin_angle + sector_size)
+    base_domain = shape.angular_slice(begin_angle, begin_angle + sector_angular_size)
     symmetrised_pattern = Pattern(base_domain, director)
     for i in range(1, arm_number):
-        segment_domain = base_domain.rotate(sector_size * i)
-        segment_director = director.rotate(sector_size * i)
+        segment_domain = base_domain.rotate(sector_angular_size * i)
+        segment_director = director.rotate(sector_angular_size * i)
         segment = Pattern(segment_domain, segment_director)
         symmetrised_pattern += segment
     return symmetrised_pattern

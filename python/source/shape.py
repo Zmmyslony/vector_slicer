@@ -81,7 +81,7 @@ class Shape:
 
     def symmetrise(self, arm_number: int, begin_angle: float = None):
         """
-        Creates a symmetric pattern with a selected number of arms, where each arm is copy of the initial one.
+        Creates a symmetric shape with a selected number of arms, where each arm is copy of the initial one.
         E.g. 4-armed symmetrisation of a rectangle is a cross.
         :param arm_number:
         :param begin_angle: defines initial arm which will range between begin_angle and begin_angle + 2 pi / arm_number
@@ -93,17 +93,24 @@ class Shape:
         if begin_angle is None:
             begin_angle = -1 / 2 * sector_size
 
-        base_segment = self - pacman_shape(begin_angle, begin_angle + sector_size)
-        symmetrised_pattern = base_segment
+        base_segment = self.angular_slice(begin_angle, begin_angle + sector_size)
+        symmetrised_shape = base_segment
         for i in range(1, arm_number):
-            symmetrised_pattern = symmetrised_pattern + base_segment.rotate(sector_size * i)
-        return symmetrised_pattern
+            symmetrised_shape = symmetrised_shape + base_segment.rotate(sector_size * i)
+        return symmetrised_shape
+
+    def angular_slice(self, begin_angle: float, end_angle: float):
+        return self - pacman_shape(begin_angle, end_angle)
 
     def __add__(self, other):
         return self.union(other)
 
     def __sub__(self, other):
         return self.intersection(other)
+
+    def print_bounds(self):
+        print(f"x: {self.x_min:.2f}-{self.x_max:.2f}\n"
+              f"y: {self.y_min:.2f}-{self.y_max:.2f}")
 
 
 def pacman_shape(opening_angle: float, closing_angle: float, centre=np.array([0, 0])):
@@ -118,7 +125,7 @@ def pacman_shape(opening_angle: float, closing_angle: float, centre=np.array([0,
 
     def shape_function(v):
         v_offset = copy.copy(v) - centre
-        phi = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0])
+        phi = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0]) % (2 * np.pi)
         return np.logical_and(phi < opening_angle % (2 * np.pi), phi > closing_angle % (2 * np.pi))
 
     return Shape(shape_function, [0, 0, 0, 0])
