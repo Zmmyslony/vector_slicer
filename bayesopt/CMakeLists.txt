@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------
 
 PROJECT(BayesOpt CXX)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} 
 		      ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -44,10 +44,10 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-option(BAYESOPT_BUILD_EXAMPLES "Build examples and demos?" ON)
+option(BAYESOPT_BUILD_EXAMPLES "Build examples and demos?" OFF)
 option(BAYESOPT_BUILD_TESTS "Build tests?" OFF)
 option(BAYESOPT_PYTHON_INTERFACE "Build Python interface?" OFF)
-option(BAYESOPT_MATLAB_COMPATIBLE "Build library compatible with Matlab?" ON)
+option(BAYESOPT_MATLAB_COMPATIBLE "Build library compatible with Matlab?" OFF)
 option(BAYESOPT_BUILD_SOBOL "Build support for Sobol sequences?" ON)
 option(BAYESOPT_BUILD_SHARED "Build BayesOpt as a shared library?" OFF)
 
