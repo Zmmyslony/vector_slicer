@@ -19,7 +19,7 @@ Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and sugges
 [//]: # (## Requirements)
 
 [//]: # (Boost library - https://www.boost.org/.)
-
+****
 ## Installation guide
 Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
 boost (https://www.boost.org/) are installed. 
@@ -45,20 +45,43 @@ cmake --build ./build --config Release
 This will build the executable in the ./build/Release directory.
 
 
-### Linux
+### Linux / macOS
 In the desired parent directory run in terminal
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
 cmake -S ./ -B ./build
 cd build
-make
+make all 
 ```
 
-### macOS
-The guide is soon to come.
 
-## Input format
+[//]: # (### macOS)
+
+[//]: # (The guide is soon to come.)
+***
+## Usage
+The program can be used either as a dynamically linked library controlled from Python or directly from C++ using 
+configuration files (see description below). 
+
+For most users Python operation is recommended as it contains input file generation, slicing and reading the outputs, 
+while C++ usage requires the input files to be separately generated. 
+
+Due to the variety of gcode formats in use, the slicer does NOT generate the output in gcode, but rather in abstract
+pixel-based coordinates. There is a separate program for translating it into gcode (https://github.com/Zmmyslony/Vector_Slicer_GCode), 
+however, at the time of writing this only directly supports Hyrel printers (specifically, System 30M), but other formats
+can also be implemented on request.
+
+### Python usage
+The Python interface can be found in _python_ subdirectory. For an example usage check _python/guide.py_.
+
+#### Input generation
+The input patterns are created by combining **Shape** and **Director** into **Pattern**, which then can be used to 
+generate the input files. A few commonly used shapes and directors come predefined in _shapes.py_ and _directors.py_.
+
+
+### C++ usage
+#### Input format
 The program requires the input director pattern to be a directory containing two matrices - one boolean which needs to be named
 **shape.csv** which tells which pixels ought to be filled, and another called **thetaField.csv** which is the angle 
 that the director makes with the x-axis. Alternatively, **thetaField.csv** can be replaced by two matrices called **xField.csv**
@@ -90,7 +113,7 @@ Optimisable:
 * _RepulsionRadius_ (default=0) – legacy, allows the pattern to repulse from paths further
  than the print radius away from itself.
 
-## Configuration
+#### Configuration
 There are five text files which configure the execution of the program and they are all contained
 in the <b>configuration</b> directory:
 
@@ -105,8 +128,7 @@ in the <b>configuration</b> directory:
 The locations of each of the configuration files together with the directories used for importing and exporting can
 be modified in the **vector_slicer_config.h.in** file.
 
-## Output
-
+### Output
 The program saves the patterns in the **output** directory, where it saves the optimised config, the filled matrix and
 the paths. The resulting files will be named based on the name of the input directory.
 
@@ -127,4 +149,4 @@ The best configuration file is saved for future use so it can be used for recalc
 
 
 ## Funding
-This Project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 956150.
+This Project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Skłodowska-Curie grant agreement No 956150.

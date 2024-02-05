@@ -162,13 +162,13 @@ class Pattern:
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
 
-    def generateInputFiles(self, pattern_name, line_width_millimetre, line_width_pixel, filling_method=None,
-                           is_displayed=False):
+    def generateInputFiles(self, pattern_name, line_width_millimetre: float, line_width_pixel: int = 9,
+                           filling_method=None, is_displayed=False):
         """
         Generates theta, splay and config files for the pattern.
-        :param pattern_name: directory name.
+        :param pattern_name: directory name, if is None the pattern is not saved and cannot be sliced.
         :param line_width_millimetre: printing line width used for meshing.
-        :param line_width_pixel: printing line width used for meshing and slicing.
+        :param line_width_pixel: width of the line in pixels - higher values result in better slicing quality at the cost of runtime.
         :param filling_method: Splay, Perimeter or Dual.
         :param is_displayed: Is the pattern displayed after the generation.
         :return:
@@ -180,30 +180,31 @@ class Pattern:
         director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
         print(f"{time.time() - begin_time:.3f}s: Director and splay calculation complete.")
 
-        pattern_directory = slicer.get_patterns_directory() / pattern_name
-        if not pattern_directory.exists():
-            if not slicer.get_patterns_directory().exists():
-                os.mkdir(slicer.get_patterns_directory())
-            os.mkdir(pattern_directory)
+        if pattern_name is not None:
+            pattern_directory = slicer.get_patterns_directory() / pattern_name
+            if not pattern_directory.exists():
+                if not slicer.get_patterns_directory().exists():
+                    os.mkdir(slicer.get_patterns_directory())
+                os.mkdir(pattern_directory)
 
-        np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")
-        print(f"{time.time() - begin_time:.3f}s: Shape grid saved.")
+            np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")
+            print(f"{time.time() - begin_time:.3f}s: Shape grid saved.")
 
-        np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
-        print(f"{time.time() - begin_time:.3f}s: Theta grid saved.")
+            np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
+            print(f"{time.time() - begin_time:.3f}s: Theta grid saved.")
 
-        flattened_splay = np.reshape(splay_grid, [splay_grid.shape[0], splay_grid.shape[1] * 2])
-        np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
-        print(f"{time.time() - begin_time:.3f}s: Splay grid saved.")
+            flattened_splay = np.reshape(splay_grid, [splay_grid.shape[0], splay_grid.shape[1] * 2])
+            np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
+            print(f"{time.time() - begin_time:.3f}s: Splay grid saved.")
 
-        if not validate_filling_method(filling_method):
-            print("\tUndefined filling method. Defaulting to Splay")
-            filling_method = "Splay"
-        config_file = open(pattern_directory / "config.txt", "w")
-        config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
-        config_file.write("InitialSeedingMethod " + filling_method.capitalize())
-        config_file.close()
-        print(f"{time.time() - begin_time:.3f}s: Configuration file saved.")
+            if not validate_filling_method(filling_method):
+                print("\tUndefined filling method. Defaulting to Splay")
+                filling_method = "Splay"
+            config_file = open(pattern_directory / "config.txt", "w")
+            config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
+            config_file.write("InitialSeedingMethod " + filling_method.capitalize())
+            config_file.close()
+            print(f"{time.time() - begin_time:.3f}s: Configuration file saved.")
 
         if is_displayed:
             plot_pattern(shape_grid, mesh, director_grid, self.domain)

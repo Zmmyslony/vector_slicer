@@ -126,13 +126,13 @@ def plot_paths(axis: plt.axis, list_of_lines):
     return axis
 
 
-def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_matrix_shown=True, is_paths_shown=True):
+def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True):
     """
-    Plots pattern read from the default vector slicer output director for pattern_name.
+    Plots the sliced pattern with fill density (gray), printing moves (blue) and non-printing moves (orange).
     :param pattern_name:
     :param axis: If specified the plots will not be immediately shown but returned for further manipulation.
-    :param is_fill_matrix_shown:
-    :param is_paths_shown:
+    :param is_fill_density_shown: allows to choose whether gray background showing the fill density is shown.
+    :param is_paths_shown: allows to choose printer movements are shown.
     :return:
     """
     fill_matrix = read_fill_matrix(pattern_name)
@@ -143,7 +143,7 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_matrix_shown=True,
         plotting_axis = fig.gca()
     else:
         plotting_axis = axis
-    if is_fill_matrix_shown:
+    if is_fill_density_shown:
         plotting_axis = plot_fill_matrix(plotting_axis, fill_matrix)
     if is_paths_shown:
         plotting_axis = plot_paths(plotting_axis, paths)
@@ -159,7 +159,7 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_matrix_shown=True,
 
 def plot_disagreement_progress(pattern_name):
     """
-    Plots how the disagreement developed throughout optimisation.
+    Plots how the disagreement developed throughout optimisation, with the solid line showing minimal disagreement.
     :param pattern_name:
     :return:
     """
