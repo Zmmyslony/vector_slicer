@@ -25,9 +25,11 @@ import numpy as np
 
 # This file contains examples of a few basic functionalities of the program. All units are in millimetres.
 
-
-# Generation of the input files for uniaxial pattern, slicing it and visualising the result.
-def complete_usage(slicer):
+def complete_usage_example(slicer):
+    """
+    Generation of the input files for uniaxial pattern, slicing it and visualising the result.
+    :return:
+    """
     # Define domains that are used for pattern generation. See shapes.py for predefined shapes.
     rectangle = shapes.rectangle(0, 0, 20, 10)
 
@@ -59,6 +61,7 @@ def complete_usage(slicer):
 # Examples below do not generate any gcode files but only demonstrate how input files can be generated.
 
 def shape_addition(line_width):
+    """ Adds two rectangular shapes to form a cross with uniaxial alignment."""
     x_rectangle = shapes.rectangle(-10, -5, 10, 5)
     y_rectangle = shapes.rectangle(-5, -10, 5, 10)
 
@@ -71,6 +74,7 @@ def shape_addition(line_width):
 
 
 def shape_subtraction(line_width):
+    """ Subtracts the disk from a rectangle to create a pattern with a hole."""
     x_rectangle = shapes.rectangle(-10, -5, 10, 5)
     disk = shapes.disk(2.5)
 
@@ -82,17 +86,18 @@ def shape_subtraction(line_width):
 
 
 def shape_rotation(line_width):
+    """ Creates a rectangle in y-direction through rotation of a rectangle in x-direction."""
     x_rectangle = shapes.rectangle(-10, -5, 10, 5)
     y_rectangle = x_rectangle.rotate(np.pi / 2)
 
-    cross_shape = x_rectangle + y_rectangle
     uniaxial_x_director = directors.uniaxial_alignment(0)
 
-    pattern = Pattern(cross_shape, uniaxial_x_director)
+    pattern = Pattern(y_rectangle, uniaxial_x_director)
     pattern.generateInputFiles(None, line_width, is_displayed=True)
 
 
 def shape_symmetrisation(line_width):
+    """ Symmetrises a rectangular shape into a 5-armed one, with global, uniaxial director."""
     x_rectangle = shapes.rectangle(0, -5, 20, 5)
     five_armed_shape = x_rectangle.symmetrise(5)
 
@@ -103,6 +108,7 @@ def shape_symmetrisation(line_width):
 
 
 def pattern_addition(line_width):
+    """ Adds an uniaxial rectangular pattern to azimuthal circular one in both orders (a + b vs b + a)."""
     x_rectangle = shapes.rectangle(0, -5, 20, 5)
     disk = shapes.disk(2.5)
 
@@ -119,6 +125,7 @@ def pattern_addition(line_width):
 
 
 def pattern_symmetrisation(line_width):
+    """ Creates a five-armed pattern with uniaxial alignment in each arm. """
     x_rectangle = shapes.rectangle(0, -5, 20, 5)
     disk = shapes.disk(2.5, 20, 5)
     joined_shape = x_rectangle + disk
@@ -129,8 +136,8 @@ def pattern_symmetrisation(line_width):
     symmetrised_pattern.generateInputFiles(None, line_width, is_displayed=True)
 
 
-# This example shows a whole workflow with multiple patterns being generated, sliced and plotted.
 def example_extensive():
+    """ This example shows a whole workflow with multiple patterns being generated, sliced and plotted."""
     # The path is relative to the parent of the Slicer's source files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
     slicer = slicer_setup.import_slicer("build")
@@ -212,5 +219,15 @@ if __name__ == "__main__":
     # The path is relative to the parent of the Slicer's source files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
     slicer = slicer_setup.import_slicer("build")
+    complete_usage_example(slicer)
 
-    example_extensive()
+    line_width = 0.2
+    shape_addition(line_width)
+    shape_subtraction(line_width)
+    shape_rotation(line_width)
+    shape_symmetrisation(line_width)
+
+    pattern_addition(line_width)
+    pattern_symmetrisation(line_width)
+
+    # example_extensive()
