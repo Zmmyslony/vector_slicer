@@ -39,7 +39,7 @@ Once boost is installed go to the desired parent directory and run in terminal
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
-cmake ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
+cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
 cmake --build ./build --config Release
 ```
 This will build the executable in the ./build/Release directory.
@@ -51,8 +51,7 @@ In the desired parent directory run in terminal
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
 cmake -S ./ -B ./build
-cd build
-make all 
+cmake --build ./build --config Release
 ```
 
 
