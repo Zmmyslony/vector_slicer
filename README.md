@@ -24,27 +24,6 @@ Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and sugges
 Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
 boost (https://www.boost.org/) are installed. 
 
-### Windows
-If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
-```
-git clone https://github.com/Microsoft/vcpkg.git
-.\vcpkg\bootstrap-vcpkg.bat
-cd vcpkg
-vcpkg install boost:x64-windows
-vcpkg integrate install 
-```
-and note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... .
-
-Once boost is installed go to the desired parent directory and run in terminal
-```
-git clone https://github.com/Zmmyslony/vector_slicer.git
-cd vector_slicer
-cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
-cmake --build ./build --config Release
-```
-This will build the executable in the ./build/Release directory.
-
-
 ### Linux / macOS
 In the desired parent directory run in terminal
 ```
@@ -54,10 +33,28 @@ cmake -S ./ -B ./build
 cmake --build ./build --config Release
 ```
 
+### Windows
+If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
+```
+git clone https://github.com/Microsoft/vcpkg.git
+.\vcpkg\bootstrap-vcpkg.bat
+cd vcpkg
+vcpkg install boost:x64-windows
+vcpkg integrate install 
+```
+Once the vcpkg is integrated, note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... as it will be used for later 
+compilation.
 
-[//]: # (### macOS)
+In the desired parent directory run in terminal
+```
+git clone https://github.com/Zmmyslony/vector_slicer.git
+cd vector_slicer
+cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
+cmake --build ./build --config Release
+```
+This will build the executable in the build directory.
 
-[//]: # (The guide is soon to come.)
+
 ***
 ## Usage
 The program can be used either as a dynamically linked library controlled from Python or directly from C++ using 
@@ -68,7 +65,7 @@ while C++ usage requires the input files to be separately generated.
 
 Due to the variety of gcode formats in use, the slicer does NOT generate the output in gcode, but rather in abstract
 pixel-based coordinates. There is a separate program for translating it into gcode (https://github.com/Zmmyslony/Vector_Slicer_GCode), 
-however, at the time of writing this only directly supports Hyrel printers (specifically, System 30M), but other formats
+however, at the time of writing this, it only directly supports Hyrel printers, specifically, System 30M, but other formats
 can also be implemented on request.
 
 ### Python usage
@@ -148,4 +145,5 @@ The best configuration file is saved for future use so it can be used for recalc
 
 
 ## Funding
+![EU logo](https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/eu_flag.jpg)
 This Project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Skłodowska-Curie grant agreement No 956150.
