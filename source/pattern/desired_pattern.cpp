@@ -29,6 +29,7 @@
 #include <iostream>
 #include <math.h>
 #include <cfloat>
+#include <iterator>
 
 #include "importing_and_exporting/table_reading.h"
 #include "auxiliary/simple_math_operations.h"
@@ -300,7 +301,7 @@ veci DesiredPattern::findInnerPointsOfMinimumDensity(std::set<veci> &candidate_s
         double current_splay = getSplay(current_coordinates);
         current_displacement = getSplayDirection(current_coordinates, 1);
         // In order to avoid numerical errors, we arbitrarily set the threshold for zero splay
-        if (current_splay < 1e-5) {
+        if (current_splay < 1e-10) {
             current_displacement = getDirector(current_coordinates, 1);
             if (dot(current_displacement, previous_displacement) < 0) {
                 current_displacement = scale(current_displacement, -1);
