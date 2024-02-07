@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
 #Optimization with system calls
 ADD_EXECUTABLE(branin_system_calls ./branin_system_calls.cpp)
