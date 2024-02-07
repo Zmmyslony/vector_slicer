@@ -43,7 +43,7 @@ vcpkg install boost:x64-windows
 vcpkg integrate install 
 ```
 Once the vcpkg is integrated, note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... as it will be used for later 
-compilation.
+configuration.
 
 In the desired parent directory run in terminal
 ```
@@ -69,11 +69,11 @@ however, at the time of writing this, it only directly supports Hyrel printers, 
 can also be implemented on request.
 
 ### Python usage
-The Python interface can be found in _python_ subdirectory. For an example usage check _python/guide.py_.
+The Python interface can be found in _python_ subdirectory. For an example usage check **python/guide.py**.
 
 #### Input generation
-The input patterns are created by combining **Shape** and **Director** into **Pattern**, which then can be used to 
-generate the input files. A few commonly used shapes and directors come predefined in _shapes.py_ and _directors.py_.
+The input patterns are created by combining _Shape_ and _Director_ into _Pattern_, which then can be used to 
+generate the input files. A few commonly used shapes and directors come predefined in **shapes.py** and **directors.py**.
 
 
 ### C++ usage
@@ -125,23 +125,20 @@ The locations of each of the configuration files together with the directories u
 be modified in the **vector_slicer_config.h.in** file.
 
 ### Output
-The program saves the patterns in the **output** directory, where it saves the optimised config, the filled matrix and
-the paths. The resulting files will be named based on the name of the input directory.
+The program saves the patterns in the **output** directory, with the outputs of each type in their subdirectory with 
+names corresponding to the names of the patterns used. 
 
-The filled matrix shows how many times was each pixel filled which is a fast test for the quality.
+The main output file is the **paths** file which contains the slicing information. The format is as follows:
+* Layer information is contained between "# Start of pattern" and "# End of pattern". Each layer corresponds to single 
+seed.
+* Each line within a layer contains information about single continuous path, where the values are flattened 
+pixel-based coordinates, i.e. x1, y1, x2, y2, etc.
 
-The paths file contains the main output of the
-program. The header contains some relevant information as to how it was sliced, and then the between "# Start of pattern"
-and "# End of pattern" is the sequence of paths corresponding to a single layer. Each line corresponds to a single line, where the x and y coordinates
-of subsequent points alternate (that is: x1,y1,x2,y2,x3,y3, etc.). Each of the patterns corresponds to a fully sliced
-pattern which uses different seeds so that in the case of multi-layer prints there is some variability between layers
-to avoid systematic errors.
-
-The simplest way of translating the output file into .gcode is to use an associated program Vector Slicer GCode generator
-(https://github.com/Zmmyslony/Vector_Slicer_GCode). It was designed to be used with the Hyrel printer (System 30M) for DIW writing 
-and the gcode headers and footers are Hyrel-specific, but the body of the gcode is rather universal. 
-
-The best configuration file is saved for future use so it can be used for recalculation.
+Remaining files:
+* **best_config** - config and seeds used for the generation of paths.
+* **filled_matrices** - contains information about how many times was each pixel fixed for the first (best) seed.
+* **logs** - Bayesopt logs used for debugging.
+* **optimisation_save** - Bayesopt optimisation progress for re-optimisation or optimisation monitoring.
 
 
 ## Funding
