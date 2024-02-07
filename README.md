@@ -16,10 +16,8 @@ realised by modification of the penalty function.
 
 Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and suggestions.
 
-[//]: # (## Requirements)
+***
 
-[//]: # (Boost library - https://www.boost.org/.)
-****
 ## Installation guide
 Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
 boost (https://www.boost.org/) are installed. 
@@ -52,10 +50,9 @@ cd vector_slicer
 cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
 cmake --build ./build --config Release
 ```
-This will build the executable in the build directory.
-
 
 ***
+
 ## Usage
 The program can be used either as a dynamically linked library controlled from Python or directly from C++ using 
 configuration files (see description below). 
@@ -68,6 +65,8 @@ pixel-based coordinates. There is a separate program for translating it into gco
 however, at the time of writing this, it only directly supports Hyrel printers, specifically, System 30M, but other formats
 can also be implemented on request.
 
+***
+
 ### Python usage
 The Python interface can be found in _python_ subdirectory. For an example usage check **python/guide.py**.
 
@@ -75,6 +74,7 @@ The Python interface can be found in _python_ subdirectory. For an example usage
 The input patterns are created by combining _Shape_ and _Director_ into _Pattern_, which then can be used to 
 generate the input files. A few commonly used shapes and directors come predefined in **shapes.py** and **directors.py**.
 
+***
 
 ### C++ usage
 #### Input format
@@ -124,6 +124,8 @@ in the <b>configuration</b> directory:
 The locations of each of the configuration files together with the directories used for importing and exporting can
 be modified in the **vector_slicer_config.h.in** file.
 
+***
+
 ### Output
 The program saves the patterns in the **output** directory, with the outputs of each type in their subdirectory with 
 names corresponding to the names of the patterns used. 
@@ -140,6 +142,7 @@ Remaining files:
 * **logs** - Bayesopt logs used for debugging.
 * **optimisation_save** - Bayesopt optimisation progress for re-optimisation or optimisation monitoring.
 
+***
 
 ## Funding
 <img alt="EU logo" src="https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/eu_flag.jpg" width="200">
