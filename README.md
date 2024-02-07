@@ -145,5 +145,5 @@ The best configuration file is saved for future use so it can be used for recalc
 
 
 ## Funding
-![EU logo](https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/eu_flag.jpg)
+<img alt="EU logo" src="https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/eu_flag.jpg" width="200">
 This Project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Skłodowska-Curie grant agreement No 956150.
