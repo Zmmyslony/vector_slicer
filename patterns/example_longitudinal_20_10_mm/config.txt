@@ -1,2 +1,0 @@
-PrintRadius 4.5
-InitialSeedingMethod Perimeter

@@ -18538,7 +18538,7 @@ it4HCjkuaEwMXel5pRx9W3Q1gfsJX46oBGmh9x3Cl0O7V8cnPo34J4JffI//
 }, Open  ]],
 
 Cell["\<\
-When patterns contain splay the penalty function does not decrease to \
+When patterns contain getSplay the penalty function does not decrease to \
 similarly low values.\
 \>", "Text",
  CellChangeTimes->{{3.9071415204300365`*^9, 

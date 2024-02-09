@@ -157,7 +157,13 @@ std::set<veci> grow_pattern(const std::set<veci> &shape, double radius) {
 }
 
 std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
+//    std::ofstream detected_line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/detected_line_density_minima.csv");
+//    for (const auto &e : shape) detected_line_density_minima << e[0] << "," << e[1] << "\n";
+
     shape = grow_pattern(shape, grow_size);
+
+//    std::ofstream grown_line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/grown_line_density_minima.csv");
+//    for (const auto &e : shape) grown_line_density_minima << e[0] << "," << e[1] << "\n";
 
     bool is_any_pixel_removed_in_step = true;
     while (is_any_pixel_removed_in_step) {
@@ -187,5 +193,8 @@ std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
             shape.erase(coordinate);
         }
     }
+
+//    std::ofstream line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
+//    for (const auto &e : shape) line_density_minima << e[0] << "," << e[1] << "\n";
     return shape;
 }
