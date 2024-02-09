@@ -1,3 +1,7 @@
+"""
+Reading and plotting the slicer output.
+"""
+
 #  Copyright (c) 2023, Michał Zmyślony, mlz22@cam.ac.uk.
 #
 #  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
