@@ -1,5 +1,5 @@
 """
-Basic shapes including rectangles, circles, annuli
+Basic shapes including rectangles, circles, annuli, polygons.
 """
 
 #  Copyright (c) 2023, Michał Zmyślony, mlz22@cam.ac.uk.
@@ -22,6 +22,7 @@ Basic shapes including rectangles, circles, annuli
 from lib.shape.shape import Shape
 import numpy as np
 import copy
+from matplotlib import path
 
 
 def annulus(r_min, r_max, x_centre=0, y_centre=0):
@@ -58,4 +59,24 @@ def rectangle(x_min, y_min, x_max, y_max):
     bounds = [x_min, y_min, x_max, y_max]
     return Shape(shape_function, bounds)
 
+
+def polygon(coordinates):
+    """
+    :param is_clockwise:
+    :param coordinates:
+    :return:
+    """
+    polygon_path = path.Path(coordinates)
+
+    bounds = np.array([np.min(coordinates[:, 0]),
+                      np.min(coordinates[:, 1]),
+                      np.max(coordinates[:, 0]),
+                      np.max(coordinates[:, 1])])
+
+    def shape_function(v):
+        v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
+        shape_flattened = polygon_path.contains_point(v_flattened)
+        return np.array(np.reshape(shape_flattened, v.shape[0:2]), dtype=int)
+
+    return Shape(shape_function, bounds)
 
