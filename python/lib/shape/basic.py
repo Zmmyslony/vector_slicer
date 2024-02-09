@@ -62,11 +62,12 @@ def rectangle(x_min, y_min, x_max, y_max):
 
 def polygon(coordinates):
     """
-    :param is_clockwise:
+    If path is clockwise, the elements on the edge WILL NOT be included, and when it is counterclockwise, the edge
+    elements WILL be included.
     :param coordinates:
     :return:
     """
-    polygon_path = path.Path(coordinates)
+    polygon_path = path.Path(coordinates, closed=True)
 
     bounds = np.array([np.min(coordinates[:, 0]),
                       np.min(coordinates[:, 1]),
@@ -75,7 +76,7 @@ def polygon(coordinates):
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
-        shape_flattened = polygon_path.contains_point(v_flattened)
+        shape_flattened = polygon_path.contains_point(v_flattened, radius=1e-9)
         return np.array(np.reshape(shape_flattened, v.shape[0:2]), dtype=int)
 
     return Shape(shape_function, bounds)
