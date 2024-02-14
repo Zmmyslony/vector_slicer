@@ -24,8 +24,10 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
+#include <iomanip>
 #include "vector_slicer_config.h"
 #include "../simulation/configuration_reading.h"
+#include "../simulation/simulation.h"
 
 
 std::string readRowToString(const std::vector<int> &row) {
@@ -134,8 +136,7 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vala
     return table;
 }
 
-std::string generateHeader(const std::string &pattern_name, double print_diameter) {
-    std::string header;
+std::string generateHeader(const std::string &pattern_name, double print_diameter, const Simulation &simulation) {
     time_t ttime = time(nullptr);
     char time[26];
 
@@ -145,41 +146,31 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 #ifdef __linux__
     ctime_r(&ttime, time);
 #endif
+    ;
+    std::stringstream header_s;
+    header_s << std::setprecision(3);
+    header_s << "# Generated using Vector Slicer " << SLICER_VER << " on " << time << std::endl
+             << "# Michał Zmyślony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
+             << "# Source directory: " << pattern_name << std::endl
+             << "# Print diameter: " << print_diameter << std::endl
+             << "# Disagreement configuration:" << std::endl
+             << "# \t empty spot (" << simulation.getEmptySpotWeight() << "," << simulation.getEmptySpotPower() << ")"
+             << std::endl
+             << "# \t overlap (" << simulation.getOverlapWeight() << "," << simulation.getOverlapPower() << ")"
+             << std::endl
+             << "# \t director (" << simulation.getDirectorWeight() << "," << simulation.getDirectorPower() << ")"
+             << std::endl
+             << "# Iterations: " << simulation.getTotalIterations() << ", relearning period: "
+             << simulation.getImprovementIterations() << ", noise: " << simulation.getNoise() << std::endl << std::endl;
 
-    header += "# Generated using Vector Slicer " + std::string(SLICER_VER) + " on " + time;
-    header += "# Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk\n";
-    header += "# Source directory: " + pattern_name + "\n";
-    header += "# Print diameter: " + std::to_string(print_diameter) + "\n";
-    header += "# Disagreement configuration: \n";
-    header += "# \t empty spot (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "empty_spot_weight") + "," +
-              readKey(DISAGREEMENT_FUNCTION_CONFIG, "empty_spot_power") + ")\n";
-    header += "# \t overlap (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "overlap_weight") + "," +
-              readKey(DISAGREEMENT_FUNCTION_CONFIG, "overlap_power") + ")\n";
-    header += "# \t director (" + readKey(DISAGREEMENT_FUNCTION_CONFIG, "director_weight") + "," +
-              readKey(DISAGREEMENT_FUNCTION_CONFIG, "director_power") + ")\n";
-    header += "# Iterations: " + readKey(BAYESIAN_CONFIG, "number_of_iterations") + ", relearning period: " +
-              readKey(BAYESIAN_CONFIG, "iterations_between_relearning") + ", noise: " +
-              readKey(BAYESIAN_CONFIG, "noise") + "\n";
-    header += "\n";
-    return header;
+    return header_s.str();
 }
 
 
-void
-exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
-                   const std::string &suffix, double print_diameter) {
-    fs::path paths_filename = path / (suffix + ".csv");
-    exportHeaderToFile(generateHeader(suffix, print_diameter), paths_filename);
-
-    std::vector<std::vector<int>> x_table = indexTable(grid_of_coordinates, 0);
-    std::vector<std::vector<int>> y_table = indexTable(grid_of_coordinates, 1);
-
-    appendVectorTableToFile(x_table, y_table, paths_filename);
-}
-
-void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
-                        fs::path path, const std::string &suffix, double print_diameter) {
-    exportHeaderToFile(generateHeader(suffix, print_diameter), path);
+void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, fs::path path,
+                        const std::string &suffix, double print_diameter, const Simulation &simulation) {
+    std::string header = generateHeader(suffix, print_diameter, simulation);
+    exportHeaderToFile(header, path);
 
     for (auto &grid: grids_of_paths) {
         std::vector<std::vector<int>> x_table = indexTable(grid, 0);
@@ -240,7 +231,6 @@ void exportVector(const std::vector<vali> &vector, const std::string &filename) 
 
     if (file.is_open()) {
         for (auto &point: vector) {
-//            std::cout << point[0] << "," << point[1] << std::endl;
             file << point[0] << "," << point[1] << std::endl;
         }
     }

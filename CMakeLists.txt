@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 project(vector_slicer VERSION 0.5.4)
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)

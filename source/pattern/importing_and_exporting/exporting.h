@@ -27,6 +27,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
+#include "../simulation/simulation.h"
 
 namespace fs = boost::filesystem;
 using vali = std::valarray<int>;
@@ -43,8 +44,8 @@ void exportVectorTableToFile(const std::string &header, const std::vector<std::v
 void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
                         const std::string &suffix, double print_diameter);
 
-void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths,
-                        fs::path path, const std::string &suffix, double print_diameter);
+void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, fs::path path,
+                        const std::string &suffix, double print_diameter, const Simulation &simulation);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
 

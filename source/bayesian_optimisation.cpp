@@ -190,7 +190,8 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
 }
 
 
-void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path) {
+void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path,
+                    const Simulation &simulation) {
     fs::path results_directory = pattern_path / "results";
 
     fs::path output_directory = pattern_path.parent_path().parent_path() / "output";
@@ -216,7 +217,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     exportConfigList(patterns, best_config_directory, number_of_layers);
     patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
-    exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter);
+    exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter, simulation);
 }
 
 QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
@@ -316,7 +317,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
             best_pattern.getFinalSeeds(), best_pattern.getThreads());
 
-    exportPatterns(best_fills, pattern_path);
+    exportPatterns(best_fills, pattern_path, simulation);
     std::vector<FillingConfig> config_list;
     for (auto &filled_config: best_fills) {
         config_list.emplace_back(filled_config.getConfig());
@@ -354,7 +355,7 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     }
     filled_configs[0].getConfig().printConfig();
     filled_configs[0].printDisagreement();
-    exportPatterns(filled_configs, pattern_path);
+    exportPatterns(filled_configs, pattern_path, simulation);
     std::cout << "Pattern filled." << std::endl;
 }
 
