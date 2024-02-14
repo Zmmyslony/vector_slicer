@@ -211,7 +211,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
         } else {
             sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, 0));
         }
-        print_diameter = pattern.getPrintRadius() * 2 + 1;
+        print_diameter = pattern.getPrintRadius() * 2;
     }
 
     exportConfigList(patterns, best_config_directory, number_of_layers);
