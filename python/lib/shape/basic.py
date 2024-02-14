@@ -64,6 +64,8 @@ def polygon(coordinates):
     """
     If path is clockwise, the elements on the edge WILL NOT be included, and when it is counterclockwise, the edge
     elements WILL be included.
+
+    See https://github.com/matplotlib/matplotlib/issues/9704 for more details.
     :param coordinates:
     :return:
     """
