@@ -123,7 +123,7 @@ def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_lik
     return local_splay
 
 
-def generate_shape_matrix(shape: Shape, pixel_size):
+def generate_shape_matrix(shape: Shape, pixel_size : float):
     x_grid = np.arange(shape.x_min, shape.x_max + pixel_size / 2, pixel_size)
     y_grid = np.arange(shape.y_min, shape.y_max + pixel_size / 2, pixel_size)
 
@@ -140,6 +140,8 @@ def generate_director_field(mesh, director_function, splay_function):
 
 
 def validate_filling_method(filling_method):
+    if not isinstance(filling_method, str):
+        return False
     return filling_method.lower() in ["splay", "perimeter", "dual"]
 
 
