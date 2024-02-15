@@ -8,6 +8,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 ADD_SUBDIRECTORY(bayesopt)
 include_directories(${PROJECT_SOURCE_DIR}/bayesopt/include)
 include_directories(${PROJECT_SOURCE_DIR}/bayesopt/utils)
+set_property(TARGET bayesopt PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET(EXT_LIBS bayesopt)
 
 find_package(OpenMP)
