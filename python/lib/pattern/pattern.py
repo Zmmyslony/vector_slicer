@@ -123,7 +123,7 @@ def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_lik
     return local_splay
 
 
-def generate_shape_matrix(shape: Shape, pixel_size : float):
+def generate_shape_matrix(shape: Shape, pixel_size: float):
     x_grid = np.arange(shape.x_min, shape.x_max + pixel_size / 2, pixel_size)
     y_grid = np.arange(shape.y_min, shape.y_max + pixel_size / 2, pixel_size)
 
@@ -153,6 +153,8 @@ class Pattern:
         :param director:
         """
         self.domain = domain
+        self.shape_list = [domain]
+        self.director_list = [director]
         self.domain_director = domain_director(domain, director.director)
         self.domain_splay = domain_splay(domain, director.splay)
 
@@ -164,6 +166,8 @@ class Pattern:
         """
         shape_copy = copy(self)
         shape_copy.domain = self.domain + other.domain
+        shape_copy.shape_list = self.shape_list + other.shape_list
+        shape_copy.director_list = self.director_list + other.director_list
         shape_copy.domain_director = domain_director(other.domain, other.domain_director, self.domain_director)
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
@@ -219,6 +223,18 @@ class Pattern:
             print(f"{time.time() - begin_time:.3f}s: Plotting complete.")
 
         return pattern_name
+
+    def symmetrise(self, arm_number: int, begin_angle: float = None):
+        if arm_number < 1:
+            raise RuntimeError("Symmetrisation requires a positive number of arms")
+        elif arm_number == 1:
+            return self
+
+        symmetrised_pattern = SymmetricPattern(self.shape_list[0], self.director_list[0], arm_number, begin_angle)
+        patterns_number = len(self.shape_list)
+        for i in range(1, patterns_number):
+            symmetrised_pattern += SymmetricPattern(self.shape_list[i], self.director_list[i], arm_number, begin_angle)
+        return symmetrised_pattern
 
 
 def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
