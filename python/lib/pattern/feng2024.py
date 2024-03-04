@@ -31,20 +31,62 @@ from lib.director import basic as directors
 from lib.pattern.pattern import Pattern, SymmetricPattern
 
 
-def translationally_invariant_gauss_flat_alignment(y_begin, y_end, is_negative=True):
+def translationally_invariant_gauss_flat_alignment(y_begin, y_end, is_negative=True, is_flipped=False):
     def alignment(v):
         w = y_end - y_begin
         y = v[:, :, 1] - y_begin
         # 0 -> 1/2 ArcCos(1 - 2 y/w) -> Pi / 2
-        director_grid = np.where(y < 0, 0,
-                                 np.where(y > w, np.pi / 2,
-                                          1 / 2 * np.arccos(1 - 2 * y / w)))
+        if is_flipped:
+            director_grid = np.where(y < 0, 0,
+                                     np.where(y > w, np.pi / 2,
+                                              -1 / 2 * np.arccos(1 - 2 * y / w)))
+        else:
+            director_grid = np.where(y < 0, 0,
+                                     np.where(y > w, np.pi / 2,
+                                              1 / 2 * np.arccos(1 - 2 * y / w)))
         if is_negative:
             return director_grid
         else:
             return director_grid + np.pi / 2
 
     return directors.Director(alignment)
+
+
+def gripper(length, w_inner, w_outer, line_width_mm, arm_number: int, line_width_pixel=9, is_positive: bool = True,
+            is_displayed=False, is_flipped=True):
+    y_1 = -w_inner / 2 - w_outer
+    y_2 = -w_inner / 2
+    y_3 = w_inner / 2
+    y_4 = w_inner / 2 + w_outer
+
+    rectangle_top = shapes.rectangle(0, y_3, length, y_4)
+    rectangle_mid = shapes.rectangle(0, y_2, length, y_3)
+    rectangle_bot = shapes.rectangle(0, y_1, length, y_2)
+
+    longitudinal_alignment = directors.uniaxial_alignment(0)
+    transverse_alignment = directors.uniaxial_alignment(np.pi / 2)
+
+    if is_positive:
+        type_p = "positive"
+        pattern_top = Pattern(rectangle_top,
+                              translationally_invariant_gauss_flat_alignment(y_3, y_4, False, is_flipped=is_flipped))
+        pattern_mid = Pattern(rectangle_mid, transverse_alignment)
+        pattern_bot = Pattern(rectangle_bot,
+                              translationally_invariant_gauss_flat_alignment(y_1, y_2, True, is_flipped=is_flipped))
+    else:
+        type_p = "negative"
+        pattern_top = Pattern(rectangle_top,
+                              translationally_invariant_gauss_flat_alignment(y_3, y_4, True, is_flipped=is_flipped))
+        pattern_mid = Pattern(rectangle_mid, longitudinal_alignment)
+        pattern_bot = Pattern(rectangle_bot,
+                              translationally_invariant_gauss_flat_alignment(y_1, y_2, False, is_flipped=is_flipped))
+
+    pattern = pattern_top + pattern_mid + pattern_bot
+
+    gripper_pattern = pattern.symmetrise(arm_number)
+    name = f"gripper_{type_p}_w_out_{w_outer:d}_w_in_{w_inner:d}_l_{length:d}_arms_{arm_number}"
+
+    return gripper_pattern.generateInputFiles(name, line_width_mm, line_width_pixel, is_displayed=is_displayed)
 
 
 def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, length, line_width_mm, line_width_pixel,
@@ -72,7 +114,7 @@ def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, len
     transverse_alignment = directors.uniaxial_alignment(np.pi / 2)
 
     alignment_negative_top = translationally_invariant_gauss_flat_alignment(y_begin + w_bottom,
-                                                                            y_begin + w_top + w_bottom)
+                                                                            y_begin + w_top + w_bottom, True)
     alignment_positive_top = translationally_invariant_gauss_flat_alignment(y_begin + w_bottom,
                                                                             y_begin + w_top + w_bottom, False)
     alignment_negative_bottom = translationally_invariant_gauss_flat_alignment(y_begin,
