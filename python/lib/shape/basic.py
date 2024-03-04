@@ -72,9 +72,9 @@ def polygon(coordinates):
     polygon_path = path.Path(coordinates, closed=True)
 
     bounds = np.array([np.min(coordinates[:, 0]),
-                      np.min(coordinates[:, 1]),
-                      np.max(coordinates[:, 0]),
-                      np.max(coordinates[:, 1])])
+                       np.min(coordinates[:, 1]),
+                       np.max(coordinates[:, 0]),
+                       np.max(coordinates[:, 1])])
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
@@ -83,3 +83,50 @@ def polygon(coordinates):
 
     return Shape(shape_function, bounds)
 
+
+def square(size: float, x_offset: float = 0, y_offset: float = 0):
+    return rectangle(
+        -size / 2 + x_offset,
+        -size / 2 + y_offset,
+        size / 2 + x_offset,
+        size / 2 + y_offset
+    )
+
+
+def regular_polygon(sides: int, radius: float, orientation: float = 0, x_offset: float = 0, y_offset: float = 0):
+    angle = orientation
+    delta_angle = 2 * np.pi / sides
+    positions = np.empty([sides, 2])
+    offset = np.array([x_offset, y_offset])
+
+    for i in range(sides):
+        positions[i] = radius * np.array([np.cos(angle), np.sin(angle)]) + offset
+        angle += delta_angle
+
+    return polygon(positions)
+
+
+def regular_triangle(side_length: float, orientation: float = 0, x_offset: float = 0, y_offset: float = 0):
+    """
+    CCW orientation (edges included)
+    :param side_length:
+    :param orientation:
+    :param x_offset:
+    :param y_offset:
+    :return:
+    """
+    radius = side_length / np.sqrt(3)
+    return regular_polygon(3, radius, orientation, x_offset, y_offset)
+
+
+def regular_hexagon(side_length: float, orientation: float = 0, x_offset: float = 0, y_offset: float = 0):
+    """
+    CCW orientation (edges included)
+    :param side_length:
+    :param orientation:
+    :param x_offset:
+    :param y_offset:
+    :return:
+    """
+    radius = side_length / np.sqrt(3)
+    return regular_polygon(6, radius, orientation, x_offset, y_offset)
