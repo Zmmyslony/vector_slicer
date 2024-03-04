@@ -177,7 +177,7 @@ class Pattern:
         :param line_width_pixel: width of the line in pixels - higher values result in better slicing quality at the cost of runtime.
         :param filling_method: Splay, Perimeter or Dual.
         :param is_displayed: Is the pattern displayed after the generation.
-        :return:
+        :return: pattern_name
         """
         begin_time = time.time()
         print(f"\n{time.time() - begin_time:.3f}s: Generating input files for {pattern_name}.")
@@ -217,6 +217,8 @@ class Pattern:
             if splay_grid is not None:
                 plot_splay(mesh, splay_grid)
             print(f"{time.time() - begin_time:.3f}s: Plotting complete.")
+
+        return pattern_name
 
 
 def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
