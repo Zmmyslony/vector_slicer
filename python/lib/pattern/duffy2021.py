@@ -35,9 +35,10 @@ def iris_alignment(r_in, target_elongation):
     r_out = r_in * np.sqrt(1 + 1 / target_elongation + 1 / np.sqrt(target_elongation))
 
     def alignment(v):
-        r = v[:, :, 0] + 1e-9
-        return 1 / 2 * np.arccos((2 * r_in ** 2 + r ** 2 * (target_elongation ** 1.5 - 1)) /
-                                 (r ** 2 * (target_elongation ** 1.5 + 1)))
+        r = v[:, :, 0]
+        cos_term = (2 * r_in ** 2 + r ** 2 * (target_elongation ** 1.5 - 1)) / (r ** 2 * (target_elongation ** 1.5 + 1))
+        cos_term = np.where(np.abs(cos_term) <= 1, cos_term, 1)
+        return 1 / 2 * np.arccos(cos_term)
 
     symmetric_alignment = directors.radial_symmetry(directors.Director(alignment))
     return symmetric_alignment, r_out
@@ -58,9 +59,10 @@ def cylinder_alignment(r_in, target_elongation):
     r_out = r_in * target_elongation ** -1.5
 
     def alignment(v):
-        r = v[:, :, 0] + 1e-9
-        return 1 / 2 * np.arccos((- 2 * r_in ** 2 + r ** 2 * (target_elongation ** 3 + 1)) /
-                                 (r ** 2 * (target_elongation ** 3 - 1)))
+        r = v[:, :, 0]
+        cos_term = (- 2 * r_in ** 2 + r ** 2 * (target_elongation ** 3 + 1)) / (r ** 2 * (target_elongation ** 3 - 1))
+        cos_term = np.where(np.abs(cos_term) <= 1, cos_term, 1)
+        return 1 / 2 * np.arccos(cos_term)
 
     symmetric_alignment = directors.radial_symmetry(directors.Director(alignment))
     return symmetric_alignment, r_out
@@ -81,9 +83,10 @@ def evertor_alignment(r_in, target_elongation):
     r_out = r_in * target_elongation ** -0.75
 
     def alignment(v):
-        r = v[:, :, 0] + 1e-9
-        return 1 / 2 * np.arccos(1 + 2 * (r ** 2 - r_in ** 2) /
-                                 (r ** 2 * (target_elongation ** 1.5 - 1)))
+        r = v[:, :, 0]
+        cos_term = 1 + 2 * (r ** 2 - r_in ** 2) / (r ** 2 * (target_elongation ** 1.5 - 1))
+        cos_term = np.where(np.abs(cos_term) <= 1, cos_term, 1)
+        return 1 / 2 * np.arccos(cos_term)
 
     symmetric_alignment = directors.radial_symmetry(directors.Director(alignment))
     return symmetric_alignment, r_out
@@ -100,18 +103,29 @@ def evertor_pattern(r_in, target_elongation):
     return Pattern(evertor_annulus, evertor_director)
 
 
-def generate_radial_gauss_flat_patterns(r_in, target_elongation, line_width_mm, line_width_pixel, is_displayed=False):
+def generate_radial_gauss_flat_patterns(r_in: float, target_elongation: float, line_width_mm: float,
+                                        line_width_pixel: int = 9, is_displayed=False):
+    """
+    Generates iris, cylinder and evertor director patterns.
+    :param r_in:
+    :param target_elongation:
+    :param line_width_mm:
+    :param line_width_pixel:
+    :param is_displayed:
+    :return: list of pattern names [iris, cylinder, evertor]
+    """
     iris = iris_pattern(r_in, target_elongation)
     cylinder = cylinder_pattern(r_in, target_elongation)
     evertor = evertor_pattern(r_in, target_elongation)
 
-    iris.generateInputFiles(f"iris_{r_in:d}_mm_{target_elongation:.2f}", line_width_mm, line_width_pixel,
-                            filling_method="Perimeter", is_displayed=is_displayed)
-    cylinder.generateInputFiles(f"cylinder_{r_in:d}_mm_{target_elongation:.2f}", line_width_mm, line_width_pixel,
-                                filling_method="Perimeter", is_displayed=is_displayed)
-    evertor.generateInputFiles(f"evertor_{r_in:d}_mm_{target_elongation:.2f}", line_width_mm, line_width_pixel,
-                               filling_method="Perimeter", is_displayed=is_displayed)
+    pattern_names = [
+        iris.generateInputFiles(f"iris_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm, line_width_pixel,
+                                filling_method="Perimeter", is_displayed=is_displayed),
+        cylinder.generateInputFiles(f"cylinder_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm,
+                                    line_width_pixel,
+                                    filling_method="Perimeter", is_displayed=is_displayed),
+        evertor.generateInputFiles(f"evertor_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm,
+                                   line_width_pixel,
+                                   filling_method="Perimeter", is_displayed=is_displayed)]
 
-    return [f"iris_{r_in:d}_mm_{target_elongation:.2f}",
-            f"cylinder_{r_in:d}_mm_{target_elongation:.2f}",
-            f"evertor_{r_in:d}_mm_{target_elongation:.2f}"]
+    return pattern_names
