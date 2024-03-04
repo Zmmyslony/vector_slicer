@@ -112,6 +112,33 @@ class Shape:
     def __sub__(self, other):
         return self.intersection(other)
 
+    def bounds(self):
+        return np.array([self.x_min, self.y_min, self.x_max, self.y_max])
+
+    def invert(self):
+        """
+        Inverts (negates) the current shape while keeping the bounds unchanged.
+        :return:
+        """
+
+        def new_shape_function(v):
+            shape_array = self.shape_function(v)
+            return np.logical_not(shape_array)
+
+        return Shape(new_shape_function, self.bounds())
+
+    def scale(self, scale):
+        """
+        Scales the shape together with its boundaries
+        :param scale:
+        :return:
+        """
+        def new_shape_function(v):
+            v_scaled = v / scale
+            return self.shape_function(v_scaled)
+
+        return Shape(new_shape_function, scale * self.bounds())
+
     def print_bounds(self):
         print(f"x: {self.x_min:.2f}-{self.x_max:.2f}\n"
               f"y: {self.y_min:.2f}-{self.y_max:.2f}")
@@ -119,7 +146,7 @@ class Shape:
 
 def pacman_shape(opening_angle: float, closing_angle: float, centre=np.array([0, 0])):
     """
-    This shape is meant for localising the shapes into a slice-type shape through substraction. It is not meant for use
+    This shape is meant for localising the shapes into a slice-type shape through subtraction. It is not meant for use
     by itself
     :param opening_angle:
     :param closing_angle:
