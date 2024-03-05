@@ -52,7 +52,9 @@ def iris_pattern(r_in, target_elongation):
     """
     iris_director, r_out = iris_alignment(r_in, target_elongation)
     iris_annulus = shapes.annulus(r_in, r_out)
-    return Pattern(iris_annulus, iris_director)
+    pattern = Pattern(iris_annulus, iris_director)
+    pattern.name = f"iris_{r_in:d}_mm_{int(target_elongation * 100):d}%"
+    return pattern
 
 
 def cylinder_alignment(r_in, target_elongation):
@@ -76,7 +78,9 @@ def cylinder_pattern(r_in, target_elongation):
     """
     cylinder_director, r_out = cylinder_alignment(r_in, target_elongation)
     cylinder_annulus = shapes.annulus(r_in, r_out)
-    return Pattern(cylinder_annulus, cylinder_director)
+    pattern = Pattern(cylinder_annulus, cylinder_director)
+    pattern.name = f"cylinder_{r_in:d}_mm_{int(target_elongation * 100):d}%"
+    return pattern
 
 
 def evertor_alignment(r_in, target_elongation):
@@ -100,7 +104,9 @@ def evertor_pattern(r_in, target_elongation):
      """
     evertor_director, r_out = evertor_alignment(r_in, target_elongation)
     evertor_annulus = shapes.annulus(r_in, r_out)
-    return Pattern(evertor_annulus, evertor_director)
+    pattern = Pattern(evertor_annulus, evertor_director)
+    pattern.name = f"evertor_{r_in:d}_mm_{int(target_elongation * 100):d}%"
+    return pattern
 
 
 def generate_radial_gauss_flat_patterns(r_in: float, target_elongation: float, line_width_mm: float,
@@ -119,11 +125,10 @@ def generate_radial_gauss_flat_patterns(r_in: float, target_elongation: float, l
     evertor = evertor_pattern(r_in, target_elongation)
 
     pattern_names = [
-        iris.generateInputFiles(line_width_mm, f"iris_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_pixel,
-                                filling_method="Perimeter", is_displayed=is_displayed),
-        cylinder.generateInputFiles(line_width_mm, f"cylinder_{r_in:d}_mm_{int(target_elongation * 100):d}%",
-                                    line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed),
-        evertor.generateInputFiles(line_width_mm, f"evertor_{r_in:d}_mm_{int(target_elongation * 100):d}%",
-                                   line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)]
+        iris.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed),
+        cylinder.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                    is_displayed=is_displayed),
+        evertor.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                   is_displayed=is_displayed)]
 
     return pattern_names

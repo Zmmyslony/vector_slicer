@@ -43,10 +43,11 @@ def topological_defect_director(charge: float, angle_offset=None):
 
 def topological_defect_pattern(r: float, charge: float, angle_offset=None):
     disk = shapes.disk(r)
-    return Pattern(disk, topological_defect_director(charge, angle_offset))
+    pattern = Pattern(disk, topological_defect_director(charge, angle_offset))
+    pattern.name = f"defect_r_{r:.1f}_c_{charge:.1f}"
+    return pattern
 
 
 def topological_defect(r: float, charge: float, line_width_mm: float, angle_offset=None, is_displayed=False):
     pattern = topological_defect_pattern(r, charge, angle_offset)
-    name = f"defect_r_{r:.1f}_c_{charge:.1f}"
-    return pattern.generateInputFiles(line_width_mm, name, is_displayed=is_displayed)
+    return pattern.generateInputFiles(line_width_mm, is_displayed=is_displayed)

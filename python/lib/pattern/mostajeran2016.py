@@ -51,12 +51,22 @@ def constant_gauss_curvature_director(w: float, is_positive=True, is_flipped=Fal
 
 def constant_gauss_curvature_rectangle_pattern(l: float, w: float, is_positive=True, is_flipped=False):
     domain = shapes.rectangle(0, -w / 2, l, w / 2)
-    return Pattern(domain, constant_gauss_curvature_director(w, is_positive, is_flipped))
+    if is_positive:
+        type_name = 'positive'
+    else:
+        type_name = 'negative'
+    name = f"constant_gauss_curvature_{type_name}_l_{l:.1f}_w_{w:.1f}"
+    return Pattern(domain, constant_gauss_curvature_director(w, is_positive, is_flipped), name)
 
 
 def constant_gauss_curvature_disk_pattern(r: float, is_positive=True, is_flipped=False):
     domain = shapes.disk(r)
-    return Pattern(domain, constant_gauss_curvature_director(2 * r, is_positive, is_flipped))
+    if is_positive:
+        type_name = 'positive'
+    else:
+        type_name = 'negative'
+    name = f"constant_gauss_curvature_{type_name}_r_{r:.1f}"
+    return Pattern(domain, constant_gauss_curvature_director(2 * r, is_positive, is_flipped), name)
 
 
 def constant_gauss_curvature_rectangle(l: float, w: float, line_width_mm, is_positive=True,
@@ -72,12 +82,7 @@ def constant_gauss_curvature_rectangle(l: float, w: float, line_width_mm, is_pos
     :return:
     """
     pattern = constant_gauss_curvature_rectangle_pattern(l, w, is_positive, is_flipped)
-    if is_positive:
-        type_name = 'positive'
-    else:
-        type_name = 'negative'
-    name = f"constant_gauss_curvature_{type_name}_l_{l:.1f}_w_{w:.1f}"
-    return pattern.generateInputFiles(line_width_mm, name, is_displayed=is_displayed)
+    return pattern.generateInputFiles(line_width_mm, is_displayed=is_displayed)
 
 
 def constant_gauss_curvature_disk(r: float, line_width_mm, is_positive=True,
@@ -92,9 +97,4 @@ def constant_gauss_curvature_disk(r: float, line_width_mm, is_positive=True,
     :return:
     """
     pattern = constant_gauss_curvature_disk_pattern(r, is_positive, is_flipped)
-    if is_positive:
-        type_name = 'positive'
-    else:
-        type_name = 'negative'
-    name = f"constant_gauss_curvature_{type_name}_r_{r:.1f}"
-    return pattern.generateInputFiles(line_width_mm, name, is_displayed=is_displayed)
+    return pattern.generateInputFiles(line_width_mm, is_displayed=is_displayed)

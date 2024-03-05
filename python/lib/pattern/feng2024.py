@@ -124,30 +124,34 @@ def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, len
 
     asymmetric_negative = (Pattern(rectangle_bottom, longitudinal_alignment) +
                            Pattern(rectangle_top, alignment_negative_top))
+    asymmetric_negative.name = f"asymmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"
 
     asymmetric_positive = (Pattern(rectangle_bottom, transverse_alignment) +
                            Pattern(rectangle_top, alignment_positive_top))
+    asymmetric_positive.name = f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"
 
     symmetric_negative = (Pattern(rectangle_bottom, alignment_negative_bottom) +
                           Pattern(rectangle_top, alignment_negative_top))
+    symmetric_negative.name = f"symmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"
 
     symmetric_positive = (Pattern(rectangle_bottom, alignment_positive_bottom) +
                           Pattern(rectangle_top, alignment_positive_top))
+    symmetric_positive.name = f"symmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"
 
-    asymmetric_negative.generateInputFiles(line_width_mm, f"asymmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
-                                           line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
+    asymmetric_negative.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                           is_displayed=is_displayed)
 
-    asymmetric_positive.generateInputFiles(line_width_mm, f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
-                                           line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
+    asymmetric_positive.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                           is_displayed=is_displayed)
 
-    symmetric_negative.generateInputFiles(line_width_mm, f"symmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
-                                          line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
+    symmetric_negative.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                          is_displayed=is_displayed)
 
-    symmetric_positive.generateInputFiles(line_width_mm, f"symmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
-                                          line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
+    symmetric_positive.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
+                                          is_displayed=is_displayed)
 
     SymmetricPattern(rectangle_top, alignment_positive_top, 3).generateInputFiles(line_width_mm,
-                                                                                  f"symmetric_positive_4_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
+                                                                                  f"symmetric_positive_3_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
                                                                                   line_width_pixel,
                                                                                   filling_method="Perimeter",
                                                                                   is_displayed=True)
@@ -156,4 +160,4 @@ def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, len
             f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
             f"symmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
             f"symmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
-            f"symmetric_positive_4_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"]
+            f"symmetric_positive_3_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}"]
