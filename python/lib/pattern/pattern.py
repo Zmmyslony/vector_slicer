@@ -146,12 +146,13 @@ def validate_filling_method(filling_method):
 
 
 class Pattern:
-    def __init__(self, domain: Shape, director: Director):
+    def __init__(self, domain: Shape, director: Director, name=None):
         """
         Combination of the Director and Shape, where the director is defined over the domain.
         :param domain:
         :param director:
         """
+        self.name = name
         self.domain = domain
         self.shape_list = [domain]
         self.director_list = [director]
@@ -172,12 +173,12 @@ class Pattern:
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
 
-    def generateInputFiles(self, pattern_name, line_width_millimetre: float, line_width_pixel: int = 9,
+    def generateInputFiles(self, line_width_millimetre: float, pattern_name = None, line_width_pixel: int = 9,
                            filling_method=None, is_displayed=False):
         """
         Generates theta, splay and config files for the pattern.
-        :param pattern_name: directory name, if is None the pattern is not saved and cannot be sliced.
         :param line_width_millimetre: printing line width used for meshing.
+        :param pattern_name: directory name, if is None, the self.name is used. If it is also None, the pattern is not saved for slicing.
         :param line_width_pixel: width of the line in pixels - higher values result in better slicing quality at the cost of runtime.
         :param filling_method: Splay, Perimeter or Dual.
         :param is_displayed: Is the pattern displayed after the generation.
@@ -189,6 +190,9 @@ class Pattern:
         print(f"{time.time() - begin_time:.3f}s: Meshing complete.")
         director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
         print(f"{time.time() - begin_time:.3f}s: Director and splay calculation complete.")
+
+        if pattern_name is None:
+            pattern_name = self.name
 
         if pattern_name is not None:
             pattern_directory = slicer.get_patterns_directory() / pattern_name

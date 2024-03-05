@@ -2,7 +2,7 @@
 This file implements some of the director patterns designed in:
 
 Geometry, mechanics and actuation of intrinsically curved folds
-F. Feng, K. Dradrach, M. Zmylony, M. Barnes and J. S. Biggins,
+F. Feng, K. Dradrach, M. Zmyślony, M. Barnes and J. S. Biggins,
 Soft Matter, 2024, DOI: 10.1039/D3SM01584J
 
 
@@ -86,7 +86,7 @@ def gripper(length, w_inner, w_outer, line_width_mm, arm_number: int, line_width
     gripper_pattern = pattern.symmetrise(arm_number)
     name = f"gripper_{type_p}_w_out_{w_outer:d}_w_in_{w_inner:d}_l_{length:d}_arms_{arm_number}"
 
-    return gripper_pattern.generateInputFiles(name, line_width_mm, line_width_pixel, is_displayed=is_displayed)
+    return gripper_pattern.generateInputFiles(line_width_mm, name, line_width_pixel, is_displayed=is_displayed)
 
 
 def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, length, line_width_mm, line_width_pixel,
@@ -134,21 +134,23 @@ def generate_lines_of_concentrated_gauss_curvature_patterns(w_bottom, w_top, len
     symmetric_positive = (Pattern(rectangle_bottom, alignment_positive_bottom) +
                           Pattern(rectangle_top, alignment_positive_top))
 
-    asymmetric_negative.generateInputFiles(f"asymmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}", line_width_mm,
+    asymmetric_negative.generateInputFiles(line_width_mm, f"asymmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
                                            line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
 
-    asymmetric_positive.generateInputFiles(f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}", line_width_mm,
+    asymmetric_positive.generateInputFiles(line_width_mm, f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
                                            line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
 
-    symmetric_negative.generateInputFiles(f"symmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}", line_width_mm,
+    symmetric_negative.generateInputFiles(line_width_mm, f"symmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
                                           line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
 
-    symmetric_positive.generateInputFiles(f"symmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}", line_width_mm,
+    symmetric_positive.generateInputFiles(line_width_mm, f"symmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
                                           line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)
 
-    SymmetricPattern(rectangle_top, alignment_positive_top, 3).generateInputFiles(
-        f"symmetric_positive_4_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}", line_width_mm,
-        line_width_pixel, filling_method="Perimeter", is_displayed=True)
+    SymmetricPattern(rectangle_top, alignment_positive_top, 3).generateInputFiles(line_width_mm,
+                                                                                  f"symmetric_positive_4_arms_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
+                                                                                  line_width_pixel,
+                                                                                  filling_method="Perimeter",
+                                                                                  is_displayed=True)
 
     return [f"asymmetric_negative_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",
             f"asymmetric_positive_L{length:d}_Wb{w_bottom:d}_Wt{w_top:d}",

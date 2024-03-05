@@ -133,6 +133,7 @@ class Shape:
         :param scale:
         :return:
         """
+
         def new_shape_function(v):
             v_scaled = v / scale
             return self.shape_function(v_scaled)
@@ -158,5 +159,24 @@ def pacman_shape(opening_angle: float, closing_angle: float, centre=np.array([0,
         v_offset = copy.copy(v) - centre
         phi = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0]) % (2 * np.pi)
         return np.logical_and(phi < opening_angle % (2 * np.pi), phi > closing_angle % (2 * np.pi))
+
+    return Shape(shape_function, [0, 0, 0, 0])
+
+
+def half_plane(r, angle, is_edge_inclusive=False):
+    """
+    Half plane used for trimming the patterns.
+    :param r: distance from origin where the plane should begin.
+    :param angle: rotation of the plane - 0 means half-plane extending to x-infinity, Pi / 2 to y-infinity etc.
+    :param is_edge_inclusive: whether distance r is included or not.
+    :return:
+    """
+
+    def shape_function(v):
+        r_coord = np.cos(angle) * v[:, :, 0] + np.sin(angle) * v[:, :, 1]
+        if is_edge_inclusive:
+            return r_coord <= r
+        else:
+            return r_coord < r
 
     return Shape(shape_function, [0, 0, 0, 0])

@@ -119,13 +119,11 @@ def generate_radial_gauss_flat_patterns(r_in: float, target_elongation: float, l
     evertor = evertor_pattern(r_in, target_elongation)
 
     pattern_names = [
-        iris.generateInputFiles(f"iris_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm, line_width_pixel,
+        iris.generateInputFiles(line_width_mm, f"iris_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_pixel,
                                 filling_method="Perimeter", is_displayed=is_displayed),
-        cylinder.generateInputFiles(f"cylinder_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm,
-                                    line_width_pixel,
-                                    filling_method="Perimeter", is_displayed=is_displayed),
-        evertor.generateInputFiles(f"evertor_{r_in:d}_mm_{int(target_elongation * 100):d}%", line_width_mm,
-                                   line_width_pixel,
-                                   filling_method="Perimeter", is_displayed=is_displayed)]
+        cylinder.generateInputFiles(line_width_mm, f"cylinder_{r_in:d}_mm_{int(target_elongation * 100):d}%",
+                                    line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed),
+        evertor.generateInputFiles(line_width_mm, f"evertor_{r_in:d}_mm_{int(target_elongation * 100):d}%",
+                                   line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed)]
 
     return pattern_names

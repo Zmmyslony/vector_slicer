@@ -127,5 +127,4 @@ if __name__ == "__main__":
     patt = read_vtk_pattern(
         r"C:\Users\zmmys\OneDrive - University of Cambridge\Projects\1. In progress\Inverse problem solving - slicer data\data.vtk",
         "dirAngle", scale=10)
-    patt.generateInputFiles("vtk", line_width_mm, line_width_pixel, filling_method="splay",
-                            is_displayed=True)
+    patt.generateInputFiles(line_width_mm, "vtk", line_width_pixel, filling_method="splay", is_displayed=True)

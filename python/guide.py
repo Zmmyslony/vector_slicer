@@ -43,7 +43,7 @@ def complete_usage_example(slicer):
     line_width = 0.2
 
     # Generate input files for defined patterns. Their names are then used for slicing.
-    uniaxial_longitudinal_pattern.generateInputFiles("example_longitudinal_20_10_mm", line_width,
+    uniaxial_longitudinal_pattern.generateInputFiles(line_width, "example_longitudinal_20_10_mm",
                                                      filling_method="Perimeter", is_displayed=True)
 
     # Pattern name needs to be first encoded
@@ -70,7 +70,7 @@ def shape_addition(line_width):
 
     cross_pattern = Pattern(cross_shape, uniaxial_x_director)
 
-    cross_pattern.generateInputFiles(None, line_width, is_displayed=True)
+    cross_pattern.generateInputFiles(line_width, None, is_displayed=True)
 
 
 def shape_subtraction(line_width):
@@ -82,7 +82,7 @@ def shape_subtraction(line_width):
     uniaxial_x_director = directors.uniaxial_alignment(0)
 
     pattern = Pattern(rectangle_with_hole, uniaxial_x_director)
-    pattern.generateInputFiles(None, line_width, is_displayed=True)
+    pattern.generateInputFiles(line_width, None, is_displayed=True)
 
 
 def shape_rotation(line_width):
@@ -93,7 +93,7 @@ def shape_rotation(line_width):
     uniaxial_x_director = directors.uniaxial_alignment(0)
 
     pattern = Pattern(y_rectangle, uniaxial_x_director)
-    pattern.generateInputFiles(None, line_width, is_displayed=True)
+    pattern.generateInputFiles(line_width, None, is_displayed=True)
 
 
 def shape_symmetrisation(line_width):
@@ -104,7 +104,7 @@ def shape_symmetrisation(line_width):
     uniaxial_x_director = directors.uniaxial_alignment(0)
 
     pattern = Pattern(five_armed_shape, uniaxial_x_director)
-    pattern.generateInputFiles(None, line_width, is_displayed=True)
+    pattern.generateInputFiles(line_width, None, is_displayed=True)
 
 
 def pattern_addition(line_width):
@@ -120,8 +120,8 @@ def pattern_addition(line_width):
 
     # Addition of patterns, overwrites the director of the first pattern with the director of the second one in common
     # domains.
-    (uniaxial_pattern + azimuthal_pattern).generateInputFiles(None, line_width, is_displayed=True)
-    (azimuthal_pattern + uniaxial_pattern).generateInputFiles(None, line_width, is_displayed=True)
+    (uniaxial_pattern + azimuthal_pattern).generateInputFiles(line_width, None, is_displayed=True)
+    (azimuthal_pattern + uniaxial_pattern).generateInputFiles(line_width, None, is_displayed=True)
 
 
 def pattern_symmetrisation(line_width):
@@ -133,7 +133,7 @@ def pattern_symmetrisation(line_width):
     uniaxial_x_director = directors.uniaxial_alignment(0)
     # Patterns can be symmetrised similarly to the shape.
     symmetrised_pattern = SymmetricPattern(joined_shape, uniaxial_x_director, 5)
-    symmetrised_pattern.generateInputFiles(None, line_width, is_displayed=True)
+    symmetrised_pattern.generateInputFiles(line_width, None, is_displayed=True)
 
 
 def example_extensive():
@@ -176,22 +176,22 @@ def example_extensive():
 
     # Generate input files for defined patterns. Their names are then used for slicing.
     line_width_mm = 0.2
-    uniaxial_longitudinal_pattern.generateInputFiles("example_longitudinal_20_10_mm", line_width_mm,
+    uniaxial_longitudinal_pattern.generateInputFiles(line_width_mm, "example_longitudinal_20_10_mm",
                                                      filling_method="Perimeter", is_displayed=True)
-    uniaxial_diagonal_pattern.generateInputFiles("example_diagonal_20_10_mm", line_width_mm,
-                                                 filling_method="Perimeter", is_displayed=True)
-    uniaxial_transverse_pattern.generateInputFiles("example_transverse_20_10_mm", line_width_mm,
+    uniaxial_diagonal_pattern.generateInputFiles(line_width_mm, "example_diagonal_20_10_mm", filling_method="Perimeter",
+                                                 is_displayed=True)
+    uniaxial_transverse_pattern.generateInputFiles(line_width_mm, "example_transverse_20_10_mm",
                                                    filling_method="Perimeter", is_displayed=True)
-    azimuthal_pattern.generateInputFiles("example_azimuthal_10_mm", line_width_mm,
-                                         filling_method="Perimeter", is_displayed=True)
-    radial_pattern.generateInputFiles("example_radial_10_mm", line_width_mm,
-                                      filling_method="Perimeter", is_displayed=True)
+    azimuthal_pattern.generateInputFiles(line_width_mm, "example_azimuthal_10_mm", filling_method="Perimeter",
+                                         is_displayed=True)
+    radial_pattern.generateInputFiles(line_width_mm, "example_radial_10_mm", filling_method="Perimeter",
+                                      is_displayed=True)
 
-    three_charge_pattern.generateInputFiles("example_three_charge_field", line_width_mm,
-                                            filling_method="Splay", is_displayed=True)
-    first_composite_pattern.generateInputFiles("example_first_composite_pattern", line_width_mm,
+    three_charge_pattern.generateInputFiles(line_width_mm, "example_three_charge_field", filling_method="Splay",
+                                            is_displayed=True)
+    first_composite_pattern.generateInputFiles(line_width_mm, "example_first_composite_pattern",
                                                filling_method="Perimeter", is_displayed=True)
-    second_composite_pattern.generateInputFiles("example_second_composite_pattern", line_width_mm,
+    second_composite_pattern.generateInputFiles(line_width_mm, "example_second_composite_pattern",
                                                 filling_method="Perimeter", is_displayed=True)
 
     # Slice patterns

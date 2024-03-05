@@ -77,7 +77,7 @@ def constant_gauss_curvature_rectangle(l: float, w: float, line_width_mm, is_pos
     else:
         type_name = 'negative'
     name = f"constant_gauss_curvature_{type_name}_l_{l:.1f}_w_{w:.1f}"
-    return pattern.generateInputFiles(name, line_width_mm, is_displayed=is_displayed)
+    return pattern.generateInputFiles(line_width_mm, name, is_displayed=is_displayed)
 
 
 def constant_gauss_curvature_disk(r: float, line_width_mm, is_positive=True,
@@ -97,4 +97,4 @@ def constant_gauss_curvature_disk(r: float, line_width_mm, is_positive=True,
     else:
         type_name = 'negative'
     name = f"constant_gauss_curvature_{type_name}_r_{r:.1f}"
-    return pattern.generateInputFiles(name, line_width_mm, is_displayed=is_displayed)
+    return pattern.generateInputFiles(line_width_mm, name, is_displayed=is_displayed)
