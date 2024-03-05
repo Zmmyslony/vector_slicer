@@ -32,6 +32,13 @@ from lib.pattern.pattern import Pattern
 
 
 def constant_gauss_curvature_director(w: float, is_positive=True, is_flipped=False):
+    """
+    Translationally symmetric director with constant Gauss curvature
+    :param w: total width
+    :param is_positive: sign of the Gauss curvature.
+    :param is_flipped: mirror symmetry
+    :return:
+    """
     def alignment(v):
         y = v[:, :, 1]
         angle = np.where(np.abs(y) > w / 2, 0, np.arccos(2 * y / w))
@@ -54,6 +61,16 @@ def constant_gauss_curvature_disk_pattern(r: float, is_positive=True, is_flipped
 
 def constant_gauss_curvature_rectangle(l: float, w: float, line_width_mm, is_positive=True,
                                        is_flipped=False, is_displayed=False):
+    """
+    Translationally symmetric pattern with constant Gauss curvature on a rectangular domain.
+    :param l:
+    :param w:
+    :param line_width_mm: printing width (line spacing) in mm.
+    :param is_positive: sign of Gauss curvature
+    :param is_flipped:
+    :param is_displayed:
+    :return:
+    """
     pattern = constant_gauss_curvature_rectangle_pattern(l, w, is_positive, is_flipped)
     if is_positive:
         type_name = 'positive'
@@ -65,6 +82,15 @@ def constant_gauss_curvature_rectangle(l: float, w: float, line_width_mm, is_pos
 
 def constant_gauss_curvature_disk(r: float, line_width_mm, is_positive=True,
                                   is_flipped=False, is_displayed=False):
+    """
+    Translationally symmetric pattern with constant Gauss curvature on a disk domain.
+    :param r:
+    :param line_width_mm: printing width (line spacing) in mm.
+    :param is_positive: sign of the Gauss curvature.
+    :param is_flipped:
+    :param is_displayed:
+    :return:
+    """
     pattern = constant_gauss_curvature_disk_pattern(r, is_positive, is_flipped)
     if is_positive:
         type_name = 'positive'
