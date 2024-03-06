@@ -139,7 +139,7 @@ def generate_director_field(mesh, director_function, splay_function):
     return director, splay
 
 
-def validate_filling_method(filling_method):
+def is_filling_method_valid(filling_method):
     if not isinstance(filling_method, str):
         return False
     return filling_method.lower() in ["splay", "perimeter", "dual"]
@@ -184,16 +184,21 @@ class Pattern:
         :param is_displayed: Is the pattern displayed after the generation.
         :return: pattern_name
         """
-        begin_time = time.time()
-        print(f"\n{time.time() - begin_time:.3f}s: Generating input files for {pattern_name}.")
-        mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
-        print(f"{time.time() - begin_time:.3f}s: Meshing complete.")
-        director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
-        print(f"{time.time() - begin_time:.3f}s: Director and splay calculation complete.")
-
         if pattern_name is None:
             pattern_name = self.name
 
+        stage_count = 3
+        if pattern_name is not None: stage_count += 1
+        if is_displayed: stage_count += 1
+
+        begin_time = time.time()
+        print(f"\n{time.time() - begin_time:.3f}s: [1/{stage_count:d}] Generating input files for {pattern_name}.")
+        mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
+        print(f"{time.time() - begin_time:.3f}s: [2/{stage_count:d}] Meshing complete.")
+        director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
+        print(f"{time.time() - begin_time:.3f}s: [3/{stage_count:d}] Director and splay calculation complete.")
+
+        current_stage = 3
         if pattern_name is not None:
             pattern_directory = slicer.get_patterns_directory() / pattern_name
             if not pattern_directory.exists():
@@ -202,29 +207,26 @@ class Pattern:
                 os.mkdir(pattern_directory)
 
             np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")
-            print(f"{time.time() - begin_time:.3f}s: Shape grid saved.")
-
             np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
-            print(f"{time.time() - begin_time:.3f}s: Theta grid saved.")
-
             flattened_splay = np.reshape(splay_grid, [splay_grid.shape[0], splay_grid.shape[1] * 2])
             np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
-            print(f"{time.time() - begin_time:.3f}s: Splay grid saved.")
 
-            if not validate_filling_method(filling_method):
+            if not is_filling_method_valid(filling_method):
                 print("\tUndefined filling method. Defaulting to Splay")
                 filling_method = "Splay"
             config_file = open(pattern_directory / "config.txt", "w")
             config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
             config_file.write("InitialSeedingMethod " + filling_method.capitalize())
             config_file.close()
-            print(f"{time.time() - begin_time:.3f}s: Configuration file saved.")
+            current_stage += 1
+            print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}] Input files exported.")
 
         if is_displayed:
             plot_pattern(shape_grid, mesh, director_grid, self.domain)
             if splay_grid is not None:
                 plot_splay(mesh, splay_grid)
-            print(f"{time.time() - begin_time:.3f}s: Plotting complete.")
+            current_stage += 1
+            print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")
 
         return pattern_name
 
