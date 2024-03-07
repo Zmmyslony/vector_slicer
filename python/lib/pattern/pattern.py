@@ -1,7 +1,6 @@
 """
 Base class defining pattern operations and input file generation together with plotting the input files.
 """
-
 #  Copyright (c) 2023, Michał Zmyślony, mlz22@cam.ac.uk.
 #
 #  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
@@ -20,6 +19,7 @@ Base class defining pattern operations and input file generation together with p
 #  If not, see <https://www.gnu.org/licenses/>.
 
 from copy import copy
+import math
 import numpy as np
 import time
 import os
@@ -30,11 +30,18 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from lib.director.director import Director
 from lib.shape.shape import Shape
+from lib.shape.basic import regular_hexagon, square, regular_triangle
 from lib import slicer_setup as slicer
 
 
 def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
     fig = plt.figure(figsize=[6, 4], dpi=300)
+
+    x_min = mesh[:, :, 0].min()
+    x_max = mesh[:, :, 0].max()
+    y_min = mesh[:, :, 1].min()
+    y_max = mesh[:, :, 1].max()
+
     color_values = np.linspace(1, 0.666, 2)
     color_list = np.char.mod('%f', color_values)
 
@@ -50,16 +57,20 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     plt.colorbar(ticks=np.arange(2), label="is filled", cax=cax)
-    ax.set_xlim(shape.x_min - (shape.x_max - shape.x_min) * 0.05, shape.x_max + (shape.x_max - shape.x_min) * 0.05)
-    ax.set_ylim(shape.y_min - (shape.y_max - shape.y_min) * 0.05, shape.y_max + (shape.y_max - shape.y_min) * 0.05)
+    ax.set_xlim(x_min - (x_max - shape.x_min) * 0.05, x_max + (x_max - x_min) * 0.05)
+    ax.set_ylim(y_min - (y_max - shape.y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
 
+    x_mesh = np.linspace(x_min, x_max, shape_grid.shape[0], endpoint=True)
+    y_mesh = np.linspace(y_min, y_max, shape_grid.shape[1], endpoint=True)
     x_vector = np.cos(theta_grid)
     y_vector = np.sin(theta_grid)
-    ax.streamplot(mesh[:, 0, 0].transpose(),
-                  mesh[0, :, 1].transpose(),
+
+    ax.streamplot(x_mesh,
+                  y_mesh,
                   x_vector.transpose(),
                   y_vector.transpose(),
                   density=1)
+
     ax.set_title("Pattern")
     ax.set_xlabel("x [mm]")
     ax.set_ylabel("y [mm]")
@@ -70,16 +81,25 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
 def plot_splay(mesh, splay):
     splay_norm = np.linalg.norm(splay, axis=2)
     fig = plt.figure(figsize=[6, 4], dpi=300)
+
+    x_min = mesh[:, :, 0].min()
+    x_max = mesh[:, :, 0].max()
+    y_min = mesh[:, :, 1].min()
+    y_max = mesh[:, :, 1].max()
+
+    x_mesh = np.linspace(x_min, x_max, mesh.shape[0], endpoint=True)
+    y_mesh = np.linspace(y_min, y_max, mesh.shape[1], endpoint=True)
+
     if splay_norm.min() == 0 or splay_norm.max() < splay_norm.min() * 10:
-        im = plt.pcolormesh(mesh[:, 0, 0].transpose(),
-                            mesh[0, :, 1].transpose(),
+        im = plt.pcolormesh(x_mesh,
+                            y_mesh,
                             splay_norm.transpose(),
                             vmin=0,
                             vmax=1,
                             cmap='OrRd')
     else:
-        im = plt.pcolormesh(mesh[:, 0, 0].transpose(),
-                            mesh[0, :, 1].transpose(),
+        im = plt.pcolormesh(x_mesh,
+                            y_mesh,
                             splay_norm.transpose(),
                             norm=colors.LogNorm(vmin=splay_norm.min(), vmax=np.median(splay_norm) * 10),
                             cmap='OrRd')
@@ -90,18 +110,14 @@ def plot_splay(mesh, splay):
 
     ax = plt.gca()
     ax.set_aspect('equal')
-    x_min = mesh[:, :, 0].min()
-    x_max = mesh[:, :, 0].max()
-    y_min = mesh[:, :, 1].min()
-    y_max = mesh[:, :, 1].max()
     ax.set_xlim(x_min - (x_max - x_min) * 0.05, x_max + (x_max - x_min) * 0.05)
     ax.set_ylim(y_min - (y_max - y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     plt.colorbar(im, cax=cax, label="splay")
 
-    ax.streamplot(mesh[:, 0, 0].transpose(),
-                  mesh[0, :, 1].transpose(),
+    ax.streamplot(x_mesh,
+                  y_mesh,
                   splay[:, :, 0].transpose(),
                   splay[:, :, 1].transpose(),
                   density=1)
@@ -123,14 +139,30 @@ def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_lik
     return local_splay
 
 
-def generate_shape_matrix(shape: Shape, pixel_size: float):
-    x_grid = np.arange(shape.x_min, shape.x_max + pixel_size / 2, pixel_size)
-    y_grid = np.arange(shape.y_min, shape.y_max + pixel_size / 2, pixel_size)
+def generate_shape_matrix(shape: Shape, pixel_size: float, x_excess: float = 0, y_excess: float = 0):
+    shape.x_max += x_excess
+    shape.y_max += y_excess
+
+    x_grid = np.arange(shape.x_min - pixel_size, shape.x_max + pixel_size * 3/ 2, pixel_size)
+    y_grid = np.arange(shape.y_min - pixel_size, shape.y_max + pixel_size * 3 / 2, pixel_size)
 
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
     mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
     shape_grid = shape.shape_function(mesh)
     return mesh, shape_grid
+
+
+def tile_basic(shape: Shape, mesh, x_spacing: float, y_spacing: float, x_count: int, y_count: int):
+    compound_mesh = mesh
+    compound_shape = shape.shape_function(mesh)
+    for i in range(x_count):
+        for j in range(y_count):
+            current_mesh = mesh - [i * x_spacing, j * y_spacing]
+            current_shape = shape.shape_function(current_mesh)
+            compound_shape = np.logical_or(compound_shape, current_shape)
+            compound_mesh = np.where(current_shape[:, :, None], current_mesh, compound_mesh)
+
+    return compound_mesh, compound_shape
 
 
 def generate_director_field(mesh, director_function, splay_function):
@@ -143,6 +175,105 @@ def is_filling_method_valid(filling_method):
     if not isinstance(filling_method, str):
         return False
     return filling_method.lower() in ["splay", "perimeter", "dual"]
+
+
+class Tiling:
+    def __init__(self, tiling_type, side_length: float, x_count: int, y_count: int):
+        """
+        Tiling defines the shape and repetition
+        :param tiling_type: 'triangular', 'square' or 'hexagonal'.
+        :param side_length:
+        :param x_count: number of tiles in the x-direction
+        :param y_count: number of tiles in the y-direction.
+        """
+        if tiling_type in {"triangular", "square", "hexagonal"}:
+            self.tiling_type = tiling_type
+        else:
+            raise RuntimeError(f"Unrecognised tiling type '{tiling_type}'.")
+        self.side_length = side_length
+        self.x_count = x_count
+        self.y_count = y_count
+
+    def generate_shape_matrix(self, pixel_size: float):
+        if self.tiling_type == "triangular":
+            x_spacing = self.side_length * np.sqrt(3) / 2
+            y_spacing = self.side_length
+
+            triangle_vertical_left = regular_triangle(self.side_length, orientation=0)
+            triangle_vertical_right = regular_triangle(self.side_length, orientation=np.pi)
+
+            mesh, _ = generate_shape_matrix(triangle_vertical_right, pixel_size,
+                                            x_excess=x_spacing * (self.x_count - 1),
+                                            y_excess=y_spacing * (self.y_count - 1) / 2)
+
+            x_count_first = math.ceil(self.x_count / 2)
+            x_count_second = math.floor(self.x_count / 2)
+
+            y_count_first = math.ceil(self.y_count / 2)
+            y_count_second = math.floor(self.y_count / 2)
+
+            offset = [0, 0]
+            mesh_one, shape_one = tile_basic(triangle_vertical_right, mesh,
+                                             x_spacing * 2, y_spacing,
+                                             x_count_first, y_count_first)
+
+            offset = [-x_spacing / 3, 0.5 * y_spacing]
+            mesh_two, shape_two = tile_basic(triangle_vertical_left, mesh - offset,
+                                             x_spacing * 2, y_spacing,
+                                             x_count_first, y_count_second)
+
+            offset = [x_spacing * 2 / 3, 0]
+            mesh_three, shape_three = tile_basic(triangle_vertical_left, mesh - offset,
+                                                 x_spacing * 2, y_spacing,
+                                                 x_count_second, y_count_first)
+
+            offset = [x_spacing , 0.5 * y_spacing]
+            mesh_four, shape_four = tile_basic(triangle_vertical_right, mesh - offset,
+                                               x_spacing * 2, y_spacing,
+                                               x_count_second, y_count_second)
+
+            compound_shape = shape_one + shape_two + shape_three + shape_four
+            compound_mesh = np.where(shape_two[:, :, None], mesh_two, mesh_one)
+            compound_mesh = np.where(shape_three[:, :, None], mesh_three, compound_mesh)
+            compound_mesh = np.where(shape_four[:, :, None], mesh_four, compound_mesh)
+
+            return compound_mesh, compound_shape
+
+        elif self.tiling_type == "square":
+            triangle_vertical_left = square(self.side_length)
+
+            mesh, _ = generate_shape_matrix(triangle_vertical_left, pixel_size,
+                                            x_excess=self.side_length * (self.x_count - 1),
+                                            y_excess=self.side_length * (self.y_count - 1))
+
+            return tile_basic(triangle_vertical_left, mesh,
+                              self.side_length, self.side_length,
+                              self.x_count, self.y_count)
+
+        elif self.tiling_type == "hexagonal":
+            # Hexagon with its bottom side being horizontal
+            triangle_vertical_left = regular_hexagon(self.side_length, orientation=- np.pi / 6)
+
+            x_spacing = np.sqrt(3) * self.side_length
+            y_spacing = 3 * self.side_length
+
+            mesh, _ = generate_shape_matrix(triangle_vertical_left, pixel_size,
+                                            x_excess=x_spacing * (self.x_count - 1 + 0.5),
+                                            y_excess=y_spacing / 2 * (self.y_count - 1))
+
+            mesh_one, shape_one = tile_basic(triangle_vertical_left, mesh,
+                                             x_spacing, y_spacing,
+                                             self.x_count, math.ceil(self.y_count / 2))
+            tile_offset = [0.5 * x_spacing, 0.5 * y_spacing]
+            mesh_two, shape_two = tile_basic(triangle_vertical_left, mesh - tile_offset,
+                                             x_spacing, y_spacing,
+                                             self.x_count, math.floor(self.y_count / 2))
+            compound_shape = np.logical_or(shape_one, shape_two)
+            compound_mesh = np.where(shape_two[:, :, None], mesh_two, mesh_one)
+
+            return compound_mesh, compound_shape
+        else:
+            raise RuntimeError("Unknown tiling type.")
 
 
 class Pattern:
@@ -173,8 +304,8 @@ class Pattern:
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
 
-    def generateInputFiles(self, line_width_millimetre: float, pattern_name = None, line_width_pixel: int = 9,
-                           filling_method=None, is_displayed=False):
+    def generateInputFiles(self, line_width_millimetre: float, pattern_name=None, line_width_pixel: int = 9,
+                           filling_method=None, is_displayed=False, tiling: Tiling = None):
         """
         Generates theta, splay and config files for the pattern.
         :param line_width_millimetre: printing line width used for meshing.
@@ -182,6 +313,7 @@ class Pattern:
         :param line_width_pixel: width of the line in pixels - higher values result in better slicing quality at the cost of runtime.
         :param filling_method: Splay, Perimeter or Dual.
         :param is_displayed: Is the pattern displayed after the generation.
+        :param tiling: Tiling overwrites the default shape and tiles using
         :return: pattern_name
         """
         if pattern_name is None:
@@ -193,7 +325,16 @@ class Pattern:
 
         begin_time = time.time()
         print(f"\n{time.time() - begin_time:.3f}s: [1/{stage_count:d}] Generating input files for {pattern_name}.")
-        mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
+        if tiling is None:
+            mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
+        else:
+            mesh, shape_grid = tiling.generate_shape_matrix(line_width_millimetre / line_width_pixel)
+            # Domain boundaries have to be updated for later plots
+            self.domain.x_min = mesh[:, :, 0].min()
+            self.domain.y_min = mesh[:, :, 1].min()
+            self.domain.x_max = mesh[:, :, 0].max()
+            self.domain.y_max = mesh[:, :, 1].max()
+
         print(f"{time.time() - begin_time:.3f}s: [2/{stage_count:d}] Meshing complete.")
         director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
         print(f"{time.time() - begin_time:.3f}s: [3/{stage_count:d}] Director and splay calculation complete.")
