@@ -96,10 +96,10 @@ def square(size: float, x_offset: float = 0, y_offset: float = 0):
 def regular_polygon(sides: int, radius: float, orientation: float = 0, x_offset: float = 0, y_offset: float = 0):
     angle = orientation
     delta_angle = 2 * np.pi / sides
-    positions = np.empty([sides, 2])
+    positions = np.empty([sides + 1, 2])
     offset = np.array([x_offset, y_offset])
 
-    for i in range(sides):
+    for i in range(sides + 1):
         positions[i] = radius * np.array([np.cos(angle), np.sin(angle)]) + offset
         angle += delta_angle
 
@@ -110,7 +110,7 @@ def regular_triangle(side_length: float, orientation: float = 0, x_offset: float
     """
     CCW orientation (edges included)
     :param side_length:
-    :param orientation:
+    :param orientation: angle at which the first side is in relation to x-axis
     :param x_offset:
     :param y_offset:
     :return:
@@ -123,10 +123,10 @@ def regular_hexagon(side_length: float, orientation: float = 0, x_offset: float 
     """
     CCW orientation (edges included)
     :param side_length:
-    :param orientation:
+    :param orientation: angle at which the first side is in relation to x-axis
     :param x_offset:
     :param y_offset:
     :return:
     """
-    radius = side_length / np.sqrt(3)
-    return regular_polygon(6, radius, orientation, x_offset, y_offset)
+    radius = side_length
+    return regular_polygon(6, radius, orientation=orientation, x_offset=x_offset, y_offset=y_offset)
