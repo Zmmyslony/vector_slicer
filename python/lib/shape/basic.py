@@ -78,7 +78,7 @@ def polygon(coordinates):
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
-        shape_flattened = polygon_path.contains_point(v_flattened, radius=1e-9)
+        shape_flattened = polygon_path.contains_points(v_flattened, radius=1e-9)
         return np.array(np.reshape(shape_flattened, v.shape[0:2]), dtype=int)
 
     return Shape(shape_function, bounds)
