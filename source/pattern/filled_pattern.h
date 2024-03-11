@@ -21,13 +21,14 @@
 #ifndef VECTOR_SLICER_FILLED_PATTERN_H
 #define VECTOR_SLICER_FILLED_PATTERN_H
 
+#include <string>
+#include <random>
 
 #include "desired_pattern.h"
 #include "path.h"
 #include "filling_config.h"
 #include "auxiliary/valarray_operations.h"
-#include <string>
-#include <random>
+#include "seed_point.h"
 
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
@@ -46,10 +47,15 @@ class FilledPattern : public FillingConfig {
     std::vector<vali> repulsion_circle;
     std::vector<vali> list_of_points;
     std::vector<vali> collision_list;
-    std::vector<vali> seed_points = {};
-    std::vector<std::vector<vali>> zero_splay_seeds;
-    std::vector<std::vector<vali>> perimeter_seeds;
-
+    /// Shuffled seed points from the current seed line.
+    std::vector<SeedPoint> seed_points;
+    /// How many seed lines are within the pattern.
+    int seed_lines = 0;
+    /// All seed points from all suitable splay lines, line order is shuffled and point order within a line is also shuffled.
+    std::vector<std::vector<SeedPoint>> zero_splay_seeds;
+    /// All seed points from all suitable perimeters, line order is shuffled and point order within a line is also shuffled.
+    std::vector<std::vector<SeedPoint>> perimeter_seeds;
+    /// All possible points where a path can start, binned based on their splay.
     std::vector<std::vector<vali>> binned_root_points;
 
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
@@ -90,11 +96,13 @@ class FilledPattern : public FillingConfig {
 
     void tryAddingPointToSpacedLine(const vali &current_position, vali &previous_position,
                                     bool &is_filled_coordinate_encountered, double separation,
-                                    std::vector<vali> &separated_starting_points);
+                                    std::vector<SeedPoint> &separated_starting_points, int line_index,
+                                    int point_index);
 
-    std::vector<vali> getSpacedLine(const double &separation, const std::vector<vali> &line);
+    std::vector<SeedPoint> getSpacedLine(const double &separation, const std::vector<vali> &line, int line_index);
+
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
-    Path generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step);
+    Path generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step);
 
     void updateSeedPoints();
 
@@ -103,7 +111,7 @@ class FilledPattern : public FillingConfig {
 
     void setupRootPoints();
 
-    std::vector<std::vector<vali>> separateLines(std::vector<std::vector<vali>> list_of_lines);
+    std::vector<std::vector<SeedPoint>> separateLines(std::vector<std::vector<vali>> list_of_lines, int line_index);
 
     vald calculateNextPosition(vald &positions, vald &previous_step, int length);
 
@@ -146,10 +154,10 @@ public:
     void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
 
     /// Looks for a suitable point where a new path can be started from. If
-    vali findSeedPoint();
+    SeedPoint findSeedPoint();
 
     /// Creates a path starting from starting_coordinates, going in both directions of the vector field
-    Path generateNewPath(vali &starting_coordinates);
+    Path generateNewPath(const SeedPoint &seed_point);
 
     void addNewPath(Path &new_path);
 

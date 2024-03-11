@@ -24,14 +24,14 @@
 #include "vector_slicer_config.h"
 
 bool tryGeneratingNewPath(FilledPattern &pattern) {
-    std::valarray<int> starting_coordinates = pattern.findSeedPoint();
-    if (starting_coordinates[0] == -1 || starting_coordinates[1] == -1) {
+    SeedPoint seed_point = pattern.findSeedPoint();
+    if (seed_point.isInvalid()) {
         return false;
     } else {
-        Path new_path = pattern.generateNewPath(starting_coordinates);
+        Path new_path = pattern.generateNewPath(seed_point);
 
         if (new_path.size() == 1) {
-            pattern.fillPointsInCircle(starting_coordinates);
+            pattern.fillPointsInCircle(seed_point.getCoordinates());
         } else {
             pattern.fillPointsInHalfCircle(new_path.first(), new_path.second(), 1);
             pattern.fillPointsInHalfCircle(new_path.last(), new_path.secondToLast(), 1);

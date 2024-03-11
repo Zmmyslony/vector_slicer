@@ -47,13 +47,22 @@ FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingC
     setup();
 }
 
-std::vector<std::vector<vali>> FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines) {
-    std::vector<std::vector<vali>> separated_lines;
+/**
+ * Takes in a list of seed lines which are sorted by adjacency (ordered), shuffles the order of lines, separates in
+ * equidistant seeds and returns shuffled seeds.
+ * @param list_of_lines
+ * @param line_index starting line index
+ * @return 2D array of Seed objects, shuffled so that they can be popped back
+ */
+std::vector<std::vector<SeedPoint>>
+FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines, int line_index) {
+    std::vector<std::vector<SeedPoint>> separated_lines;
     std::shuffle(list_of_lines.begin(), list_of_lines.end(), random_engine);
     for (auto &line: list_of_lines) {
-        std::vector<vali> spaced_line = getSpacedLine(getSeedSpacing(), line);
+        std::vector<SeedPoint> spaced_line = getSpacedLine(getSeedSpacing(), line, line_index);
         std::shuffle(spaced_line.begin(), spaced_line.end(), random_engine);
         separated_lines.emplace_back(spaced_line);
+        line_index++;
     }
     return separated_lines;
 }
@@ -63,8 +72,9 @@ void FilledPattern::setup() {
     collision_list = generatePerimeterList(getTerminationRadius());
     random_engine = std::mt19937(getSeed());
 
-    zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima());
-    perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList());
+    zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima(), 0);
+    perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
+    seed_lines = perimeter_seeds.size() + zero_splay_seeds.size();
 
     switch (getInitialSeedingMethod()) {
         case Splay:
@@ -99,6 +109,10 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
         FilledPattern::FilledPattern(desired_pattern, print_radius, collision_radius, step_length, 0) {}
 
 
+/**
+ * Contains all points that can be used as seeds, sorted depending on their value of splay, as areas of low splay
+ * ought to be more suitable for rooting a seed line.
+ */
 void FilledPattern::setupRootPoints() {
     std::vector<std::vector<vali>> root_points = desired_pattern.get().getSplaySortedEmptySpots();
     if (root_points.empty()) {
@@ -115,33 +129,33 @@ void FilledPattern::setupRootPoints() {
 
 void FilledPattern::updateSeedPoints() {
     if (search_stage == SplayFilling) {
-        if (!zero_splay_seeds.empty()) {
+        if (zero_splay_seeds.empty()) {
+            search_stage = PerimeterFilling;
+        } else {
             seed_points = zero_splay_seeds.back();
             zero_splay_seeds.pop_back();
             return;
-        } else {
-            search_stage = PerimeterFilling;
         }
     }
 
     if (search_stage == PerimeterFilling) {
-        seed_points = perimeter_seeds.back();
-        perimeter_seeds.pop_back();
-
         if (perimeter_seeds.empty()) {
             search_stage = RemainingFilling;
+        } else {
+            seed_points = perimeter_seeds.back();
+            perimeter_seeds.pop_back();
+            return;
         }
-
-        return;
     }
 
     vali root_point = findRemainingRootPoint();
     if (root_point[0] == -1) {
-        seed_points = {INVALID_POSITION};
+        seed_points = {INVALID_SEED};
         return;
     }
     std::vector<vali> dual_line = findDualLine(root_point);
-    std::vector<vali> spaced_dual_line = getSpacedLine(getSeedSpacing(), dual_line);
+    std::vector<SeedPoint> spaced_dual_line = getSpacedLine(getSeedSpacing(), dual_line, seed_lines);
+    seed_lines++;
     std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
     seed_points = spaced_dual_line;
 }
@@ -310,9 +324,9 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
 }
 
 
-Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, const vali &starting_step) {
-    Path new_path(starting_coordinates);
-    vald current_positions = itod(starting_coordinates);
+Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step) {
+    Path new_path(seed_point);
+    vald current_positions = itod(seed_point.getCoordinates());
     vald current_step = itod(starting_step);
 
     for (int length = getStepLength(); length >= getPrintRadius(); length--) {
@@ -324,11 +338,11 @@ Path FilledPattern::generateNewPathForDirection(vali &starting_coordinates, cons
 }
 
 
-Path FilledPattern::generateNewPath(vali &starting_coordinates) {
-    vali starting_step = dtoi(desired_pattern.get().getDirector(starting_coordinates) * getStepLength());
+Path FilledPattern::generateNewPath(const SeedPoint &seed_point) {
+    vali starting_step = dtoi(desired_pattern.get().getDirector(seed_point.getCoordinates()) * getStepLength());
 
-    Path forward_path = generateNewPathForDirection(starting_coordinates, starting_step);
-    Path backward_path = generateNewPathForDirection(starting_coordinates, -starting_step);
+    Path forward_path = generateNewPathForDirection(seed_point, starting_step);
+    Path backward_path = generateNewPathForDirection(seed_point, -starting_step);
 
     return {forward_path, backward_path};
 }
@@ -485,7 +499,8 @@ double FilledPattern::distance(const vali &first_point, const vali &second_point
 
 void FilledPattern::tryAddingPointToSpacedLine(const vali &current_position, vali &previous_position,
                                                bool &is_filled_coordinate_encountered, double separation,
-                                               std::vector<vali> &separated_starting_points) {
+                                               std::vector<SeedPoint> &separated_starting_points, int line_index,
+                                               int point_index) {
     double current_distance = distance(current_position, previous_position);
     if (!isInRange(current_position) ||
         isFilled(current_position)) {
@@ -493,30 +508,31 @@ void FilledPattern::tryAddingPointToSpacedLine(const vali &current_position, val
         previous_position = current_position;
     } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
                is_filled_coordinate_encountered && current_distance >= separation / 2) {
-        separated_starting_points.push_back(current_position);
+        separated_starting_points.emplace_back(current_position, line_index, point_index);
         previous_position = current_position;
         is_filled_coordinate_encountered = false;
     }
 }
 
-std::vector<vali> FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &line) {
+std::vector<SeedPoint>
+FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &line, int line_index) {
     std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
     int starting_index = index_distribution(random_engine);
-    std::vector<vali> separated_starting_points = {line[starting_index]};
+    std::vector<SeedPoint> separated_starting_points = {{line[starting_index], line_index, starting_index}};
 
     bool is_filled_coordinate_encountered = false;
 
     vali previous_position = line[starting_index];
     for (int i = starting_index + 1; i < line.size(); i++) {
         tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
-                                   separated_starting_points);
+                                   separated_starting_points, line_index, i);
     }
 
     is_filled_coordinate_encountered = false;
     previous_position = line[starting_index];
     for (int i = starting_index - 1; i >= 0; i--) {
         tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
-                                   separated_starting_points);
+                                   separated_starting_points, line_index, i);
     }
     return separated_starting_points;
 }
@@ -553,12 +569,12 @@ bool FilledPattern::isFillablePointLeft() const {
 }
 
 
-vali FilledPattern::findSeedPoint() {
+SeedPoint FilledPattern::findSeedPoint() {
     if (seed_points.empty()) {
         updateSeedPoints();
     }
 
-    vali last_element = seed_points.back();
+    SeedPoint last_element = seed_points.back();
     seed_points.pop_back();
 
     return last_element;

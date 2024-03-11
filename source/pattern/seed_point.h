@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2023, Michał Zmyślony, mlz22@cam.ac.uk.
+// Copyright (c) 2024, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -16,45 +16,37 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 21/09/2021.
+// Created by Michał Zmyślony on 11/03/2024.
 //
 
-#ifndef VECTOR_SLICER_PATH_H
-#define VECTOR_SLICER_PATH_H
+#ifndef VECTOR_SLICER_SEED_POINT_H
+#define VECTOR_SLICER_SEED_POINT_H
 
 #include <vector>
 #include <valarray>
-#include "seed_point.h"
 
 using vali = std::valarray<int>;
 
-/// Contains the sequence of coordinates that form a single path
-class Path {
+class SeedPoint {
+    vali coordinates;
+    int seed_line{};
+    int index{};
+
 public:
-    std::vector<vali> sequence_of_positions;
-    std::vector<double> overlap;
-    SeedPoint seed_point;
+    SeedPoint();
 
-    explicit Path(SeedPoint seed);
+    SeedPoint(vali coordinates, int seed_line, int index);
 
-    Path(const Path& forward_path, const Path& backward_path);
+    const vali &getCoordinates() const;
 
-    void addPoint(const vali &positions, double segment_overlap);
+    int getSeedLine() const;
 
-    void addPoint(const vali &positions);
+    int getIndex() const;
 
-    [[nodiscard]] vali first() const ;
-
-    [[nodiscard]] vali last() const ;
-
-    [[nodiscard]] unsigned int size() const;
-
-    [[nodiscard]] vali secondToLast() const;
-
-    [[nodiscard]] vali second() const;
-
-    double getLength();
+    bool isInvalid() const;
 };
 
+/// Seed point representing invalidity.
+const SeedPoint INVALID_SEED = {{-1, -1}, -1, -1};
 
-#endif //VECTOR_SLICER_PATH_H
+#endif //VECTOR_SLICER_SEED_POINT_H

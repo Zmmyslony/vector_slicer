@@ -20,15 +20,22 @@
 //
 
 #include "path.h"
+
+#include <utility>
 #include "auxiliary/valarray_operations.h"
 
-void Path::addPoint(vali &positions) {
+void Path::addPoint(const vali &positions, double segment_overlap) {
     sequence_of_positions.push_back(positions);
+    overlap.push_back(segment_overlap);
+}
+
+void Path::addPoint(const vali &positions) {
+    addPoint(positions, 0);
 }
 
 
-Path::Path(vali &starting_positions) {
-    addPoint(starting_positions);
+Path::Path(SeedPoint seed) : seed_point(std::move(seed)){
+    addPoint(seed_point.getCoordinates());
 }
 
 
@@ -41,9 +48,15 @@ Path::Path(const Path &forward_path, const Path &backward_path) {
     std::vector<vali> backward_sequence = backward_path.sequence_of_positions;
     std::vector<vali> forward_sequence = forward_path.sequence_of_positions;
 
+    std::vector<double> backward_overlap = backward_path.overlap;
+    std::vector<double> forward_overlap = forward_path.overlap;
+
     std::reverse(backward_sequence.begin(), backward_sequence.end());
+    std::reverse(backward_overlap.begin(), backward_overlap.end());
     backward_sequence.insert(backward_sequence.end(), forward_sequence.begin() + 1, forward_sequence.end());
+    backward_overlap.insert(backward_overlap.end(), forward_overlap.begin() + 1, forward_overlap.end());
     sequence_of_positions = backward_sequence;
+    overlap = backward_overlap;
 }
 
 vali Path::first() const {

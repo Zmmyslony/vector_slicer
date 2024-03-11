@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(vector_slicer VERSION 0.5.4)
+project(vector_slicer VERSION 0.6.0)
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
@@ -82,7 +82,9 @@ set(SOURCES
         source/pattern/simulation/disagreement_function_config.cpp
         source/pattern/simulation/disagreement_function_config.h
         source/pattern/simulation/filling_method_config.cpp
-        source/pattern/simulation/filling_method_config.h)
+        source/pattern/simulation/filling_method_config.h
+        source/pattern/seed_point.cpp
+        source/pattern/seed_point.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})
