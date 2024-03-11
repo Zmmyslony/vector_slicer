@@ -177,7 +177,7 @@ createPathWithExtension(const std::string &directory, const std::string &filenam
     fs::path directory_path = directory;
     createDirectory(directory_path);
     fs::path joined_path = directory_path / filename;
-    joined_path.replace_extension(extension);
+    joined_path += extension;
     return joined_path;
 }
 
@@ -196,7 +196,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     fs::path output_directory = pattern_path.parent_path().parent_path() / "output";
     createDirectory(output_directory);
-    std::string pattern_name = pattern_path.stem().string();
+    std::string pattern_name = pattern_path.filename().string();
 
     fs::path generated_paths_directory = createCsvPath(PATHS_EXPORT_PATH, pattern_name);
     fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
