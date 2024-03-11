@@ -1,4 +1,4 @@
-// Copyright (c) 2023, Michał Zmyślony, mlz22@cam.ac.uk.
+// Copyright (c) 2023-2024, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -22,8 +22,8 @@
 #ifndef VECTOR_SLICER_VECTOR_SORTED_PATHS_H
 #define VECTOR_SLICER_VECTOR_SORTED_PATHS_H
 
-#include "path.h"
-#include "auxiliary/valarray_operations.h"
+#include "../path.h"
+#include "../auxiliary/valarray_operations.h"
 
 
 std::vector<std::vector<vali>> getVectorSortedPaths(std::vector<Path> unsorted_paths, const vali& starting_point);

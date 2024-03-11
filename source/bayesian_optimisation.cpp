@@ -30,8 +30,8 @@
 
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
-#include "pattern/director_indexed_path.h"
-#include "pattern/vector_sorted_paths.h"
+#include "pattern/path_sorting/director_indexed_path.h"
+#include "pattern/path_sorting/vector_sorted_paths.h"
 #include "pattern/importing_and_exporting/open_files.h"
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
@@ -205,13 +205,18 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     std::vector<pattern> sorted_patterns;
     double print_diameter = 0;
     int number_of_layers = patterns[0].getNumberOfLayers();
+    vali starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
+        std::vector<std::vector<vali>> sorted_paths;
         if (pattern.desired_pattern.get().isVectorSorted()) {
-            sorted_patterns.emplace_back(getVectorSortedPaths(pattern.getSequenceOfPaths(), {0, 0}));
+            sorted_paths = getVectorSortedPaths(pattern.getSequenceOfPaths(), starting_coordinates);
         } else {
-            sorted_patterns.emplace_back(getDirectorSortedPaths(pattern, 0));
+            sorted_paths = getDirectorSortedPaths(pattern, starting_coordinates);
         }
+
+        starting_coordinates = sorted_paths.back().back();
+        sorted_patterns.emplace_back(sorted_paths);
         print_diameter = pattern.getPrintRadius() * 2;
     }
 
@@ -285,7 +290,8 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     Simulation simulation(pattern_path, is_default_used);
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled, simulation.getThreads());
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
+                                                              simulation.getThreads());
 
     QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 
@@ -334,14 +340,14 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
 }
 
 
-
 void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled, simulation.getThreads());
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
+                                                              simulation.getThreads());
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
         filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], simulation));

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023, Michał Zmyślony, mlz22@cam.ac.uk.
+// Copyright (c) 2022-2024, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -22,8 +22,8 @@
 #ifndef VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H
 #define VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H
 
-#include "path.h"
-#include "filled_pattern.h"
+#include "../path.h"
+#include "../filled_pattern.h"
 #include <valarray>
 #include <vector>
 #include <climits>
@@ -72,6 +72,6 @@ public:
 
 };
 
-std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, int starting_point_number);
+std::vector<std::vector<vali>> getDirectorSortedPaths(FilledPattern &filled_pattern, vali starting_coordinates);
 
 #endif //VECTOR_SLICER_DIRECTOR_INDEXED_PATH_H

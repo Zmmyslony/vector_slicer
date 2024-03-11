@@ -53,8 +53,8 @@ set(SOURCES
         source/pattern/auxiliary/progress_bar.h
         source/pattern/filling_config.cpp
         source/pattern/filling_config.h
-        source/pattern/director_indexed_path.cpp
-        source/pattern/director_indexed_path.h
+        source/pattern/path_sorting/director_indexed_path.cpp
+        source/pattern/path_sorting/director_indexed_path.h
         source/bayesian_optimisation.cpp
         source/bayesian_optimisation.h
         source/pattern/auxiliary/vector_operations.cpp
@@ -63,8 +63,8 @@ set(SOURCES
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/simulation/configuration_reading.cpp
         source/pattern/simulation/configuration_reading.h
-        source/pattern/vector_sorted_paths.cpp
-        source/pattern/vector_sorted_paths.h
+        source/pattern/path_sorting/vector_sorted_paths.cpp
+        source/pattern/path_sorting/vector_sorted_paths.h
         source/pattern/auxiliary/repulsion.cpp
         source/pattern/auxiliary/repulsion.h
         source/pattern/auxiliary/line_operations.cpp
