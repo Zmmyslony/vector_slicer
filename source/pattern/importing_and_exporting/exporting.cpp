@@ -148,21 +148,34 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 #endif
     ;
     std::stringstream header_s;
-    header_s << std::setprecision(3);
+    header_s << std::setprecision(2);
     header_s << "# Generated using Vector Slicer " << SLICER_VER << " on " << time << std::endl
              << "# Michał Zmyślony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
              << "# Source directory: " << pattern_name << std::endl
-             << "# Print diameter: " << print_diameter << std::endl
-             << "# Disagreement configuration:" << std::endl
-             << "# \t empty spot (" << simulation.getEmptySpotWeight() << "," << simulation.getEmptySpotPower() << ")"
-             << std::endl
-             << "# \t overlap (" << simulation.getOverlapWeight() << "," << simulation.getOverlapPower() << ")"
-             << std::endl
-             << "# \t director (" << simulation.getDirectorWeight() << "," << simulation.getDirectorPower() << ")"
-             << std::endl
-             << "# Iterations: " << simulation.getTotalIterations() << ", relearning period: "
-             << simulation.getImprovementIterations() << ", noise: " << simulation.getNoise() << std::endl << std::endl;
+             << "# Print diameter: " << print_diameter << std::endl;
+    header_s << std::endl;
 
+    header_s << "# Disagreement configuration:" << std::endl
+             << "# \t p  ** " << simulation.getPathsPower() << " * ("
+             << simulation.getEmptySpotWeight() << " * h ** " << simulation.getEmptySpotPower() << " + "
+             << simulation.getOverlapWeight() << " * o ** " << simulation.getOverlapPower() << " + "
+             << simulation.getDirectorWeight() << " * d ** " << simulation.getDirectorPower() << std::endl
+             << "# \twhere p - number of paths, h - hole density, o - overlap density, d - director disagreement density";
+    header_s << std::endl;
+
+    int iteration_limit = simulation.getTotalIterations();
+    header_s << "# Bayesian configuration:" << std::endl;
+    if (iteration_limit <= 0) {
+        header_s << "# \tUnlimited optimisation iteration cap";
+    } else {
+        header_s << "# \tOptimisation iteration cap: " << iteration_limit;
+    }
+    header_s << ", relearning period: "
+             << simulation.getImprovementIterations() << ", noise: " << simulation.getNoise() << std::endl;
+
+    header_s << "# Filling configuration:" << std::endl;
+
+    header_s << std::endl;
     return header_s.str();
 }
 
