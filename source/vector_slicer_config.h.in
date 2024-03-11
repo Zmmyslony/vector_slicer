@@ -38,9 +38,6 @@
 
 #define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"
 
-#define SLICER_DLLEXPORT extern "C" __declspec( dllexport )
-
-// #define SLICER_DLLEXPORT extern "C" __declspec( dllexport )
 #pragma once
 
 #if defined(_MSC_VER)
