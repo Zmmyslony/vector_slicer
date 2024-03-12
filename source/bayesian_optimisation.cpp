@@ -355,6 +355,7 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
+    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing best config path.");}
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
