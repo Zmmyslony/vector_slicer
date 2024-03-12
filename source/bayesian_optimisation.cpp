@@ -181,11 +181,11 @@ createPathWithExtension(const std::string &directory, const std::string &filenam
 }
 
 fs::path createTxtPath(const std::string &directory, const std::string &filename) {
-    return createPathWithExtension(directory, filename, "txt");
+    return createPathWithExtension(directory, filename, ".txt");
 }
 
 fs::path createCsvPath(const std::string &directory, const std::string &filename) {
-    return createPathWithExtension(directory, filename, "csv");
+    return createPathWithExtension(directory, filename, ".csv");
 }
 
 /**
