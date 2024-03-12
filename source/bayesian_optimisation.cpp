@@ -377,8 +377,7 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {
-    std::string pattern_name = pattern_path.stem().string() + ".txt";
-    fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / pattern_name;
-    config_path.replace_extension("txt");
+    std::string pattern_name = pattern_path.filename().string();
+    fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / (pattern_name + ".txt");
     fillPattern(pattern_path, config_path);
 }

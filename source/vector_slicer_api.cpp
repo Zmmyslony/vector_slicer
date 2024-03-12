@@ -33,3 +33,8 @@ SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory, bool is_defau
     optimisePattern(pattern_path_fs, is_default_used);
 }
 
+SLICER_DLLEXPORT void reslice_pattern(const char *pattern_directory) {
+    fs::path pattern_path_fs(pattern_directory);
+    recalculateBestConfig(pattern_path_fs);
+}
+
