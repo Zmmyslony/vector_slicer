@@ -55,6 +55,7 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
 
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
+    sorting_method = readKeyInt(FILLING_CONFIG, "sorting_method");
 }
 
 
@@ -389,4 +390,8 @@ bool DesiredPattern::isLowSplay(const vald &coordinates) const {
 
 const std::vector<std::vector<vali>> &DesiredPattern::getLineDensityMinima() const {
     return lines_of_minimal_density;
+}
+
+int DesiredPattern::getSortingMethod() const {
+    return sorting_method;
 }

@@ -30,6 +30,9 @@
 #include <valarray>
 #include <set>
 
+#define SORT_NEAREST_NEIGHBOUR 0
+#define SORT_SEED_LINE 1
+
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
@@ -56,6 +59,7 @@ class DesiredPattern {
     bool is_splay_filling_enabled = false;
     bool is_pattern_updated = false;
     int threads = 1;
+    int sorting_method = SORT_NEAREST_NEIGHBOUR;
 
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
@@ -123,6 +127,8 @@ public:
     void findLineDensityMinima();
 
     void isPatternUpdated() const;
+
+    int getSortingMethod() const;
 };
 
 

@@ -22,6 +22,7 @@
 #include "path.h"
 
 #include <utility>
+#include <stdexcept>
 #include "auxiliary/valarray_operations.h"
 
 void Path::addPoint(const vali &positions, double segment_overlap) {
@@ -55,6 +56,7 @@ Path::Path(const Path &forward_path, const Path &backward_path) {
     std::reverse(backward_overlap.begin(), backward_overlap.end());
     backward_sequence.insert(backward_sequence.end(), forward_sequence.begin() + 1, forward_sequence.end());
     backward_overlap.insert(backward_overlap.end(), forward_overlap.begin() + 1, forward_overlap.end());
+    seed_point = forward_path.seed_point;
     sequence_of_positions = backward_sequence;
     overlap = backward_overlap;
 }
@@ -68,6 +70,7 @@ vali Path::second() const {
 }
 
 vali Path::last() const {
+//    if (sequence_of_positions.empty()) {throw std::runtime_error("ERROR: Path is empty.");}
     return sequence_of_positions.back();
 }
 

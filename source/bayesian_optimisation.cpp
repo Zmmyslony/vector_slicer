@@ -31,6 +31,7 @@
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
 #include "pattern/path_sorting/nearest_neighbour.h"
+#include "pattern/path_sorting/seed_line.h"
 #include "pattern/importing_and_exporting/open_files.h"
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
@@ -196,12 +197,23 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
  * @return
  */
 std::vector<std::vector<vali>> sort_paths(const FilledPattern &pattern, vali &start) {
-    std::vector<Path> sorted_paths = sort_nearest_neighbour(pattern.getSequenceOfPaths(), start,
-                                                            pattern.desired_pattern.get().isVectorSorted());
+    int sorting_method = pattern.desired_pattern.get().getSortingMethod();
+    std::vector<Path> sorted_paths;
+    switch (sorting_method) {
+        case SORT_NEAREST_NEIGHBOUR:
+            sorted_paths = nearestNeighbourSort(pattern, start);
+            break;
+        case SORT_SEED_LINE:
+            sorted_paths = seedLineSort(pattern, start);
+            break;
+        default:
+            throw std::runtime_error("ERROR: Unrecognised path sorting method.");
+    }
 
     start = sorted_paths.back().endPoint();
     std::vector<std::vector<vali>> position_sequences;
-    for (auto &path : sorted_paths) {
+    position_sequences.reserve(sorted_paths.size());
+    for (auto &path: sorted_paths) {
         position_sequences.emplace_back(path.getPositionSequence());
     }
     return position_sequences;

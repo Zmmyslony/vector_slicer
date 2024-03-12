@@ -97,14 +97,15 @@ bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coor
 }
 
 vald
-getOutwardPointingVector(const vali &positions, const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
+getOutwardPointingVector(const vali &current_position, const std::vector<std::vector<int>> &shape_matrix,
+                         const vali &sizes,
                          const std::vector<vali> &tested_circle) {
     int number_of_empty_points = 0;
     vald sum_of_empty_point_displacements = {0, 0};
     for (auto &displacement: tested_circle) {
-        vali offset_positions = displacement + positions;
-        if (!isInRange(offset_positions, sizes) ||
-            isEmpty(offset_positions, shape_matrix)) {
+        vali coordinates = current_position + displacement;
+        if (!isInRange(coordinates, sizes) ||
+            isEmpty(coordinates, shape_matrix)) {
             number_of_empty_points++;
             sum_of_empty_point_displacements += itod(displacement);
         }
@@ -112,7 +113,7 @@ getOutwardPointingVector(const vali &positions, const std::vector<std::vector<in
     if (number_of_empty_points > 0) {
         return sum_of_empty_point_displacements / (double) number_of_empty_points;
     } else {
-        return sum_of_empty_point_displacements;
+        return {0, 0};
     }
 
 }
@@ -124,7 +125,7 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
         return false;
     }
 
-    vald outward_pointing_vector = getOutwardPointingVector(positions, shape_matrix, sizes, tested_circle);
+    vald outward_pointing_vector = normalize(getOutwardPointingVector(positions, shape_matrix, sizes, tested_circle));
     vald current_splay = splay_array[positions[0]][positions[1]];
 
     // Threshold is set slightly below zero to improve stability for numerically calculated splay
@@ -135,7 +136,6 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
 std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
                                            const std::vector<std::vector<vald>> &splay_array) {
     std::vector<vali> unsorted_perimeters;
-    // It is set to constant radius, maybe add a control over it?
     std::vector<vali> tested_circle = generatePerimeterList(4);
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
@@ -168,13 +168,13 @@ std::vector<std::vector<vali>>
 findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
                         const std::vector<std::vector<vald>> &splay_array) {
     std::vector<vali> unsorted_perimeters = findValidPerimeterPoints(shape_matrix, sizes, splay_array);
-    std::vector<std::vector<vali>> separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, sqrt(2));
+    std::vector<std::vector<vali>> separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, 2);
     // If using the splay approach for selecting splay-valid perimeter points yields single points that are unconnected
     // then separation into perimeters will not detect any lines. Therefore, we revert to the simple geometrical
     // definition of perimeter, where point within the pattern that neighbours one that is outside is counted as perimeter.
     if (separated_perimeters.empty()) {
         unsorted_perimeters = findGeometricalPerimeter(shape_matrix, sizes);
-        separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, sqrt(2));
+        separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, 2);
     }
     return separated_perimeters;
 }

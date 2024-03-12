@@ -25,14 +25,12 @@
 #include <vector>
 #include <valarray>
 #include "../path.h"
+#include "../filled_pattern.h"
 
 using vali = std::valarray<int>;
 
-class NearestNeighbour {
-
-};
 
 std::vector<Path>
-sort_nearest_neighbour(std::vector<Path> unsorted_paths, const vali& starting_coordinates, bool is_vector_filled);
+nearestNeighbourSort(const FilledPattern &pattern, const vali& starting_coordinates);
 
 #endif //VECTOR_SLICER_NEAREST_NEIGHBOUR_H

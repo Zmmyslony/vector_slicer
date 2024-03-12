@@ -25,15 +25,17 @@
 #include <cmath>
 
 std::vector<Path>
-sort_nearest_neighbour(std::vector<Path> unsorted_paths, const vali &starting_coordinates, bool is_vector_filled) {
+nearestNeighbourSort(const FilledPattern &pattern, const vali &starting_coordinates) {
+    bool is_vector_sorted = pattern.desired_pattern.get().isVectorSorted();
+    std::vector<Path> unsorted_paths = pattern.getSequenceOfPaths();
     std::vector<Path> sorted_paths;
     vali previous_end = starting_coordinates;
 
     while (!unsorted_paths.empty()) {
         int i_nearest = 0;
         for (int i = 1; i < unsorted_paths.size(); i++) {
-            if (unsorted_paths[i].distance(previous_end, is_vector_filled) <
-                    unsorted_paths[i_nearest].distance(previous_end, is_vector_filled)) {
+            if (unsorted_paths[i].distance(previous_end, is_vector_sorted) <
+                    unsorted_paths[i_nearest].distance(previous_end, is_vector_sorted)) {
                 i_nearest = i;
             }
         }

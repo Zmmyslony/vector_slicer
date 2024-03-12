@@ -81,8 +81,8 @@ set(SOURCES
         source/pattern/simulation/filling_method_config.h
         source/pattern/seed_point.cpp
         source/pattern/seed_point.h
-        source/pattern/path_sorting/seed_line_sorting.cpp
-        source/pattern/path_sorting/seed_line_sorting.h
+        source/pattern/path_sorting/seed_line.cpp
+        source/pattern/path_sorting/seed_line.h
         source/pattern/path_sorting/nearest_neighbour.cpp
         source/pattern/path_sorting/nearest_neighbour.h)
 
