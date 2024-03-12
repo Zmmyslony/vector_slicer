@@ -364,8 +364,8 @@ void FilledPattern::removePoints() {
 
 void FilledPattern::removeLine(Path path) {
     std::vector<vali> current_points_to_fill;
-    vali current_coordinates = path.sequence_of_positions[1];
-    vali previous_coordinates = path.sequence_of_positions[0];
+    vali current_coordinates = path.position(1);
+    vali previous_coordinates = path.position(0);
     current_points_to_fill = findPointsToFill(previous_coordinates, current_coordinates, getPrintRadius(),
                                               !isFilled(previous_coordinates));
 
@@ -373,9 +373,9 @@ void FilledPattern::removeLine(Path path) {
     fillPointsFromList(current_points_to_fill, new_step_int, -1);
 
     for (int i = 2; i < path.size(); i++) {
-        current_coordinates = path.sequence_of_positions[i];
-        previous_coordinates = path.sequence_of_positions[i - 1];
-        vali second_previous_coordinates = path.sequence_of_positions[i - 2];
+        current_coordinates = path.position(i);
+        previous_coordinates = path.position(i - 1);
+        vali second_previous_coordinates = path.position(i - 2);
         current_points_to_fill = findPointsToFill(second_previous_coordinates, previous_coordinates,
                                                   current_coordinates, getPrintRadius(),
                                                   !isFilled(previous_coordinates));
@@ -383,7 +383,7 @@ void FilledPattern::removeLine(Path path) {
         new_step_int = current_coordinates - previous_coordinates;
         fillPointsFromList(current_points_to_fill, new_step_int, -1);
     }
-    fillPointsInHalfCircle(path.sequence_of_positions[0], path.sequence_of_positions[1], -1);
+    fillPointsInHalfCircle(path.position(0), path.position(1), -1);
     fillPointsInHalfCircle(path.last(), path.secondToLast(), -1);
 }
 
@@ -417,7 +417,7 @@ void FilledPattern::exportFilledMatrix(const fs::path &path) const {
 }
 
 
-std::vector<Path> FilledPattern::getSequenceOfPaths() {
+std::vector<Path> FilledPattern::getSequenceOfPaths() const {
     return sequence_of_paths;
 }
 

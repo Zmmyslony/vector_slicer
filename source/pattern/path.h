@@ -30,10 +30,16 @@ using vali = std::valarray<int>;
 
 /// Contains the sequence of coordinates that form a single path
 class Path {
-public:
-    std::vector<vali> sequence_of_positions;
-    std::vector<double> overlap;
     SeedPoint seed_point;
+    std::vector<vali> sequence_of_positions;
+    bool is_reversed = false;
+
+    /// Distance between the point and the start of the path.
+    double vectorDistance(const vali &point) const;
+    /// Shorter distance between the point and the start of the path, which reverses the path when needed.
+    double tensorDistance(const vali &point);
+public:
+    std::vector<double> overlap;
 
     explicit Path(SeedPoint seed);
 
@@ -54,6 +60,21 @@ public:
     [[nodiscard]] vali second() const;
 
     double getLength();
+
+    const SeedPoint &getSeedPoint() const;
+
+    /// Vector or tensor distance
+    double distance(const vali& point, bool is_vector_filled);
+
+    /// Last point taking into account the directionality
+    [[nodiscard]] vali endPoint() const;
+
+    /// Returns sequence of positions in forward or backward order depending on is_reversed
+    std::vector<vali> getPositionSequence() const;
+
+    /// Return position at index
+    vali position(unsigned int index);
+
 };
 
 

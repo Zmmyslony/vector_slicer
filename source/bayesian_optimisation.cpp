@@ -30,8 +30,7 @@
 
 #include "bayesian_optimisation.h"
 #include "vector_slicer_config.h"
-#include "pattern/path_sorting/director_indexed_path.h"
-#include "pattern/path_sorting/vector_sorted_paths.h"
+#include "pattern/path_sorting/nearest_neighbour.h"
 #include "pattern/importing_and_exporting/open_files.h"
 #include "pattern/importing_and_exporting/exporting.h"
 #include "pattern/auxiliary/progress_bar.h"
@@ -189,6 +188,25 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
     return createPathWithExtension(directory, filename, "csv");
 }
 
+/**
+ * Sorts paths from a pattern, using either vector or director sorting using either nearest neighbour or seed-line
+ * ordering.
+ * @param pattern
+ * @param start coordinates where from the sorting should start from. Is overwritten by last position of the last path in sequence.
+ * @return
+ */
+std::vector<std::vector<vali>> sort_paths(const FilledPattern &pattern, vali &start) {
+    std::vector<Path> sorted_paths = sort_nearest_neighbour(pattern.getSequenceOfPaths(), start,
+                                                            pattern.desired_pattern.get().isVectorSorted());
+
+    start = sorted_paths.back().endPoint();
+    std::vector<std::vector<vali>> position_sequences;
+    for (auto &path : sorted_paths) {
+        position_sequences.emplace_back(path.getPositionSequence());
+    }
+    return position_sequences;
+}
+
 
 void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::path &pattern_path,
                     const Simulation &simulation) {
@@ -208,14 +226,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     vali starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
-        std::vector<std::vector<vali>> sorted_paths;
-        if (pattern.desired_pattern.get().isVectorSorted()) {
-            sorted_paths = getVectorSortedPaths(pattern.getSequenceOfPaths(), starting_coordinates);
-        } else {
-            sorted_paths = getDirectorSortedPaths(pattern, starting_coordinates);
-        }
-
-        starting_coordinates = sorted_paths.back().back();
+        std::vector<std::vector<vali>> sorted_paths = sort_paths(pattern, starting_coordinates);
         sorted_patterns.emplace_back(sorted_paths);
         print_diameter = pattern.getPrintRadius() * 2;
     }

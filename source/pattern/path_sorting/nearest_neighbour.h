@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2024, Michał Zmyślony, mlz22@cam.ac.uk.
+// Copyright (c) 2024, Michał Zmyślony, mlz22@cam.ac.uk.
 //
 // Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
 //
@@ -16,18 +16,23 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Michał Zmyślony on 03/04/2023.
+// Created by Michał Zmyślony on 12/03/2024.
 //
 
-#ifndef VECTOR_SLICER_VECTOR_SORTED_PATHS_H
-#define VECTOR_SLICER_VECTOR_SORTED_PATHS_H
+#ifndef VECTOR_SLICER_NEAREST_NEIGHBOUR_H
+#define VECTOR_SLICER_NEAREST_NEIGHBOUR_H
 
+#include <vector>
+#include <valarray>
 #include "../path.h"
-#include "../auxiliary/valarray_operations.h"
 
+using vali = std::valarray<int>;
 
-std::vector<std::vector<vali>> getVectorSortedPaths(std::vector<Path> unsorted_paths, const vali& starting_point);
+class NearestNeighbour {
 
+};
 
+std::vector<Path>
+sort_nearest_neighbour(std::vector<Path> unsorted_paths, const vali& starting_coordinates, bool is_vector_filled);
 
-#endif //VECTOR_SLICER_VECTOR_SORTED_PATHS_H
+#endif //VECTOR_SLICER_NEAREST_NEIGHBOUR_H

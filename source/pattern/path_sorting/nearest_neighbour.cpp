@@ -1,0 +1,46 @@
+// Copyright (c) 2024, Michał Zmyślony, mlz22@cam.ac.uk.
+//
+// Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
+//
+// This file is part of Vector Slicer.
+//
+// Vector Slicer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+// later version.
+//
+// Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+// Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Vector Slicer.
+// If not, see <https://www.gnu.org/licenses/>.
+
+//
+// Created by Michał Zmyślony on 12/03/2024.
+//
+
+#define _USE_MATH_DEFINES
+
+#include "nearest_neighbour.h"
+#include <cmath>
+
+std::vector<Path>
+sort_nearest_neighbour(std::vector<Path> unsorted_paths, const vali &starting_coordinates, bool is_vector_filled) {
+    std::vector<Path> sorted_paths;
+    vali previous_end = starting_coordinates;
+
+    while (!unsorted_paths.empty()) {
+        int i_nearest = 0;
+        for (int i = 1; i < unsorted_paths.size(); i++) {
+            if (unsorted_paths[i].distance(previous_end, is_vector_filled) <
+                    unsorted_paths[i_nearest].distance(previous_end, is_vector_filled)) {
+                i_nearest = i;
+            }
+        }
+        Path nearest_path = unsorted_paths[i_nearest];
+        sorted_paths.emplace_back(nearest_path);
+        previous_end = nearest_path.endPoint();
+        unsorted_paths.erase(unsorted_paths.begin() + i_nearest);
+    }
+    return sorted_paths;
+}

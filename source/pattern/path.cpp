@@ -82,3 +82,55 @@ double Path::getLength() {
     }
     return length;
 }
+
+const SeedPoint &Path::getSeedPoint() const {
+    return seed_point;
+}
+
+double Path::vectorDistance(const vali &point) const {
+    return norm(point - first());
+}
+
+double Path::tensorDistance(const vali &point) {
+    double forward_distance = norm(point - first());
+    double backward_distance = norm(point - last());
+    if (backward_distance < forward_distance) {
+        is_reversed = true;
+        return backward_distance;
+    }
+    return forward_distance;
+}
+
+vali Path::endPoint() const {
+    if (is_reversed) {
+        return first();
+    } else {
+        return last();
+    }
+}
+
+double Path::distance(const vali &point, bool is_vector_filled) {
+    if (is_vector_filled) {
+        return vectorDistance(point);
+    } else {
+        return tensorDistance(point);
+    }
+}
+
+std::vector<vali> Path::getPositionSequence() const {
+    if (is_reversed) {
+        std::vector<vali> position_sequence = sequence_of_positions;
+        std::reverse(position_sequence.begin(), position_sequence.end());
+        return position_sequence;
+    } else {
+        return sequence_of_positions;
+    }
+}
+
+vali Path::position(unsigned int index) {
+    return sequence_of_positions[index];
+}
+
+
+
+

@@ -53,8 +53,6 @@ set(SOURCES
         source/pattern/auxiliary/progress_bar.h
         source/pattern/filling_config.cpp
         source/pattern/filling_config.h
-        source/pattern/path_sorting/director_indexed_path.cpp
-        source/pattern/path_sorting/director_indexed_path.h
         source/bayesian_optimisation.cpp
         source/bayesian_optimisation.h
         source/pattern/auxiliary/vector_operations.cpp
@@ -63,8 +61,6 @@ set(SOURCES
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/simulation/configuration_reading.cpp
         source/pattern/simulation/configuration_reading.h
-        source/pattern/path_sorting/vector_sorted_paths.cpp
-        source/pattern/path_sorting/vector_sorted_paths.h
         source/pattern/auxiliary/repulsion.cpp
         source/pattern/auxiliary/repulsion.h
         source/pattern/auxiliary/line_operations.cpp
@@ -84,7 +80,11 @@ set(SOURCES
         source/pattern/simulation/filling_method_config.cpp
         source/pattern/simulation/filling_method_config.h
         source/pattern/seed_point.cpp
-        source/pattern/seed_point.h)
+        source/pattern/seed_point.h
+        source/pattern/path_sorting/seed_line_sorting.cpp
+        source/pattern/path_sorting/seed_line_sorting.h
+        source/pattern/path_sorting/nearest_neighbour.cpp
+        source/pattern/path_sorting/nearest_neighbour.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})
