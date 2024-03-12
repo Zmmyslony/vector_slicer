@@ -16,7 +16,8 @@
 #  If not, see <https://www.gnu.org/licenses/>.
 
 
-from lib import slicer_setup, output_reading
+from lib import output_reading
+from lib.slicer import Slicer
 from lib.director import basic as directors
 from lib.shape import basic as shapes
 from lib.pattern.pattern import Pattern, SymmetricPattern
@@ -25,7 +26,7 @@ import numpy as np
 
 # This file contains examples of a few basic functionalities of the program. All units are in millimetres.
 
-def complete_usage_example(slicer):
+def complete_usage_example(slicer: Slicer):
     """
     Generation of the input files for uniaxial pattern, slicing it and visualising the result.
     :return:
@@ -43,14 +44,12 @@ def complete_usage_example(slicer):
     line_width = 0.2
 
     # Generate input files for defined patterns. Their names are then used for slicing.
-    uniaxial_longitudinal_pattern.generateInputFiles(line_width, "example_longitudinal_20_10_mm",
-                                                     filling_method="Perimeter", is_displayed=True)
+    name = uniaxial_longitudinal_pattern.generateInputFiles(line_width, "example_longitudinal_20_10_mm",
+                                                            filling_method="Perimeter", is_displayed=True)
 
-    # Pattern name needs to be first encoded
-    input_name = slicer_setup.convert_pattern_name_into_input_name("example_longitudinal_20_10_mm")
     # Slices the pattern specified by name. Second boolean option allows us to use default configuration (True) or
     # to modify it (False).
-    slicer.slice_pattern(input_name, True)
+    slicer.slice(name)
 
     # Plots the sliced pattern.
     output_reading.plot_pattern("example_longitudinal_20_10_mm")
@@ -140,7 +139,7 @@ def example_extensive():
     """ This example shows a whole workflow with multiple patterns being generated, sliced and plotted."""
     # The path is relative to the parent of the Slicer's lib files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
-    slicer = slicer_setup.import_slicer("build")
+    slicer = Slicer("build")
 
     # Define domains that are used for pattern generation. See basic.py for predefined shapes.
     annulus = shapes.annulus(5, 10)
@@ -203,11 +202,8 @@ def example_extensive():
                      "example_three_charge_field"]
 
     for pattern_name in pattern_names:
-        # Pattern name needs to be first encoded
-        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_name)
-        # Slices the pattern specified by name. Second boolean option allows us to use default configuration (True) or
-        # to modify it (False).
-        slicer.slice_pattern(input_name, True)
+        # Slices the pattern specified by its name.
+        slicer.slice(pattern_name)
 
     # View sliced patterns
     for pattern_name in pattern_names:
@@ -218,7 +214,7 @@ def example_extensive():
 if __name__ == "__main__":
     # The path is relative to the parent of the Slicer's lib files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
-    slicer = slicer_setup.import_slicer("build")
+    slicer = Slicer("build")
     complete_usage_example(slicer)
 
     line_width = 0.2
