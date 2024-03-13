@@ -100,8 +100,10 @@ double Path::tensorDistance(const vali &point) {
     if (backward_distance < forward_distance) {
         is_reversed = true;
         return backward_distance;
+    } else {
+        is_reversed = false;
+        return forward_distance;
     }
-    return forward_distance;
 }
 
 vali Path::endPoint() const {
@@ -149,6 +151,10 @@ void Path::setOverlap(const std::vector<double> &overlap) {
         throw std::runtime_error("Size of overlap array disagrees with path length.");
     }
     Path::overlap = overlap;
+}
+
+bool Path::isReversed() const {
+    return is_reversed;
 }
 
 

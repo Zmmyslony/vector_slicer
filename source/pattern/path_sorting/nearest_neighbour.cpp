@@ -22,21 +22,23 @@
 #define _USE_MATH_DEFINES
 
 #include "nearest_neighbour.h"
-#include <cmath>
+#include <cfloat>
+#include <iostream>
 
-std::vector<Path>
-nearestNeighbourSort(const FilledPattern &pattern, const vali &starting_coordinates) {
+std::vector<Path> nearestNeighbourSort(const FilledPattern &pattern, const vali &starting_coordinates) {
     bool is_vector_sorted = pattern.desired_pattern.get().isVectorSorted();
     std::vector<Path> unsorted_paths = pattern.getSequenceOfPaths();
     std::vector<Path> sorted_paths;
     vali previous_end = starting_coordinates;
-
+    int j = 0;
     while (!unsorted_paths.empty()) {
         int i_nearest = 0;
+        double minimal_distance = DBL_MAX;
         for (int i = 1; i < unsorted_paths.size(); i++) {
-            if (unsorted_paths[i].distance(previous_end, is_vector_sorted) <
-                    unsorted_paths[i_nearest].distance(previous_end, is_vector_sorted)) {
+            double current_distance = unsorted_paths[i].distance(previous_end, is_vector_sorted);
+            if (current_distance < minimal_distance) {
                 i_nearest = i;
+                minimal_distance = current_distance;
             }
         }
         Path nearest_path = unsorted_paths[i_nearest];

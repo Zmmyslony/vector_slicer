@@ -78,6 +78,8 @@ public:
     std::vector<double> getOverlap() const;
 
     void setOverlap(const std::vector<double> &overlap);
+
+    bool isReversed() const;
 };
 
 
