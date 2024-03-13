@@ -45,6 +45,7 @@ unsigned int Path::size() const {
 }
 
 
+/// Joins two paths, reversing the backward path and appending to it the forward path.
 Path::Path(const Path &forward_path, const Path &backward_path) {
     std::vector<vali> backward_sequence = backward_path.sequence_of_positions;
     std::vector<vali> forward_sequence = forward_path.sequence_of_positions;
@@ -61,23 +62,27 @@ Path::Path(const Path &forward_path, const Path &backward_path) {
     overlap = backward_overlap;
 }
 
+/// Returns the first position in the path.
 vali Path::first() const {
     return sequence_of_positions.front();
 }
 
+/// Returns the second position in the path.
 vali Path::second() const {
     return sequence_of_positions[1];
 }
 
+/// Returns last position in the path.
 vali Path::last() const {
-//    if (sequence_of_positions.empty()) {throw std::runtime_error("ERROR: Path is empty.");}
     return sequence_of_positions.back();
 }
 
+/// Returns second to last position in the path.
 vali Path::secondToLast() const {
     return sequence_of_positions[sequence_of_positions.size() - 2];
 }
 
+/// Returns total length of the path.
 double Path::getLength() {
     double length = 0;
     for (int i = 1; i < size(); i++) {
@@ -90,10 +95,13 @@ const SeedPoint &Path::getSeedPoint() const {
     return seed_point;
 }
 
+/// Returns distance between the point and the first() point.
 double Path::vectorDistance(const vali &point) const {
     return norm(point - first());
 }
 
+/// Returns shorter distance between point and  first() or last(). If distance from last() is closer, marks path as
+/// reversed.
 double Path::tensorDistance(const vali &point) {
     double forward_distance = norm(point - first());
     double backward_distance = norm(point - last());
@@ -106,6 +114,8 @@ double Path::tensorDistance(const vali &point) {
     }
 }
 
+
+/// Last point taking into the account whether path is reversed.
 vali Path::endPoint() const {
     if (is_reversed) {
         return first();
@@ -136,6 +146,8 @@ vali Path::position(unsigned int index) {
     return sequence_of_positions[index];
 }
 
+
+/// Returns sequence of overlaps, taking into the account if path is reversed.
 std::vector<double> Path::getOverlap() const {
     if (is_reversed) {
         std::vector<double> reversed_overlap = overlap;
