@@ -34,6 +34,7 @@
 #define CONFIG_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/best_configs"
 #define FILLED_MATRIX_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/filled_matrices"
 #define OPTIMISATION_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/optimisation_save"
+#define OVERLAP_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/overlap"
 #define PATHS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/paths"
 
 #define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"

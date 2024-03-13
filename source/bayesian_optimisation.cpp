@@ -196,7 +196,7 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
  * @param start coordinates where from the sorting should start from. Is overwritten by last position of the last path in sequence.
  * @return
  */
-std::vector<std::vector<vali>> sort_paths(const FilledPattern &pattern, vali &start) {
+std::vector<Path> sort_paths(const FilledPattern &pattern, vali &start) {
     int sorting_method = pattern.desired_pattern.get().getSortingMethod();
     std::vector<Path> sorted_paths;
     switch (sorting_method) {
@@ -210,13 +210,29 @@ std::vector<std::vector<vali>> sort_paths(const FilledPattern &pattern, vali &st
             throw std::runtime_error("ERROR: Unrecognised path sorting method.");
     }
 
+    // Update for use in next layer.
     start = sorted_paths.back().endPoint();
+    return sorted_paths;
+}
+
+/// Extracts coordinate sequences from path sequence.
+std::vector<std::vector<vali>> extract_coordinates(const std::vector<Path> &paths) {
     std::vector<std::vector<vali>> position_sequences;
-    position_sequences.reserve(sorted_paths.size());
-    for (auto &path: sorted_paths) {
+    position_sequences.reserve(paths.size());
+    for (auto &path: paths) {
         position_sequences.emplace_back(path.getPositionSequence());
     }
     return position_sequences;
+}
+
+/// Extracts overlap sequence from path sequence.
+std::vector<std::vector<double>> extract_overlap(const std::vector<Path> &paths) {
+    std::vector<std::vector<double>> overlap_sequence;
+    overlap_sequence.reserve(paths.size());
+    for (auto &path: paths) {
+        overlap_sequence.emplace_back(path.getOverlap());
+    }
+    return overlap_sequence;
 }
 
 
@@ -231,22 +247,28 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     fs::path generated_paths_directory = createCsvPath(PATHS_EXPORT_PATH, pattern_name);
     fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
     fs::path best_config_directory = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
+    fs::path overlap_directory = createCsvPath(OVERLAP_EXPORT_PATH, pattern_name);
 
     std::vector<pattern> sorted_patterns;
+    std::vector<std::vector<std::vector<double>>> sorted_overlaps;
     double print_diameter = 0;
     int number_of_layers = patterns[0].getNumberOfLayers();
     vali starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         pattern.updatePathsOverlap();
-        std::vector<std::vector<vali>> sorted_paths = sort_paths(pattern, starting_coordinates);
-        sorted_patterns.emplace_back(sorted_paths);
+        std::vector<Path> sorted_paths = sort_paths(pattern, starting_coordinates);
+
+        sorted_patterns.emplace_back(extract_coordinates(sorted_paths));
+        sorted_overlaps.emplace_back(extract_overlap(sorted_paths));
         print_diameter = pattern.getPrintRadius() * 2;
     }
 
     exportConfigList(patterns, best_config_directory, number_of_layers);
     patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter, simulation);
+    exportOverlap(sorted_overlaps, overlap_directory, pattern_name, print_diameter, simulation);
+    std::cout << generated_paths_directory.string() << std::endl;
 }
 
 QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,

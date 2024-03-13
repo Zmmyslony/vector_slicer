@@ -134,8 +134,14 @@ vali Path::position(unsigned int index) {
     return sequence_of_positions[index];
 }
 
-const std::vector<double> &Path::getOverlap() const {
-    return overlap;
+std::vector<double> Path::getOverlap() const {
+    if (is_reversed) {
+        std::vector<double> reversed_overlap = overlap;
+        std::reverse(reversed_overlap.begin(), reversed_overlap.end());
+        return reversed_overlap;
+    } else {
+        return overlap;
+    }
 }
 
 void Path::setOverlap(const std::vector<double> &overlap) {

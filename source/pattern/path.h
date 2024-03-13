@@ -75,7 +75,7 @@ public:
     /// Return position at index
     vali position(unsigned int index);
 
-    const std::vector<double> &getOverlap() const;
+    std::vector<double> getOverlap() const;
 
     void setOverlap(const std::vector<double> &overlap);
 };

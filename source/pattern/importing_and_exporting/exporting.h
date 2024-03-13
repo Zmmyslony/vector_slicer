@@ -34,9 +34,9 @@ using vali = std::valarray<int>;
 using vald = std::valarray<double>;
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path);
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path);
 
-void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename);
+void exportVectorTableToFile(const std::vector<std::vector<double>> &table, const fs::path &filename);
 
 void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
                              const std::vector<std::vector<int>> &table_second, fs::path &filename);
@@ -44,7 +44,7 @@ void exportVectorTableToFile(const std::string &header, const std::vector<std::v
 void exportPathSequence(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates, const fs::path &path,
                         const std::string &suffix, double print_diameter);
 
-void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, fs::path path,
+void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, const fs::path path,
                         const std::string &suffix, double print_diameter, const Simulation &simulation);
 
 std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix);
@@ -56,5 +56,8 @@ void exportVector(const std::vector<vald> &vector, const std::string &filename);
 void printVector(const std::vector<vald> &vector);
 
 void printVector(const std::vector<vali> &vector);
+
+void exportOverlap(const std::vector<std::vector<std::vector<double>>> &overlap_stack, const fs::path &path,
+                   const std::string &suffix, double print_diameter, const Simulation &simulation);
 
 #endif //VECTOR_SLICER_EXPORTING_H

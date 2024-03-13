@@ -54,7 +54,7 @@ std::string readRowToString(const std::vector<double> &row) {
 }
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, fs::path &path) {
+void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path) {
     std::ofstream file(path.string());
     if (file.is_open()) {
         for (auto &row: table) {
@@ -79,6 +79,14 @@ std::stringstream convertVectorTableToStream(const std::vector<std::vector<int>>
     return stream;
 }
 
+std::stringstream convertVectorTableToStream(const std::vector<std::vector<double>> &table) {
+    std::stringstream stream;
+    for (const auto &row: table) {
+        stream << readRowToString(row);
+    }
+    return stream;
+}
+
 void exportHeaderToFile(const std::string &header, const fs::path &filename) {
     std::ofstream file(filename.string());
 
@@ -91,7 +99,7 @@ void exportHeaderToFile(const std::string &header, const fs::path &filename) {
 
 
 void appendVectorTableToFile(const std::vector<std::vector<int>> &table_first,
-                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+                             const std::vector<std::vector<int>> &table_second, const fs::path &filename) {
     std::ofstream file(filename.string(), std::ios_base::app);
 
     if (file.is_open()) {
@@ -102,15 +110,26 @@ void appendVectorTableToFile(const std::vector<std::vector<int>> &table_first,
     }
 }
 
+void appendVectorTableToFile(const std::vector<std::vector<double>> &table, const fs::path &filename) {
+    std::ofstream file(filename.string(), std::ios_base::app);
+
+    if (file.is_open()) {
+        file << std::endl;
+        file << "# Start of pattern" << std::endl;
+        file << convertVectorTableToStream(table).rdbuf();
+        file << "# End of pattern" << std::endl;
+    }
+}
+
 
 void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
-                             const std::vector<std::vector<int>> &table_second, fs::path &filename) {
+                             const std::vector<std::vector<int>> &table_second, const fs::path &filename) {
     exportHeaderToFile(header, filename);
     appendVectorTableToFile(table_first, table_second, filename);
 }
 
 
-void exportVectorTableToFile(const std::vector<std::vector<double>> &table, fs::path &filename) {
+void exportVectorTableToFile(const std::vector<std::vector<double>> &table, const fs::path &filename) {
     std::ofstream file(filename.string());
     if (file.is_open()) {
         for (auto &row: table) {
@@ -180,8 +199,9 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 }
 
 
-void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, fs::path path,
-                        const std::string &suffix, double print_diameter, const Simulation &simulation) {
+void
+exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, const fs::path path,
+                   const std::string &suffix, double print_diameter, const Simulation &simulation) {
     std::string header = generateHeader(suffix, print_diameter, simulation);
     exportHeaderToFile(header, path);
 
@@ -190,6 +210,16 @@ void exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<
         std::vector<std::vector<int>> y_table = indexTable(grid, 1);
 
         appendVectorTableToFile(x_table, y_table, path);
+    }
+}
+
+void exportOverlap(const std::vector<std::vector<std::vector<double>>> &overlap_stack, const fs::path &path,
+                   const std::string &suffix, double print_diameter, const Simulation &simulation) {
+    std::string header = generateHeader(suffix, print_diameter, simulation);
+    exportHeaderToFile(header, path);
+
+    for (auto &overlaps: overlap_stack) {
+        appendVectorTableToFile(overlaps, path);
     }
 }
 
