@@ -64,7 +64,8 @@ def shape_from_image(file_path, line_width_mm, line_width_pixel, centre_origin=N
     x_grid = np.arange(bounds[0], bounds[2] + pixel_size / 2, pixel_size)
     y_grid = np.arange(bounds[1], bounds[3] + pixel_size / 2, pixel_size)
 
-    shape_interpolator = RegularGridInterpolator([x_grid, y_grid], shape_matrix)
+    shape_interpolator = RegularGridInterpolator([x_grid, y_grid], shape_matrix,
+                                                 fill_value=0, bounds_error=False)
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
