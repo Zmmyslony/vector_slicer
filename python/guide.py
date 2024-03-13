@@ -47,8 +47,7 @@ def complete_usage_example(slicer: Slicer):
     name = uniaxial_longitudinal_pattern.generateInputFiles(line_width, "example_longitudinal_20_10_mm",
                                                             filling_method="Perimeter", is_displayed=True)
 
-    # Slices the pattern specified by name. Second boolean option allows us to use default configuration (True) or
-    # to modify it (False).
+    # Slices the pattern specified by name.
     slicer.slice(name)
 
     # Plots the sliced pattern.

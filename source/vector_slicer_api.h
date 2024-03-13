@@ -25,12 +25,13 @@
 #include "vector_slicer_config.h"
 
 
-/// Slices director pattern contained in pattern_directory using provided config from config_path
+/// Slices director pattern contained in pattern_directory using provided config from config_path.
 SLICER_DLLEXPORT void slice_pattern_with_config(const char *pattern_directory, const char *config_path);
 
-/// Slices director pattern contained in pattern_directory and optimises it according to default penalty function
+/// Slices director pattern contained in pattern_directory and optimises it according to default penalty function.
 SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory, bool is_default_used);
 
-
+/// Re-slices pattern based on previously exported best config.
+SLICER_DLLEXPORT void re_slice_pattern(const char *pattern_directory);
 
 #endif //VECTOR_SLICER_VECTOR_SLICER_API_H

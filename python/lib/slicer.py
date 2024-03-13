@@ -24,7 +24,7 @@ import pathlib
 import sys
 import os
 
-import slicer_setup
+from lib import slicer_setup
 
 
 class Slicer:
@@ -40,7 +40,7 @@ class Slicer:
         :return:
         """
         input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
-        self.slicer.slice(input_name, use_default)
+        self.slicer.slice_pattern(input_name, use_default)
 
     def re_slice(self, pattern_file_name: str):
         """
@@ -49,4 +49,4 @@ class Slicer:
         :return:
         """
         input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
-        self.slicer.reslice(input_name)
+        self.slicer.re_slice_pattern(input_name)
