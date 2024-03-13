@@ -44,7 +44,7 @@ def iris_alignment(r_in, target_elongation):
     return symmetric_alignment, r_out
 
 
-def iris_pattern(r_in, target_elongation):
+def iris_pattern(r_in: float, target_elongation: float):
     """
     :param r_in: inner radius in mm
     :param target_elongation: elongation at which the iris will be flat (material elongation at desired temperature)
@@ -125,10 +125,8 @@ def generate_radial_gauss_flat_patterns(r_in: float, target_elongation: float, l
     evertor = evertor_pattern(r_in, target_elongation)
 
     pattern_names = [
-        iris.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter", is_displayed=is_displayed),
-        cylinder.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
-                                    is_displayed=is_displayed),
-        evertor.generateInputFiles(line_width_mm, line_width_pixel, filling_method="Perimeter",
-                                   is_displayed=is_displayed)]
+        iris.generateInputFiles(line_width_mm, filling_method="Perimeter", is_displayed=is_displayed),
+        cylinder.generateInputFiles(line_width_mm, filling_method="Perimeter", is_displayed=is_displayed),
+        evertor.generateInputFiles(line_width_mm, filling_method="Perimeter", is_displayed=is_displayed)]
 
     return pattern_names
