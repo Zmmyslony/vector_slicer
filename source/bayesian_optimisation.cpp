@@ -238,6 +238,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     vali starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
+        pattern.updatePathsOverlap();
         std::vector<std::vector<vali>> sorted_paths = sort_paths(pattern, starting_coordinates);
         sorted_patterns.emplace_back(sorted_paths);
         print_diameter = pattern.getPrintRadius() * 2;

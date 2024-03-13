@@ -123,6 +123,8 @@ class FilledPattern : public FillingConfig {
 
     double getOverlap(const std::vector<vali> &points_to_check);
 
+    void updatePathOverlap(Path &path);
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;
@@ -168,7 +170,7 @@ public:
     void exportFilledMatrix(const fs::path &path) const;
 
     /// Updates overlaps in Paths for postprocessing.
-    void updatePathOverlap(Path &path);
+    void updatePathsOverlap();
 };
 
 

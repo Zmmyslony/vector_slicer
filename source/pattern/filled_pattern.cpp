@@ -322,7 +322,9 @@ double FilledPattern::getOverlap(const std::vector<vali> &points_to_check) {
     int points_count = points_to_check.size();
     int overlap = 0;
     for (auto &point: points_to_check) {
-        overlap += number_of_times_filled[point[0]][point[1]] - 1;
+        if (isInRange(point)) {
+            overlap += number_of_times_filled[point[0]][point[1]] - 1;
+        }
     }
     return (double) overlap / (double) points_count;
 }
@@ -344,6 +346,12 @@ void FilledPattern::updatePathOverlap(Path &path) {
     }
     overlap_array.emplace_back(current_edge_overlap);
     path.setOverlap(overlap_array);
+}
+
+void FilledPattern::updatePathsOverlap() {
+    for (auto &path : sequence_of_paths) {
+        updatePathOverlap(path);
+    }
 }
 
 Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step) {
