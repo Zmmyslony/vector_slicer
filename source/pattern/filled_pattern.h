@@ -121,6 +121,8 @@ class FilledPattern : public FillingConfig {
 
     [[nodiscard]] bool isInRange(const vald &index) const;
 
+    double getOverlap(const std::vector<vali> &points_to_check);
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;
@@ -164,6 +166,9 @@ public:
     std::vector<Path> getSequenceOfPaths() const;
 
     void exportFilledMatrix(const fs::path &path) const;
+
+    /// Updates overlaps in Paths for postprocessing.
+    void updatePathOverlap(Path &path);
 };
 
 

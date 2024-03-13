@@ -134,6 +134,17 @@ vali Path::position(unsigned int index) {
     return sequence_of_positions[index];
 }
 
+const std::vector<double> &Path::getOverlap() const {
+    return overlap;
+}
+
+void Path::setOverlap(const std::vector<double> &overlap) {
+    if (overlap.size() != sequence_of_positions.size()) {
+        throw std::runtime_error("Size of overlap array disagrees with path length.");
+    }
+    Path::overlap = overlap;
+}
+
 
 
 

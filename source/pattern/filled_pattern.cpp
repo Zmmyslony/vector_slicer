@@ -232,11 +232,11 @@ vald FilledPattern::getNewStep(vald &real_coordinates, int &length, vald &previo
     }
 }
 
-bool is_unchanged(const vali &first_position, const vali &second_position) {
+bool isUnchanged(const vali &first_position, const vali &second_position) {
     return first_position[0] == second_position[0] && first_position[1] == second_position[1];
 }
 
-bool is_reversed(const vald &first_step, const vald &second_step) {
+bool isReversed(const vald &first_step, const vald &second_step) {
     return dot(first_step, second_step) <= 0;
 }
 
@@ -259,8 +259,8 @@ vald FilledPattern::calculateNextPosition(vald &positions, vald &previous_step, 
     // Check if newly generated position is valid
     if (isFillable(new_coordinates) &&
         isDirectorContinuous(current_coordinates, new_coordinates) &&
-        !is_unchanged(current_coordinates, new_coordinates) &&
-        !is_reversed(previous_step, new_step)) {
+        !isUnchanged(current_coordinates, new_coordinates) &&
+        !isReversed(previous_step, new_step)) {
         return new_positions;
     } else {
         return INVALID_POSITION;
@@ -289,21 +289,16 @@ bool FilledPattern::isInRange(const vald &index) const {
 
 bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
+    if (!isInRange(current_coordinates)) { return false; }
     vald new_positions = calculateNextPosition(positions, previous_step, length);
 
-    if (!isInRange(current_coordinates)) {
-        return false;
-    }
     // Try creating the longest possible step
     while (length > 0 && !isInRange(new_positions)) {
         new_positions = calculateNextPosition(positions, previous_step, length);
         length--;
     }
+    if (length == 0) { return false; }
 
-    // Check if new position is valid
-    if (!isInRange(new_positions)) {
-        return false;
-    }
     previous_step = new_positions - positions;
     positions = new_positions;
     vali new_coordinates = dtoi(new_positions);
@@ -323,6 +318,33 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     return true;
 }
 
+double FilledPattern::getOverlap(const std::vector<vali> &points_to_check) {
+    int points_count = points_to_check.size();
+    int overlap = 0;
+    for (auto &point: points_to_check) {
+        overlap += number_of_times_filled[point[0]][point[1]] - 1;
+    }
+    return (double) overlap / (double) points_count;
+}
+
+void FilledPattern::updatePathOverlap(Path &path) {
+    std::vector<double> overlap_array;
+    overlap_array.reserve(path.size());
+    std::vector<vali> first_segment = findPointsToFill(path.first(), path.second(), getPrintRadius(), false);
+    double current_edge_overlap = getOverlap(first_segment);
+    // Overlap is defined on edges, while paths are defined on nodes, so first and last nodes will have overlaps
+    // corresponding to first and last edges, while the middle one will have n[i] = (e[i] + e[i - 1]) / 2
+    overlap_array.emplace_back(current_edge_overlap);
+    for (int i = 2; i < path.size(); i++) {
+        double previous_edge_overlap = current_edge_overlap;
+        std::vector<vali> current_segment = findPointsToFill(path.position(i - 2), path.position(i - 1),
+                                                             path.position(i), getPrintRadius(), false);
+        current_edge_overlap = getOverlap(current_segment);
+        overlap_array.emplace_back((previous_edge_overlap + current_edge_overlap) / 2);
+    }
+    overlap_array.emplace_back(current_edge_overlap);
+    path.setOverlap(overlap_array);
+}
 
 Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step) {
     Path new_path(seed_point);
