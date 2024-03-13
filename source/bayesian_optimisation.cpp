@@ -344,6 +344,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
     parameters.l_type = L_MCMC;
+    parameters.force_jump = best_pattern.getRelearningIterations();
     parameters.n_iter_relearn = best_pattern.getRelearningIterations();
     parameters.noise = best_pattern.getNoise();
     parameters.n_inner_iterations = 1000;
@@ -363,8 +364,14 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
                 "No parameter was chosen for optimisation. Please enable at least one of them in bayesian_configuration.cfg");
     }
 
-    best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
-                                    parameters, dims);
+    try {
+        best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
+                                        parameters, dims);
+    } catch (std::runtime_error &error) {
+        if (error.what() == "nlopt failure") {
+
+        }
+    }
 
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
             best_pattern.getFinalSeeds(), best_pattern.getThreads());
