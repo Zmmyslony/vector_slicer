@@ -26,14 +26,17 @@ import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 
 
-def shape_from_image(file_path, line_width_mm, line_width_pixel, centre_origin=None, scale=1):
+def shape_from_image(file_path, line_width_mm, line_width_pixel, centre_origin=None, scale=1, x_size: float = None,
+                     y_size: float = None):
     """
     Imports image to be used as shape array.
     :param file_path:
     :param line_width_mm: WARNING: has to agree with what is later used for slicing.
     :param line_width_pixel: WARNING: has to agree with what is later used for slicing.
     :param centre_origin:
-    :param scale: rescales the size
+    :param scale: rescales the size of pattern by scaling the original number of pixels. Only if x_size and y_size are both None.
+    :param x_size: x-size to rescale to. If y_size = None, scales the image uniformly.
+    :param y_size: y-size to rescale to. If x_size = None, scales the image uniformly.
     :return:
     """
     if centre_origin is None:
@@ -53,23 +56,33 @@ def shape_from_image(file_path, line_width_mm, line_width_pixel, centre_origin=N
     shape_matrix -= shape_matrix.min()
     shape_matrix /= shape_matrix.max()
 
-    if scale <= 0: raise Warning(f"Scale has to be a positive number.")
+    if scale is not None and scale <= 0: raise Warning(f"Scale has to be a positive number.")
+    if x_size is not None and x_size < 0: raise Warning(f"x_size has to be a positive number.")
+    if y_size is not None and y_size < 0: raise Warning(f"y_size has to be a positive number.")
 
-    pixel_size = scale * line_width_mm / line_width_pixel
-    bounds = np.array([centre_origin[0] - (shape_matrix.shape[0] - 1) * pixel_size / 2,
-                       centre_origin[1] - (shape_matrix.shape[1] - 1) * pixel_size / 2,
-                       centre_origin[0] + (shape_matrix.shape[0] - 1) * pixel_size / 2,
-                       centre_origin[1] + (shape_matrix.shape[1] - 1) * pixel_size / 2])
+    if x_size is not None and y_size is not None:
+        pass
+    elif x_size is not None and y_size is None:
+        y_size = x_size * shape_matrix.shape[1] / shape_matrix.shape[0]
+    elif x_size is None and y_size is not None:
+        x_size = y_size * shape_matrix.shape[0] / shape_matrix.shape[1]
+    else:
+        pixel_size = scale * line_width_mm / line_width_pixel
+        x_size = (shape_matrix.shape[0] - 1) * pixel_size
+        y_size = (shape_matrix.shape[1] - 1) * pixel_size
 
-    x_grid = np.arange(bounds[0], bounds[2] + pixel_size / 2, pixel_size)
-    y_grid = np.arange(bounds[1], bounds[3] + pixel_size / 2, pixel_size)
+    bounds = np.array([centre_origin[0] - x_size / 2, centre_origin[1] - y_size / 2,
+                       centre_origin[0] + x_size / 2, centre_origin[1] + y_size / 2])
+
+    x_grid = np.linspace(bounds[0], bounds[2], shape_matrix.shape[0])
+    y_grid = np.linspace(bounds[1], bounds[3], shape_matrix.shape[1])
 
     shape_interpolator = RegularGridInterpolator([x_grid, y_grid], shape_matrix,
-                                                 fill_value=0, bounds_error=False)
+                                                 fill_value=None, bounds_error=False)
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
         shape_flattened = np.round(shape_interpolator(v_flattened))
         return np.array(np.reshape(shape_flattened, v.shape[0:2]), dtype=int)
 
-    return Shape(shape_function, bounds, is_defined_explicitly=False)
+    return Shape(shape_function, bounds)
