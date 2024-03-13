@@ -130,3 +130,45 @@ def regular_hexagon(side_length: float, orientation: float = 0, x_offset: float 
     """
     radius = side_length
     return regular_polygon(6, radius, orientation=orientation, x_offset=x_offset, y_offset=y_offset)
+
+
+def sine_modulated_rectangle(length: float,
+                             width: float,
+                             wave_number_top: float,
+                             wave_number_bottom: float,
+                             phase_offset_top: float = 0,
+                             phase_offset_bottom: float = 0,
+                             amplitude_top: float = 1,
+                             amplitude_bottom: float = 1,
+                             x_offset: float = 0,
+                             y_offset: float = 0):
+    """
+    Rectangle spanning in x-direction with sine modulated boundary at y-top and z-bottom.
+    :param y_offset:
+    :param x_offset:
+    :param length:
+    :param width:
+    :param wave_number_top:
+    :param wave_number_bottom:
+    :param phase_offset_top:
+    :param phase_offset_bottom:
+    :param amplitude_top:
+    :param amplitude_bottom:
+    :return:
+    """
+
+    def shape_function(v):
+        x = v[:, :, 0]
+        y = v[:, :, 1]
+        is_in_x_bounds = np.logical_and(x - x_offset >= 0, x - x_offset <= length)
+        top_boundary = width / 2 + amplitude_top * np.sin(wave_number_top * x + phase_offset_top)
+        bottom_boundary = -width / 2 - amplitude_bottom * np.sin(wave_number_bottom * x + phase_offset_bottom)
+        is_in_y_bounds = np.logical_and(y - y_offset >= bottom_boundary, y - y_offset <= top_boundary)
+        return np.logical_and(is_in_x_bounds, is_in_y_bounds)
+
+    bounds = [
+        x_offset,
+        - width / 2 + y_offset - amplitude_bottom,
+        x_offset + length,
+        width / 2 + y_offset + amplitude_top]
+    return Shape(shape_function, bounds)
