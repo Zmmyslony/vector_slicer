@@ -69,7 +69,7 @@ def shape_from_image(file_path, line_width_mm, line_width_pixel, centre_origin=N
 
     def shape_function(v):
         v_flattened = np.vstack([v[:, :, 0].flatten(), v[:, :, 1].flatten()]).transpose()
-        shape_flattened = shape_interpolator(v_flattened)
+        shape_flattened = np.round(shape_interpolator(v_flattened))
         return np.array(np.reshape(shape_flattened, v.shape[0:2]), dtype=int)
 
     return Shape(shape_function, bounds, is_defined_explicitly=False)
