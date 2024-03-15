@@ -26,10 +26,12 @@
 
 SeedPoint::SeedPoint() = default;
 
-SeedPoint::SeedPoint(vali coordinates, int seed_line, int index) :
+SeedPoint::SeedPoint(vali coordinates, vald director, int seed_line, int index) :
         coordinates(std::move(coordinates)),
         seed_line(seed_line),
-        index(index) {}
+        index(index),
+        director(std::move(director)) {}
+
 
 const vali &SeedPoint::getCoordinates() const {
     return coordinates;
@@ -52,4 +54,8 @@ bool SeedPoint::isInvalid() const {
         return true;
     }
     return false;
+}
+
+const vald &SeedPoint::getDirector() const {
+    return director;
 }

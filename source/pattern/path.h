@@ -27,12 +27,15 @@
 #include "seed_point.h"
 
 using vali = std::valarray<int>;
+using vald = std::valarray<double>;
 
 /// Contains the sequence of coordinates that form a single path
 class Path {
     SeedPoint seed_point;
     std::vector<vali> sequence_of_positions;
     std::vector<double> overlap;
+    std::vector<vald> positive_path_edge;
+    std::vector<vald> negative_path_edge;
 
     bool is_reversed = false;
     /// Distance between the point and the start of the path.
@@ -41,13 +44,13 @@ class Path {
     double tensorDistance(const vali &point);
 public:
 
-    explicit Path(SeedPoint seed);
+    explicit Path(SeedPoint seed, double print_radius);
 
     Path(const Path& forward_path, const Path& backward_path);
 
-    void addPoint(const vali &positions, double segment_overlap);
+    void addPoint(const vali &positions, double segment_overlap, const vald &positive_edge, const vald &negative_edge);
 
-    void addPoint(const vali &positions);
+    void addPoint(const vali &positions, const vald &positive_edge, const vald &negative_edge);
 
     [[nodiscard]] vali first() const ;
 
@@ -80,6 +83,10 @@ public:
     void setOverlap(const std::vector<double> &overlap);
 
     bool isReversed() const;
+
+    std::vector<vali> findPointsToFill(int i, bool is_position_filled) const;
+
+    std::vector<vali> findPointsToFill(bool is_position_filled) const;
 };
 
 

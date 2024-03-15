@@ -92,43 +92,26 @@ std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_
     return points_to_fill;
 }
 
-
-std::vector<vali>
-findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled) {
-    vald tangent = normalize(point_next - point_current);
-    vald normal = perpendicular(tangent) * radius;
-
-    vald corner_first = itod(point_current) + normal;
-    vald corner_second = itod(point_current) - normal;
-    vald corner_third = itod(point_next) - normal;
-    vald corner_fourth = itod(point_next) + normal;
-
-    return findPointsToFill(corner_first, corner_second, corner_third, corner_fourth, is_first_point_filled);
+/// Adds to the primary vector the orientation corrected secondary vector, and resizes it so that the projection
+/// onto primary vector is equal 1.
+vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector) {
+    vald resultant;
+    if (dot(primary_vector, secondary_vector) < 0) {
+        resultant = normalize(primary_vector) - normalize(secondary_vector);
+    } else {
+        resultant = normalize(primary_vector) + normalize(secondary_vector);
+    }
+    double projection = dot(resultant, normalize(primary_vector));
+    return resultant / projection;
 }
 
 
 std::vector<vali>
-findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
-                 bool is_first_point_filled) {
-    vald previous_tangent = normalize(point_current - point_previous);
-    vald previous_normal = perpendicular(previous_tangent) * radius;
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
+               const vald &last_director) {
 
-    vald current_tangent = normalize(point_next - point_current);
-    vald current_normal = perpendicular(current_tangent) * radius;
-
-    vald corner_first = itod(point_current) + previous_normal;
-    vald corner_second = itod(point_current) - previous_normal;
-    vald corner_third = itod(point_next) - current_normal;
-    vald corner_fourth = itod(point_next) + current_normal;
-
-    return findPointsToFill(corner_first, corner_second, corner_third, corner_fourth, is_first_point_filled);
-}
-
-
-std::vector<vali>
-findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled) {
-
-    vald tangent = normalize(last_point - previous_point);
+    vald displacements = normalize(last_point - previous_point);
+    vald tangent = normalisedResultant(displacements, last_director);
     vald normal = perpendicular(tangent) * radius;
 
     std::vector<vali> points_to_fill;

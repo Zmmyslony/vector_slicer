@@ -26,16 +26,18 @@
 #include <valarray>
 
 using vali = std::valarray<int>;
+using vald = std::valarray<double>;
 
 class SeedPoint {
     vali coordinates;
+    vald director;
     int seed_line{};
     int index{};
 
 public:
     SeedPoint();
 
-    SeedPoint(vali coordinates, int seed_line, int index);
+    SeedPoint(vali coordinates, vald director, int seed_line, int index);
 
     const vali &getCoordinates() const;
 
@@ -44,9 +46,12 @@ public:
     int getIndex() const;
 
     bool isInvalid() const;
+
+    const vald &getDirector() const;
+
 };
 
 /// Seed point representing invalidity.
-const SeedPoint INVALID_SEED = {{-1, -1}, -1, -1};
+const SeedPoint INVALID_SEED = {{-1, -1}, {-1, -1}, -1, -1};
 
 #endif //VECTOR_SLICER_SEED_POINT_H

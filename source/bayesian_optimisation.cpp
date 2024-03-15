@@ -268,7 +268,6 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter, simulation);
     exportOverlap(sorted_overlaps, overlap_directory, pattern_name, print_diameter, simulation);
-    std::cout << generated_paths_directory.string() << std::endl;
 }
 
 QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,

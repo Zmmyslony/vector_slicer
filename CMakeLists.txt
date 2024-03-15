@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(vector_slicer VERSION 0.6.0)
+project(vector_slicer VERSION 0.6.1)
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 find_package(Boost COMPONENTS system filesystem REQUIRED)

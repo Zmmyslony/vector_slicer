@@ -56,6 +56,9 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
     is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
     is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
     sorting_method = readKeyInt(FILLING_CONFIG, "sorting_method");
+    double angular_discontinuity_threshold = readKeyDouble(FILLING_CONFIG, "discontinuity_threshold");
+    discontinuity_threshold_cos = cos(angular_discontinuity_threshold * M_PI / 180);
+    discontinuity_behaviour = readKeyInt(FILLING_CONFIG, "discontinuity_behaviour");
 }
 
 
@@ -394,4 +397,12 @@ const std::vector<std::vector<vali>> &DesiredPattern::getLineDensityMinima() con
 
 int DesiredPattern::getSortingMethod() const {
     return sorting_method;
+}
+
+int DesiredPattern::getDiscontinuityBehaviour() const {
+    return discontinuity_behaviour;
+}
+
+double DesiredPattern::getDiscontinuityThresholdCos() const {
+    return discontinuity_threshold_cos;
 }

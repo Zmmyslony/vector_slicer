@@ -30,18 +30,18 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
-std::vector<vali> findPointsToFill(const vali &point_current, const vali &point_next, double radius, bool is_first_point_filled);
+std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_second, const vald &corner_third,
+                                   const vald &corner_fourth, bool is_exclusive);
 
-std::vector<vali>
-findPointsToFill(const vali &point_previous, const vali &point_current, const vali &point_next, double radius,
-                 bool is_first_point_filled);
+vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector);
 
 std::vector<vali> findPointsInCircle(double radius);
 
 std::vector<vali> findPointsInCircle(int radius);
 
 std::vector<vali>
-findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled);
+findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
+               const vald &last_director);
 
 std::vector<vali> generateLineDisplacements(const vald &tangent, double radius);
 

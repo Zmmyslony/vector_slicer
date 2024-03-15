@@ -125,6 +125,10 @@ class FilledPattern : public FillingConfig {
 
     void updatePathOverlap(Path &path);
 
+    vald getDirector(const vald &coordinates) const;
+
+    vald getDirector(const vali &coordinates) const;
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;

@@ -30,8 +30,13 @@
 #include <valarray>
 #include <set>
 
+#define DISCONTINUITY_IGNORE 0
+#define DISCONTINUITY_STICK 1
+#define DISCONTINUITY_TERMINATE 2
+
 #define SORT_NEAREST_NEIGHBOUR 0
 #define SORT_SEED_LINE 1
+//#define SORT_TRAVELLING_SALESMAN 2
 
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
@@ -61,6 +66,12 @@ class DesiredPattern {
     int threads = 1;
     int sorting_method = SORT_NEAREST_NEIGHBOUR;
 
+    /// Behaviour at discontinuities: 0 - ignoring, 1 - sticking, 2 - terminating.
+    int discontinuity_behaviour = DISCONTINUITY_STICK;
+
+    /// Termination
+    double discontinuity_threshold_cos = -1;
+
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
     [[nodiscard]] vecd getDirector(const vecd &position, double distance) const;
@@ -74,6 +85,7 @@ class DesiredPattern {
     std::set<veci> fillablePointsSet();
 
     void adjustMargins();
+
 
 public:
 
@@ -129,6 +141,10 @@ public:
     void isPatternUpdated() const;
 
     int getSortingMethod() const;
+
+    int getDiscontinuityBehaviour() const;
+
+    double getDiscontinuityThresholdCos() const;
 };
 
 

@@ -24,19 +24,26 @@
 #include <utility>
 #include <stdexcept>
 #include "auxiliary/valarray_operations.h"
+#include "auxiliary/geometry.h"
 
-void Path::addPoint(const vali &positions, double segment_overlap) {
+void
+Path::addPoint(const vali &positions, double segment_overlap, const vald &positive_edge, const vald &negative_edge) {
     sequence_of_positions.push_back(positions);
     overlap.push_back(segment_overlap);
+    negative_path_edge.push_back(negative_edge);
+    positive_path_edge.push_back(positive_edge);
 }
 
-void Path::addPoint(const vali &positions) {
-    addPoint(positions, 0);
+void Path::addPoint(const vali &positions, const vald &positive_edge, const vald &negative_edge) {
+    addPoint(positions, 0, positive_edge, negative_edge);
 }
 
 
-Path::Path(SeedPoint seed) : seed_point(std::move(seed)){
-    addPoint(seed_point.getCoordinates());
+Path::Path(SeedPoint seed, double print_radius) : seed_point(std::move(seed)){
+    vald positions = itod(seed_point.getCoordinates());
+    vald tangent = seed_point.getDirector();
+    vald normal = perpendicular(tangent) * print_radius;
+    addPoint(seed_point.getCoordinates(),positions + normal, positions - normal);
 }
 
 
@@ -44,22 +51,22 @@ unsigned int Path::size() const {
     return sequence_of_positions.size();
 }
 
+template <typename T>
+
+std::vector<T> joinVectors(std::vector<T> forward_vector, std::vector<T> backward_vector) {
+    std::reverse(backward_vector.begin(), backward_vector.end());
+    backward_vector.insert(backward_vector.end(), forward_vector.begin() + 1, forward_vector.end());
+    return backward_vector;
+}
+
 
 /// Joins two paths, reversing the backward path and appending to it the forward path.
 Path::Path(const Path &forward_path, const Path &backward_path) {
-    std::vector<vali> backward_sequence = backward_path.sequence_of_positions;
-    std::vector<vali> forward_sequence = forward_path.sequence_of_positions;
-
-    std::vector<double> backward_overlap = backward_path.overlap;
-    std::vector<double> forward_overlap = forward_path.overlap;
-
-    std::reverse(backward_sequence.begin(), backward_sequence.end());
-    std::reverse(backward_overlap.begin(), backward_overlap.end());
-    backward_sequence.insert(backward_sequence.end(), forward_sequence.begin() + 1, forward_sequence.end());
-    backward_overlap.insert(backward_overlap.end(), forward_overlap.begin() + 1, forward_overlap.end());
     seed_point = forward_path.seed_point;
-    sequence_of_positions = backward_sequence;
-    overlap = backward_overlap;
+    sequence_of_positions = joinVectors(backward_path.sequence_of_positions, forward_path.sequence_of_positions);
+    overlap = joinVectors(backward_path.overlap, forward_path.overlap);
+    positive_path_edge = joinVectors(backward_path.positive_path_edge, forward_path.positive_path_edge);
+    negative_path_edge = joinVectors(backward_path.negative_path_edge, forward_path.negative_path_edge);
 }
 
 /// Returns the first position in the path.
@@ -169,6 +176,18 @@ bool Path::isReversed() const {
     return is_reversed;
 }
 
+std::vector<vali> Path::findPointsToFill(int i, bool is_position_filled) const {
+    return ::findPointsToFill(
+            positive_path_edge[i - 1],
+            negative_path_edge[i - 1],
+            negative_path_edge[i],
+            positive_path_edge[i],
+            is_position_filled);
+}
+
+std::vector<vali> Path::findPointsToFill(bool is_position_filled) const {
+    return findPointsToFill(size() - 1, is_position_filled);
+}
 
 
 
