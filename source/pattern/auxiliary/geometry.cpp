@@ -22,31 +22,24 @@
 #include <vector>
 #include <valarray>
 #include <algorithm>
+#include <iostream>
 
 #include "geometry.h"
 #include "valarray_operations.h"
 
 
-bool isLeftOfEdgeInclusive(const vali &point, const vald &edge_point_first, const vald &edge_point_second) {
-    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
-    return (cross_product >= 0);
-}
-
-
-bool isLeftOfEdgeExclusive(const vali &point, const vald &edge_point_first, const vald &edge_point_second) {
-    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
-    return (cross_product > 0);
-}
-
-
 bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
     if (is_exclusive) {
-        return isLeftOfEdgeExclusive(point, edge_point_first, edge_point_second);
+        return cross_product > 0;
     } else {
-        return isLeftOfEdgeInclusive(point, edge_point_first, edge_point_second);
+        return cross_product >= 0;
     }
 }
 
+bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+    return isLeftOfEdge(dtoi(point), edge_point_first, edge_point_second, is_exclusive);
+}
 
 bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
                    const vald &corner_fourth, bool is_exclusive) {
@@ -69,10 +62,33 @@ double maxValue(const std::vector<double> &values) {
 }
 
 
-std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_second, const vald &corner_third,
-                                   const vald &corner_fourth, bool is_exclusive) {
+std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald corner_third,
+                                   vald corner_fourth, bool is_exclusive) {
     std::vector<double> x_coordinates = {corner_first[0], corner_second[0], corner_third[0], corner_fourth[0]};
     std::vector<double> y_coordinates = {corner_first[1], corner_second[1], corner_third[1], corner_fourth[1]};
+
+    vald midpoint_first = (corner_second + corner_first) / 2;
+    vald midpoint_second = (corner_third + corner_fourth) / 2;
+
+    // Error 1: Edge 3-4 is flipped - swap corners 3 & 4.
+    if (!isLeftOfEdge(midpoint_first, corner_third, corner_fourth, false)) {
+        std::swap(corner_third, corner_fourth);
+    }
+
+    // Error 2: Edge 1-2 is flipped - swap corners 1 & 2.
+    if (!isLeftOfEdge(midpoint_second, corner_first, corner_second, false)) {
+        std::swap(corner_first, corner_second);
+    }
+
+    // Error 3: Corner 4 is right of 1-2 - replace 4 with midpoint between 1 and 3
+    if (!isLeftOfEdge(corner_fourth, corner_first, corner_second, false)) {
+        corner_fourth = (corner_third + corner_first) / 2;
+    }
+
+    // Error 4: Corner 3 is right of 1-2 - replace 3 with midpoint between 2 and 4
+    if (!isLeftOfEdge(corner_third, corner_first, corner_second, false)) {
+        corner_third = (corner_fourth + corner_second) / 2;
+    }
 
     int x_min = (int) minValue(x_coordinates);
     int x_max = (int) maxValue(x_coordinates) + 1;
@@ -97,11 +113,12 @@ std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_
 vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector) {
     vald resultant;
     if (dot(primary_vector, secondary_vector) < 0) {
-        resultant = normalize(primary_vector) - normalize(secondary_vector);
+        resultant = normalize(normalize(primary_vector) - normalize(secondary_vector));
     } else {
-        resultant = normalize(primary_vector) + normalize(secondary_vector);
+        resultant = normalize(normalize(primary_vector) + normalize(secondary_vector));
     }
     double projection = dot(resultant, normalize(primary_vector));
+
     return resultant / projection;
 }
 

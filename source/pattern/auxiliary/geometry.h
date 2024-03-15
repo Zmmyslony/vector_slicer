@@ -30,8 +30,8 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
-std::vector<vali> findPointsToFill(const vald &corner_first, const vald &corner_second, const vald &corner_third,
-                                   const vald &corner_fourth, bool is_exclusive);
+std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald corner_third,
+                                   vald corner_fourth, bool is_exclusive);
 
 vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector);
 

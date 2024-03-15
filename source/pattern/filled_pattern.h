@@ -70,7 +70,7 @@ class FilledPattern : public FillingConfig {
 
     vald getNewStep(vald &real_coordinates, int &length, vald &previous_move) const;
 
-    bool tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length);
+    bool propagatePath(Path &current_path, vald &positions, vald &previous_step, int length);
 
 
     [[nodiscard]] matrix_d getDualTensor(const vali &coordinates) const;

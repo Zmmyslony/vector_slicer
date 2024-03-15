@@ -301,7 +301,8 @@ bool FilledPattern::isInRange(const vald &index) const {
     return ::isInRange(dtoi(index), desired_pattern.get().getDimensions());
 }
 
-bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positions, vald &previous_step, int length) {
+/// Returns bool depending whether propagation was successful.
+bool FilledPattern::propagatePath(Path &current_path, vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
     if (!isInRange(current_coordinates)) { return false; }
 
@@ -337,12 +338,8 @@ bool FilledPattern::tryGeneratingPathWithLength(Path &current_path, vald &positi
     positions = new_positions;
     vali new_coordinates = dtoi(new_positions);
 
-    if (new_coordinates[0] == current_coordinates[0] && new_coordinates[1] == current_coordinates[1]) {
-        throw std::runtime_error("New coordinates are identical to previous ones. This should not happen.");
-    }
-
     vali new_step_int = new_coordinates - current_coordinates;
-    vald tangent = normalisedResultant(previous_step, getDirector(current_coordinates));
+    vald tangent = normalisedResultant(previous_step, getDirector(new_coordinates));
     vald normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_coordinates, new_positions + normal, new_positions - normal);
@@ -389,16 +386,24 @@ void FilledPattern::updatePathsOverlap() {
 }
 
 Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step) {
-    Path new_path(seed_point, getPrintRadius());
+    Path path(seed_point, getPrintRadius());
     vald current_positions = itod(seed_point.getCoordinates());
     vald current_step = itod(starting_step);
-
-    for (int length = getStepLength(); length >= getPrintRadius(); length--) {
-        while (tryGeneratingPathWithLength(new_path, current_positions, current_step, length)) {
-            length = getStepLength();
-        }
+    bool is_discontinuous_part_found = false;
+    int i_to_print = 0;
+    while (propagatePath(path, current_positions, current_step, getStepLength())) {
+//        is_discontinuous_part_found = !isDirectorContinuous(path.secondToLast(), path.last());
+//        if (is_discontinuous_part_found) {
+//            std::cout << "Discontinuity found." << std::endl;
+//            i_to_print = 3;
+//        }
+//        if (i_to_print > 0) {
+//            i_to_print--;
+//            std::cout << "i" << i_to_print << " x" << current_positions[0] << ", y" << current_positions[1] << ", l" << norm(path.secondToLast() - path.last()) << std::endl;
+//        }
     }
-    return new_path;
+
+    return path;
 }
 
 
@@ -431,12 +436,6 @@ void FilledPattern::removeLine(Path path) {
     vali current_coordinates = path.position(1);
     vali previous_coordinates = path.position(0);
     current_points_to_fill = path.findPointsToFill(1, !isFilled(previous_coordinates));
-//            findPointsToFill(previous_coordinates,
-//                                              current_coordinates,
-//                                              getDirector(previous_coordinates),
-//                                              getDirector(current_coordinates),
-//                                              getPrintRadius(),
-//                                              !isFilled(previous_coordinates));
 
     vali new_step_int = current_coordinates - previous_coordinates;
     fillPointsFromList(current_points_to_fill, new_step_int, -1);
@@ -446,13 +445,6 @@ void FilledPattern::removeLine(Path path) {
         previous_coordinates = path.position(i - 1);
         vali second_previous_coordinates = path.position(i - 2);
         current_points_to_fill = path.findPointsToFill(i, !isFilled(previous_coordinates));
-//                findPointsToFill(second_previous_coordinates,
-//                                                  previous_coordinates,
-//                                                  current_coordinates,
-//                                                  getDirector(previous_coordinates),
-//                                                  getDirector(current_coordinates),
-//                                                  getPrintRadius(),
-//                                                  !isFilled(previous_coordinates));
 
         new_step_int = current_coordinates - previous_coordinates;
         fillPointsFromList(current_points_to_fill, new_step_int, -1);
