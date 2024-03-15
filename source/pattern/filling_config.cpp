@@ -116,15 +116,15 @@ double FillingConfig::getPrintRadius() const {
 
 configOptions stringToConfig(const std::string &string_option) {
     static std::unordered_map<std::string, configOptions> const mapping = {
-            {"InitialSeedingMethod",    configOptions::InitialSeedingMethod},
-            {"TerminationRadius",         configOptions::TerminationRadius},
-            {"StepLength",              configOptions::StepLength},
-            {"PrintRadius",             configOptions::PrintRadius},
-            {"Repulsion",               configOptions::Repulsion},
-            {"SeedSpacing", configOptions::SeedSpacing},
-            {"Seed",                    configOptions::Seed},
-            {"RepulsionRadius",         configOptions::RepulsionRadius},
-            {"RepulsionAngle",          configOptions::RepulsionAngle}
+            {"InitialSeedingMethod", configOptions::InitialSeedingMethod},
+            {"TerminationRadius",    configOptions::TerminationRadius},
+            {"StepLength",           configOptions::StepLength},
+            {"PrintRadius",          configOptions::PrintRadius},
+            {"Repulsion",            configOptions::Repulsion},
+            {"SeedSpacing",          configOptions::SeedSpacing},
+            {"Seed",                 configOptions::Seed},
+            {"RepulsionRadius",      configOptions::RepulsionRadius},
+            {"RepulsionAngle",       configOptions::RepulsionAngle}
     };
     auto it = mapping.find(string_option);
     if (it != mapping.end()) {
@@ -165,7 +165,9 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
             break;
         case PrintRadius:
             print_radius = std::stod(value);
-            starting_point_separation = 2 * print_radius;
+            if (starting_point_separation == 0) {
+                starting_point_separation = 2 * print_radius;
+            }
             break;
         case Repulsion:
             repulsion = std::stod(value);
@@ -250,7 +252,8 @@ std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
     return filling_config_list;
 }
 
-FillingConfig::FillingConfig(const FillingConfig &source_config, int source_seed) : FillingConfig(source_config) {
+FillingConfig::FillingConfig(const FillingConfig &source_config, int source_seed) :
+        FillingConfig(source_config) {
     seed = source_seed;
 }
 

@@ -60,7 +60,7 @@ class FillingConfig {
     /// Length of each step in pixels.
     int step_length;
     /// See FillingMethod
-    double starting_point_separation;
+    double starting_point_separation = 0;
     /// Radius away from the generated line where the pixels of the filled_matrix will be filled.
     double print_radius;
     /// Numerical seed deciding the randomness of the whole algorithm.
