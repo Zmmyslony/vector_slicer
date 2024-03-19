@@ -28,10 +28,12 @@
 #include <fstream>
 
 FillingMethodConfig::FillingMethodConfig(const fs::path &config_path) :
-    is_vector_filling_enabled(readKeyBool(config_path, "is_vector_filling_enabled")),
-    is_vector_sorting_enabled(readKeyBool(config_path, "is_vector_sorting_enabled")),
-    is_points_removed(readKeyBool(config_path, "is_points_removed")),
-    minimal_line_length(readKeyDouble(config_path, "minimal_line_length")) {
+        is_vector_filling_enabled(readKeyBool(config_path, "is_vector_filling_enabled")),
+        is_vector_sorting_enabled(readKeyBool(config_path, "is_vector_sorting_enabled")),
+        is_points_removed(readKeyBool(config_path, "is_points_removed")),
+        minimal_line_length(readKeyDouble(config_path, "minimal_line_length")),
+        discontinuity_threshold(readKeyDouble(config_path, "discontinuity_threshold")),
+        discontinuity_behaviour(readKeyInt(config_path, "discontinuity_behaviour")) {
 
 }
 
@@ -58,22 +60,22 @@ void FillingMethodConfig::saveFillingMethodConfig(const fs::path &config_path) {
 
 void FillingMethodConfig::saveFillingMethodConfig(const fs::path &local_path, const fs::path &default_path) {
     bool is_saving_complete = false;
-    while(!is_saving_complete) {
+    while (!is_saving_complete) {
         std::cout << "Save the config? 0 - don't save, 1 - save locally, 2 - save as default" << std::endl;
         int saving_destination = readInt(0);
-        switch(saving_destination) {
+        switch (saving_destination) {
             case 0:
                 std::cout << "Config is going to be not saved, do you confirm?" << std::endl;
                 is_saving_complete = readBool(true);
                 break;
             case 1:
-                if(confirmation()) {
+                if (confirmation()) {
                     is_saving_complete = true;
                     saveFillingMethodConfig(local_path);
                 }
                 break;
             case 2:
-                if(confirmation()) {
+                if (confirmation()) {
                     is_saving_complete = true;
                     saveFillingMethodConfig(default_path);
                 }
@@ -87,19 +89,28 @@ void FillingMethodConfig::saveFillingMethodConfig(const fs::path &local_path, co
 
 std::string FillingMethodConfig::textFillingMethodConfig() const {
     std::ostringstream textForm;
-    textForm << "# Switch between vector filling, where a path cannot continue if the desired director has inverted its direction and\n"
-                "# director operation where it does not matter."
-             << "\nis_vector_filling_enabled = " << is_vector_filling_enabled
-             << "\n\n# Switch for vector sorting, where the start and end points are distinguished through the vector field, and the director\n"
-                "# sorting where a path can start from either direction."
-             << "\nis_vector_sorting_enabled = " << is_vector_sorting_enabled
-             << "\n\n# Switch for removing the points from the filled pattern, as they do not have the required directionality, but can\n"
-                "# be used in order to fill the pattern more. It occurs before the disagreement calculation so the optimisation will try\n"
-                "# to remove the holes existing after the removal of points."
-             << "\nis_points_removed = " << is_points_removed
-             << "\n\n# Lines shorter than minimal_line_length * print_radius will be removed. Happens before the disagreement calculation,\n"
-                "# same as point removal."
-             << "\nminimal_line_length = " << minimal_line_length;
+    textForm
+            << "# Switch between vector filling, where a path cannot continue if the desired director has inverted its direction and\n"
+               "# director operation where it does not matter."
+            << "\nis_vector_filling_enabled = " << is_vector_filling_enabled
+            << "\n\n# Switch for vector sorting, where the start and end points are distinguished through the vector field, and the director\n"
+               "# sorting where a path can start from either direction."
+            << "\nis_vector_sorting_enabled = " << is_vector_sorting_enabled
+            << "\n\n# Switch for removing the points from the filled pattern, as they do not have the required directionality, but can\n"
+               "# be used in order to fill the pattern more. It occurs before the disagreement calculation so the optimisation will try\n"
+               "# to remove the holes existing after the removal of points."
+            << "\nis_points_removed = " << is_points_removed
+            << "\n\n# Lines shorter than minimal_line_length * print_radius will be removed. Happens before the disagreement calculation,\n"
+               "# same as point removal."
+            << "\nminimal_line_length = " << minimal_line_length
+            << "\n\n# Angular discontinuity threshold - if a director at path's end differs from the director at its beginning by this much\n"
+               "# we assume it as discontinuous. Can be used for smoothing the paths in areas of rapidly varying director by sticking."
+            << "\ndiscontinuity_threshold = " << discontinuity_threshold
+            << "\n\n# Discontinuity behaviour:\n"
+               "# 0 - ignoring: discontinuities are ignored,\n"
+               "# 1 - sticking: path continues as close after the discontinuity as possible,\n"
+               "# 2 - termination: when discontinuity is detected, path terminates."
+            << "\ndiscontinuity_behaviour = " << discontinuity_behaviour;
     return textForm.str();
 }
 
@@ -111,6 +122,8 @@ void FillingMethodConfig::editFillingMethodConfig() {
         editBool(is_vector_sorting_enabled, "is_vector_sorting_enabled");
         editBool(is_points_removed, "is_points_removed");
         editDouble(minimal_line_length, "minimal_line_length");
+        editDouble(discontinuity_threshold, "discontinuity_threshold");
+        editInt(discontinuity_behaviour, "discontinuity_behaviour");
 
         std::cout << std::endl << "Current configuration:" << std::endl;
         printFillingMethodConfig();
@@ -134,4 +147,12 @@ bool FillingMethodConfig::isPointsRemoved() const {
 
 double FillingMethodConfig::getMinimalLineLength() const {
     return minimal_line_length;
+}
+
+double FillingMethodConfig::getDiscontinuityThreshold() const {
+    return discontinuity_threshold;
+}
+
+int FillingMethodConfig::getDiscontinuityBehaviour() const {
+    return discontinuity_behaviour;
 }

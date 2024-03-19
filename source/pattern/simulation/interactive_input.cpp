@@ -26,28 +26,34 @@
 
 void editInt(int &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (int, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
+    std::cout << "\r" << variable_name << " (int, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         variable = std::stoi(input);
+    } else {
+        std::cout << "Value unchanged." << std::endl;
     }
 }
 
 void editDouble(double &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (double, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
+    std::cout << "\r" <<variable_name << " (double, current: " << variable << "),  leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         variable = std::stod(input);
+    } else {
+        std::cout << "Value unchanged." << std::endl;
     }
 }
 
 void editBool(bool &variable, const std::string &variable_name) {
     std::string input;
-    std::cout << variable_name << " (bool, current: " << variable << "), leave empty to keep unchanged." << std::endl;
+    std::cout << "\r" <<variable_name << " (bool, current: " << variable << "), leave empty to keep unchanged." << std::endl;
     std::getline(std::cin, input);
     if (!input.empty() || input == "\n") {
         std::istringstream(input) >> variable;
+    } else {
+        std::cout << "Value unchanged." << std::endl;
     }
 }
 

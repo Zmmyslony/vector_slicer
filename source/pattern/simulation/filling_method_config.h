@@ -31,6 +31,8 @@ class FillingMethodConfig {
     bool is_vector_sorting_enabled;
     bool is_points_removed;
     double minimal_line_length;
+    double discontinuity_threshold;
+    int discontinuity_behaviour;
 
     std::string textFillingMethodConfig() const;
 public:
@@ -53,6 +55,10 @@ public:
     bool isPointsRemoved() const;
 
     double getMinimalLineLength() const;
+
+    double getDiscontinuityThreshold() const;
+
+    int getDiscontinuityBehaviour() const;
 };
 
 
