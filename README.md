@@ -23,6 +23,17 @@ Please ensure that system specific C++ compiler, git (https://git-scm.com/), cma
 boost (https://www.boost.org/) are installed. 
 
 ### Linux / macOS
+If CMake or boost are missing, install them by typing:
+
+Linux:
+```
+sudo apt install cmake libboost-all-dev
+```
+macOS:
+```
+brew install cmake boost
+```
+
 In the desired parent directory run in terminal
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
@@ -31,12 +42,13 @@ cmake -S ./ -B ./build
 cmake --build ./build --config Release
 ```
 
+
+
 ### Windows
 If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
 ```
 git clone https://github.com/Microsoft/vcpkg.git
-.\vcpkg\bootstrap-vcpkg.bat
-cd vcpkg
+cd vcpkg && bootstrap-vcpkg.bat
 vcpkg install boost:x64-windows
 vcpkg integrate install 
 ```
