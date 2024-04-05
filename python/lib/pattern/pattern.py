@@ -62,8 +62,8 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
 
     x_mesh = np.linspace(x_min, x_max, shape_grid.shape[0], endpoint=True)
     y_mesh = np.linspace(y_min, y_max, shape_grid.shape[1], endpoint=True)
-    x_vector = np.cos(theta_grid)
-    y_vector = np.sin(theta_grid)
+    x_vector = np.where(shape_grid, np.cos(theta_grid), 0)
+    y_vector = np.where(shape_grid, np.sin(theta_grid), 0)
 
     ax.streamplot(x_mesh,
                   y_mesh,
@@ -143,7 +143,7 @@ def generate_shape_matrix(shape: Shape, pixel_size: float, x_excess: float = 0, 
     shape.x_max += x_excess
     shape.y_max += y_excess
 
-    x_grid = np.arange(shape.x_min - pixel_size, shape.x_max + pixel_size * 3/ 2, pixel_size)
+    x_grid = np.arange(shape.x_min - pixel_size, shape.x_max + pixel_size * 3 / 2, pixel_size)
     y_grid = np.arange(shape.y_min - pixel_size, shape.y_max + pixel_size * 3 / 2, pixel_size)
 
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
@@ -227,7 +227,7 @@ class Tiling:
                                                  x_spacing * 2, y_spacing,
                                                  x_count_second, y_count_first)
 
-            offset = [x_spacing , 0.5 * y_spacing]
+            offset = [x_spacing, 0.5 * y_spacing]
             mesh_four, shape_four = tile_basic(triangle_vertical_right, mesh - offset,
                                                x_spacing * 2, y_spacing,
                                                x_count_second, y_count_second)
