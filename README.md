@@ -22,19 +22,13 @@ Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and sugges
 Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
 boost (https://www.boost.org/) are installed. 
 
-### Linux / macOS
-If CMake or boost are missing, install them by typing:
-
-Linux:
+### Linux
+First run in terminal  
 ```
 sudo apt install cmake libboost-all-dev
 ```
-macOS:
-```
-brew install cmake boost
-```
 
-In the desired parent directory run in terminal
+In the desired parent directory run
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
@@ -42,7 +36,32 @@ cmake -S ./ -B ./build
 cmake --build ./build --config Release
 ```
 
+### macOS
+**Warning: This software has been written for gcc compiler, and not AppleClang, so user needs to use gcc compiler or debug on their own. Instructions below outline how to switch to gcc and compile using it.**
 
+First, run in terminal
+```
+brew install cmake boost gcc
+```
+
+In the desired parent directory run
+```
+git clone https://github.com/Zmmyslony/vector_slicer.git
+cd vector_slicer
+```
+Then, check the versions of the installed gcc and g++ by typing in terminal 
+```
+find /usr/local/bin/gcc*
+find /usr/local/bin/g++*
+```
+For example, if the found paths are _/usr/local/bin/gcc-13_ and _/usr/local/bin/g++-13_, in order to create input files, type
+```
+cmake -S ./ -B ./build -DCMAKE_C_COMPILER=/usr/local/bin/gcc-13 -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-13
+```
+and build with 
+```
+cmake --build ./build --config Release 
+```
 
 ### Windows
 If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
