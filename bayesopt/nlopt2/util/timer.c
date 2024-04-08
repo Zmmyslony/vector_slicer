@@ -42,14 +42,14 @@ double nlopt_seconds(void)
 {
      static THREADLOCAL int start_inited = 0; /* whether start time has been initialized */
 #if defined(HAVE_GETTIMEOFDAY)
-     static THREADLOCAL struct timeval start;
-     struct timeval tv;
+    static THREADLOCAL struct timespec start;
+    struct timespec tv;
      if (!start_inited) {
 	  start_inited = 1;
-	  gettimeofday(&start, NULL);
+      clock_gettime(CLOCK_REALTIME, &start);
      }
-     gettimeofday(&tv, NULL);
-     return (tv.tv_sec - start.tv_sec) + 1.e-6 * (tv.tv_usec - start.tv_usec);
+     clock_gettime(CLOCK_REALTIME, &tv);
+    return (double)(tv.tv_sec - start.tv_sec) + 1e-9 * (double)(tv.tv_nsec - start.tv_nsec);
 #elif defined(HAVE_TIME)
      return time(NULL);
 #elif defined(_WIN32) || defined(__WIN32__)
@@ -78,9 +78,9 @@ double nlopt_seconds(void)
 unsigned long nlopt_time_seed(void)
 {
 #if defined(HAVE_GETTIMEOFDAY)
-     struct timeval tv;
-     gettimeofday(&tv, NULL);
-     return (tv.tv_sec ^ tv.tv_usec);
+    struct timespec tv;
+    clock_gettime(CLOCK_REALTIME, &tv);
+    return (tv.tv_sec ^ tv.tv_nsec);
 #elif defined(HAVE_TIME)
      return time(NULL);
 #elif defined(_WIN32) || defined(__WIN32__)
