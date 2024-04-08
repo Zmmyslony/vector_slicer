@@ -19,7 +19,7 @@ if (OPENMP_FOUND)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD C17)
+set(CMAKE_C_STANDARD 17)
 
 configure_file(source/vector_slicer_config.h.in vector_slicer_config.h)
 include_directories(${PROJECT_BINARY_DIR})
