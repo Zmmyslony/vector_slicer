@@ -135,6 +135,7 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         }
         showProgress(i, max_steps, steps_since_improvement,
                      max_constant_steps, mParameters.n_init_samples);
+        x_out = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
         steps_since_improvement++;
 
         if (max_constant_steps > 0 && steps_since_improvement > max_constant_steps) {
@@ -313,9 +314,15 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
     int max_iterations = pattern.getTotalIterations();
     int max_iterations_without_improvement = pattern.getImprovementIterations();
-
-    pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
-
+    try {
+        pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
+    } catch (std::runtime_error &error) {
+        if (error.what() == "nlopt failure") {
+            std::cout << std::endl;
+            std::cout << "WARNING: NLOPT failure during bayesian optimisation. Returned solution may not be optimal." << std ::endl;
+            return {pattern, best_config};
+        }
+    }
     return {pattern, best_config};
 }
 
@@ -336,7 +343,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     FillingConfig initial_config(initial_config_path);
     bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
-                                                              simulation.getThreads());
+                                                              simulation.getThreads(), simulation);
 
     QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 
@@ -363,14 +370,9 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
                 "No parameter was chosen for optimisation. Please enable at least one of them in bayesian_configuration.cfg");
     }
 
-    try {
-        best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
-                                        parameters, dims);
-    } catch (std::runtime_error &error) {
-        if (error.what() == "nlopt failure") {
+    best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
+                                    parameters, dims);
 
-        }
-    }
 
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
             best_pattern.getFinalSeeds(), best_pattern.getThreads());
@@ -396,17 +398,17 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
-    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing best config path.");}
+    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing best config path."); }
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
-                                                              simulation.getThreads());
+                                                              simulation.getThreads(), simulation);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
         filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], simulation));
     }
 
-    int threads = readKeyInt(DISAGREEMENT_CONFIG, "threads");
+    int threads = simulation.getThreads();
     omp_set_num_threads(threads);
 #pragma omp parallel for
     for (int i = 0; i < filled_configs.size(); i++) {
@@ -420,6 +422,7 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
 
 void recalculateBestConfig(const fs::path &pattern_path) {
     std::string pattern_name = pattern_path.filename().string();
-    fs::path config_path = pattern_path.parent_path().parent_path() / "output" / "best_configs" / (pattern_name + ".txt");
+    fs::path config_path =
+            pattern_path.parent_path().parent_path() / "output" / "best_configs" / (pattern_name + ".txt");
     fillPattern(pattern_path, config_path);
 }

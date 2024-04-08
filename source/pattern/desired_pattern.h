@@ -29,6 +29,7 @@
 #include <vector>
 #include <valarray>
 #include <set>
+#include "simulation/filling_method_config.h"
 
 #define DISCONTINUITY_IGNORE 0
 #define DISCONTINUITY_STICK 1
@@ -65,6 +66,8 @@ class DesiredPattern {
     bool is_pattern_updated = false;
     int threads = 1;
     int sorting_method = SORT_NEAREST_NEIGHBOUR;
+    double minimal_line_length = 0;
+    bool is_points_removed = true;
 
     /// Behaviour at discontinuities: 0 - ignoring, 1 - sticking, 2 - terminating.
     int discontinuity_behaviour = DISCONTINUITY_STICK;
@@ -92,13 +95,14 @@ public:
     DesiredPattern();
 
     DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                   const std::string &y_field_filename, bool is_splay_filling_enabled, int threads);
+                   const std::string &y_field_filename, bool is_splay_filling_enabled, int threads,
+                   const FillingMethodConfig &filling);
 
     DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
-                   bool is_splay_filling_enabled, int threads);
+                   bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
     DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
-                   bool is_splay_filling_enabled, int threads);
+                   bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
     [[nodiscard]] const std::vector<veci> &getShapeMatrix() const;
 
@@ -145,6 +149,10 @@ public:
     int getDiscontinuityBehaviour() const;
 
     double getDiscontinuityThresholdCos() const;
+
+    double getMinimalLineLength() const;
+
+    bool isPointsRemoved() const;
 };
 
 

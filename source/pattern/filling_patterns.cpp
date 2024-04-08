@@ -47,10 +47,10 @@ void fillWithPaths(FilledPattern &pattern) {
     while (is_there_any_spot_fillable) {
         is_there_any_spot_fillable = tryGeneratingNewPath(pattern);
     }
-    if (readKeyBool(FILLING_CONFIG, "is_points_removed")) {
+    if (pattern.desired_pattern.get().isPointsRemoved()) {
         pattern.removePoints();
     }
-    double short_line_coefficient = readKeyDouble(FILLING_CONFIG, "minimal_line_length");
+    double short_line_coefficient = pattern.desired_pattern.get().getMinimalLineLength();
     if (short_line_coefficient > 0) {
         pattern.removeShortLines(short_line_coefficient);
     }

@@ -96,6 +96,10 @@ std::string FillingMethodConfig::textFillingMethodConfig() const {
             << "\n\n# Switch for vector sorting, where the start and end points are distinguished through the vector field, and the director\n"
                "# sorting where a path can start from either direction."
             << "\nis_vector_sorting_enabled = " << is_vector_sorting_enabled
+            << "# Line sorting method that occurs after generating print-paths\n"
+               "# 0 - nearest neighbour,\n"
+               "# 1 - seed-line - goes by neighbouring seeds within different used seed lines."
+            << "\nsorting_method = " << sorting_method
             << "\n\n# Switch for removing the points from the filled pattern, as they do not have the required directionality, but can\n"
                "# be used in order to fill the pattern more. It occurs before the disagreement calculation so the optimisation will try\n"
                "# to remove the holes existing after the removal of points."
@@ -124,6 +128,7 @@ void FillingMethodConfig::editFillingMethodConfig() {
         editDouble(minimal_line_length, "minimal_line_length");
         editDouble(discontinuity_threshold, "discontinuity_threshold");
         editInt(discontinuity_behaviour, "discontinuity_behaviour");
+        editInt(sorting_method, "sorting_method");
 
         std::cout << std::endl << "Current configuration:" << std::endl;
         printFillingMethodConfig();
@@ -155,4 +160,8 @@ double FillingMethodConfig::getDiscontinuityThreshold() const {
 
 int FillingMethodConfig::getDiscontinuityBehaviour() const {
     return discontinuity_behaviour;
+}
+
+int FillingMethodConfig::getSortingMethod() const {
+    return sorting_method;
 }

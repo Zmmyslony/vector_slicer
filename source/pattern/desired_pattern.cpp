@@ -38,38 +38,42 @@
 #include "auxiliary/line_thinning.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
-#include "simulation/configuration_reading.h"
 #include "vector_slicer_config.h"
+#include "simulation/filling_method_config.h"
 
 
 DesiredPattern::DesiredPattern() = default;
 
 
 DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
-                               bool is_splay_filling_enabled, int threads) :
+                               bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
         y_field_preferred(std::move(y_field)),
         dimensions(getTableDimensions(shape_field)),
-        is_splay_filling_enabled(is_splay_filling_enabled) {
+        is_splay_filling_enabled(is_splay_filling_enabled),
+        threads(threads) {
 
-    is_vector_filled = readKeyBool(FILLING_CONFIG, "is_vector_filling_enabled");
-    is_vector_sorted = readKeyBool(FILLING_CONFIG, "is_vector_sorting_enabled");
-    sorting_method = readKeyInt(FILLING_CONFIG, "sorting_method");
-    double angular_discontinuity_threshold = readKeyDouble(FILLING_CONFIG, "discontinuity_threshold");
+    is_vector_filled = filling.isVectorFillingEnabled();
+    is_vector_sorted = filling.isVectorSortingEnabled();
+    sorting_method = filling.getSortingMethod();
+    double angular_discontinuity_threshold = filling.getDiscontinuityThreshold();
     discontinuity_threshold_cos = cos(angular_discontinuity_threshold * M_PI / 180);
-    discontinuity_behaviour = readKeyInt(FILLING_CONFIG, "discontinuity_behaviour");
+    discontinuity_behaviour = filling.getDiscontinuityBehaviour();
+    minimal_line_length = filling.getMinimalLineLength();
+    is_points_removed = filling.isPointsRemoved();
 }
 
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &x_field_filename,
-                               const std::string &y_field_filename, bool is_splay_filling_enabled, int threads) :
+                               const std::string &y_field_filename, bool is_splay_filling_enabled, int threads,
+                               const FillingMethodConfig &filling) :
         DesiredPattern(readFileToTableInt(shape_filename), readFileToTableDouble(x_field_filename),
-                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled, threads) {}
+                       readFileToTableDouble(y_field_filename), is_splay_filling_enabled, threads, filling) {}
 
 
 DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
-                               bool is_splay_filling_enabled, int threads) {
+                               bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling) {
     std::vector<vecd> theta_field = readFileToTableDouble(theta_field_filename);
     std::vector<vecd> x_field;
     std::vector<vecd> y_field;
@@ -83,7 +87,8 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
         x_field.push_back(x_row);
         y_field.push_back(y_row);
     }
-    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled, threads);
+    *this = DesiredPattern(readFileToTableInt(shape_filename), x_field, y_field, is_splay_filling_enabled,
+                           threads, filling);
 }
 
 void DesiredPattern::updateProperties() {
@@ -405,4 +410,12 @@ int DesiredPattern::getDiscontinuityBehaviour() const {
 
 double DesiredPattern::getDiscontinuityThresholdCos() const {
     return discontinuity_threshold_cos;
+}
+
+double DesiredPattern::getMinimalLineLength() const {
+    return minimal_line_length;
+}
+
+bool DesiredPattern::isPointsRemoved() const {
+    return is_points_removed;
 }

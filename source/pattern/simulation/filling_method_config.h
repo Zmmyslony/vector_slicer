@@ -33,6 +33,7 @@ class FillingMethodConfig {
     double minimal_line_length;
     double discontinuity_threshold;
     int discontinuity_behaviour;
+    int sorting_method = 0;
 
     std::string textFillingMethodConfig() const;
 public:
@@ -59,6 +60,8 @@ public:
     double getDiscontinuityThreshold() const;
 
     int getDiscontinuityBehaviour() const;
+
+    int getSortingMethod() const;
 };
 
 
