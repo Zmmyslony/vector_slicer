@@ -23,24 +23,34 @@ from . import slicer_setup as slicer
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+import os.path
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def get_output_directory():
+def get_slicer_output_directory():
     slicer_directory = slicer.get_project_directory()
     output_directory = slicer_directory / "output"
     return output_directory
 
 
+def get_plot_output_directory():
+    plot_output_directory = slicer.get_project_directory() / "python" / "output"
+    if not os.path.exists(plot_output_directory):
+        os.mkdir(plot_output_directory)
+    return plot_output_directory
+
+
 def read_fill_matrix(pattern_name):
-    input_path = get_output_directory() / "filled_matrices" / pattern_name
-    input_path = input_path.with_suffix(".csv")
+    input_path = get_slicer_output_directory() / "filled_matrices" / (pattern_name + ".csv")
     data = np.genfromtxt(input_path, dtype=int, delimiter=",").transpose()
     return data
 
 
-def plot_fill_matrix(axis: plt.axis, data: np.ndarray):
-    max_value = max(3, np.max(data))
+def plot_fill_matrix(axis: plt.axis, data: np.ndarray, max_fill_value=None, is_axes_shown=False):
+    if max_fill_value is None:
+        max_value = max(3, np.max(data))
+    else:
+        max_value = max_fill_value
 
     color_values = np.linspace(1, 0, max_value + 1)
     color_list = np.char.mod('%f', color_values)
@@ -49,9 +59,12 @@ def plot_fill_matrix(axis: plt.axis, data: np.ndarray):
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, max_value + 1), discrete_colormap.N)
 
     pcm = axis.matshow(data, cmap=discrete_colormap, norm=colormap_bounds, origin="lower")
-    divider = make_axes_locatable(axis)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(pcm, ticks=np.arange(max_value + 1), label="number of times filled", cax=cax)
+
+    # plt.colorbar(pcm, ticks=np.arange(max_value + 1), label="number of times filled", cax=cax)
+    if is_axes_shown:
+        divider = make_axes_locatable(axis)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(pcm, ticks=np.arange(max_value + 1), cax=cax)
     return axis
 
 
@@ -67,8 +80,7 @@ def read_optimisation_sequence(pattern_name) -> list:
     :param pattern_name:
     :return: List of disagreements in each optimisation iteration.
     """
-    input_path = get_output_directory() / "optimisation_save" / pattern_name
-    input_path = input_path.with_suffix(".txt")
+    input_path = get_slicer_output_directory() / "optimisation_save" / (pattern_name + ".txt")
 
     file = open(input_path, "r")
     optimisation_sequence = []
@@ -101,8 +113,7 @@ def convert_to_coordinates(string_data):
 
 
 def read_paths(pattern_name):
-    input_path = get_output_directory() / "paths" / pattern_name
-    input_path = input_path.with_suffix(".csv")
+    input_path = get_slicer_output_directory() / "paths" / (pattern_name + ".csv")
 
     file = open(input_path, "r")
     list_of_lines = []
@@ -117,26 +128,34 @@ def read_paths(pattern_name):
     return list_of_lines
 
 
-def plot_paths(axis: plt.axis, list_of_lines):
+def plot_paths(axis: plt.axis, list_of_lines, is_non_printing_moves_shown=True):
+    if len(list_of_lines) == 0:
+        raise RuntimeError("There are no paths to plot.")
     for path in list_of_lines:
         path = np.array(path)
         axis.plot(path[:, 0], path[:, 1], color="C0", linewidth=0.5)
 
-    if len(list_of_lines) > 1:
+    if len(list_of_lines) > 1 and is_non_printing_moves_shown:
         for i in range(1, len(list_of_lines)):
             connecting_path = np.array([list_of_lines[i - 1][-1], list_of_lines[i][0]])
             axis.plot(connecting_path[:, 0], connecting_path[:, 1], color="C1", linewidth=0.5)
 
+    axis.axis("equal")
+
     return axis
 
 
-def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True):
+def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True,
+                 is_axes_shown=True, max_fill_value=None, is_non_printing_moves_shown=True):
     """
     Plots the sliced pattern with fill density (gray), printing moves (blue) and non-printing moves (orange).
     :param pattern_name:
     :param axis: If specified the plots will not be immediately shown but returned for further manipulation.
     :param is_fill_density_shown: allows to choose whether gray background showing the fill density is shown.
     :param is_paths_shown: allows to choose printer movements are shown.
+    :param is_non_printing_moves_shown: allows to choose whether non-printing moves between paths are shown.
+    :param is_axes_shown:
+    :param max_fill_value: maximum value of the fill matrix.
     :return:
     """
     fill_matrix = read_fill_matrix(pattern_name)
@@ -148,15 +167,25 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
     else:
         plotting_axis = axis
     if is_fill_density_shown:
-        plotting_axis = plot_fill_matrix(plotting_axis, fill_matrix)
+        plotting_axis = plot_fill_matrix(plotting_axis, fill_matrix, max_fill_value=max_fill_value,
+                                         is_axes_shown=is_axes_shown)
     if is_paths_shown:
-        plotting_axis = plot_paths(plotting_axis, paths)
+        plotting_axis = plot_paths(plotting_axis, paths, is_non_printing_moves_shown=is_non_printing_moves_shown)
 
-    plotting_axis.set_title(pattern_name)
-    plotting_axis.set_xlabel("x [pixel]")
-    plotting_axis.set_ylabel("y [pixel]")
-    plotting_axis.set_aspect('equal')
+    if is_axes_shown:
+        plotting_axis.set_title(pattern_name)
+        plotting_axis.set_xlabel("x [pixel]")
+        plotting_axis.set_ylabel("y [pixel]")
+        plotting_axis.set_aspect('equal')
+    else:
+        plotting_axis.axis('off')
+        plotting_axis.get_xaxis().set_visible(False)
+        plotting_axis.get_yaxis().set_visible(False)
+        plt.tight_layout()
+
     if axis is None:
+        save_name = get_plot_output_directory() / f"{pattern_name}_pattern.svg"
+        plt.savefig(save_name)
         plt.show()
     return axis
 
@@ -177,4 +206,7 @@ def plot_disagreement_progress(pattern_name):
     ax.set_xlabel("iteration")
     ax.set_ylabel("disagreement")
     ax.legend()
+    save_name = get_plot_output_directory() / f"{pattern_name}_disagreement_progress.svg"
+    plt.savefig(save_name)
+
     plt.show()
