@@ -41,25 +41,14 @@ cmake --build ./build --config Release
 
 First, run in terminal
 ```
-brew install cmake boost gcc
+brew install cmake git boost libgomp
 ```
 
 In the desired parent directory run
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
-```
-Then, check the versions of the installed gcc and g++ by typing in terminal 
-```
-find /usr/local/bin/gcc*
-find /usr/local/bin/g++*
-```
-For example, if the found paths are _/usr/local/bin/gcc-13_ and _/usr/local/bin/g++-13_, in order to create input files, type
-```
-cmake -S ./ -B ./build -DCMAKE_C_COMPILER=/usr/local/bin/gcc-13 -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-13
-```
-and build with 
-```
+cmake -S ./ -B ./build
 cmake --build ./build --config Release 
 ```
 
