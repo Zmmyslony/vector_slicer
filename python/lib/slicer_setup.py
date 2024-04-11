@@ -58,10 +58,16 @@ def import_slicer(build_directory):
     """
     project_directory = get_project_directory()
 
+
     if sys.platform == "win32":
         library_name = "vector_slicer_api.dll"
-    else:
+    elif sys.platform == "linux":
         library_name = "libvector_slicer_api.so"
+    elif sys.platform == "darwin":
+        library_name = "libvector_slicer_api.dylib"
+    else:
+        raise Exception("Unrecognised platform " + sys.platform)
+
     vector_slicer_lib_path = project_directory / build_directory / library_name
     if not os.path.exists(vector_slicer_lib_path):
         print(f"Vector Slicer Api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose the "
