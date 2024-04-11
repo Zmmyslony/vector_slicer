@@ -11,7 +11,26 @@ include_directories(${PROJECT_SOURCE_DIR}/bayesopt/utils)
 set_property(TARGET bayesopt PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET(EXT_LIBS bayesopt)
 
-find_package(OpenMP)
+if(APPLE)
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+        set(OpenMP_C "${CMAKE_C_COMPILER}" CACHE STRING "" FORCE)
+        set(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument" CACHE STRING "" FORCE)
+        set(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5" CACHE STRING "" FORCE)
+        set(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES} CACHE STRING "" FORCE)
+        set(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES} CACHE STRING "" FORCE)
+        set(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES} CACHE STRING "" FORCE)
+    endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(OpenMP_CXX "${CMAKE_CXX_COMPILER}" CACHE STRING "" FORCE)
+        set(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument" CACHE STRING "" FORCE)
+        set(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5" CACHE STRING "" FORCE)
+        set(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
+        set(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
+        set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
+    endif()
+endif()
+
+find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -84,7 +103,9 @@ set(SOURCES
         source/pattern/path_sorting/seed_line.cpp
         source/pattern/path_sorting/seed_line.h
         source/pattern/path_sorting/nearest_neighbour.cpp
-        source/pattern/path_sorting/nearest_neighbour.h)
+        source/pattern/path_sorting/nearest_neighbour.h
+        source/pattern/path_sorting/travelling_salesman.cpp
+        source/pattern/path_sorting/travelling_salesman.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})
