@@ -1,6 +1,6 @@
 #!/bin/bash
 brew update
-brew upgrade --no-dry-run
+brew upgrade
 brew install llvm cmake git boost libomp
 brew install numpy scipy python-matplotlib
 
