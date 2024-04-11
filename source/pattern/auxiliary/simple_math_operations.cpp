@@ -193,3 +193,21 @@ std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array) {
     return {left_empty_columns, right_empty_columns};
 }
 
+
+template<typename T>
+T min_array(const std::vector<std::vector<T>> &array) {
+    std::vector<T> arr_min(array.size());
+    for (auto &vec: array) {
+        arr_min.emplace_back(std::min(vec.begin(), vec.end()));
+    }
+    return std::min(arr_min.begin(), arr_min.end());
+}
+
+template<typename T>
+T max_array(const std::vector<std::vector<T>> &array) {
+    std::vector<T> arr_min(array.size());
+    for (auto &vec: array) {
+        arr_min.emplace_back(std::max(vec.begin(), vec.end()));
+    }
+    return std::max(arr_min.begin(), arr_min.end());
+}

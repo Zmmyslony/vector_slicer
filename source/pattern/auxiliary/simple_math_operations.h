@@ -48,7 +48,7 @@ std::vector<int> findNullRows(const std::vector<std::vector<int>> &array);
 std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array);
 
 template<typename T>
-std::vector<T> removeRows(std::vector<T> &array, const std::vector<int> &rows_to_remove)  {
+std::vector<T> removeRows(std::vector<T> &array, const std::vector<int> &rows_to_remove) {
     if (rows_to_remove[0] > 0) {
         array.erase(array.begin(), array.begin() + rows_to_remove[0]);
     }
@@ -74,4 +74,13 @@ void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<
     removeColumns(array, columns_to_remove);
 
 }
+
+/// Minimum value of 2D vector array
+template<typename T>
+T min_array(const std::vector<std::vector<T>> &array);
+
+/// Maximum value of 2D vector array
+template<typename T>
+T max_array(const std::vector<std::vector<T>> &array);
+
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
