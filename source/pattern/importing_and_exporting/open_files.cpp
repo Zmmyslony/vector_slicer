@@ -22,7 +22,6 @@
 #include "open_files.h"
 #include <iostream>
 #include <sstream>
-#include "../simulation/filling_method_config.h"
 
 
 std::vector<int> readConfigTable(const fs::path &config_path) {
@@ -80,19 +79,6 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
     return pattern;
 }
 
-
-//FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, unsigned int seed, int threads) {
-//    DesiredPattern desired_pattern = openPatternFromDirectory(directory_path, false, threads, <#initializer#>);
-//    fs::path config_path = directory_path / "config.txt";
-//    std::vector<int> config = readConfigTable(config_path);
-//    FilledPattern pattern(desired_pattern, config[0], config[1], config[2], seed);
-//    return pattern;
-//}
-//
-//
-//FilledPattern openFilledPatternFromDirectory(const fs::path &directory_path, int threads) {
-//    return openFilledPatternFromDirectory(directory_path, 0, threads);
-//}
 
 FilledPattern
 openFilledPatternFromDirectoryAndPattern(const fs::path &directory_path, const DesiredPattern &pattern,

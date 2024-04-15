@@ -169,7 +169,7 @@ public:
 
     void addNewPath(Path &new_path);
 
-    std::vector<Path> getSequenceOfPaths() const;
+    [[nodiscard]] std::vector<Path> getSequenceOfPaths() const;
 
     void exportFilledMatrix(const fs::path &path) const;
 

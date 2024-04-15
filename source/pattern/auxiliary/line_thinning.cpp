@@ -36,12 +36,17 @@
 #include <iostream>
 #include <omp.h>
 #include <fstream>
+#include <unordered_set>
 
 #include "geometry.h"
 #include "vector_operations.h"
 
+coord add(const coord &current , const coord &other) {
+    return {current.first + other.first, current.second + other.second};
+}
+
 /// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
-bool isRemovedEastSouth(const std::set<veci> &shape, const veci &coordinate) {
+bool isRemovedEastSouth(const coord_set &shape, const coord &coordinate) {
     bool P1 = shape.find(coordinate) != shape.end();
     bool P2 = shape.find(add(coordinate, {1, 0})) != shape.end();
     bool P3 = shape.find(add(coordinate, {1, 1})) != shape.end();
@@ -73,7 +78,7 @@ bool isRemovedEastSouth(const std::set<veci> &shape, const veci &coordinate) {
 }
 
 /// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
-bool isRemovedNorthWest(const std::set<veci> &shape, const veci &coordinate) {
+bool isRemovedNorthWest(const coord_set &shape, const coord &coordinate) {
     bool P1 = shape.find(coordinate) != shape.end();
     bool P2 = shape.find(add(coordinate, {1, 0})) != shape.end();
     bool P3 = shape.find(add(coordinate, {1, 1})) != shape.end();
@@ -145,31 +150,33 @@ std::set<veci> fill_in_gaps(std::set<veci> shape) {
     return shape;
 }
 
-std::set<veci> grow_pattern(const std::set<veci> &shape, double radius) {
+coord_set grow_pattern(const coord_set &shape, double radius) {
     std::vector<vali> circle = findPointsInCircle(radius);
-    std::set<veci> grown_pattern;
+    coord_set grown_pattern;
     for (auto &element: shape) {
         for (auto &displacement: circle) {
-            grown_pattern.insert(add(element, valtovec(displacement)));
+            coord current = {element.first + displacement[0], element.second + displacement[1]};
+            grown_pattern.insert(current);
         }
     }
     return grown_pattern;
 }
 
-std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
-//    std::ofstream detected_line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/detected_line_density_minima.csv");
-//    for (const auto &e : shape) detected_line_density_minima << e[0] << "," << e[1] << "\n";
+
+coord_set skeletonize(coord_set shape, int grow_size, int threads) {
+    std::ofstream detected_line_density_minima("/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/detected_line_density_minima.csv");
+    for (const auto &e : shape) detected_line_density_minima << e.first << "," << e.second << "\n";
 
     shape = grow_pattern(shape, grow_size);
 
-//    std::ofstream grown_line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/grown_line_density_minima.csv");
-//    for (const auto &e : shape) grown_line_density_minima << e[0] << "," << e[1] << "\n";
+    std::ofstream grown_line_density_minima("/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/grown_line_density_minima.csv");
+    for (const auto &e : shape) grown_line_density_minima << e.first << "," << e.second << "\n";
 
     bool is_any_pixel_removed_in_step = true;
     while (is_any_pixel_removed_in_step) {
         is_any_pixel_removed_in_step = false;
 
-        std::set<veci> coordinates_to_remove;
+        coord_set coordinates_to_remove;
         for (auto &coordinate: shape) {
             if (isRemovedEastSouth(shape, coordinate)) {
                 coordinates_to_remove.insert(coordinate);
@@ -181,7 +188,7 @@ std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
             shape.erase(coordinate);
         }
 
-        std::set<veci> removed_coordinates_north_west;
+        coord_set removed_coordinates_north_west;
         for (auto &coordinate: shape) {
             if (isRemovedNorthWest(shape, coordinate)) {
                 removed_coordinates_north_west.insert(coordinate);
@@ -194,7 +201,7 @@ std::set<veci> skeletonize(std::set<veci> shape, int grow_size, int threads) {
         }
     }
 
-//    std::ofstream line_density_minima("/home/mlz22/OneDrive/Projects/Slicer/Notebooks/line_density_minima.csv");
-//    for (const auto &e : shape) line_density_minima << e[0] << "," << e[1] << "\n";
+    std::ofstream line_density_minima("/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/line_density_minima.csv");
+    for (const auto &e : shape) line_density_minima << e.first << "," << e.second << "\n";
     return shape;
 }

@@ -136,7 +136,7 @@ void FilledPattern::setupRootPoints() {
 void FilledPattern::updateSeedPoints() {
     if (search_stage == SplayFilling) {
         if (zero_splay_seeds.empty()) {
-            search_stage = PerimeterFilling;
+            search_stage = RemainingFilling;
         } else {
             seed_points = zero_splay_seeds.back();
             zero_splay_seeds.pop_back();

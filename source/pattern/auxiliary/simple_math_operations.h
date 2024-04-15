@@ -77,10 +77,25 @@ void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<
 
 /// Minimum value of 2D vector array
 template<typename T>
-T min_array(const std::vector<std::vector<T>> &array);
+T min_array(const std::vector<std::vector<T>> &array) {
+    std::vector<T> arr_min(array.size());
+    for (auto &vec: array) {
+        T element = *std::min_element(vec.begin(), vec.end());
+        arr_min.emplace_back(element);
+    }
+    return *std::min_element(arr_min.begin(), arr_min.end());
+};
 
 /// Maximum value of 2D vector array
 template<typename T>
-T max_array(const std::vector<std::vector<T>> &array);
+T max_array(const std::vector<std::vector<T>> &array) {
+    std::vector<T> arr_min(array.size());
+    for (auto &vec: array) {
+        T element = *std::max_element(vec.begin(), vec.end());
+        arr_min.emplace_back(element);
+    }
+    return *std::max_element(arr_min.begin(), arr_min.end());
+};
+
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
