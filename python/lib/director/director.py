@@ -46,9 +46,9 @@ def splay_numeric(director_function, derivative_delta):
     :param derivative_delta: Numerical delta used for calculation.
     :return: Grid of splay vectors [x_dim, y_dim, 2].
     """
-    if derivative_delta < 1e-13:
-        print("Derivative delta lower than 1e-13 will yield inaccurate results due to 52 bit long mantissa of float. ")
-        derivative_delta = 1e-13
+    if derivative_delta < 1e-8:
+        print("Derivative delta lower than 1e-13 will yield inaccurate results due to 52 bit long mantissa of double. ")
+        derivative_delta = 1e-8
 
     def splay(mesh):
         q_tensor_grid = q_tensor(director_function, mesh, [0, 0])
@@ -61,7 +61,7 @@ def splay_numeric(director_function, derivative_delta):
 
 
 class Director:
-    def __init__(self, director, splay_function=None, derivative_delta=1e-11):
+    def __init__(self, director, splay_function=None, derivative_delta=1e-6):
         """
         Director class contains the definitions of director and splay functions.
         :param director: function returning angle theta [x_dim, y_dim] when provided with xy mesh [x_dim, y_dim, 2].
