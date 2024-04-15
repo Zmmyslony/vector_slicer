@@ -29,12 +29,13 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from lib.director.director import Director
+from lib.output_reading import get_plot_output_directory
 from lib.shape.shape import Shape
 from lib.shape.basic import regular_hexagon, square, regular_triangle
 from lib import slicer_setup as slicer
 
 
-def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
+def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, filename=None):
     fig = plt.figure(figsize=[6, 4], dpi=300)
 
     x_min = mesh[:, :, 0].min()
@@ -69,16 +70,22 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape):
                   y_mesh,
                   x_vector.transpose(),
                   y_vector.transpose(),
-                  density=1)
+                  density=1,
+                  arrowsize=0,
+                  integration_direction="both")
 
     ax.set_title("Pattern")
     ax.set_xlabel("x [mm]")
     ax.set_ylabel("y [mm]")
 
-    plt.show()
+    if filename is None:
+        plt.show()
+    else:
+        plt.savefig(filename)
+        plt.close()
 
 
-def plot_splay(mesh, splay):
+def plot_splay(mesh, splay, filename=None):
     splay_norm = np.linalg.norm(splay, axis=2)
     fig = plt.figure(figsize=[6, 4], dpi=300)
 
@@ -121,8 +128,11 @@ def plot_splay(mesh, splay):
                   splay[:, :, 0].transpose(),
                   splay[:, :, 1].transpose(),
                   density=1)
-    plt.show()
-    plt.close()
+    if filename is None:
+        plt.show()
+    else:
+        plt.savefig(filename)
+        plt.close()
 
 
 def domain_director(domain, director_function, default_director=lambda mesh: 0):
@@ -143,8 +153,8 @@ def generate_shape_matrix(shape: Shape, pixel_size: float, x_excess: float = 0, 
     shape.x_max += x_excess
     shape.y_max += y_excess
 
-    x_grid = np.arange(shape.x_min - pixel_size, shape.x_max + pixel_size * 3 / 2, pixel_size)
-    y_grid = np.arange(shape.y_min - pixel_size, shape.y_max + pixel_size * 3 / 2, pixel_size)
+    x_grid = np.arange(shape.x_min - pixel_size, shape.x_max + pixel_size * 3 / 2, pixel_size, dtype=np.double)
+    y_grid = np.arange(shape.y_min - pixel_size, shape.y_max + pixel_size * 3 / 2, pixel_size, dtype=np.double)
 
     x_mesh, y_mesh = np.meshgrid(x_grid, y_grid, indexing='ij')
     mesh = np.transpose([x_mesh, y_mesh], [1, 2, 0])
@@ -319,9 +329,8 @@ class Pattern:
         if pattern_name is None:
             pattern_name = self.name
 
-        stage_count = 3
+        stage_count = 4
         if pattern_name is not None: stage_count += 1
-        if is_displayed: stage_count += 1
 
         begin_time = time.time()
         print(f"\n{time.time() - begin_time:.3f}s: [1/{stage_count:d}] Generating input files for {pattern_name}.")
@@ -350,6 +359,7 @@ class Pattern:
             np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")
             np.savetxt(pattern_directory / "theta_field.csv", director_grid, delimiter=',', fmt="%.10f")
             flattened_splay = np.reshape(splay_grid, [splay_grid.shape[0], splay_grid.shape[1] * 2])
+
             np.savetxt(pattern_directory / "splay.csv", flattened_splay, delimiter=',', fmt="%.10f")
 
             if not is_filling_method_valid(filling_method):
@@ -363,25 +373,32 @@ class Pattern:
             print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}] Input files exported.")
 
         if is_displayed:
-            plot_pattern(shape_grid, mesh, director_grid, self.domain)
-            if splay_grid is not None:
-                plot_splay(mesh, splay_grid)
-            current_stage += 1
-            print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")
+            director_filename = None
+            splay_filename = None
+        else:
+            director_filename = get_plot_output_directory() / f"{pattern_name}_director.png"
+            splay_filename = get_plot_output_directory() / f"{pattern_name}_splay.png"
+        plot_pattern(shape_grid, mesh, director_grid, self.domain, filename=director_filename)
+        if splay_grid is not None:
+            plot_splay(mesh, splay_grid, filename=splay_filename)
+        current_stage += 1
+
+        print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")
 
         return pattern_name
 
-    def symmetrise(self, arm_number: int, begin_angle: float = None):
-        if arm_number < 1:
-            raise RuntimeError("Symmetrisation requires a positive number of arms")
-        elif arm_number == 1:
-            return self
 
-        symmetrised_pattern = SymmetricPattern(self.shape_list[0], self.director_list[0], arm_number, begin_angle)
-        patterns_number = len(self.shape_list)
-        for i in range(1, patterns_number):
-            symmetrised_pattern += SymmetricPattern(self.shape_list[i], self.director_list[i], arm_number, begin_angle)
-        return symmetrised_pattern
+def symmetrise(self, arm_number: int, begin_angle: float = None):
+    if arm_number < 1:
+        raise RuntimeError("Symmetrisation requires a positive number of arms")
+    elif arm_number == 1:
+        return self
+
+    symmetrised_pattern = SymmetricPattern(self.shape_list[0], self.director_list[0], arm_number, begin_angle)
+    patterns_number = len(self.shape_list)
+    for i in range(1, patterns_number):
+        symmetrised_pattern += SymmetricPattern(self.shape_list[i], self.director_list[i], arm_number, begin_angle)
+    return symmetrised_pattern
 
 
 def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):

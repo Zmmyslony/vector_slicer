@@ -113,6 +113,12 @@ def convert_to_coordinates(string_data):
 
 
 def read_paths(pattern_name):
+    """
+    Reads paths in format where the first level corresponds to paths, second level to coordinates within a path
+    and the first one to specific pixel-based x-y coordinates.
+    :param pattern_name:
+    :return:
+    """
     input_path = get_slicer_output_directory() / "paths" / (pattern_name + ".csv")
 
     file = open(input_path, "r")

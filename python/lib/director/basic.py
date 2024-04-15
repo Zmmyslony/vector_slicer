@@ -118,3 +118,33 @@ def single_charge_field(position, charge) -> Director:
     :return:
     """
     return charge_field([position], [charge])
+
+
+def polygon_constant_angle(angle: float, vertex_count: int, first_vertex_angle: float = None):
+    """
+    Piecewise-constant pattern resembling a regular polygon,
+    :param angle: angle of the director in the first segment right of the centre.
+    :param vertex_count:
+    :param first_vertex_angle: angle, corresponding to the first edge of the first vertex.
+    :return:
+    """
+    delta_angle = 2 * np.pi / vertex_count
+    if first_vertex_angle is None: first_vertex_angle = -delta_angle / 2
+
+    def director(v):
+        angular_position = np.arctan2(v[:, :, 1], v[:, :, 0])
+        segment = np.floor_divide(angular_position - first_vertex_angle, delta_angle)
+        return segment * delta_angle + angle
+
+    return Director(director)
+
+
+def azimuthal_piecewise_polygon(vertex_count: int, angle_offset=0, first_vertex_angle=0):
+    """
+    Director pattern corresponding to piecewise +1 topological defect (cone).
+    :param vertex_count:
+    :return:
+    """
+    return polygon_constant_angle(np.pi / 2 + angle_offset,
+                                  vertex_count,
+                                  first_vertex_angle=first_vertex_angle)
