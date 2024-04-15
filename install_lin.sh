@@ -2,7 +2,7 @@
 
 sudo apt update
 sudo apt upgrade
-sudo apt install cmake libboost-all-dev python
+sudo apt install cmake libboost-all-dev
 
 git pull
 cmake -S ./ -B ./build
