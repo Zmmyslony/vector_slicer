@@ -125,8 +125,8 @@ void DesiredPattern::isPatternUpdated() const {
 
 
 void DesiredPattern::adjustMargins() {
-    veci null_rows = findNullRows(shape_matrix);
-    veci null_columns = findNullColumns(shape_matrix);
+    veci null_rows = findNullRows(shape_matrix, 10);
+    veci null_columns = findNullColumns(shape_matrix, 10);
 
     adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
     adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);

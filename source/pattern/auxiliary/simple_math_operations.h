@@ -43,26 +43,75 @@ vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_ar
 
 std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array, int threads);
 
-std::vector<int> findNullRows(const std::vector<std::vector<int>> &array);
+std::vector<int> findNullRows(const std::vector<std::vector<int>> &array, int padding);
 
-std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array);
+std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array, int padding);
 
 template<typename T>
-std::vector<T> removeRows(std::vector<T> &array, const std::vector<int> &rows_to_remove) {
+std::vector<std::vector<T>> zero_like(std::vector<std::vector<T>> obj) {
+    for (auto &el: obj) {
+        for (auto &sub_el: el) {
+            sub_el = 0;
+        }
+    }
+    return obj;
+}
+
+template<typename T>
+std::vector<std::valarray<T>> zero_like(std::vector<std::valarray<T>> obj) {
+    for (auto &el: obj) {
+        for (auto &sub_el: el) {
+            sub_el = 0;
+        }
+    }
+    return obj;
+}
+
+template<typename T>
+std::vector<T> zero_like(std::vector<T> obj) {
+    for (auto &el: obj) {
+        el = 0;
+    }
+    return obj;
+}
+
+template<typename T>
+std::valarray<T> zero_like(std::valarray<T> obj) {
+    for (auto &el: obj) {
+        el = 0;
+    }
+    return obj;
+}
+
+template<typename T>
+T zero_like(T obj) {
+    return 0;
+}
+
+template<typename T>
+std::vector<T> adjust_rows(std::vector<T> &array, const std::vector<int> &rows_to_remove) {
     if (rows_to_remove[0] > 0) {
         array.erase(array.begin(), array.begin() + rows_to_remove[0]);
+    } else if (rows_to_remove[0] < 0) {
+        auto it = array.begin();
+        T zeros = zero_like(array[0]);
+        array.insert(it, -rows_to_remove[0], zeros);
     }
     if (rows_to_remove[1] > 0) {
         array.erase(array.end() - rows_to_remove[1], array.end());
+    } else if (rows_to_remove[1] < 0) {
+        auto it = array.end();
+        T zeros = zero_like(array[0]);
+        array.insert(it, -rows_to_remove[1], zeros);
     }
     return array;
 }
 
 template<typename T>
 std::vector<std::vector<T>>
-removeColumns(std::vector<std::vector<T>> &array, const std::vector<int> &columns_to_remove) {
+adjust_columns(std::vector<std::vector<T>> &array, const std::vector<int> &columns_to_remove) {
     for (auto &row: array) {
-        removeRows(row, columns_to_remove);
+        adjust_rows(row, columns_to_remove);
     }
     return array;
 }
@@ -70,8 +119,8 @@ removeColumns(std::vector<std::vector<T>> &array, const std::vector<int> &column
 template<typename T>
 void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<int> &rows_to_remove,
                           const std::vector<int> &columns_to_remove) {
-    removeRows(array, rows_to_remove);
-    removeColumns(array, columns_to_remove);
+    adjust_rows(array, rows_to_remove);
+    adjust_columns(array, columns_to_remove);
 
 }
 

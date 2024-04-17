@@ -151,7 +151,7 @@ std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vecto
     return norms;
 }
 
-std::vector<int> findNullRows(const std::vector<std::vector<int>> &array) {
+std::vector<int> findNullRows(const std::vector<std::vector<int>> &array, int padding) {
     int top_empty_rows = 0;
     while (std::all_of(array[top_empty_rows].begin(),
                        array[top_empty_rows].end(),
@@ -168,10 +168,10 @@ std::vector<int> findNullRows(const std::vector<std::vector<int>> &array) {
     )) {
         bottom_empty_rows++;
     }
-    return {top_empty_rows, bottom_empty_rows};
+    return {top_empty_rows - padding, bottom_empty_rows - padding};
 }
 
-std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array) {
+std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array, int padding) {
     int left_empty_columns = 0;
     while (std::all_of(array.begin(),
                        array.end(),
@@ -190,6 +190,6 @@ std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array) {
     )) {
         right_empty_columns++;
     }
-    return {left_empty_columns, right_empty_columns};
+    return {left_empty_columns - padding, right_empty_columns - padding};
 }
 
