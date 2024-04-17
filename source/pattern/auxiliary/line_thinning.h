@@ -41,20 +41,13 @@
 
 using veci = std::vector<int>;
 
-using coord = std::pair<u_int16_t , u_int16_t>;
+using coord = std::pair<uint16_t , uint16_t>;
 
 struct pairhash {
 public:
-    u_int32_t operator()(const std::pair<u_int16_t, u_int16_t> &x) const
+    uint32_t operator()(const std::pair<uint16_t, uint16_t> &x) const
     {
-//        u_int32_t seed = 0;
         return x.first * 65536 + x.second;
-//        auto first_hash = std::hash<u_int32_t>()(x.first);
-//        auto second_hash = std::hash<u_int32_t>()(x.second);
-//        boost::hash_combine(seed, first_hash);
-//        boost::hash_combine(seed, second_hash);
-//        return seed;
-//        return std::hash<int>()(x.first) ^ std::hash<int>()(x.second);
     }
 };
 

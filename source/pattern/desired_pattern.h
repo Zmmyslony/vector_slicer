@@ -89,21 +89,17 @@ class DesiredPattern {
     [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
 
 
-    coord_set findPointsOfZeroSplay(coord_set &candidate_set);
-
-    coord_set shape_coordinates();
+    coord_set findPointsOfZeroSplay(const coord &starting_coordinate);
 
     void adjustMargins();
 
 
     [[nodiscard]] vald getMove(const vald &position, double distance, const vald &displacement) const;
 
-    coord_vector getIntegralCurve(coord_set &candidate_set);
+    void updateIntegralCurve(const coord &starting_coordinate);
 
-    coord_vector updateIntegralCurveInDirection(coord_vector integral_curve, coord_set &candidate_set,
-                                                coord_set &integral_curve_set, coord current_coord,
-                                                vald current_position,
-                                                vald current_travel_direction);
+    void updateIntegralCurveInDirection(coord current_coord, vald current_position,
+                                        vald current_travel_direction);
 
 
     vald getSplayVector(const coord &coordinate);
@@ -111,6 +107,8 @@ class DesiredPattern {
     std::vector<double> directedSplayMagnitude(const coord_vector &integral_curve);
 
     void initialiseSplaySeeding();
+
+    bool isCoordinateViable(const coord &coordinate);
 
 public:
 
