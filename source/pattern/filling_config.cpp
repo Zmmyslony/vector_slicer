@@ -246,8 +246,12 @@ std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
     }
 
     std::vector<FillingConfig> filling_config_list;
+    filling_config_list.reserve(seed_list.size());
     for (auto &seed: seed_list) {
-        filling_config_list.emplace_back(FillingConfig(base_config, seed));
+        filling_config_list.emplace_back(base_config, seed);
+    }
+    if (seed_list.empty()) {
+        filling_config_list.emplace_back(base_config);
     }
     return filling_config_list;
 }
