@@ -38,3 +38,8 @@ SLICER_DLLEXPORT void re_slice_pattern(const char *pattern_directory) {
     recalculateBestConfig(pattern_path_fs);
 }
 
+SLICER_DLLEXPORT void slice_pattern_seeds_only(const char *pattern_directory, int seeds) {
+    fs::path pattern_path_fs(pattern_directory);
+    optimisePatternSeeds(pattern_directory, pattern_path_fs / "config.txt", seeds);
+}
+

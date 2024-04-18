@@ -319,7 +319,8 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     } catch (std::runtime_error &error) {
         if (error.what() == "nlopt failure") {
             std::cout << std::endl;
-            std::cout << "WARNING: NLOPT failure during bayesian optimisation. Returned solution may not be optimal." << std ::endl;
+            std::cout << "WARNING: NLOPT failure during bayesian optimisation. Returned solution may not be optimal."
+                      << std::endl;
             return {pattern, best_config};
         }
     }
@@ -388,9 +389,9 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
               << std::endl;
-    std::vector<std::vector<double>> disagreement_grid = best_fills[0].localDisagreementGrid();
-    fs::path disagreement_grid_path = pattern_path / "disagreement_grid";
-    exportVectorTableToFile(disagreement_grid, disagreement_grid_path);
+//    std::vector<std::vector<double>> disagreement_grid = best_fills[0].localDisagreementGrid();
+//    fs::path disagreement_grid_path = pattern_path / "disagreement_grid";
+//    exportVectorTableToFile(disagreement_grid, disagreement_grid_path);
 }
 
 
@@ -398,14 +399,14 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
-    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing best config path."); }
+    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing config path."); }
     std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
     bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
     DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
                                                               simulation.getThreads(), simulation);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
-        filled_configs.emplace_back(QuantifiedConfig(desired_pattern, best_config[i], simulation));
+        filled_configs.emplace_back(desired_pattern, best_config[i], simulation);
     }
 
     int threads = simulation.getThreads();
@@ -418,6 +419,29 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     filled_configs[0].printDisagreement();
     exportPatterns(filled_configs, pattern_path, simulation);
     std::cout << "Pattern filled." << std::endl;
+}
+
+void optimisePatternSeeds(const fs::path &pattern_path, const fs::path &config_path, int seeds) {
+    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
+
+    Simulation simulation(pattern_path, true);
+    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing config path."); }
+    std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
+    bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
+                                                              simulation.getThreads(), simulation);
+    QuantifiedConfig best_pattern(desired_pattern, best_config[0], simulation);
+
+    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(seeds, best_pattern.getThreads());
+
+    exportPatterns(best_fills, pattern_path, simulation);
+    std::vector<FillingConfig> config_list;
+    for (auto &filled_config: best_fills) {
+        config_list.emplace_back(filled_config.getConfig());
+    }
+
+    best_fills[0].getConfig().printConfig();
+    best_fills[0].printDisagreement();
 }
 
 void recalculateBestConfig(const fs::path &pattern_path) {
