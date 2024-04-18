@@ -24,11 +24,15 @@ import copy
 
 
 def q_tensor(director_function, mesh, offset):
-    director = director_function(mesh + offset)
-    q_tensor_value = np.transpose(np.array(
-        [[np.cos(director) * np.cos(director), np.sin(director) * np.cos(director)],
-         [np.sin(director) * np.cos(director), np.sin(director) * np.sin(director)]]), [2, 3, 0, 1])
-    return q_tensor_value
+    high_precision_mesh = np.array(mesh + offset, dtype=np.longdouble)
+    director = director_function(high_precision_mesh)
+    cos_cos = np.cos(director) * np.cos(director)
+    cos_sin = np.cos(director) * np.sin(director)
+    sin_sin = np.sin(director) * np.sin(director)
+
+    first_stack = np.stack([cos_cos, cos_sin], axis=-1)
+    second_stack = np.stack([cos_sin, sin_sin], axis=-1)
+    return np.stack([first_stack, second_stack], axis=first_stack.ndim)
 
 
 def div_q_tensor(director_function, mesh, delta):
@@ -53,7 +57,7 @@ def splay_numeric(director_function, derivative_delta):
     def splay(mesh):
         q_tensor_grid = q_tensor(director_function, mesh, [0, 0])
         div_q_tensor_grid = div_q_tensor(director_function, mesh, derivative_delta)
-        q_div_q = np.matmul(q_tensor_grid, div_q_tensor_grid[:, :, :, None])[:, :, :, 0]
+        q_div_q = np.matmul(q_tensor_grid, div_q_tensor_grid[..., None])[..., 0]
         q_div_q = np.nan_to_num(q_div_q)
         return q_div_q
 
