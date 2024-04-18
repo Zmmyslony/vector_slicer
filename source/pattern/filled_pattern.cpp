@@ -75,7 +75,7 @@ FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines, int l
 
 void FilledPattern::setup() {
     print_circle = findPointsInCircle(getPrintRadius());
-    collision_list = generatePerimeterList(getTerminationRadius());
+    collision_list = circleDisplacements(getTerminationRadius());
     random_engine = std::mt19937(getSeed());
 
     zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima(), 0);

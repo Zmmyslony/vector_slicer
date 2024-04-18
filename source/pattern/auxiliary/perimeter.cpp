@@ -27,12 +27,12 @@
 #include "valarray_operations.h"
 
 
-std::vector<vali> generatePerimeterList(double radius) {
+std::vector<vali> circleDisplacements(double radius) {
     std::vector<vali> perimeter_list;
     int range = (int) radius + 1;
     for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
-            if (floor(sqrt(i * i + j * j) - radius) == 0) {
+            if (ceil(sqrt(i * i + j * j) - radius) == 0) {
                 perimeter_list.push_back({i, j});
             }
         }
@@ -136,7 +136,7 @@ bool isValidPerimeterPoint(const vali &positions, const std::vector<std::vector<
 std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
                                            const std::vector<std::vector<vald>> &splay_array) {
     std::vector<vali> unsorted_perimeters;
-    std::vector<vali> tested_circle = generatePerimeterList(4);
+    std::vector<vali> tested_circle = circleDisplacements(4);
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
             vali current_position = {i, j};
@@ -151,7 +151,7 @@ std::vector<vali> findValidPerimeterPoints(const std::vector<std::vector<int>> &
 std::vector<vali> findGeometricalPerimeter(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes) {
     std::vector<vali> unsorted_perimeters;
     // It is set to constant radius, maybe add a control over it?
-    std::vector<vali> tested_circle = generatePerimeterList(4);
+    std::vector<vali> tested_circle = circleDisplacements(4);
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
             vali current_position = {i, j};

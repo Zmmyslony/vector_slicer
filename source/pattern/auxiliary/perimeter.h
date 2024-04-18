@@ -29,7 +29,7 @@
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
-std::vector<vali> generatePerimeterList(double radius);
+std::vector<vali> circleDisplacements(double radius);
 
 bool isInRange(const vali &position, const vali &dimensions);
 
