@@ -429,6 +429,20 @@ bool isValidSplayFreeLineEnd(bool is_boundary, double splay) {
     }
 }
 
+bool DesiredPattern::isBoundary(const coord &coordinate) {
+    vali coord_i = {coordinate.first, coordinate.second};
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++){
+            vali displacement = {i, j};
+            bool is_out_of_bounds = !isInShape(coord_i + displacement);
+            if (is_out_of_bounds) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate) {
     updateIntegralCurve(starting_coordinate);
     if (integral_curve_coords.empty()) {
@@ -439,9 +453,11 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
     std::vector<double> directed_splay = directedSplayMagnitude(integral_curve_coords);
 
     bool is_looped = isLooped(integral_curve_coords);
-    bool is_boundary = !is_looped;
+    bool is_end_boundary = !is_looped;
     coord_vector current_splay_free_line;
     coord_set valid_coords_set;
+
+    bool is_whole_curve_boundary = true;
     while (!integral_curve_coords.empty()) {
         coord coordinate = integral_curve_coords.back();
         is_coordinate_in_curve[coordinate.first][coordinate.second] = 0;
@@ -449,12 +465,16 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
         double splay = directed_splay.back();
         directed_splay.pop_back();
         if (integral_curve_coords.empty() && !is_looped) {
-            is_boundary = true;
+            is_end_boundary = true;
+        }
+        if (is_whole_curve_boundary) {
+            is_whole_curve_boundary &= isBoundary(coordinate);
         }
 
-        if (isValidSplayFreeLineEnd(is_boundary, splay) && !current_splay_free_line.empty()) {
+        if (isValidSplayFreeLineEnd(is_end_boundary, splay) && !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
-            if (!isLooped(current_splay_free_line)) {
+            if (!isLooped(current_splay_free_line) &&
+                (!is_whole_curve_boundary || current_splay_free_line.size() == 1)) {
                 valid_coords_set.insert(current_splay_free_line[current_splay_free_line.size() / 2]);
             }
             current_splay_free_line.clear();
@@ -462,11 +482,12 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
         if (isValidSplayFreeLineInterior(splay) && !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
         }
-        if (isValidSplayFreeLineStart(is_boundary, splay)) {
+        if (isValidSplayFreeLineStart(is_end_boundary, splay)) {
             current_splay_free_line = {coordinate};
+            is_whole_curve_boundary = isBoundary(coordinate);
         }
 
-        is_boundary = false;
+        is_end_boundary = false;
     }
     return valid_coords_set;
 }

@@ -110,6 +110,8 @@ class DesiredPattern {
 
     bool isCoordinateViable(const coord &coordinate);
 
+    bool isBoundary(const coord &coordinate);
+
 public:
 
     DesiredPattern();
@@ -171,6 +173,7 @@ public:
     [[nodiscard]] bool isPointsRemoved() const;
 
     [[nodiscard]] bool isInShape(const coord &coordinate) const;
+
 };
 
 
