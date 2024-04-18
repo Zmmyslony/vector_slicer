@@ -102,7 +102,7 @@ class FilledPattern : public FillingConfig {
     std::vector<SeedPoint> getSpacedLine(const double &separation, const std::vector<vali> &line, int line_index);
 
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
-    Path generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step);
+    Path generateNewPathForDirection(const SeedPoint &seed_point, const vald &starting_step);
 
     void updateSeedPoints();
 
@@ -159,7 +159,7 @@ public:
     void fillPointsInCircle(const vali &coordinates);
 
     /// Fills points in half circle at the end of the path
-    void fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value);
+    void fillPointsInHalfCircle(const vali &last_coordinate, const vali &previous_coordinate, int value);
 
     /// Looks for a suitable point where a new path can be started from. If
     SeedPoint findSeedPoint();

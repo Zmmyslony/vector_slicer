@@ -385,30 +385,19 @@ void FilledPattern::updatePathsOverlap() {
     }
 }
 
-Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vali &starting_step) {
+Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const vald &starting_step) {
     Path path(seed_point, getPrintRadius());
     vald current_positions = itod(seed_point.getCoordinates());
-    vald current_step = itod(starting_step);
-    bool is_discontinuous_part_found = false;
-    int i_to_print = 0;
-    while (propagatePath(path, current_positions, current_step, getStepLength())) {
-//        is_discontinuous_part_found = !isDirectorContinuous(path.secondToLast(), path.last());
-//        if (is_discontinuous_part_found) {
-//            std::cout << "Discontinuity found." << std::endl;
-//            i_to_print = 3;
-//        }
-//        if (i_to_print > 0) {
-//            i_to_print--;
-//            std::cout << "i" << i_to_print << " x" << current_positions[0] << ", y" << current_positions[1] << ", l" << norm(path.secondToLast() - path.last()) << std::endl;
-//        }
-    }
+    vald current_step = starting_step;
+
+    while (propagatePath(path, current_positions, current_step, getStepLength())) {}
 
     return path;
 }
 
 
 Path FilledPattern::generateNewPath(const SeedPoint &seed_point) {
-    vali starting_step = dtoi(getDirector(seed_point.getCoordinates()) * getStepLength());
+    vald starting_step = getDirector(seed_point.getCoordinates());
 
     Path forward_path = generateNewPathForDirection(seed_point, starting_step);
     Path backward_path = generateNewPathForDirection(seed_point, -starting_step);
@@ -470,10 +459,10 @@ void FilledPattern::removeShortLines(double length_coefficient) {
 
 
 void
-FilledPattern::fillPointsInHalfCircle(const vali &last_point, const vali &previous_point, int value) {
-    std::vector<vali> half_circle_points = findHalfCircle(last_point, previous_point, getPrintRadius(),
-                                                          isFilled(last_point), getDirector(last_point));
-    fillPointsFromList(half_circle_points, previous_point - last_point, value);
+FilledPattern::fillPointsInHalfCircle(const vali &last_coordinate, const vali &previous_coordinate, int value) {
+    std::vector<vali> half_circle_points = findHalfCircle(last_coordinate, previous_coordinate, getPrintRadius(),
+                                                          isFilled(last_coordinate), getDirector(last_coordinate));
+    fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
 
 
