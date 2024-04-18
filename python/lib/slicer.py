@@ -50,3 +50,13 @@ class Slicer:
         """
         input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
         self.slicer.re_slice_pattern(input_name)
+
+    def slice_seeds_only(self, pattern_file_name: str, seeds: int):
+        """
+        Slices the pattern using the config in the input directory for a given number of seeds.
+        :param pattern_file_name:
+        :param seeds:
+        :return:
+        """
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
+        self.slicer.slice_pattern_seeds_only(input_name, seeds)

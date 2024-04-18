@@ -48,6 +48,7 @@ def configure_slicer(slicer):
     slicer.slice_pattern.argtypes = [ctypes.c_char_p]
     slicer.slice_pattern_with_config.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     slicer.re_slice_pattern.argtypes = [ctypes.c_char_p]
+    slicer.slice_pattern_seeds_only.argtypes = [ctypes.c_char_p, ctypes.c_int]
 
 
 def import_slicer(build_directory):
