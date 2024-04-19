@@ -38,27 +38,12 @@
 #include <set>
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
-
-using veci = std::vector<int>;
-
-using coord = std::pair<uint16_t , uint16_t>;
-
-struct pairhash {
-public:
-    uint32_t operator()(const std::pair<uint16_t, uint16_t> &x) const
-    {
-        return x.first * 65536 + x.second;
-    }
-};
-
-using coord_set = std::unordered_set<coord, pairhash>;
-using coord_sequence = std::set<coord>;
-using coord_vector = std::vector<coord>;
+#include "../coord.h"
 
 /// Zhang-Suen line thinning algorithm
-coord_set skeletonize(coord_set shape, int grow_size, int threads);
+coord_set skeletonize(coord_set shape, int grow_size, int threads, const std::vector<std::vector<int>> &shape_matrix);
 
-coord_set grow_pattern(const coord_set &shape, double radius);
+coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<int>> &shape_matrix);
 
 
 #endif //VECTOR_SLICER_LINE_THINNING_H

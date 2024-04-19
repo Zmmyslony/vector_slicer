@@ -103,7 +103,9 @@ set(SOURCES
         source/pattern/path_sorting/seed_line.cpp
         source/pattern/path_sorting/seed_line.h
         source/pattern/path_sorting/nearest_neighbour.cpp
-        source/pattern/path_sorting/nearest_neighbour.h)
+        source/pattern/path_sorting/nearest_neighbour.h
+        source/pattern/coord.h
+        source/pattern/position.h)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})
