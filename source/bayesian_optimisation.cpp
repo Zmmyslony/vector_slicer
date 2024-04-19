@@ -68,12 +68,8 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
                   << "ERROR: Using only first " << dims << " components." << std::endl;
     }
     problem = QuantifiedConfig(problem, x_in);
-//    auto start = std::chrono::high_resolution_clock::now();
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
                                                   disagreement_percentile);
-//    auto finish = std::chrono::high_resolution_clock::now();
-//    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds >(finish-start);
-//    std::cout << " Iteration time: " << milliseconds.count() << " ms" << std::endl;
     return disagreement;
 }
 
@@ -279,36 +275,43 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     QuantifiedConfig pattern(desired_pattern, filling_config, simulation);
     BayesianOptimisation pattern_optimisation(pattern, std::move(optimisation_parameters), dims);
 
-
-    double print_radius = pattern.getConfig().getPrintRadius();
+    double print_radius = filling_config.getPrintRadius();
     vecd lower_bound_vector;
     vecd upper_bound_vector;
+    vecd best_config_vector;
 
     if (pattern.isCollisionRadiusOptimised()) {
         lower_bound_vector.emplace_back(0);
+        best_config_vector.emplace_back(filling_config.getTerminationRadius());
         upper_bound_vector.emplace_back(print_radius + 1);
     }
     if (pattern.isStartingPointSeparationOptimised()) {
         lower_bound_vector.emplace_back(print_radius * 1.5);
-        upper_bound_vector.emplace_back(print_radius * 2.5);
+        best_config_vector.emplace_back(filling_config.getSeedSpacing());
+        upper_bound_vector.emplace_back(print_radius * 3);
     }
     if (pattern.isRepulsionMagnitudeOptimised()) {
         lower_bound_vector.emplace_back(0);
+        best_config_vector.emplace_back(filling_config.getRepulsion());
         upper_bound_vector.emplace_back(4);
     }
     if (pattern.isRepulsionAngleOptimised()) {
         lower_bound_vector.emplace_back(0);
+        best_config_vector.emplace_back(filling_config.getRepulsionAngle());
         upper_bound_vector.emplace_back(M_PI / 2);
     }
 
+
     std::reverse(lower_bound_vector.begin(), lower_bound_vector.end());
     std::reverse(upper_bound_vector.begin(), upper_bound_vector.end());
+    std::reverse(best_config_vector.begin(), best_config_vector.end());
     vectord best_config(dims);
     vectord lower_bound(dims);
     vectord upper_bound(dims);
     for (int i = 0; i < dims; i++) {
         lower_bound[i] = lower_bound_vector[i];
         upper_bound[i] = upper_bound_vector[i];
+        best_config[i] = best_config_vector[i];
     }
 
     pattern_optimisation.setBoundingBox(lower_bound, upper_bound);
@@ -317,11 +320,14 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     try {
         pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
     } catch (std::runtime_error &error) {
-        if (error.what() == "nlopt failure") {
+        if (error.what() == std::string("nlopt failure")) {
             std::cout << std::endl;
             std::cout << "WARNING: NLOPT failure during bayesian optimisation. Returned solution may not be optimal."
                       << std::endl;
             return {pattern, best_config};
+        }
+        else {
+            throw error;
         }
     }
     return {pattern, best_config};
@@ -366,14 +372,15 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
                (int) best_pattern.isRepulsionMagnitudeOptimised() +
                (int) best_pattern.isCollisionRadiusOptimised() +
                (int) best_pattern.isStartingPointSeparationOptimised();
+
+
     if (dims == 0) {
-        throw std::runtime_error(
-                "No parameter was chosen for optimisation. Please enable at least one of them in bayesian_configuration.cfg");
+        std::cout << "No parameter was chosen for optimisation. Optimising only over seeds. \n"
+                     "You can enable optimisation_parameters in bayesian_configuration.cfg" << std::endl;
+    } else {
+        best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
+                                        parameters, dims);
     }
-
-    best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
-                                    parameters, dims);
-
 
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
             best_pattern.getFinalSeeds(), best_pattern.getThreads());
@@ -389,9 +396,6 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
               << std::endl;
-//    std::vector<std::vector<double>> disagreement_grid = best_fills[0].localDisagreementGrid();
-//    fs::path disagreement_grid_path = pattern_path / "disagreement_grid";
-//    exportVectorTableToFile(disagreement_grid, disagreement_grid_path);
 }
 
 
