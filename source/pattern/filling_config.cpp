@@ -220,6 +220,9 @@ FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
         }
         readLineOfConfig(row);
     }
+    if (starting_point_separation == 0) {
+        starting_point_separation = 2 * print_radius;
+    }
 }
 
 std::vector<FillingConfig> readMultiSeedConfig(const fs::path &config_path) {
