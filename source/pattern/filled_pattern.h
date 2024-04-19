@@ -57,6 +57,10 @@ class FilledPattern : public FillingConfig {
     std::vector<std::vector<SeedPoint>> perimeter_seeds;
     /// All possible points where a path can start, binned based on their splay.
     std::vector<std::vector<vali>> binned_root_points;
+    /// Parameter allowing for controlling whether dual seeding based reseeding occurs.
+    bool is_reseeding_enabled = false;
+    /// Switches whether seeds from seed line are taken at random or consecutively.
+    bool is_random_filling_enabled = false;
 
     void fillPoint(const vali &point, const vald &normalized_direction, int value);
 
@@ -128,6 +132,10 @@ class FilledPattern : public FillingConfig {
     vald getDirector(const vald &coordinates) const;
 
     vald getDirector(const vali &coordinates) const;
+
+    bool isFree(const vali &coordinate) const;
+
+    bool isTerminable(const vali &coordinate, const vald &direction);
 
 public:
 
