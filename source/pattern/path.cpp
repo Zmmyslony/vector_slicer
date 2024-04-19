@@ -39,11 +39,11 @@ void Path::addPoint(const vali &positions, const vald &positive_edge, const vald
 }
 
 
-Path::Path(SeedPoint seed, double print_radius) : seed_point(std::move(seed)){
+Path::Path(SeedPoint seed, double print_radius) : seed_point(std::move(seed)) {
     vald positions = itod(seed_point.getCoordinates());
     vald tangent = seed_point.getDirector();
     vald normal = perpendicular(tangent) * print_radius;
-    addPoint(seed_point.getCoordinates(),positions + normal, positions - normal);
+    addPoint(seed_point.getCoordinates(), positions + normal, positions - normal);
 }
 
 
@@ -51,8 +51,7 @@ unsigned int Path::size() const {
     return sequence_of_positions.size();
 }
 
-template <typename T>
-
+template<typename T>
 std::vector<T> joinVectors(std::vector<T> forward_vector, std::vector<T> backward_vector) {
     std::reverse(backward_vector.begin(), backward_vector.end());
     backward_vector.insert(backward_vector.end(), forward_vector.begin() + 1, forward_vector.end());
