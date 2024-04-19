@@ -32,7 +32,7 @@
 #include <vector>
 
 
-QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern, 
+QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern,
                                    const Simulation &simulation) :
         FilledPattern(pattern),
         Simulation(simulation) {
@@ -110,16 +110,18 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
-    double local_director_agreement = 0;
+
     vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
     vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
                              desired_pattern.get().getYFieldPreferred()[i][j]};
     double filled_director_norm = norm(filled_director);
     double desired_director_norm = norm(desired_director);
     double current_director_agreement = dot(filled_director, desired_director);
-    if (desired_director_norm != 0 && filled_director_norm != 0) {
-        local_director_agreement += std::abs(current_director_agreement) /
-                                    (filled_director_norm * desired_director_norm);
+
+    double local_director_agreement = std::abs(current_director_agreement) /
+                                      (filled_director_norm * desired_director_norm);
+    if (isnan(local_director_agreement)) {
+        return 0;
     }
     return local_director_agreement;
 }
@@ -133,13 +135,19 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
 
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
-            if (number_of_times_filled[i][j] > 0) {
+            if (number_of_times_filled[i][j] > 0 &&
+                desired_pattern.get().isInShape(vali{i, j})) {
                 director_agreement += localDirectorAgreement(i, j);
                 number_of_filled_elements++;
             }
         }
     }
-    return 1 - (double) director_agreement / (double) number_of_filled_elements;
+
+    if (number_of_filled_elements > 0) {
+        return 1 - (double) director_agreement / (double) number_of_filled_elements;
+    } else {
+        return 1;
+    }
 }
 
 double QuantifiedConfig::calculatePathLengthDeviation(int order) {
@@ -283,7 +291,8 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
             if (number_of_times_filled[i][j] > 1) {
                 int local_overlap = number_of_times_filled[i][j] - 1;
                 local_disagreement +=
-                        getOverlapWeight() * getOverlapPower() * pow(average_overlap, getOverlapPower() - 1) * local_overlap;
+                        getOverlapWeight() * getOverlapPower() * pow(average_overlap, getOverlapPower() - 1) *
+                        local_overlap;
             }
             if (number_of_times_filled[i][j] > 0) {
                 double local_director_disagreement = 1 - localDirectorAgreement(i, j);
