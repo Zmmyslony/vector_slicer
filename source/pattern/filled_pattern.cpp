@@ -607,6 +607,7 @@ FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &
         tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
                                    separated_starting_points, line_index, i);
     }
+    std::reverse(separated_starting_points.begin(), separated_starting_points.end());
 
     is_filled_coordinate_encountered = false;
     previous_position = line[starting_index];
