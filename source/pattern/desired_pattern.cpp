@@ -527,10 +527,6 @@ void DesiredPattern::findLineDensityMinima() {
     auto t0 = std::chrono::system_clock::now();
     std::cout << "Beginning search for seeding lines." << std::endl;
     initialiseSplaySeeding();
-//    auto t1 = std::chrono::system_clock::now();
-//    std::chrono::duration<float> d1 = t1 - t0;
-//    std::cout << d1.count() << " s" << std::endl;
-
     size_t fillable_point_count = coord_in_shape.size();
 
     coord_set solution_set;
@@ -548,16 +544,8 @@ void DesiredPattern::findLineDensityMinima() {
         solution_set.insert(point_of_minimum_density.begin(), point_of_minimum_density.end());
     }
 
-//    auto t2 = std::chrono::system_clock::now();
-//    std::chrono::duration<float> d2 = t2 - t1;
-//    std::cout << "\r" << d2.count() << " s" << std::endl;
-
     std::cout << "\rSearch for seeding lines complete." << std::endl;
-    solution_set = skeletonize(solution_set, 10, 1);
-
-//    auto t3 = std::chrono::system_clock::now();
-//    std::chrono::duration<float> d3 = t3 - t2;
-//    std::cout << d3.count() << " s" << std::endl;
+    solution_set = skeletonize(solution_set, 3, 1, shape_matrix);
 
     std::vector<vali> line_density_minima_local;
     for (auto &vector: solution_set) {
