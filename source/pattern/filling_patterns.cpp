@@ -30,7 +30,8 @@ bool tryGeneratingNewPath(FilledPattern &pattern) {
     } else {
         Path new_path = pattern.generateNewPath(seed_point);
 
-        if (new_path.size() == 1) {
+        if (new_path.size() == 0) {}
+        else if (new_path.size() == 1) {
             pattern.fillPointsInCircle(seed_point.getCoordinates());
         } else {
             pattern.fillPointsInHalfCircle(new_path.first(), new_path.second(), 1);
