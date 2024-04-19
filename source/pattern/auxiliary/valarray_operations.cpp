@@ -49,7 +49,11 @@ double generalNorm(const vald &array, const double &exponent) {
     for (auto &element: array) {
         sum += pow(element, exponent);
     }
-    return pow(sum, 1 / exponent);
+    if (sum == 0) {
+        return 0;
+    } else {
+        return pow(sum, 1 / exponent);
+    }
 }
 
 double norm(const vald &array) {
@@ -107,7 +111,14 @@ vald perpendicular(const vald &vector) {
     if (vector.size() != 2) {
         throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
     }
-    return vald({-vector[1], vector[0]});
+    return {-vector[1], vector[0]};
+}
+
+vali perpendicular(const vali &vector) {
+    if (vector.size() != 2) {
+        throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
+    }
+    return {-vector[1], vector[0]};
 }
 
 double cross(const vald &vector_first, const vald &vector_second) {
