@@ -24,19 +24,24 @@
 
 #include <boost/filesystem.hpp>
 
+#define DISCONTINUITY_IGNORE 0
+#define DISCONTINUITY_STICK 1
+#define DISCONTINUITY_TERMINATE 2
+
 namespace fs = boost::filesystem;
 
 class FillingMethodConfig {
-    bool is_vector_filling_enabled;
-    bool is_vector_sorting_enabled;
-    bool is_points_removed;
+    bool is_vector_filling_enabled = false;
+    bool is_vector_sorting_enabled = false;
+    bool is_points_removed = true;
     double minimal_line_length;
-    double discontinuity_threshold;
-    int discontinuity_behaviour;
+    double discontinuity_angular_threshold = 40;
+    int discontinuity_behaviour = DISCONTINUITY_STICK;
     int sorting_method = 0;
 
-    std::string textFillingMethodConfig() const;
 public:
+    std::string textFillingMethodConfig() const;
+
     explicit FillingMethodConfig(const fs::path &config_path);
 
     FillingMethodConfig(const fs::path &local_path, const fs::path &default_path);

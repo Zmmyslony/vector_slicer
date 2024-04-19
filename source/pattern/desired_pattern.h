@@ -32,10 +32,6 @@
 #include "simulation/filling_method_config.h"
 #include "auxiliary/line_thinning.h"
 
-#define DISCONTINUITY_IGNORE 0
-#define DISCONTINUITY_STICK 1
-#define DISCONTINUITY_TERMINATE 2
-
 #define SORT_NEAREST_NEIGHBOUR 0
 #define SORT_SEED_LINE 1
 //#define SORT_TRAVELLING_SALESMAN 2
@@ -75,7 +71,7 @@ class DesiredPattern {
     int discontinuity_behaviour = DISCONTINUITY_STICK;
 
     /// Termination
-    double discontinuity_threshold_cos = -1;
+    double discontinuity_threshold_cos = 0;
 
     /// Splay seeding: Initialised as original shape matrix and 1's are replaced with 0's once they are considered by the algorithm.
     std::vector<std::vector<uint8_t>> is_coordinate_used;
