@@ -81,7 +81,7 @@ class FilledPattern : public FillingConfig {
 
     double distance(const vali &first_point, const vali &second_point);
 
-    std::vector<vali> findDualLineOneDirection(vald coordinates, vald previous_dual_director);
+    void updateDualLineInDirection(coord_set &line_elements, coord_vector &line, vald previous_dual_director);
 
     vali findRemainingRootPoint();
 
@@ -109,9 +109,6 @@ class FilledPattern : public FillingConfig {
     Path generateNewPathForDirection(const SeedPoint &seed_point, const vald &starting_step);
 
     void updateSeedPoints();
-
-    std::vector<vali>
-    findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald));
 
     void setupRootPoints();
 

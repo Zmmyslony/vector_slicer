@@ -509,52 +509,68 @@ vald normalizedDualVector(const vald &vector) {
     return normalize(perpendicular(vector));
 }
 
-std::vector<vali> FilledPattern::findDualLineOneDirection(vald coordinates, vald previous_dual_director) {
-    veci coordinates_i = valtovec(dtoi(coordinates));
-    std::set<veci> line_set;
-    vald dual_director = previous_dual_director;
-    while (
-            isFillable(dtoi(coordinates)) &&
-            line_set.find(coordinates_i) == line_set.end() &&
-            dot(previous_dual_director, dual_director) > 0
-            ) {
+bool isEqual(const vali &first, const vali &second) {
+    return first[0] == second[0] && first[1] == second[1];
+}
 
-        line_set.insert(coordinates_i);
-        vald director = getDirector(coordinates);
-        dual_director = normalizedDualVector(director);
+vali coord_to_vali(const coord &x) {
+    return vali{x.first, x.second};
+}
+
+vald coord_to_vald(const coord &x) {
+    return itod(coord_to_vali(x));
+}
+
+coord vali_to_coord(const vali &x) {
+    return {x[0], x[1]};
+}
+
+coord vald_to_coord(const vald &x) {
+    return vali_to_coord(dtoi(x));
+}
+
+
+void
+FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector &line, vald previous_dual_director) {
+    coord current_coord = line.back();
+    vald position = coord_to_vald(current_coord);
+
+    while (
+            isFillable(coord_to_vali(current_coord)) &&
+            (line_elements.find(current_coord) == line_elements.end() ||
+             (line.back() == current_coord))
+            ) {
+        line_elements.insert(current_coord);
+        // Avoid doubling the entries.
+        if (line.empty() || current_coord != line.back()) {
+            line.emplace_back(current_coord);
+        }
+        vald dual_director = normalizedDualVector(position);
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director *= -1;
         }
-        coordinates += dual_director;
-        coordinates_i = valtovec(dtoi(coordinates));
         previous_dual_director = dual_director;
+        position += dual_director;
+        current_coord = vald_to_coord(position);
     }
-    std::vector<vali> line;
-    line.reserve(line_set.size());
-    for (auto &element: line_set) {
-        line.push_back(vectoval(element));
-    }
-    return line;
 }
-
-
-std::vector<vali>
-FilledPattern::findLineGeneral(const vali &start, std::vector<vali> (FilledPattern::*line_propagation)(vald, vald)) {
-    vald real_coordinates = itod(start);
-    vald previous_director = getDirector(real_coordinates);
-    vald initial_dual_director = normalizedDualVector(previous_director);
-
-    std::vector<vali> points_in_dual_line_forward;
-    std::vector<vali> points_in_dual_line_backward;
-
-    points_in_dual_line_forward = (this->*line_propagation)(real_coordinates, initial_dual_director);
-    points_in_dual_line_backward = (this->*line_propagation)(real_coordinates, -initial_dual_director);
-    return stitchTwoVectors(points_in_dual_line_backward, points_in_dual_line_forward);
-}
-
 
 std::vector<vali> FilledPattern::findDualLine(const vali &start) {
-    return findLineGeneral(start, &FilledPattern::findDualLineOneDirection);
+    coord_set line_elements = {vali_to_coord(start)};
+    coord_vector line_sequence = {vali_to_coord(start)};
+    vald starting_dual_director = normalizedDualVector(itod(start));
+
+    updateDualLineInDirection(line_elements, line_sequence, starting_dual_director);
+    std::reverse(line_sequence.begin(), line_sequence.end());
+    updateDualLineInDirection(line_elements, line_sequence, -starting_dual_director);
+
+    std::vector<vali> line_vector;
+    line_vector.reserve(line_sequence.size());
+    for (auto &coordinate: line_sequence) {
+        line_vector.emplace_back(coord_to_vali(coordinate));
+    }
+
+    return line_vector;
 }
 
 
