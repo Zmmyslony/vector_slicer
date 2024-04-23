@@ -35,13 +35,36 @@ from lib.shape.basic import regular_hexagon, square, regular_triangle
 from lib import slicer_setup as slicer
 
 
-def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, filename=None):
-    fig = plt.figure(figsize=[6, 4], dpi=300)
+def refine_low_magnitude_splay(shape_grid, theta_grid, splay):
+    splay_magnitude = np.linalg.norm(splay, axis=2)
+    x_vector = np.where(shape_grid, np.cos(theta_grid), 0)
+    y_vector = np.where(shape_grid, np.sin(theta_grid), 0)
+    director = np.stack([x_vector, y_vector], axis=2)
+
+    return np.where(
+        np.logical_and(splay_magnitude[..., None] < 0.001, shape_grid[..., None]),
+        director * (splay_magnitude[..., None] + 0.001),
+        splay)
+
+
+def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=None,
+                 is_splay_shown=False, is_labels_shown=False):
+    mpl.rcParams.update({'font.size': 8})
+    refine_low_magnitude_splay(shape_grid, theta_grid, splay)
+    fig = plt.figure(figsize=[4, 3], dpi=450)
 
     x_min = mesh[:, :, 0].min()
     x_max = mesh[:, :, 0].max()
     y_min = mesh[:, :, 1].min()
     y_max = mesh[:, :, 1].max()
+
+    x_len = x_max - x_min
+    y_len = y_max - y_min
+
+    if x_len > y_len:
+        density = [1, float(y_len) / float(x_len)]
+    else:
+        density = [float(x_len) / float(y_len), 1]
 
     color_values = np.linspace(1, 0.666, 2)
     color_list = np.char.mod('%f', color_values)
@@ -50,14 +73,15 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, filename=None):
     colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, 2), discrete_colormap.N)
 
     local_shape_grid = copy(shape_grid)
-    plt.imshow(np.transpose(local_shape_grid), extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
-               origin="lower", cmap=discrete_colormap, norm=colormap_bounds)
-
     ax = plt.gca()
+    ax.imshow(np.transpose(local_shape_grid),
+              extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
+              origin="lower", cmap=discrete_colormap, norm=colormap_bounds, rasterized=True)
+
     ax.set_aspect('equal')
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(ticks=np.arange(2), label="is filled", cax=cax)
+    # cax = divider.append_axes("right", size="5%", pad=0.05)
+    # plt.colorbar(ticks=np.arange(2), label="", cax=cax)
     ax.set_xlim(x_min - (x_max - shape.x_min) * 0.05, x_max + (x_max - x_min) * 0.05)
     ax.set_ylim(y_min - (y_max - shape.y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
 
@@ -66,72 +90,48 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, filename=None):
     x_vector = np.where(shape_grid, np.cos(theta_grid), 0)
     y_vector = np.where(shape_grid, np.sin(theta_grid), 0)
 
-    ax.streamplot(x_mesh,
-                  y_mesh,
-                  x_vector.transpose(),
-                  y_vector.transpose(),
-                  density=1,
-                  arrowsize=0,
-                  integration_direction="both")
+    refined_splay = refine_low_magnitude_splay(shape_grid, theta_grid, splay)
+    splay_norm = np.linalg.norm(refined_splay, axis=2)
 
-    ax.set_title("Pattern")
-    ax.set_xlabel("x [mm]")
-    ax.set_ylabel("y [mm]")
+    if is_splay_shown:
+        if splay_norm.max() > 1:
+            norm = colors.LogNorm(vmax=splay_norm.max())
+        else:
+            norm = colors.Normalize(vmin=0, vmax=1)
+
+        streamplot = ax.streamplot(x_mesh,
+                                   y_mesh,
+                                   refined_splay[..., 0].transpose(),
+                                   refined_splay[..., 1].transpose(),
+                                   color=splay_norm.transpose(),
+                                   cmap='OrRd', density=density,
+                                   broken_streamlines=False,
+                                   norm=norm)
+
+        cax2 = divider.append_axes("right", size="5%", pad=0.1)
+        plt.colorbar(streamplot.lines, cax=cax2, label="splay")
+    else:
+        ax.streamplot(x_mesh,
+                      y_mesh,
+                      x_vector.transpose(),
+                      y_vector.transpose(),
+                      density=density,
+                      arrowsize=0,
+                      integration_direction="both")
+
+    if is_labels_shown:
+        ax.set_xlabel("x [mm]")
+        ax.set_ylabel("y [mm]")
+    else:
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.axis('off')
 
     if filename is None:
         plt.show()
     else:
-        plt.savefig(filename)
-        plt.close()
-
-
-def plot_splay(mesh, splay, filename=None):
-    splay_norm = np.linalg.norm(splay, axis=2)
-    fig = plt.figure(figsize=[6, 4], dpi=300)
-
-    x_min = mesh[:, :, 0].min()
-    x_max = mesh[:, :, 0].max()
-    y_min = mesh[:, :, 1].min()
-    y_max = mesh[:, :, 1].max()
-
-    x_mesh = np.linspace(x_min, x_max, mesh.shape[0], endpoint=True)
-    y_mesh = np.linspace(y_min, y_max, mesh.shape[1], endpoint=True)
-
-    if splay_norm.min() == 0 or splay_norm.max() < splay_norm.min() * 10:
-        im = plt.pcolormesh(x_mesh,
-                            y_mesh,
-                            splay_norm.transpose(),
-                            vmin=0,
-                            vmax=1,
-                            cmap='OrRd')
-    else:
-        im = plt.pcolormesh(x_mesh,
-                            y_mesh,
-                            splay_norm.transpose(),
-                            norm=colors.LogNorm(vmin=splay_norm.min(), vmax=np.median(splay_norm) * 10),
-                            cmap='OrRd')
-
-    plt.title("Splay vector")
-    plt.xlabel("x [mm]")
-    plt.ylabel("y [mm]")
-
-    ax = plt.gca()
-    ax.set_aspect('equal')
-    ax.set_xlim(x_min - (x_max - x_min) * 0.05, x_max + (x_max - x_min) * 0.05)
-    ax.set_ylim(y_min - (y_max - y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(im, cax=cax, label="splay")
-
-    ax.streamplot(x_mesh,
-                  y_mesh,
-                  splay[:, :, 0].transpose(),
-                  splay[:, :, 1].transpose(),
-                  density=1)
-    if filename is None:
-        plt.show()
-    else:
-        plt.savefig(filename)
+        plt.tight_layout()
+        plt.savefig(filename, format='png', transparent=True)
         plt.close()
 
 
@@ -367,20 +367,19 @@ class Pattern:
                 filling_method = "Splay"
             config_file = open(pattern_directory / "config.txt", "w")
             config_file.write("PrintRadius " + str(line_width_pixel / 2) + "\n")
-            config_file.write("InitialSeedingMethod " + filling_method.capitalize())
+            config_file.write("InitialSeedingMethod " + filling_method.capitalize() + "\n")
+            config_file.write("SeedSpacing " + str(line_width_pixel) + "\n")
             config_file.close()
             current_stage += 1
             print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}] Input files exported.")
 
         if is_displayed:
             director_filename = None
-            splay_filename = None
         else:
-            director_filename = get_plot_output_directory() / f"{pattern_name}_director.png"
-            splay_filename = get_plot_output_directory() / f"{pattern_name}_splay.png"
-        plot_pattern(shape_grid, mesh, director_grid, self.domain, filename=director_filename)
-        if splay_grid is not None:
-            plot_splay(mesh, splay_grid, filename=splay_filename)
+            director_filename = get_plot_output_directory() / f"{pattern_name}_design.png"
+
+        plot_pattern(shape_grid, mesh, director_grid, self.domain, splay_grid, filename=director_filename,
+                     is_splay_shown=False)
         current_stage += 1
 
         print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")
