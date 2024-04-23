@@ -34,8 +34,8 @@ bool tryGeneratingNewPath(FilledPattern &pattern) {
         else if (new_path.size() == 1) {
             pattern.fillPointsInCircle(seed_point.getCoordinates());
         } else {
-            pattern.fillPointsInHalfCircle(new_path.first(), new_path.second(), 1);
-            pattern.fillPointsInHalfCircle(new_path.last(), new_path.secondToLast(), 1);
+            pattern.fillPointsInHalfCircle(new_path, 1, true);
+            pattern.fillPointsInHalfCircle(new_path, 1, false);
             pattern.addNewPath(new_path);
         }
 

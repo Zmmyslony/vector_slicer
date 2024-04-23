@@ -40,8 +40,13 @@ std::vector<vali> findPointsInCircle(double radius);
 std::vector<vali> findPointsInCircle(int radius);
 
 std::vector<vali>
-findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
-               const vald &last_director);
+findHalfCircleCentres(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
+                      const vald &last_director);
+
+/// Finds coordinates in half-circle based on position of the centre-point and two edges of previous path segment.
+std::vector<vali>
+findHalfCircleEdges(const vali &centre_position, vald corner_one, vald corner_two, double radius,
+                    bool is_last_point_filled, const vald &last_move_direction);
 
 std::vector<vali> generateLineDisplacements(const vald &tangent, double radius);
 

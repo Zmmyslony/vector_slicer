@@ -461,8 +461,8 @@ void FilledPattern::removeLine(Path path) {
         new_step_int = current_coordinates - previous_coordinates;
         fillPointsFromList(current_points_to_fill, new_step_int, -1);
     }
-    fillPointsInHalfCircle(path.position(0), path.position(1), -1);
-    fillPointsInHalfCircle(path.last(), path.secondToLast(), -1);
+    fillPointsInHalfCircle(path, -1, true);
+    fillPointsInHalfCircle(path, -1, false);
 }
 
 
@@ -483,8 +483,43 @@ void FilledPattern::removeShortLines(double length_coefficient) {
 
 void
 FilledPattern::fillPointsInHalfCircle(const vali &last_coordinate, const vali &previous_coordinate, int value) {
-    std::vector<vali> half_circle_points = findHalfCircle(last_coordinate, previous_coordinate, getPrintRadius(),
-                                                          isFilled(last_coordinate), getDirector(last_coordinate));
+    std::vector<vali> half_circle_points = findHalfCircleCentres(last_coordinate, previous_coordinate, getPrintRadius(),
+                                                                 isFilled(last_coordinate),
+                                                                 getDirector(last_coordinate));
+    fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
+}
+
+void
+FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front) {
+    vali last_coordinate = path.last();
+    vali previous_coordinate = path.secondToLast();
+    vald corner_first = path.getNegativePathEdge().back();
+    vald corner_second = path.getPositivePathEdge().back();
+    if (is_front) {
+        last_coordinate = path.first();
+        double distance = 0;
+        int i = 0;
+        while (distance == 0 && i != path.size()) {
+            previous_coordinate = path.getPositionSequence()[i++];
+            distance = norm(last_coordinate - previous_coordinate);
+        }
+        corner_first = path.getNegativePathEdge().front();
+        corner_second = path.getPositivePathEdge().front();
+    } else {
+        double distance = 0;
+        int i = path.size();
+        while (distance == 0 && i != 0) {
+            previous_coordinate = path.getPositionSequence()[path.size() - --i];
+            distance = norm(last_coordinate - previous_coordinate);
+        }
+    }
+
+    vald last_move_direction = itod(last_coordinate - previous_coordinate);
+
+    std::vector<vali> half_circle_points = findHalfCircleEdges(last_coordinate, corner_first, corner_second,
+                                                               getPrintRadius(),
+                                                               isFilled(last_coordinate),
+                                                               last_move_direction);
     fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
 
@@ -698,7 +733,7 @@ SeedPoint FilledPattern::findSeedPoint() {
 std::vector<coord> FilledPattern::getSeedCoordinates() {
     std::vector<coord> seed_coordinates;
     seed_coordinates.reserve(sequence_of_paths.size());
-    for (auto &path : sequence_of_paths) {
+    for (auto &path: sequence_of_paths) {
         vali coordinates_vali = path.getSeedPoint().getCoordinates();
         seed_coordinates.emplace_back(coordinates_vali[0], coordinates_vali[1]);
     }

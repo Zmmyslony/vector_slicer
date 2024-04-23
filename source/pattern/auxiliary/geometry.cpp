@@ -124,8 +124,8 @@ vald normalisedResultant(const vald &primary_vector, const vald &secondary_vecto
 
 
 std::vector<vali>
-findHalfCircle(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
-               const vald &last_director) {
+findHalfCircleCentres(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
+                      const vald &last_director) {
 
     vald displacements = normalize(last_point - previous_point);
     vald tangent = normalisedResultant(displacements, last_director);
@@ -140,6 +140,34 @@ findHalfCircle(const vali &last_point, const vali &previous_point, double radius
 
             if (norm(displacement) <= radius && is_on_correct_side) {
                 points_to_fill.emplace_back(displacement + last_point);
+            }
+        }
+    }
+    return points_to_fill;
+}
+
+std::vector<vali>
+findHalfCircleEdges(const vali &centre_position, vald corner_one, vald corner_two, double radius,
+                    bool is_last_point_filled, const vald &last_move_direction) {
+    vald normal = perpendicular(last_move_direction);
+    corner_one -= itod(centre_position);
+    corner_two -= itod(centre_position);
+
+    if (dot(normal, corner_one) < 0) {
+        vald tmp = corner_one;
+        corner_one = corner_two;
+        corner_two = tmp;
+    }
+
+    std::vector<vali> points_to_fill;
+    int range = (int) radius + 1;
+    for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
+        for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
+            vali displacement = {x_displacement, y_displacement};
+            bool is_on_correct_side = isLeftOfEdge(displacement, corner_one, corner_two, is_last_point_filled);
+
+            if (norm(displacement) <= radius && is_on_correct_side) {
+                points_to_fill.emplace_back(displacement + centre_position);
             }
         }
     }

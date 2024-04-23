@@ -182,6 +182,8 @@ public:
     void updatePathsOverlap();
 
     std::vector<coord> getSeedCoordinates();
+
+    void fillPointsInHalfCircle(const Path &path, int value, bool is_front);
 };
 
 
