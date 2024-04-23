@@ -545,7 +545,7 @@ FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector 
         if (line.empty() || current_coord != line.back()) {
             line.emplace_back(current_coord);
         }
-        vald dual_director = normalizedDualVector(position);
+        vald dual_director = normalizedDualVector(getDirector(position));
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director *= -1;
         }
@@ -558,7 +558,7 @@ FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector 
 std::vector<vali> FilledPattern::findDualLine(const vali &start) {
     coord_set line_elements = {vali_to_coord(start)};
     coord_vector line_sequence = {vali_to_coord(start)};
-    vald starting_dual_director = normalizedDualVector(itod(start));
+    vald starting_dual_director = normalizedDualVector(getDirector(start));
 
     updateDualLineInDirection(line_elements, line_sequence, starting_dual_director);
     std::reverse(line_sequence.begin(), line_sequence.end());
