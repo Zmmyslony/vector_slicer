@@ -134,6 +134,12 @@ def read_paths(pattern_name):
     return list_of_lines
 
 
+def read_seeds(pattern_name):
+    input_path = get_slicer_output_directory() / "used_seeds" / (pattern_name + ".csv")
+    seeds = np.genfromtxt(input_path, delimiter=",")
+    return seeds
+
+
 def plot_paths(axis: plt.axis, list_of_lines, is_non_printing_moves_shown=True):
     if len(list_of_lines) == 0:
         raise RuntimeError("There are no paths to plot.")
@@ -152,7 +158,7 @@ def plot_paths(axis: plt.axis, list_of_lines, is_non_printing_moves_shown=True):
 
 
 def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True,
-                 is_axes_shown=True, max_fill_value=None, is_non_printing_moves_shown=True):
+                 is_axes_shown=True, max_fill_value=None, is_non_printing_moves_shown=True, is_seeds_shown=False):
     """
     Plots the sliced pattern with fill density (gray), printing moves (blue) and non-printing moves (orange).
     :param pattern_name:
@@ -166,6 +172,7 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
     """
     fill_matrix = read_fill_matrix(pattern_name)
     paths = read_paths(pattern_name)
+    seeds = read_seeds(pattern_name)
 
     if axis is None:
         fig = plt.figure(figsize=[6, 4], dpi=300)
@@ -177,6 +184,9 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
                                          is_axes_shown=is_axes_shown)
     if is_paths_shown:
         plotting_axis = plot_paths(plotting_axis, paths, is_non_printing_moves_shown=is_non_printing_moves_shown)
+
+    if is_seeds_shown:
+        plotting_axis.scatter(seeds[..., 0], seeds[..., 1], color="red", s=0.1)
 
     if is_axes_shown:
         plotting_axis.set_title(pattern_name)
@@ -191,7 +201,7 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
 
     if axis is None:
         save_name = get_plot_output_directory() / f"{pattern_name}_pattern.svg"
-        plt.savefig(save_name)
+        plt.savefig(save_name, transparent=True)
         plt.show()
     return axis
 
