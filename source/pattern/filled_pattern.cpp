@@ -695,4 +695,14 @@ SeedPoint FilledPattern::findSeedPoint() {
     return last_element;
 }
 
+std::vector<coord> FilledPattern::getSeedCoordinates() {
+    std::vector<coord> seed_coordinates;
+    seed_coordinates.reserve(sequence_of_paths.size());
+    for (auto &path : sequence_of_paths) {
+        vali coordinates_vali = path.getSeedPoint().getCoordinates();
+        seed_coordinates.emplace_back(coordinates_vali[0], coordinates_vali[1]);
+    }
+    return seed_coordinates;
+}
+
 #pragma clang diagnostic pop

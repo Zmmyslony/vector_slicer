@@ -180,6 +180,8 @@ public:
 
     /// Updates overlaps in Paths for postprocessing.
     void updatePathsOverlap();
+
+    std::vector<coord> getSeedCoordinates();
 };
 
 
