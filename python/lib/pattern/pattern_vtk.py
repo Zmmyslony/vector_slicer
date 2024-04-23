@@ -118,13 +118,3 @@ def interpolate_director_pattern(coordinates: np.ndarray, thetas: np.ndarray, bo
 def read_vtk_pattern(filename, field="theta", scale: float = 1):
     coordinates, thetas, bounds = read_vtk(filename, field)
     return interpolate_director_pattern(coordinates, thetas, bounds, scale)
-
-
-if __name__ == "__main__":
-    line_width_mm = 0.2
-    line_width_pixel = 9.
-
-    patt = read_vtk_pattern(
-        r"C:\Users\zmmys\OneDrive - University of Cambridge\Projects\1. In progress\Inverse problem solving - slicer data\data.vtk",
-        "dirAngle", scale=10)
-    patt.generateInputFiles(line_width_mm, "vtk", line_width_pixel, filling_method="splay", is_displayed=True)
