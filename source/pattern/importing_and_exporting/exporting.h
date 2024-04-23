@@ -28,6 +28,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 #include "../simulation/simulation.h"
+#include "../coord.h"
 
 namespace fs = boost::filesystem;
 using vali = std::valarray<int>;
@@ -59,5 +60,7 @@ void printVector(const std::vector<vali> &vector);
 
 void exportOverlap(const std::vector<std::vector<std::vector<double>>> &overlap_stack, const fs::path &path,
                    const std::string &suffix, double print_diameter, const Simulation &simulation);
+
+void exportCoordVector(const coord_vector &vector, const fs::path &filename);
 
 #endif //VECTOR_SLICER_EXPORTING_H
