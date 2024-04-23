@@ -47,15 +47,16 @@ coord add(const coord &current, const coord &other) {
 
 /// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
 bool isRemovedEastSouth(const coord_set &shape, const coord &coordinate) {
+    /// true -> black, false -> white
     bool P1 = shape.find(coordinate) != shape.end();
-    bool P2 = shape.find(add(coordinate, {1, 0})) != shape.end();
-    bool P3 = shape.find(add(coordinate, {1, 1})) != shape.end();
-    bool P4 = shape.find(add(coordinate, {0, 1})) != shape.end();
-    bool P5 = shape.find(add(coordinate, {-1, 1})) != shape.end();
-    bool P6 = shape.find(add(coordinate, {-1, 0})) != shape.end();
-    bool P7 = shape.find(add(coordinate, {-1, -1})) != shape.end();
-    bool P8 = shape.find(add(coordinate, {0, -1})) != shape.end();
-    bool P9 = shape.find(add(coordinate, {1, -1})) != shape.end();
+    bool P2 = shape.find(coordinate + coord{1, 0}) != shape.end();
+    bool P3 = shape.find(coordinate + coord{1, 1}) != shape.end();
+    bool P4 = shape.find(coordinate + coord{0, 1}) != shape.end();
+    bool P5 = shape.find(coordinate + coord{-1, 1}) != shape.end();
+    bool P6 = shape.find(coordinate + coord{-1, 0}) != shape.end();
+    bool P7 = shape.find(coordinate + coord{-1, -1}) != shape.end();
+    bool P8 = shape.find(coordinate + coord{0, -1}) != shape.end();
+    bool P9 = shape.find(coordinate + coord{1, -1}) != shape.end();
 
     int filled_neighbours = P2 + P3 + P4 + P5 + P6 + P7 + P8 + P9;
     int number_of_colour_transitions = (!P2 && P3) +
@@ -122,33 +123,6 @@ bool isSurroundedByFilledElements(const std::set<veci> &shape, const veci &coord
     return neighbour_sum >= 3 && !is_this_filled;
 }
 
-std::set<veci> fill_in_gaps(std::set<veci> shape) {
-    bool is_algorithm_in_progress = true;
-    std::vector<veci> neighbour_displacements = {{1,  0},
-                                                 {0,  1},
-                                                 {-1, 0},
-                                                 {0,  -1}};
-    while (is_algorithm_in_progress) {
-        std::set<veci> coordinates_to_add;
-        for (auto &filled_element: shape) {
-            for (auto &displacement: neighbour_displacements) {
-                veci neighbour = add(filled_element, displacement);
-                if (isSurroundedByFilledElements(shape, neighbour)) {
-                    coordinates_to_add.insert(neighbour);
-                }
-            }
-        }
-
-        if (coordinates_to_add.empty()) {
-            is_algorithm_in_progress = false;
-        } else {
-            for (auto &element: coordinates_to_add) {
-                shape.insert(element);
-            }
-        }
-    }
-    return shape;
-}
 
 coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<int>> &shape_matrix) {
     std::vector<vali> circle = findPointsInCircle(radius);
@@ -165,7 +139,7 @@ coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<
 }
 
 
-coord_set skeletonize(coord_set shape, int grow_size, int threads, const std::vector<std::vector<int>> &shape_matrix) {
+coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vector<int>> &shape_matrix) {
     std::ofstream detected_line_density_minima(
             "/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/detected_line_density_minima.csv");
     for (const auto &e: shape) detected_line_density_minima << e.first << "," << e.second << "\n";
@@ -176,34 +150,25 @@ coord_set skeletonize(coord_set shape, int grow_size, int threads, const std::ve
             "/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/grown_line_density_minima.csv");
     for (const auto &e: shape) grown_line_density_minima << e.first << "," << e.second << "\n";
 
-    bool is_any_pixel_removed_in_step = true;
-    while (is_any_pixel_removed_in_step) {
-        coord_set coordinates_to_remove;
+    /// Instead of doing the skeletonisation until convergence, we only aim to reduce what was added by the growth.
+    for (int i = 0; i <= grow_size; i++) {
+        coord_vector coordinates_to_remove_stage_one;
         for (auto &coordinate: shape) {
             if (isRemovedEastSouth(shape, coordinate)) {
-                coordinates_to_remove.insert(coordinate);
+                coordinates_to_remove_stage_one.emplace_back(coordinate);
             }
         }
 
-        for (auto &coordinate: coordinates_to_remove) {
-            shape.erase(coordinate);
-        }
+        for (auto &coordinate: coordinates_to_remove_stage_one) { shape.erase(coordinate); }
 
-        coord_set removed_coordinates_north_west;
+        coord_vector coordinates_to_remove_stage_two;
         for (auto &coordinate: shape) {
             if (isRemovedNorthWest(shape, coordinate)) {
-                removed_coordinates_north_west.insert(coordinate);
-                is_any_pixel_removed_in_step = true;
+                coordinates_to_remove_stage_two.emplace_back(coordinate);
             }
         }
 
-        for (auto &coordinate: removed_coordinates_north_west) {
-            shape.erase(coordinate);
-        }
-
-        is_any_pixel_removed_in_step =
-                !coordinates_to_remove.empty() ||
-                !removed_coordinates_north_west.empty();
+        for (auto &coordinate: coordinates_to_remove_stage_two) { shape.erase(coordinate); }
     }
 
     std::ofstream line_density_minima(

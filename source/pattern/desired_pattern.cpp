@@ -432,7 +432,7 @@ bool isValidSplayFreeLineEnd(bool is_boundary, double splay) {
 bool DesiredPattern::isBoundary(const coord &coordinate) {
     vali coord_i = {coordinate.first, coordinate.second};
     for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++){
+        for (int j = -1; j <= 1; j++) {
             vali displacement = {i, j};
             bool is_out_of_bounds = !isInShape(coord_i + displacement);
             if (is_out_of_bounds) {
@@ -545,7 +545,7 @@ void DesiredPattern::findLineDensityMinima() {
     }
 
     std::cout << "\rSearch for seeding lines complete." << std::endl;
-    solution_set = skeletonize(solution_set, 3, 1, shape_matrix);
+    solution_set = skeletonize(solution_set, 3, shape_matrix);
 
     std::vector<vali> line_density_minima_local;
     for (auto &vector: solution_set) {
