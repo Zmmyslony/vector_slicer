@@ -32,10 +32,8 @@ stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<s
     if (!backwards_vector.empty()) {
         backwards_vector.pop_back();
     }
-    std::vector<std::valarray<int>> stitched_vector = backwards_vector;
-    stitched_vector.reserve(backwards_vector.size() + forwards_vector.size());
-    stitched_vector.insert(stitched_vector.end(), forwards_vector.begin(), forwards_vector.end());
-    return stitched_vector;
+    backwards_vector.insert(backwards_vector.end(), forwards_vector.begin(), forwards_vector.end());
+    return backwards_vector;
 }
 
 double mean(const vecd &data) {
