@@ -52,7 +52,8 @@ def radial_symmetry(director: Director, x_centre=0, y_centre=0) -> Director:
         # Append y-coordinates as 0 everywhere.
         r = r[:, :, None]
         r = np.append(r, np.zeros_like(r), axis=2)
-        return np.mod(director.director(r) + radial_angle, np.pi)
+
+        return np.mod(director.director(r) + radial_angle, 2 * np.pi)
 
     return Director(symmetric_director)
 
