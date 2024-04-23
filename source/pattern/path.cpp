@@ -54,6 +54,8 @@ unsigned int Path::size() const {
 template<typename T>
 std::vector<T> joinVectors(std::vector<T> forward_vector, std::vector<T> backward_vector) {
     std::reverse(backward_vector.begin(), backward_vector.end());
+    if (forward_vector.empty()) { return backward_vector; }
+    if (backward_vector.empty()) { return forward_vector; }
     backward_vector.insert(backward_vector.end(), forward_vector.begin() + 1, forward_vector.end());
     return backward_vector;
 }
@@ -186,6 +188,14 @@ std::vector<vali> Path::findPointsToFill(int i, bool is_position_filled) const {
 
 std::vector<vali> Path::findPointsToFill(bool is_position_filled) const {
     return findPointsToFill(size() - 1, is_position_filled);
+}
+
+const std::vector<vald> &Path::getPositivePathEdge() const {
+    return positive_path_edge;
+}
+
+const std::vector<vald> &Path::getNegativePathEdge() const {
+    return negative_path_edge;
 }
 
 

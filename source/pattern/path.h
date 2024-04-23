@@ -52,6 +52,10 @@ public:
 
     void addPoint(const vali &positions, const vald &positive_edge, const vald &negative_edge);
 
+    const std::vector<vald> &getPositivePathEdge() const;
+
+    const std::vector<vald> &getNegativePathEdge() const;
+
     [[nodiscard]] vali first() const ;
 
     [[nodiscard]] vali last() const ;
