@@ -32,7 +32,7 @@ FillingMethodConfig::FillingMethodConfig(const fs::path &config_path) :
         is_vector_sorting_enabled(readKeyBool(config_path, "is_vector_sorting_enabled")),
         is_points_removed(readKeyBool(config_path, "is_points_removed")),
         minimal_line_length(readKeyDouble(config_path, "minimal_line_length")),
-        discontinuity_angular_threshold(readKeyDouble(config_path, "discontinuity_threshold")),
+        discontinuity_angular_threshold(readKeyDouble(config_path, "discontinuity_angular_threshold")),
         discontinuity_behaviour(readKeyInt(config_path, "discontinuity_behaviour")) {
 
 }
@@ -109,7 +109,7 @@ std::string FillingMethodConfig::textFillingMethodConfig() const {
             << "\nminimal_line_length = " << minimal_line_length
             << "\n\n# Angular discontinuity threshold - if a director at path's end differs from the director at its beginning by this much\n"
                "# we assume it as discontinuous. Can be used for smoothing the paths in areas of rapidly varying director by sticking."
-            << "\ndiscontinuity_threshold = " << discontinuity_angular_threshold
+            << "\ndiscontinuity_angular_threshold = " << discontinuity_angular_threshold
             << "\n\n# Discontinuity behaviour:\n"
                "# 0 - ignoring: discontinuities are ignored,\n"
                "# 1 - sticking: path continues as close after the discontinuity as possible,\n"
@@ -126,7 +126,7 @@ void FillingMethodConfig::editFillingMethodConfig() {
         editBool(is_vector_sorting_enabled, "is_vector_sorting_enabled");
         editBool(is_points_removed, "is_points_removed");
         editDouble(minimal_line_length, "minimal_line_length");
-        editDouble(discontinuity_angular_threshold, "discontinuity_threshold");
+        editDouble(discontinuity_angular_threshold, "discontinuity_angular_threshold");
         editInt(discontinuity_behaviour, "discontinuity_behaviour");
         editInt(sorting_method, "sorting_method");
 
