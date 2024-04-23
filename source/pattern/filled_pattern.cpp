@@ -509,7 +509,7 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
         double distance = 0;
         int i = path.size();
         while (distance == 0 && i != 0) {
-            previous_coordinate = path.getPositionSequence()[path.size() - --i];
+            previous_coordinate = path.getPositionSequence()[--i];
             distance = norm(last_coordinate - previous_coordinate);
         }
     }
