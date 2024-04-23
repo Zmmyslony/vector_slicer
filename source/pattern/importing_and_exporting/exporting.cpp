@@ -300,3 +300,13 @@ void printVector(const std::vector<vali> &vector) {
         std::cout << point[0] << "," << point[1] << std::endl;
     }
 }
+
+void exportCoordVector(const coord_vector &vector, const fs::path &filename) {
+    std::ofstream file(filename.string());
+    if (file.is_open()) {
+        for (auto &coord: vector) {
+            file << coord.first << "," << coord.second << std::endl;
+        }
+    }
+    file.close();
+}

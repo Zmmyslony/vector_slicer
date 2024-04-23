@@ -36,6 +36,7 @@
 #define OPTIMISATION_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/optimisation_save"
 #define OVERLAP_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/overlap"
 #define PATHS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/paths"
+#define SEED_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/used_seeds"
 
 #define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"
 

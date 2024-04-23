@@ -245,6 +245,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     fs::path matrices_directory = createCsvPath(FILLED_MATRIX_EXPORT_PATH, pattern_name);
     fs::path best_config_directory = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
     fs::path overlap_directory = createCsvPath(OVERLAP_EXPORT_PATH, pattern_name);
+    fs::path seed_directory = createCsvPath(SEED_EXPORT_PATH, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     std::vector<std::vector<std::vector<double>>> sorted_overlaps;
@@ -263,6 +264,8 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
     exportConfigList(patterns, best_config_directory, number_of_layers);
     patterns[0].getFilledPattern().exportFilledMatrix(matrices_directory);
+    std::vector<coord> seeds = patterns[0].getFilledPattern().getSeedCoordinates();
+    exportCoordVector(seeds, seed_directory);
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter, simulation);
     exportOverlap(sorted_overlaps, overlap_directory, pattern_name, print_diameter, simulation);
 }
