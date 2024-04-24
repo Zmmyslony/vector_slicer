@@ -553,7 +553,8 @@ void DesiredPattern::findLineDensityMinima() {
     }
 
     if (line_density_minima_local.empty()) {
-
+        std::cout << "No splay seeding lines found, which indicates a pattern being composed of +1 defects. "
+                     "Proceeding with dual seeding. " << std::endl;
         return;
     }
     std::vector<std::vector<vali>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
