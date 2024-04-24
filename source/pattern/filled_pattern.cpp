@@ -293,21 +293,6 @@ vald FilledPattern::calculateNextPosition(vald &positions, vald &previous_step, 
     }
 }
 
-bool FilledPattern::isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const {
-    if (desired_pattern.get().getDiscontinuityBehaviour() == DISCONTINUITY_IGNORE) { return true; }
-    if (!isValid(new_coordinates)) { return false; }
-
-    vald previous_director = getDirector(previous_coordinates);
-    vald new_director = getDirector(new_coordinates);
-    double product = dot(previous_director, new_director) / (norm(previous_director) * norm(new_director));
-
-    if (desired_pattern.get().isVectorFilled()) {
-        return product >= desired_pattern.get().getDiscontinuityThresholdCos();
-    } else {
-        return abs(product) >= desired_pattern.get().getDiscontinuityThresholdCos();
-    }
-}
-
 bool FilledPattern::isInRange(const vali &index) const {
     return ::isInRange(index, desired_pattern.get().getDimensions());
 }
@@ -316,14 +301,21 @@ bool FilledPattern::isInRange(const vald &index) const {
     return ::isInRange(dtoi(index), desired_pattern.get().getDimensions());
 }
 
+bool FilledPattern::isDirectorContinuous(const vali &previous_coordinates, const vali &new_coordinates) const {
+    vald previous_director = getDirector(previous_coordinates);
+    vald new_director = getDirector(new_coordinates);
+    double product = dot(previous_director, new_director) / (norm(previous_director) * norm(new_director));
+    if (!desired_pattern.get().isVectorFilled()) { product = fabs(product); }
+
+    return product >= desired_pattern.get().getDiscontinuityThresholdCos();
+}
+
 /// Returns bool depending whether propagation was successful.
 bool FilledPattern::propagatePath(Path &current_path, vald &positions, vald &previous_step, int length) {
     vali current_coordinates = dtoi(positions);
     if (!isInRange(current_coordinates)) { return false; }
 
     // Try creating the longest possible step
-
-
     vald new_positions = INVALID_POSITION;
     vald potential_positions = INVALID_POSITION;
     /// Keeps last valid position, even if it is discontinuous.
@@ -674,7 +666,11 @@ FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &
 
 
 bool FilledPattern::isFilled(const vali &coordinates) const {
-    return number_of_times_filled[coordinates[0]][coordinates[1]];
+    if (desired_pattern.get().isInShape(coordinates)) {
+        return number_of_times_filled[coordinates[0]][coordinates[1]];
+    } else {
+        return true;
+    }
 }
 
 
@@ -694,13 +690,16 @@ bool FilledPattern::isTerminable(const vali &coordinate, const vald &direction) 
     if (getTerminationRadius() <= 0) {
         return !isFree(coordinate);
     }
-    vali tangent = dtoi(normalize(direction) * getTerminationRadius());
-    vali normal = perpendicular(tangent);
+    vald tangent = normalize(direction) * getTerminationRadius();
+    vald normal = perpendicular(tangent);
 
-    return !isFree(coordinate) ||
-           !isFree(coordinate + tangent) ||
-           !isFree(coordinate + normal) ||
-           !isFree(coordinate - normal);
+    for (auto &displacement: collision_list) {
+        if (isLeftOfEdge(itod(displacement), normal, -normal, true) &&
+            !isFree(coordinate + displacement)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
