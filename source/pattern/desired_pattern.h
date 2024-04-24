@@ -70,7 +70,7 @@ class DesiredPattern {
     /// Behaviour at discontinuities: 0 - ignoring, 1 - sticking, 2 - terminating.
     int discontinuity_behaviour = DISCONTINUITY_STICK;
 
-    /// Termination
+    /// Maximal angle for the director to be counted as discontinuous.
     double discontinuity_threshold_cos = 0;
 
     /// Splay seeding: Initialised as original shape matrix and 1's are replaced with 0's once they are considered by the algorithm.
