@@ -39,6 +39,8 @@ std::vector<vali> findPointsInCircle(double radius);
 
 std::vector<vali> findPointsInCircle(int radius);
 
+bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive);
+
 std::vector<vali>
 findHalfCircleCentres(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
                       const vald &last_director);
