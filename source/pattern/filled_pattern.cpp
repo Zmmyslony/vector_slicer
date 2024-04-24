@@ -84,20 +84,23 @@ void FilledPattern::setup() {
     collision_list = circleDisplacements(getTerminationRadius());
     random_engine = std::mt19937(getSeed());
 
-    zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima(), 0);
-    perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
-    seed_lines = perimeter_seeds.size() + zero_splay_seeds.size();
 
     switch (getInitialSeedingMethod()) {
         case Splay:
             if (desired_pattern.get().isSplayProvided()) {
                 search_stage = SplayFilling;
+                zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima(), 0);
+                seed_lines = zero_splay_seeds.size();
             } else {
-                search_stage = PerimeterFilling;
+                search_stage = RemainingFilling;
+                perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
+                seed_lines = perimeter_seeds.size();
             }
             break;
         case Perimeter:
             search_stage = PerimeterFilling;
+            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
+            seed_lines = perimeter_seeds.size();
             break;
         case Dual:
             search_stage = RemainingFilling;
