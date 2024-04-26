@@ -388,17 +388,18 @@ bool isLooped(const coord_vector &coordinate_line) {
         return false;
     }
     coord_set front_set(coordinate_line.begin(), coordinate_line.end() - 3);
+    coord last_coord = coordinate_line.back();
     int x = coordinate_line.back().first;
     int y = coordinate_line.back().second;
     coord_vector neighbours = {
-            {x + 1, y + 0},
-            {x + 1, y + 1},
-            {x + 0, y + 1},
-            {x - 1, y + 1},
-            {x - 1, y + 0},
-            {x - 1, y + -1},
-            {x + 0, y + -1},
-            {x + 1, y + -1},
+            last_coord + coord{1, 0},
+            last_coord + coord{1, 1},
+            last_coord + coord{0, 1},
+            last_coord + coord{-1, 1},
+            last_coord + coord{-1, 0},
+            last_coord + coord{-1, -1},
+            last_coord + coord{0, -1},
+            last_coord + coord{1, -1},
     };
     bool is_looped = std::any_of(neighbours.begin(), neighbours.end(),
                                  [front_set](const coord &coordinate) {
@@ -452,42 +453,35 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
     /// The splay magnitude in the direction from back to front.
     std::vector<double> directed_splay = directedSplayMagnitude(integral_curve_coords);
 
-    bool is_looped = isLooped(integral_curve_coords);
-    bool is_end_boundary = !is_looped;
     coord_vector current_splay_free_line;
     coord_set valid_coords_set;
 
-    bool is_whole_curve_boundary = true;
+    int boundary_nodes_count = 0;
     while (!integral_curve_coords.empty()) {
         coord coordinate = integral_curve_coords.back();
         is_coordinate_in_curve[coordinate.first][coordinate.second] = 0;
         integral_curve_coords.pop_back();
         double splay = directed_splay.back();
         directed_splay.pop_back();
-        if (integral_curve_coords.empty() && !is_looped) {
-            is_end_boundary = true;
-        }
-        if (is_whole_curve_boundary) {
-            is_whole_curve_boundary &= isBoundary(coordinate);
-        }
+        bool is_current_boundary = isBoundary(coordinate);
 
-        if (isValidSplayFreeLineEnd(is_end_boundary, splay) && !current_splay_free_line.empty()) {
+        if (isValidSplayFreeLineEnd(is_current_boundary, splay) && !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
-            if (!isLooped(current_splay_free_line) &&
-                (!is_whole_curve_boundary || current_splay_free_line.size() == 1)) {
+            boundary_nodes_count += is_current_boundary;
+            bool is_looped = isLooped(current_splay_free_line);
+            if  (!is_looped && boundary_nodes_count <= 1) {
                 valid_coords_set.insert(current_splay_free_line[current_splay_free_line.size() / 2]);
             }
             current_splay_free_line.clear();
         }
         if (isValidSplayFreeLineInterior(splay) && !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
+            boundary_nodes_count += is_current_boundary;
         }
-        if (isValidSplayFreeLineStart(is_end_boundary, splay)) {
+        if (isValidSplayFreeLineStart(is_current_boundary, splay)) {
             current_splay_free_line = {coordinate};
-            is_whole_curve_boundary = isBoundary(coordinate);
+            boundary_nodes_count = is_current_boundary;
         }
-
-        is_end_boundary = false;
     }
     return valid_coords_set;
 }
@@ -545,7 +539,7 @@ void DesiredPattern::findLineDensityMinima() {
     }
 
     std::cout << "\rSearch for seeding lines complete." << std::endl;
-    solution_set = skeletonize(solution_set, 3, shape_matrix);
+    solution_set = skeletonize(solution_set, 5, shape_matrix);
 
     std::vector<vali> line_density_minima_local;
     for (auto &vector: solution_set) {
