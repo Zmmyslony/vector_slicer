@@ -58,6 +58,13 @@ vali findClosestNeighbour(std::vector<vali> &array, vali &element) {
     return closest_element;
 }
 
+/// Checks if the line forms a loop.
+bool isLooped(const std::vector<vali> &line) {
+    vali first = line.front();
+    vali last = line.back();
+    return norm(first - last) <= 2;
+}
+
 std::vector<std::vector<vali>>
 separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordinates, double separation_distance) {
     vali current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);

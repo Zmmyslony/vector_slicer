@@ -42,7 +42,10 @@ using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
 std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance);
+
 std::vector<std::vector<vali>>
 separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordinates, double separation_distance);
+
+bool isLooped(const std::vector<vali> &line);
 
 #endif //VECTOR_SLICER_LINE_OPERATIONS_H

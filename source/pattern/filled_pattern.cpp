@@ -31,6 +31,7 @@
 #include "auxiliary/repulsion.h"
 #include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
+#include "auxiliary/line_operations.h"
 
 #define INVALID_POSITION {-1, -1}
 /// Minimal value of cosine between current and previous director for it to be assumed as continuous.
@@ -645,7 +646,7 @@ FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &
     int starting_index = index_distribution(random_engine);
     std::vector<SeedPoint> separated_starting_points = {{line[starting_index], getDirector(line[starting_index]),
                                                          line_index, starting_index}};
-
+    bool is_looped = isLooped(line);
     bool is_filled_coordinate_encountered = false;
 
     vali previous_position = line[starting_index];
@@ -653,13 +654,21 @@ FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &
         tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
                                    separated_starting_points, line_index, i);
     }
-    std::reverse(separated_starting_points.begin(), separated_starting_points.end());
 
-    is_filled_coordinate_encountered = false;
-    previous_position = line[starting_index];
-    for (int i = starting_index - 1; i >= 0; i--) {
-        tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
-                                   separated_starting_points, line_index, i);
+    if (is_looped) {
+        for (int i = 0; i < 0; i++) {
+            tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
+                                       separated_starting_points, line_index, i);
+        }
+    } else {
+        std::reverse(separated_starting_points.begin(), separated_starting_points.end());
+
+        is_filled_coordinate_encountered = false;
+        previous_position = line[starting_index];
+        for (int i = starting_index - 1; i >= 0; i--) {
+            tryAddingPointToSpacedLine(line[i], previous_position, is_filled_coordinate_encountered, separation,
+                                       separated_starting_points, line_index, i);
+        }
     }
     return separated_starting_points;
 }
