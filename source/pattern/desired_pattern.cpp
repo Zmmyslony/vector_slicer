@@ -96,6 +96,7 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
 
 
 void DesiredPattern::updateProperties() {
+    adjustMargins();
     if (!isSplayProvided()) {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred, threads);
         splay_array = vectorArrayNorm(splay_vector_array, threads);
@@ -106,7 +107,8 @@ void DesiredPattern::updateProperties() {
             throw std::runtime_error("Incompatible y-size of splay array and shape array.");
         }
     }
-    adjustMargins();
+
+    std::cout << "Pattern dimensions: " << dimensions[0] << "x" << dimensions[1] << std::endl;
     if (is_splay_filling_enabled) {
         findLineDensityMinima();
     }
@@ -178,8 +180,8 @@ vald DesiredPattern::getDirector(const vald &positions) const {
 }
 
 bool DesiredPattern::isInShape(const coord &coordinate) const {
-    return 0 < coordinate.first && coordinate.first < dimensions[0] &&
-           0 < coordinate.second && coordinate.second < dimensions[0] &&
+    return 0 <= coordinate.first && coordinate.first < dimensions[0] &&
+           0 <= coordinate.second && coordinate.second < dimensions[1] &&
            shape_matrix[coordinate.first][coordinate.second];
 }
 
