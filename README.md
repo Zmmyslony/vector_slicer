@@ -19,56 +19,35 @@ Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and sugges
 ***
 
 ## Installation guide
-Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
-boost (https://www.boost.org/) are installed. 
+Please ensure that system specific C++ compiler, git (https://git-scm.com/) and cmake (https://cmake.org/) are installed.
 
 ### Linux
-First run in terminal  
-```
-sudo apt install cmake libboost-all-dev
-```
-
-In the desired parent directory run
+In the desired parent directory (it will create a subdirectory _vector_slicer_) run 
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
-cmake -S ./ -B ./build
-cmake --build ./build --config Release
+sudo chmod +x ./install_lin.sh
+./install_lin.sh
 ```
 
 ### macOS
-**Warning: This software has been written for gcc compiler, and not AppleClang, so user needs to use gcc compiler or debug on their own. Instructions below outline how to switch to gcc and compile using it.**
-
-First, run in terminal
-```
-brew install cmake git boost libgomp
-```
+**Warning: This software uses OpenMP and so is incompatible with AppleClang.
+By default, the installation script uses LLVM.**
 
 In the desired parent directory run
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
-cmake -S ./ -B ./build
-cmake --build ./build --config Release 
+sudo chmod +x ./install_mac.sh
+./install_lin.sh
 ```
 
 ### Windows
-If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
-```
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg && bootstrap-vcpkg.bat
-vcpkg install boost:x64-windows
-vcpkg integrate install 
-```
-Once the vcpkg is integrated, note down the line starting with -DCMAKE_TOOLCHAIN_FILE=... as it will be used for later 
-configuration.
-
 In the desired parent directory run in terminal
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
-cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=...
-cmake --build ./build --config Release
+install_win.bat
 ```
 
 ***
@@ -112,7 +91,7 @@ Additionally, **config.txt** needs to be provided in order to control the fillin
 Unoptimisable:
 * _PrintRadius_ (default=5) – defines the relation between grid spacing and path width. Small
   values (<4) as they introduce numerical errors, likewise large values (>10) offer little improvement.
-* _InitialSeedingMethod_ (optional, default=Spla) – options: _Splay_, _Perimeter_, _Dual_; Splay filling first searches 
+* _InitialSeedingMethod_ (optional, default=Splay) – options: _Splay_, _Perimeter_, _Dual_; Splay filling first searches 
   regions of maximum divergence and seeds lines there, after that it switches to Perimeter which finds areas on the 
   perimeter where either the splay is zero or the splay vector points outwards and then seeds them, and then dual line 
   the approach is taken in order to ensure complete filling. 
@@ -123,7 +102,7 @@ Optimisable:
 * _Repulsion_ (default=0) – strength of repulsion from preexisting paths in range _RepulsionRadius_.
 * _RepulsionAngle_ (default=3.14) – the maximum angle between repulsed direction and preferred. 
 * _SeedSpacing_ (default=2 * PrintRadius)
-* _Seed_ (default=0, isOptimisable=True) –  used only when using the function "recalculateBestConfig".
+* _Seed_ (default=0) –  used only when using the function "recalculateBestConfig".
 * _TerminationRadius_ (default=5) – minimal distance between two separate paths for 
   propagation to continue.
 * _RepulsionRadius_ (default=0) – legacy, allows the pattern to repulse from paths further
@@ -161,7 +140,7 @@ Remaining files:
 * **filled_matrices** - contains information about how many times was each pixel fixed for the first (best) seed.
 * **logs** - Bayesopt logs used for debugging.
 * **optimisation_save** - Bayesopt optimisation progress for re-optimisation or optimisation monitoring.
-
+* **used_seeds** - list of coordinates of seeds used for propagation of paths in the best numerical seed.
 ***
 
 ## Funding

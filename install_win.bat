@@ -5,7 +5,7 @@ SET cwd=$(pwd)
 IF EXIST "C:\src\vcpkg\" (
     cd C:\src\vcpkg\
     git pull
-    vcpkg upgrade --no-dry-run
+    vcpkg install boost:x64-windows
     vcpkg integrate install
 ) else (
      mkdir C:\src
@@ -15,7 +15,6 @@ IF EXIST "C:\src\vcpkg\" (
      vcpkg install boost:x64-windows
      vcpkg integrate install
 )
-
 
 cmake_path=-DCMAKE_TOOLCHAIN_FILE=C:\src\vcpkg\scripts\buildsystems\vcpkg.cmake
 
