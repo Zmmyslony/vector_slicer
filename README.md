@@ -22,8 +22,13 @@ Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and sugges
 Please ensure that system specific C++ compiler, git (https://git-scm.com/), cmake (https://cmake.org/) and 
 boost (https://www.boost.org/) are installed. 
 
-### Linux / macOS
-In the desired parent directory run in terminal
+### Linux
+First run in terminal  
+```
+sudo apt install cmake libboost-all-dev
+```
+
+In the desired parent directory run
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
@@ -31,12 +36,27 @@ cmake -S ./ -B ./build
 cmake --build ./build --config Release
 ```
 
+### macOS
+**Warning: This software has been written for gcc compiler, and not AppleClang, so user needs to use gcc compiler or debug on their own. Instructions below outline how to switch to gcc and compile using it.**
+
+First, run in terminal
+```
+brew install cmake git boost libgomp
+```
+
+In the desired parent directory run
+```
+git clone https://github.com/Zmmyslony/vector_slicer.git
+cd vector_slicer
+cmake -S ./ -B ./build
+cmake --build ./build --config Release 
+```
+
 ### Windows
 If boost is not installed we recommend using vcpkg (https://vcpkg.io/en/) which can be installed by running in the terminal
 ```
 git clone https://github.com/Microsoft/vcpkg.git
-.\vcpkg\bootstrap-vcpkg.bat
-cd vcpkg
+cd vcpkg && bootstrap-vcpkg.bat
 vcpkg install boost:x64-windows
 vcpkg integrate install 
 ```
