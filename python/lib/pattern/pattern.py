@@ -62,21 +62,19 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
     y_len = y_max - y_min
 
     if x_len > y_len:
-        density = [1, float(y_len) / float(x_len)]
+        streamplot_density = [1, float(y_len) / float(x_len)]
     else:
-        density = [float(x_len) / float(y_len), 1]
+        streamplot_density = [float(x_len) / float(y_len), 1]
 
-    color_values = np.linspace(1, 0.666, 2)
-    color_list = np.char.mod('%f', color_values)
-
-    discrete_colormap = mpl.colors.ListedColormap(color_list)
-    colormap_bounds = mpl.colors.BoundaryNorm(np.arange(-0.5, 2), discrete_colormap.N)
+    discrete_colormap = mpl.colors.ListedColormap(["white", "lightgray"])
+    colormap_bounds = mpl.colors.BoundaryNorm([0, 0.5], discrete_colormap.N)
 
     local_shape_grid = copy(shape_grid)
     ax = plt.gca()
     ax.imshow(np.transpose(local_shape_grid),
               extent=[shape.x_min, shape.x_max, shape.y_min, shape.y_max],
-              origin="lower", cmap=discrete_colormap, norm=colormap_bounds, rasterized=True)
+              origin="lower", cmap=discrete_colormap, norm=colormap_bounds, rasterized=True,
+              zorder=0)
 
     ax.set_aspect('equal')
     divider = make_axes_locatable(ax)
@@ -93,31 +91,41 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
     refined_splay = refine_low_magnitude_splay(shape_grid, theta_grid, splay)
     splay_norm = np.linalg.norm(refined_splay, axis=2)
 
+    ax.streamplot(x_mesh,
+                  y_mesh,
+                  x_vector.transpose(),
+                  y_vector.transpose(),
+                  density=streamplot_density,
+                  arrowsize=0,
+                  integration_direction="both",
+                  zorder=1)
+
     if is_splay_shown:
         if splay_norm.max() > 1:
             norm = colors.LogNorm(vmax=splay_norm.max())
         else:
             norm = colors.Normalize(vmin=0, vmax=1)
 
-        streamplot = ax.streamplot(x_mesh,
-                                   y_mesh,
-                                   refined_splay[..., 0].transpose(),
-                                   refined_splay[..., 1].transpose(),
-                                   color=splay_norm.transpose(),
-                                   cmap='OrRd', density=density,
-                                   broken_streamlines=False,
-                                   norm=norm)
+        resolution = 15
+        x_size = splay.shape[0]
+        y_size = splay.shape[1]
+        if x_size > resolution and x_size >= y_size:
+            scale = int(x_size / resolution)
+        elif y_size > resolution and y_size > x_size:
+            scale = int(y_size / resolution)
+        else:
+            scale = 1
 
-        cax2 = divider.append_axes("right", size="5%", pad=0.1)
-        plt.colorbar(streamplot.lines, cax=cax2, label="splay")
-    else:
-        ax.streamplot(x_mesh,
-                      y_mesh,
-                      x_vector.transpose(),
-                      y_vector.transpose(),
-                      density=density,
-                      arrowsize=0,
-                      integration_direction="both")
+        splayplot = ax.quiver(x_mesh[::scale],
+                              y_mesh[::scale],
+                              refined_splay[::scale, ::scale, 0].transpose(),
+                              refined_splay[::scale, ::scale, 1].transpose(),
+                              color="tab:orange",
+                              zorder=2
+                              )
+
+        # cax2 = divider.append_axes("right", size="5%", pad=0.1)
+        # plt.colorbar(streamplot.lines, cax=cax2, label="splay")
 
     if is_labels_shown:
         ax.set_xlabel("x [mm]")
@@ -315,7 +323,7 @@ class Pattern:
         return shape_copy
 
     def generateInputFiles(self, line_width_millimetre: float, pattern_name=None, line_width_pixel: int = 9,
-                           filling_method=None, is_displayed=False, tiling: Tiling = None):
+                           filling_method=None, is_displayed=False, tiling: Tiling = None, is_splay_shown=False):
         """
         Generates theta, splay and config files for the pattern.
         :param line_width_millimetre: printing line width used for meshing.
@@ -324,6 +332,7 @@ class Pattern:
         :param filling_method: Splay, Perimeter or Dual.
         :param is_displayed: Is the pattern displayed after the generation.
         :param tiling: Tiling overwrites the default shape and tiles using
+        :param is_splay_shown: Bool to change whether a quiver plot should be superimposed on the director.
         :return: pattern_name
         """
         if pattern_name is None:
@@ -379,7 +388,7 @@ class Pattern:
             director_filename = get_plot_output_directory() / f"{pattern_name}_design.png"
 
         plot_pattern(shape_grid, mesh, director_grid, self.domain, splay_grid, filename=director_filename,
-                     is_splay_shown=False)
+                     is_splay_shown=is_splay_shown)
         current_stage += 1
 
         print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")
