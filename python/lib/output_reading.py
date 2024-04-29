@@ -170,9 +170,6 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
     :param max_fill_value: maximum value of the fill matrix.
     :return:
     """
-    fill_matrix = read_fill_matrix(pattern_name)
-    paths = read_paths(pattern_name)
-    seeds = read_seeds(pattern_name)
 
     if axis is None:
         fig = plt.figure(figsize=[6, 4], dpi=300)
@@ -180,12 +177,15 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
     else:
         plotting_axis = axis
     if is_fill_density_shown:
+        fill_matrix = read_fill_matrix(pattern_name)
         plotting_axis = plot_fill_matrix(plotting_axis, fill_matrix, max_fill_value=max_fill_value,
                                          is_axes_shown=is_axes_shown)
     if is_paths_shown:
+        paths = read_paths(pattern_name)
         plotting_axis = plot_paths(plotting_axis, paths, is_non_printing_moves_shown=is_non_printing_moves_shown)
 
     if is_seeds_shown:
+        seeds = read_seeds(pattern_name)
         plotting_axis.scatter(seeds[..., 0], seeds[..., 1], color="red", s=0.1)
 
     if is_axes_shown:
