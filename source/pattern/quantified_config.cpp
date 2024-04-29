@@ -87,7 +87,11 @@ double QuantifiedConfig::calculateEmptySpots() {
             }
         }
     }
-    return (double) number_of_empty_spots / (double) number_of_elements;
+    if (number_of_elements > 0) {
+        return (double) number_of_empty_spots / (double) number_of_elements;
+    } else {
+        return 1;
+    }
 }
 
 
@@ -105,7 +109,11 @@ double QuantifiedConfig::calculateAverageOverlap() {
             }
         }
     }
-    return (double) total_overlap / (double) total_filled_elements;
+    if (total_filled_elements > 0) {
+        return (double) total_overlap / (double) total_filled_elements;
+    } else {
+        return 1;
+    }
 }
 
 
@@ -150,58 +158,51 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     }
 }
 
-double QuantifiedConfig::calculatePathLengthDeviation(int order) {
-    double length_scale = fmax(desired_pattern.get().getDimensions()[0], desired_pattern.get().getDimensions()[1]);
-    double sum_of_lengths = 0;
-    for (auto &path: getSequenceOfPaths()) {
-        sum_of_lengths += path.getLength();
-    }
-    double average_length = sum_of_lengths / paths_number;
-
-    double deviations_sum = 0;
-    for (auto &path: getSequenceOfPaths()) {
-        deviations_sum += pow(std::abs((path.getLength() - average_length) / length_scale), order);
-    }
-    deviations_sum /= paths_number;
-    return pow(deviations_sum, 1. / order);
-}
-
 void QuantifiedConfig::evaluate() {
     setup();
     fillWithPaths(*this);
     empty_spots = calculateEmptySpots();
     average_overlap = calculateAverageOverlap();
-    director_disagreement = calculateDirectorDisagreement();
+    average_director_disagreement = calculateDirectorDisagreement();
 
     paths_number = (double) getSequenceOfPaths().size();
-    multiplier = fmax(pow(paths_number, getPathsPower()), 1);
+    path_multiplier = fmax(pow(paths_number, getPathsPower()), 1);
 
-    disagreement = getEmptySpotWeight() * pow(empty_spots, getEmptySpotPower()) +
-                   getOverlapWeight() * pow(average_overlap, getOverlapPower()) +
-                   getDirectorWeight() * pow(director_disagreement, getDirectorPower());
+    disagreement_norm = getEmptySpotWeight() + getOverlapWeight() + getDirectorWeight();
+    if (disagreement_norm <= 0) {
+        throw std::runtime_error("Sum of disagreement weights must be positive.");
+    }
 
-    total_disagreement = disagreement * multiplier;
+    empty_spot_disagreement = getEmptySpotWeight() * pow(empty_spots, getEmptySpotPower()) / disagreement_norm;
+    overlap_disagreement = getOverlapWeight() * pow(average_overlap, getOverlapPower()) / disagreement_norm;
+    director_disagreement =
+            getDirectorWeight() * pow(average_director_disagreement, getDirectorPower()) / disagreement_norm;
+
+    disagreement = empty_spot_disagreement + overlap_disagreement + director_disagreement;
+
+    total_disagreement = disagreement * path_multiplier;
 }
 
 void QuantifiedConfig::printDisagreement() const {
-    double empty_spot_disagreement = getEmptySpotWeight() * pow(empty_spots, getEmptySpotPower());
-    double overlap_disagreement = getOverlapWeight() * pow(average_overlap, getOverlapPower());
-    double director_disagreement_value = getDirectorWeight() * pow(director_disagreement, getDirectorPower());
-
     std::stringstream stream;
+
+    double empty_spot_ratio = empty_spot_disagreement / disagreement * 100;
+    double overlap_ratio = overlap_disagreement / disagreement * 100;
+    double director_ratio = director_disagreement / disagreement * 100;
+
     stream << std::setprecision(2);
 
     stream << std::endl;
-    stream << "Disagreement " << disagreement * multiplier << std::endl;
+    stream << "Disagreement " << disagreement * path_multiplier << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spots * multiplier << "\t" << empty_spot_disagreement << "\t"
-           << empty_spot_disagreement / disagreement * 100 << std::endl;
-    stream << "\tOverlap\t\t" << average_overlap * multiplier << "\t" << overlap_disagreement << "\t"
-           << overlap_disagreement / disagreement * 100 << std::endl;
-    stream << "\tDirector\t" << director_disagreement * multiplier << "\t" << director_disagreement_value << "\t"
-           << director_disagreement_value / disagreement * 100 << std::endl;
+    stream << "\tEmpty spot\t" << empty_spots * path_multiplier << "\t" << empty_spot_disagreement << "\t"
+           << empty_spot_ratio << std::endl;
+    stream << "\tOverlap\t\t" << average_overlap * path_multiplier << "\t" << overlap_disagreement << "\t"
+           << overlap_ratio << std::endl;
+    stream << "\tDirector\t" << average_director_disagreement * path_multiplier << "\t" << director_disagreement
+           << "\t" << director_ratio << std::endl;
     stream << "\n\tPaths\t" << paths_number << std::endl;
-    stream << "\tPaths multiplier\t" << multiplier << std::endl;
+    stream << "\tPaths multiplier\t" << path_multiplier << std::endl;
 
     std::cout << stream.str() << std::endl;
 }
@@ -297,11 +298,12 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
             if (number_of_times_filled[i][j] > 0) {
                 double local_director_disagreement = 1 - localDirectorAgreement(i, j);
                 local_disagreement +=
-                        getDirectorWeight() * getDirectorPower() * pow(director_disagreement, getDirectorPower() - 1) *
+                        getDirectorWeight() * getDirectorPower() *
+                        pow(average_director_disagreement, getDirectorPower() - 1) *
                         local_director_disagreement;
             }
 
-            local_disagreement *= multiplier;
+            local_disagreement *= path_multiplier;
             disagreement_row.emplace_back(local_disagreement);
         }
         disagreement_grid.emplace_back(disagreement_row);

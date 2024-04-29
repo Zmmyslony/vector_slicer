@@ -34,19 +34,21 @@ typedef boost::numeric::ublas::vector<double> vectord;
 class QuantifiedConfig : FilledPattern, public Simulation {
     double empty_spots = 0;
     double average_overlap = 0;
-    double director_disagreement = 0;
+    double average_director_disagreement = 0;
     double paths_number = 0;
     double disagreement = DBL_MAX;
     double total_disagreement = DBL_MAX;
-    double multiplier = 1;
+    double path_multiplier = 1;
+    double disagreement_norm = 0;
+    double empty_spot_disagreement = DBL_MAX;
+    double overlap_disagreement = DBL_MAX;
+    double director_disagreement = DBL_MAX;
 
     double calculateEmptySpots();
 
     double calculateAverageOverlap();
 
     double calculateDirectorDisagreement();
-
-    double calculatePathLengthDeviation(int order);
 
     double localDirectorAgreement(int i, int j);
 
