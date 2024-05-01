@@ -113,6 +113,7 @@ BayesianOptimisation::showProgress(int current_step, int max_step, int steps_fro
 }
 
 void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps) {
+    std::cout << "Evaluating the pattern for initial samples." << std::endl;
     initializeOptimization();
     if (max_steps <= 0 && max_constant_steps <= 0) {
         throw std::runtime_error(
@@ -130,7 +131,7 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
             steps_since_improvement = 0;
         }
         showProgress(i, max_steps, steps_since_improvement,
-                     max_constant_steps, mParameters.n_init_samples);
+                     max_constant_steps, (int)mParameters.n_init_samples);
         x_out = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
         steps_since_improvement++;
 
@@ -160,7 +161,7 @@ void createDirectory(const fs::path &path) {
     }
 }
 
-void exportConfigList(const std::vector<QuantifiedConfig> &configs, fs::path path, int number_of_configs) {
+void exportConfigList(const std::vector<QuantifiedConfig> &configs, const fs::path& path, int number_of_configs) {
     std::vector<FillingConfig> filling_configs;
 
     for (int i = 0; i < number_of_configs; i++) {
@@ -303,7 +304,6 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
         best_config_vector.emplace_back(filling_config.getRepulsionAngle());
         upper_bound_vector.emplace_back(M_PI / 2);
     }
-
 
     std::reverse(lower_bound_vector.begin(), lower_bound_vector.end());
     std::reverse(upper_bound_vector.begin(), upper_bound_vector.end());
