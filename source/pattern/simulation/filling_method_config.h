@@ -38,6 +38,7 @@ class FillingMethodConfig {
     double discontinuity_angular_threshold = 40;
     int discontinuity_behaviour = DISCONTINUITY_STICK;
     int sorting_method = 0;
+    int splay_line_behaviour;
 
 public:
     std::string textFillingMethodConfig() const;
@@ -67,6 +68,8 @@ public:
     int getDiscontinuityBehaviour() const;
 
     int getSortingMethod() const;
+
+    int getSplayLineBehaviour() const;
 };
 
 

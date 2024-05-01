@@ -33,8 +33,8 @@ FillingMethodConfig::FillingMethodConfig(const fs::path &config_path) :
         is_points_removed(readKeyBool(config_path, "is_points_removed")),
         minimal_line_length(readKeyDouble(config_path, "minimal_line_length")),
         discontinuity_angular_threshold(readKeyDouble(config_path, "discontinuity_angular_threshold")),
-        discontinuity_behaviour(readKeyInt(config_path, "discontinuity_behaviour")) {
-
+        discontinuity_behaviour(readKeyInt(config_path, "discontinuity_behaviour")),
+        splay_line_behaviour(readKeyInt(config_path, "splay_line_behaviour")) {
 }
 
 FillingMethodConfig::FillingMethodConfig(const fs::path &local_path, const fs::path &config_path) {
@@ -114,7 +114,13 @@ std::string FillingMethodConfig::textFillingMethodConfig() const {
                "# 0 - ignoring: discontinuities are ignored,\n"
                "# 1 - sticking: path continues as close after the discontinuity as possible,\n"
                "# 2 - termination: when discontinuity is detected, path terminates."
-            << "\ndiscontinuity_behaviour = " << discontinuity_behaviour;
+            << "\ndiscontinuity_behaviour = " << discontinuity_behaviour
+            << "\n\n# Splay line behaviour:\n"
+               "# Determines which coordinates to take as splay-line in event of detection of multiple coordinates with zero splay in\n"
+               "# the same integral curve.\n"
+               "# 0 - always take middle\n"
+               "# 1 - if contains any boundary coordinates, use them, else, use the middle coordinate."
+            << "\nsplay_line_behaviour = " << splay_line_behaviour;
     return textForm.str();
 }
 
@@ -129,6 +135,7 @@ void FillingMethodConfig::editFillingMethodConfig() {
         editDouble(discontinuity_angular_threshold, "discontinuity_angular_threshold");
         editInt(discontinuity_behaviour, "discontinuity_behaviour");
         editInt(sorting_method, "sorting_method");
+        editInt(splay_line_behaviour, "splay_line_behaviour");
 
         std::cout << std::endl << "Current configuration:" << std::endl;
         printFillingMethodConfig();
@@ -164,4 +171,8 @@ int FillingMethodConfig::getDiscontinuityBehaviour() const {
 
 int FillingMethodConfig::getSortingMethod() const {
     return sorting_method;
+}
+
+int FillingMethodConfig::getSplayLineBehaviour() const {
+    return splay_line_behaviour;
 }

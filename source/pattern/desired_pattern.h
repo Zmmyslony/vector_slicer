@@ -36,12 +36,14 @@
 #define SORT_SEED_LINE 1
 //#define SORT_TRAVELLING_SALESMAN 2
 
+#define SPLAY_LINE_CENTRES 0
+#define SPLAY_LINE_BOUNDARIES 1
+
 using vald = std::valarray<double>;
 using vali = std::valarray<int>;
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
-
 
 /// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
 /// with the information about its continuous edges
@@ -72,6 +74,8 @@ class DesiredPattern {
 
     /// Maximal angle for the director to be counted as discontinuous.
     double discontinuity_threshold_cos = 0;
+
+    int splay_line_behaviour = SPLAY_LINE_CENTRES;
 
     /// Splay seeding: Initialised as original shape matrix and 1's are replaced with 0's once they are considered by the algorithm.
     std::vector<std::vector<uint8_t>> is_coordinate_used;

@@ -65,6 +65,7 @@ DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> 
     discontinuity_behaviour = filling.getDiscontinuityBehaviour();
     minimal_line_length = filling.getMinimalLineLength();
     is_points_removed = filling.isPointsRemoved();
+    splay_line_behaviour = filling.getSplayLineBehaviour();
 }
 
 
@@ -383,13 +384,13 @@ std::vector<double> DesiredPattern::directedSplayMagnitude(const coord_vector &i
     return directed_splay;
 }
 
-/// Checks whether any of the neighbours of the last element exists in the coordinate line earlier than at the last 3
-/// positions.
+/// Checks whether any of the neighbours of the last element exists in the coordinate line in the first 3 coordinates
+/// if the length of the curve is longer than 6 coordiantes.
 bool isLooped(const coord_vector &coordinate_line) {
-    if (coordinate_line.size() <= 3) {
+    if (coordinate_line.size() <= 6) {
         return false;
     }
-    coord_set front_set(coordinate_line.begin(), coordinate_line.end() - 3);
+    coord_set front_set(coordinate_line.begin(), coordinate_line.begin() + 3);
     coord last_coord = coordinate_line.back();
     int x = coordinate_line.back().first;
     int y = coordinate_line.back().second;
@@ -410,9 +411,10 @@ bool isLooped(const coord_vector &coordinate_line) {
     return is_looped;
 }
 
-bool isValidSplayFreeLineStart(bool is_boundary, double splay) {
-    // Boundary where the director points towards it (negative) or is zero are both valid.
-    if (is_boundary) {
+bool isValidSplayFreeLineStart(bool is_boundary_last_in_curve, double splay) {
+    // When this element is the last element in the integral curve and is at a boundary, this means that the integral
+    // curve ends at a boundary for which condition is different.
+    if (is_boundary_last_in_curve) {
         return splay < ZERO_SPLAY_THRESHOLD;
     } else {
         return splay > ZERO_SPLAY_THRESHOLD;
@@ -424,8 +426,8 @@ bool isValidSplayFreeLineInterior(double splay) {
     return fabs(splay) < ZERO_SPLAY_THRESHOLD;
 }
 
-bool isValidSplayFreeLineEnd(bool is_boundary, double splay) {
-    if (is_boundary) {
+bool isValidSplayFreeLineEnd(bool is_boundary_last_in_curve, double splay) {
+    if (is_boundary_last_in_curve) {
         return splay > -ZERO_SPLAY_THRESHOLD;
     } else {
         return splay < -ZERO_SPLAY_THRESHOLD;
@@ -457,33 +459,48 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
 
     coord_vector current_splay_free_line;
     coord_set valid_coords_set;
+    coord_set zero_splay_boundary_nodes;
 
-    int boundary_nodes_count = 0;
+    bool is_integral_curve_looped = isLooped(integral_curve_coords);
+    bool is_last_in_curve = !is_integral_curve_looped;
+
     while (!integral_curve_coords.empty()) {
         coord coordinate = integral_curve_coords.back();
         is_coordinate_in_curve[coordinate.first][coordinate.second] = 0;
         integral_curve_coords.pop_back();
+        if (integral_curve_coords.empty()) { is_last_in_curve = !is_integral_curve_looped; }
         double splay = directed_splay.back();
         directed_splay.pop_back();
         bool is_current_boundary = isBoundary(coordinate);
+        if (is_current_boundary) { zero_splay_boundary_nodes.insert(coordinate); }
 
-        if (isValidSplayFreeLineEnd(is_current_boundary, splay) && !current_splay_free_line.empty()) {
+        if (isValidSplayFreeLineEnd(is_current_boundary && is_last_in_curve, splay) &&
+            !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
-            boundary_nodes_count += is_current_boundary;
             bool is_looped = isLooped(current_splay_free_line);
-            if  (!is_looped && boundary_nodes_count <= 1) {
-                valid_coords_set.insert(current_splay_free_line[current_splay_free_line.size() / 2]);
+
+            if (!is_looped) {
+                if (zero_splay_boundary_nodes.empty() || splay_line_behaviour == SPLAY_LINE_CENTRES) {
+                    valid_coords_set.insert(current_splay_free_line[current_splay_free_line.size() / 2]);
+                } else {
+                    valid_coords_set.insert(zero_splay_boundary_nodes.begin(), zero_splay_boundary_nodes.end());
+                }
             }
+            zero_splay_boundary_nodes.clear();
             current_splay_free_line.clear();
         }
         if (isValidSplayFreeLineInterior(splay) && !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
-            boundary_nodes_count += is_current_boundary;
         }
-        if (isValidSplayFreeLineStart(is_current_boundary, splay)) {
+        if (isValidSplayFreeLineStart(is_current_boundary && is_last_in_curve, splay)) {
             current_splay_free_line = {coordinate};
-            boundary_nodes_count = is_current_boundary;
+            if (is_current_boundary) {
+                zero_splay_boundary_nodes = {coordinate};
+            } else {
+                zero_splay_boundary_nodes.clear();
+            }
         }
+        is_last_in_curve = false;
     }
     return valid_coords_set;
 }
