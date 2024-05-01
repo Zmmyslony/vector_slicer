@@ -289,7 +289,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
         upper_bound_vector.emplace_back(print_radius + 1);
     }
     if (pattern.isStartingPointSeparationOptimised()) {
-        lower_bound_vector.emplace_back(print_radius * 1.5);
+        lower_bound_vector.emplace_back(print_radius * 1.9);
         best_config_vector.emplace_back(filling_config.getSeedSpacing());
         upper_bound_vector.emplace_back(print_radius * 3);
     }
