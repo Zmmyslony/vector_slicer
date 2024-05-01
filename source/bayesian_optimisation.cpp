@@ -359,6 +359,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
+    parameters.n_init_samples = 50;
     parameters.l_type = L_MCMC;
     parameters.force_jump = best_pattern.getRelearningIterations();
     parameters.n_iter_relearn = best_pattern.getRelearningIterations();
