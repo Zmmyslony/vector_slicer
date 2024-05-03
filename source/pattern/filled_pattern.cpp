@@ -70,7 +70,7 @@ FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines, int l
     std::vector<std::vector<SeedPoint>> separated_lines;
     std::shuffle(list_of_lines.begin(), list_of_lines.end(), random_engine);
     for (auto &line: list_of_lines) {
-        std::vector<SeedPoint> spaced_line = getSpacedLine(getSeedSpacing(), line, line_index);
+        std::vector<SeedPoint> spaced_line = getSpacedLine(line, line_index, 0);
         if (is_random_filling_enabled) {
             std::shuffle(spaced_line.begin(), spaced_line.end(), random_engine);
         }
@@ -80,28 +80,62 @@ FilledPattern::separateLines(std::vector<std::vector<vali>> list_of_lines, int l
     return separated_lines;
 }
 
+/// Extends the seed lines by SeedSeparation in the dual direction, so there is an overlap between different seed lines
+/// which will make the inter-seed-line spacing consistent.
+void FilledPattern::extendSeedLines() {
+    for (std::vector<vali> &seed_line: seed_lines) {
+        if (isLooped(seed_line)) { continue; }
+
+        vald front_dual = perpendicular(getDirector(seed_line.front()));
+        vald previous_displacement = itod(seed_line.front() - seed_line[3]);
+        if (dot(front_dual, previous_displacement) < 0) { front_dual *= -1; }
+
+        vald back_dual = perpendicular(getDirector(seed_line.back()));
+        previous_displacement = itod(seed_line.back() - seed_line[seed_line.size() - 4]);
+        if (dot(back_dual, previous_displacement) < 0) { back_dual *= -1; }
+
+        std::vector<vali> front_displacements = pixeliseLine(front_dual * getSeedSpacing());
+        std::vector<vali> back_displacements = pixeliseLine(back_dual * getSeedSpacing());
+
+        int size = seed_line.size();
+        vali front = seed_line.front();
+        for (auto &displacement: front_displacements) {
+            vali current = front + displacement;
+            if (desired_pattern.get().isInShape(current)) {
+                seed_line.insert(seed_line.begin(), current);
+            }
+        }
+
+        vali back = seed_line.back();
+        for (auto &displacement: back_displacements) {
+            vali current = back + displacement;
+            if (desired_pattern.get().isInShape(current)) {
+                seed_line.emplace_back(current);
+            }
+        }
+    }
+}
+
+
 void FilledPattern::setup() {
     print_circle = findPointsInCircle(getPrintRadius());
     collision_list = circleDisplacements(getTerminationRadius());
     random_engine = std::mt19937(getSeed());
 
-
     switch (getInitialSeedingMethod()) {
         case Splay:
             if (desired_pattern.get().isSplayProvided()) {
                 search_stage = SplayFilling;
-                zero_splay_seeds = separateLines(desired_pattern.get().getLineDensityMinima(), 0);
-                seed_lines = zero_splay_seeds.size();
+                seed_lines = desired_pattern.get().getLineDensityMinima();
+                extendSeedLines();
             } else {
                 search_stage = RemainingFilling;
-                perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
-                seed_lines = perimeter_seeds.size();
+                seed_lines = desired_pattern.get().getPerimeterList();
             }
             break;
         case Perimeter:
             search_stage = PerimeterFilling;
-            perimeter_seeds = separateLines(desired_pattern.get().getPerimeterList(), zero_splay_seeds.size());
-            seed_lines = perimeter_seeds.size();
+            seed_lines = desired_pattern.get().getPerimeterList();
             break;
         case Dual:
             search_stage = RemainingFilling;
@@ -143,26 +177,75 @@ void FilledPattern::setupRootPoints() {
     binned_root_points = root_points;
 }
 
-void FilledPattern::updateSeedPoints() {
-    if (search_stage == SplayFilling) {
-        if (zero_splay_seeds.empty()) {
-            search_stage = RemainingFilling;
-        } else {
-            seed_points = zero_splay_seeds.back();
-            zero_splay_seeds.pop_back();
-            return;
+/// Finds index of overlapping seed line.
+std::vector<unsigned int> FilledPattern::findOverlappingSeedLines() {
+    std::vector<unsigned int> overlapping_indices;
+    for (int i = 0; i < seed_lines.size(); i++) {
+        bool is_overlapping = false;
+        for (auto &coordinate: seed_lines[i]) {
+            is_overlapping |= isFilled(coordinate);
         }
+        if (is_overlapping) {
+            overlapping_indices.emplace_back(i);
+        }
+    }
+    return overlapping_indices;
+}
+
+std::vector<SeedPoint> FilledPattern::getSeedsFromRandomSeedLine() {
+    std::uniform_int_distribution<> distribution(0, seed_lines.size() - 1);
+    int i = distribution(random_engine);
+    std::vector<vali> current_seed_line = seed_lines[i];
+    seed_lines.erase(seed_lines.begin() + i);
+
+    return getSpacedLineRandom(current_seed_line, current_seed_line_index);
+}
+
+std::vector<SeedPoint>
+FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indexes) {
+    std::uniform_int_distribution<> distribution(0, overlapping_indexes.size() - 1);
+    int i = overlapping_indexes[distribution(random_engine)];
+    std::vector<vali> current_seed_line = seed_lines[i];
+    seed_lines.erase(seed_lines.begin() + i);
+
+    return getSpacedLineOverlapping(current_seed_line, current_seed_line_index);
+}
+
+void FilledPattern::updateSeedPoints() {
+    if (!seed_lines.empty()) {
+        std::vector<unsigned int> overlapping_seed_lines = findOverlappingSeedLines();
+        if (overlapping_seed_lines.empty()) {
+            seed_points = getSeedsFromRandomSeedLine();
+        } else {
+            seed_points = getSeedsFromOverlappingSeedLine(overlapping_seed_lines);
+        }
+        if (is_random_filling_enabled) {
+            std::shuffle(seed_points.begin(), seed_points.end(), random_engine);
+        }
+        current_seed_line_index++;
+        return;
     }
 
-    if (search_stage == PerimeterFilling) {
-        if (perimeter_seeds.empty()) {
-            search_stage = RemainingFilling;
-        } else {
-            seed_points = perimeter_seeds.back();
-            perimeter_seeds.pop_back();
-            return;
-        }
-    }
+
+//    if (search_stage == SplayFilling) {
+//        if (zero_splay_seeds.empty()) {
+//            search_stage = RemainingFilling;
+//        } else {
+//            seed_points = zero_splay_seeds.back();
+//            zero_splay_seeds.pop_back();
+//            return;
+//        }
+//    }
+//
+//    if (search_stage == PerimeterFilling) {
+//        if (perimeter_seeds.empty()) {
+//            search_stage = RemainingFilling;
+//        } else {
+//            seed_points = perimeter_seeds.back();
+//            perimeter_seeds.pop_back();
+//            return;
+//        }
+//    }
 
     if (is_reseeding_enabled) {
         vali root_point = findRemainingRootPoint();
@@ -171,8 +254,9 @@ void FilledPattern::updateSeedPoints() {
             return;
         }
         std::vector<vali> dual_line = findDualLine(root_point);
-        std::vector<SeedPoint> spaced_dual_line = getSpacedLine(getSeedSpacing(), dual_line, seed_lines);
-        seed_lines++;
+        std::vector<SeedPoint> spaced_dual_line = getSpacedLine(dual_line, current_seed_line_index,
+                                                                0);
+        current_seed_line_index++;
         if (is_random_filling_enabled) {
             std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
         }
@@ -640,10 +724,31 @@ void FilledPattern::tryAddingPointToSpacedLine(const vali &current_position, val
     }
 }
 
-std::vector<SeedPoint>
-FilledPattern::getSpacedLine(const double &separation, const std::vector<vali> &line, int line_index) {
+std::vector<SeedPoint> FilledPattern::getSpacedLineRandom(const std::vector<vali> &line, int line_index) {
     std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
     int starting_index = index_distribution(random_engine);
+    return getSpacedLine(line, line_index, starting_index);
+}
+
+std::vector<SeedPoint> FilledPattern::getSpacedLineOverlapping(const std::vector<vali> &line, int line_index) {
+    std::vector<int> i_overlapping;
+    for (int i = 0; i < line.size(); i++) {
+        if (isFilled(line[i])) {
+            i_overlapping.emplace_back(i);
+        }
+    }
+    if (i_overlapping.empty()) {
+        throw std::runtime_error(
+                "No overlapping coordinates were found during spacing the path. This should not happen.");
+    }
+    std::uniform_int_distribution<> index_distribution(0, i_overlapping.size() - 1);
+    int starting_index = i_overlapping[index_distribution(random_engine)];
+    return getSpacedLine(line, line_index, starting_index);
+}
+
+
+std::vector<SeedPoint> FilledPattern::getSpacedLine(const std::vector<vali> &line, int line_index, int starting_index) {
+    double separation = getSeedSpacing();
     std::vector<SeedPoint> separated_starting_points = {{line[starting_index], getDirector(line[starting_index]),
                                                          line_index, starting_index}};
     bool is_looped = isLooped(line);

@@ -34,6 +34,8 @@
 #include "line_operations.h"
 
 #include <cfloat>
+#include <cstdlib>
+#include <iostream>
 
 #include "valarray_operations.h"
 
@@ -90,7 +92,7 @@ separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordina
         }
         current_path.push_back(current_element);
     }
-    if(is_backwards_path_filled) {
+    if (is_backwards_path_filled) {
         backwards_paths.push_back(current_path);
     } else {
         forwards_paths.push_back(current_path);
@@ -99,7 +101,7 @@ separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordina
 
     std::vector<std::vector<vali>> separated_paths;
     for (int i = 0; i < forwards_paths.size(); i++) {
-        std::vector<vali> joined_path ({forwards_paths[i].begin() + 1, forwards_paths[i].end()});
+        std::vector<vali> joined_path({forwards_paths[i].begin() + 1, forwards_paths[i].end()});
         std::reverse(joined_path.begin(), joined_path.end());
         joined_path.insert(joined_path.end(), backwards_paths[i].begin(), backwards_paths[i].end());
         if (joined_path.size() > 20) {
@@ -126,4 +128,66 @@ std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeter
         separated_perimeters.emplace_back(current_subpath);
     }
     return separated_perimeters;
+}
+
+/// Creates pixel representation of a line - Bresenham's line algorithm. Works only when dx >= dy and dx > 0.
+std::vector<vali> pixeliseLineBase(const vald &line) {
+    int dx = line[0];
+    int dy = line[1];
+    int yi = 1;
+    if (dy < 0) {
+        yi = -1;
+        dy = -dy;
+    }
+    int D = 2 * dy - dx;
+    int y = 0;
+
+    std::vector<vali> coordinates;
+
+    for (int x = 0; x <= dx; x++) {
+        coordinates.emplace_back(vali{x, y});
+        if (D > 0) {
+            y += yi;
+            D += 2 * dy - 2 * dx;
+        } else {
+            D += 2 * dy;
+        }
+    }
+
+    return coordinates;
+}
+
+std::vector<vali> x_y_swap(std::vector<vali> vec) {
+    for (int i = 0; i < vec.size(); i++) {
+        std::swap(vec[i][0], vec[i][1]);
+    }
+    return vec;
+}
+
+std::vector<vali> x_invert_sign(std::vector<vali> vec) {
+    for (int i = 0; i < vec.size(); i++) {
+        vec[i][0] *= -1;
+    }
+    return vec;
+}
+
+std::vector<vali> pixeliseLine(const vald &line) {
+    double dx = line[0];
+    double dy = line[1];
+    if (fabs(dx) >= fabs(dy)) {
+        if (dx >= 0) {
+            return pixeliseLineBase(line);
+        } else {
+            std::vector<vali> line = pixeliseLineBase({-dx, dy});
+            return x_invert_sign(line);
+        }
+    } else {
+        if (dy >= 0) {
+            std::vector<vali> line = pixeliseLineBase({dy, dx});
+            return x_y_swap(line);
+        } else {
+            std::vector<vali> line = pixeliseLineBase({-dy, dx});
+            return x_y_swap(x_invert_sign(line));
+        }
+    }
 }
