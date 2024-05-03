@@ -49,8 +49,10 @@ class FilledPattern : public FillingConfig {
     std::vector<vali> collision_list;
     /// Shuffled seed points from the current seed line.
     std::vector<SeedPoint> seed_points;
-    /// How many seed lines are within the pattern.
-    int seed_lines = 0;
+    /// List of seed lines obtained from the DesiredPattern
+    std::vector<std::vector<vali>> seed_lines;
+    /// Keeps track of which seed line are we using currently.
+    int current_seed_line_index = 0;
     /// All seed points from all suitable splay lines, line order is shuffled and point order within a line is also shuffled.
     std::vector<std::vector<SeedPoint>> zero_splay_seeds;
     /// All seed points from all suitable perimeters, line order is shuffled and point order within a line is also shuffled.
@@ -103,7 +105,7 @@ class FilledPattern : public FillingConfig {
                                     std::vector<SeedPoint> &separated_starting_points, int line_index,
                                     int point_index);
 
-    std::vector<SeedPoint> getSpacedLine(const double &separation, const std::vector<vali> &line, int line_index);
+    std::vector<SeedPoint> getSpacedLine(const std::vector<vali> &line, int line_index, int starting_index);
 
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
     Path generateNewPathForDirection(const SeedPoint &seed_point, const vald &starting_step);
@@ -134,6 +136,17 @@ class FilledPattern : public FillingConfig {
 
     bool isTerminable(const vali &coordinate, const vald &direction);
 
+    std::vector<unsigned int> findOverlappingSeedLines();
+
+    std::vector<SeedPoint> getSeedsFromRandomSeedLine();
+
+    std::vector<SeedPoint> getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indexes);
+
+    std::vector<SeedPoint> getSpacedLineRandom(const std::vector<vali> &line, int line_index);
+
+    std::vector<SeedPoint> getSpacedLineOverlapping(const std::vector<vali> &line, int line_index);
+
+    void extendSeedLines();
 public:
 
     std::vector<std::vector<double>> x_field_filled;
