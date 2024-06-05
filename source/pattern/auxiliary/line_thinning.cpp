@@ -140,16 +140,6 @@ coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<
 
 
 coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vector<int>> &shape_matrix) {
-    std::ofstream detected_line_density_minima(
-            "/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/detected_line_density_minima.csv");
-    for (const auto &e: shape) detected_line_density_minima << e.first << "," << e.second << "\n";
-
-    shape = grow_pattern(shape, grow_size, shape_matrix);
-
-    std::ofstream grown_line_density_minima(
-            "/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/grown_line_density_minima.csv");
-    for (const auto &e: shape) grown_line_density_minima << e.first << "," << e.second << "\n";
-
     /// Instead of doing the skeletonisation until convergence, we only aim to reduce what was added by the growth.
     for (int i = 0; i <= grow_size; i++) {
         coord_vector coordinates_to_remove_stage_one;
@@ -170,9 +160,5 @@ coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vec
 
         for (auto &coordinate: coordinates_to_remove_stage_two) { shape.erase(coordinate); }
     }
-
-    std::ofstream line_density_minima(
-            "/home/mlz22/OneDrive/Projects/2. In preparation/Slicer/Notebooks/line_density_minima.csv");
-    for (const auto &e: shape) line_density_minima << e.first << "," << e.second << "\n";
     return shape;
 }
