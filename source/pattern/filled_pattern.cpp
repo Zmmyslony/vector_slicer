@@ -97,7 +97,6 @@ void FilledPattern::extendSeedLines() {
         std::vector<vali> front_displacements = pixeliseLine(front_dual * getSeedSpacing());
         std::vector<vali> back_displacements = pixeliseLine(back_dual * getSeedSpacing());
 
-        int size = seed_line.size();
         vali front = seed_line.front();
         for (auto &displacement: front_displacements) {
             vali current = front + displacement;

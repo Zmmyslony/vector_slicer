@@ -46,7 +46,7 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double overlap_disagreement = DBL_MAX;
     double director_disagreement = DBL_MAX;
     std::vector<unsigned int> director_disagreement_distribution = std::vector<unsigned int>(DISAGREEMENT_BUCKET_COUNT, 0);
-    double bucket_size = M_PI_2 / DISAGREEMENT_BUCKET_COUNT;
+    double bucket_size = M_PI_2 / (DISAGREEMENT_BUCKET_COUNT - 1);
 
     double calculateEmptySpots();
 

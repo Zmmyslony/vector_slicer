@@ -238,7 +238,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
                     const Simulation &simulation) {
     fs::path results_directory = pattern_path / "results";
 
-    fs::path output_directory = pattern_path.parent_path().parent_path() / "output";
+    fs::path output_directory = OUTPUT_PATH;
     createDirectory(output_directory);
     std::string pattern_name = pattern_path.filename().string();
 
@@ -247,6 +247,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     fs::path best_config_directory = createTxtPath(CONFIG_EXPORT_PATH, pattern_name);
     fs::path overlap_directory = createCsvPath(OVERLAP_EXPORT_PATH, pattern_name);
     fs::path seed_directory = createCsvPath(SEED_EXPORT_PATH, pattern_name);
+    fs::path bucketed_disagreement = createCsvPath(DISAGREEMENT_BUCKETS_PATH, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     std::vector<std::vector<std::vector<double>>> sorted_overlaps;
@@ -269,6 +270,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     exportCoordVector(seeds, seed_directory);
     exportPathSequence(sorted_patterns, generated_paths_directory, pattern_name, print_diameter, simulation);
     exportOverlap(sorted_overlaps, overlap_directory, pattern_name, print_diameter, simulation);
+    exportRowToFile(patterns[0].getDirectorDisagreementDistribution(), bucketed_disagreement);
 }
 
 QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
@@ -290,7 +292,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
         upper_bound_vector.emplace_back(print_radius + 1);
     }
     if (pattern.isStartingPointSeparationOptimised()) {
-        lower_bound_vector.emplace_back(print_radius * 1.9);
+        lower_bound_vector.emplace_back(print_radius * 1.6);
         best_config_vector.emplace_back(filling_config.getSeedSpacing());
         upper_bound_vector.emplace_back(print_radius * 3);
     }

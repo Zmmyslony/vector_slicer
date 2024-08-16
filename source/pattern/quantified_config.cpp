@@ -137,6 +137,9 @@ double QuantifiedConfig::localDirectorAgreement(int i, int j) {
 
 void QuantifiedConfig::insertIntoBucket(double local_director_agreement) {
     double disagreement_angle = acos(local_director_agreement);
+    if (local_director_agreement >= 1) {
+        disagreement_angle = 0;
+    }
     unsigned int bucket = int(disagreement_angle / bucket_size);
     director_disagreement_distribution[bucket]++;
 }
