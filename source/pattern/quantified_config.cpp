@@ -131,7 +131,14 @@ double QuantifiedConfig::localDirectorAgreement(int i, int j) {
     if (isnan(local_director_agreement)) {
         return 0;
     }
+    insertIntoBucket(local_director_agreement);
     return local_director_agreement;
+}
+
+void QuantifiedConfig::insertIntoBucket(double local_director_agreement) {
+    double disagreement_angle = acos(local_director_agreement);
+    unsigned int bucket = int(disagreement_angle / bucket_size);
+    director_disagreement_distribution[bucket]++;
 }
 
 
@@ -309,6 +316,10 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
         disagreement_grid.emplace_back(disagreement_row);
     }
     return disagreement_grid;
+}
+
+const std::vector<unsigned int> &QuantifiedConfig::getDirectorDisagreementDistribution() const {
+    return director_disagreement_distribution;
 }
 
 
