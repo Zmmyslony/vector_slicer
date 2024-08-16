@@ -30,41 +30,6 @@
 #include "../simulation/simulation.h"
 
 
-std::string readRowToString(const std::vector<int> &row) {
-    std::string row_string;
-    for (auto &element: row) {
-        row_string += std::to_string(element);
-        row_string += ",";
-    }
-    row_string.pop_back();
-    row_string += "\n";
-    return row_string;
-}
-
-
-std::string readRowToString(const std::vector<double> &row) {
-    std::string row_string;
-    for (auto &element: row) {
-        row_string += std::to_string(element);
-        row_string += ",";
-    }
-    row_string.pop_back();
-    row_string += "\n";
-    return row_string;
-}
-
-
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path) {
-    std::ofstream file(path.string());
-    if (file.is_open()) {
-        for (auto &row: table) {
-            file << readRowToString(row);
-        }
-        file.close();
-    }
-}
-
-
 std::stringstream convertVectorTableToStream(const std::vector<std::vector<int>> &table_first,
                                              const std::vector<std::vector<int>> &table_second) {
     std::stringstream stream;
