@@ -161,6 +161,18 @@ namespace bayesopt
         state.saveToFile(mParameters.save_filename);
       }
   }
+
+    void BayesOptBase::stepOptimization(const vectord& xNext)
+    {
+        // Find what is the next point.
+        double yNext = evaluateSampleInternal(xNext);
+
+        mModel->addSample(xNext,yNext);
+        mModel->updateSurrogateModel();
+        plotStepData(mCurrentIter,xNext,yNext);
+        mModel->updateCriteria(xNext);
+        mCurrentIter++;
+    }
   
 
   void BayesOptBase::initializeOptimization()
