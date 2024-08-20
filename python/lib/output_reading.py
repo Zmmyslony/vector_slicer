@@ -187,7 +187,7 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
 
     if is_seeds_shown:
         seeds = read_seeds(pattern_name)
-        plotting_axis.scatter(seeds[..., 0], seeds[..., 1], color="red", s=0.1)
+        plotting_axis.scatter(seeds[..., 0], seeds[..., 1], color="black", s=5, marker="o")
 
     if is_axes_shown:
         plotting_axis.set_title(pattern_name)
