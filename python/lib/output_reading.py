@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import os.path
+import math
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
@@ -204,6 +205,28 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
         plt.savefig(save_name, transparent=True)
         plt.show()
     return axis
+
+
+def plot_director_distribution_disagreement(pattern_name, bucket_count=None):
+    input_path = get_slicer_output_directory() / "bucketed_disagreement" / (pattern_name + ".csv")
+    original_data = np.genfromtxt(input_path, delimiter=",")
+    original_data /= np.sum(original_data) # Normalize
+    original_data *= 100 # Percentages
+    original_angle_separators = np.linspace(0, 90, original_data.shape[0], endpoint=True)
+    if bucket_count is not None:
+        interval = math.ceil(original_data.shape[0] / bucket_count)
+    else:
+        interval = 1
+    data = original_data[::interval]
+    for i in range(1, interval):
+        data += original_data[i::interval]
+    angle_separators = original_angle_separators[::interval]
+
+    fig = plt.figure(figsize=[6, 4], dpi=300)
+    plt.bar(angle_separators[:-1], data[:-1], width=interval * 0.8)
+    plt.xlabel("angle disagreement [°]")
+    plt.ylabel("density [%]")
+    plt.show()
 
 
 def plot_disagreement_progress(pattern_name):
