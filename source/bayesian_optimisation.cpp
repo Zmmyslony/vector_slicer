@@ -112,9 +112,41 @@ BayesianOptimisation::showProgress(int current_step, int max_step, int steps_fro
                      std::chrono::steady_clock::now(), suffix);
 }
 
-void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps) {
+std::vector<std::vector<double>>
+stack(const std::vector<std::vector<double>> &target, const std::vector<double> &values) {
+    std::vector<std::vector<double>> result;
+    if (target.empty()) {
+        for (double value: values) {
+            result.emplace_back(std::vector<double>{value});
+        }
+    } else {
+        for (const std::vector<double> &base: target) {
+            for (double value: values) {
+                std::vector<double> new_value = base;
+                new_value.emplace_back(value);
+                result.emplace_back(new_value);
+            }
+        }
+    }
+    return result;
+}
+
+
+void BayesianOptimisation::evaluateGuesses(const std::vector<std::vector<double>> &fixed_guesses) {
+    for (const std::vector<double> &guess: fixed_guesses) {
+        vectord x_sample(guess.size());
+        for (int i = 0; i < guess.size(); i++) {
+            x_sample[i] = guess[i];
+        }
+        stepOptimization(x_sample);
+    }
+}
+
+void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps,
+                                              const std::vector<std::vector<double>> &fixed_guesses) {
     std::cout << "Evaluating the pattern for initial samples." << std::endl;
     initializeOptimization();
+    evaluateGuesses(fixed_guesses);
     if (max_steps <= 0 && max_constant_steps <= 0) {
         throw std::runtime_error(
                 "Optimisation incorrectly set up. At least one of number_of_iterations or "
@@ -131,7 +163,7 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
             steps_since_improvement = 0;
         }
         showProgress(i, max_steps, steps_since_improvement,
-                     max_constant_steps, (int)mParameters.n_init_samples);
+                     max_constant_steps, (int) mParameters.n_init_samples);
         x_out = bayesopt::ContinuousModel::remapPoint(getData()->getPointAtMinimum());
         steps_since_improvement++;
 
@@ -161,7 +193,7 @@ void createDirectory(const fs::path &path) {
     }
 }
 
-void exportConfigList(const std::vector<QuantifiedConfig> &configs, const fs::path& path, int number_of_configs) {
+void exportConfigList(const std::vector<QuantifiedConfig> &configs, const fs::path &path, int number_of_configs) {
     std::vector<FillingConfig> filling_configs;
 
     for (int i = 0; i < number_of_configs; i++) {
@@ -286,25 +318,36 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     vecd upper_bound_vector;
     vecd best_config_vector;
 
+    // Vector of vectors of normalised optimisation parameters.
+    std::vector<std::vector<double>> fixed_guesses;
+
     if (pattern.isCollisionRadiusOptimised()) {
         lower_bound_vector.emplace_back(0);
         best_config_vector.emplace_back(filling_config.getTerminationRadius());
         upper_bound_vector.emplace_back(print_radius + 1);
+        fixed_guesses = stack(fixed_guesses, {0, 1 - 1 / print_radius});
     }
     if (pattern.isStartingPointSeparationOptimised()) {
-        lower_bound_vector.emplace_back(print_radius * 1.6);
+        double min_separation = print_radius * 1.6;
+        double max_separation = print_radius * 3;
+        lower_bound_vector.emplace_back(min_separation);
         best_config_vector.emplace_back(filling_config.getSeedSpacing());
-        upper_bound_vector.emplace_back(print_radius * 3);
+        upper_bound_vector.emplace_back(max_separation);
+        double normalised_double_spacing = (print_radius * 2 - min_separation) / (max_separation - min_separation);
+        double normalised_double_one_spacing = (print_radius * 2 + 1 - min_separation) / (max_separation - min_separation);
+        fixed_guesses = stack(fixed_guesses, {normalised_double_spacing, normalised_double_one_spacing});
     }
     if (pattern.isRepulsionMagnitudeOptimised()) {
         lower_bound_vector.emplace_back(0);
         best_config_vector.emplace_back(filling_config.getRepulsion());
         upper_bound_vector.emplace_back(4);
+        fixed_guesses = stack(fixed_guesses, {0, 0.25});
     }
     if (pattern.isRepulsionAngleOptimised()) {
         lower_bound_vector.emplace_back(0);
         best_config_vector.emplace_back(filling_config.getRepulsionAngle());
         upper_bound_vector.emplace_back(M_PI / 2);
+        fixed_guesses = stack(fixed_guesses, {1});
     }
 
     std::reverse(lower_bound_vector.begin(), lower_bound_vector.end());
@@ -323,15 +366,15 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
     int max_iterations = pattern.getTotalIterations();
     int max_iterations_without_improvement = pattern.getImprovementIterations();
     try {
-        pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement);
+        pattern_optimisation.optimizeControlled(best_config, max_iterations, max_iterations_without_improvement,
+                                                fixed_guesses);
     } catch (std::runtime_error &error) {
         if (error.what() == std::string("nlopt failure")) {
             std::cout << std::endl;
             std::cout << "WARNING: NLOPT failure during bayesian optimisation. Returned solution may not be optimal."
                       << std::endl;
             return {pattern, best_config};
-        }
-        else {
+        } else {
             throw error;
         }
     }
@@ -366,7 +409,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     parameters.force_jump = best_pattern.getRelearningIterations();
     parameters.n_iter_relearn = best_pattern.getRelearningIterations();
     parameters.noise = best_pattern.getNoise();
-    parameters.n_inner_iterations = 1000;
+    parameters.n_inner_iterations = 100;
 
     parameters.load_save_flag = 2;
     parameters.save_filename = optimisation_save_path.string();

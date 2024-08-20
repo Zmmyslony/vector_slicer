@@ -48,13 +48,16 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     double evaluateSample(const vectord &x_in);
 
     bool checkReachability(const vectord &query) { return true; };
+
+    void evaluateGuesses(const std::vector<std::vector<double>>& fixed_guesses);
 public:
 
     BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims);
 
 
     /// Optimizes the pattern with a threshold on number of steps without improvement
-    void optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps);
+    void optimizeControlled(vectord &x_out, int max_steps, int max_constant_steps,
+                            const std::vector<std::vector<double>>& fixed_guesses);
 };
 
 /// Optimises the pattern from the selected path using the set configuration
