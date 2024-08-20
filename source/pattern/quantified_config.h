@@ -47,6 +47,8 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double director_disagreement = DBL_MAX;
     std::vector<unsigned int> director_disagreement_distribution = std::vector<unsigned int>(DISAGREEMENT_BUCKET_COUNT, 0);
     double bucket_size = M_PI_2 / (DISAGREEMENT_BUCKET_COUNT - 1);
+    double total_angular_director_disagreement = 0;
+    double average_angular_director_disagreement = DBL_MAX;
 
     double calculateEmptySpots();
 
