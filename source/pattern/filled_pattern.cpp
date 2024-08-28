@@ -254,7 +254,7 @@ void FilledPattern::updateSeedPoints() {
         }
         std::vector<vali> dual_line = findDualLine(root_point);
         int first_seed_position = (int)getPrintRadius();
-        if (dual_line.size() < (int)(2 * getPrintRadius())) {
+        if (dual_line.size() <= (int)(getSeedSpacing())) {
             first_seed_position = dual_line.size() / 2;
         }
         std::vector<SeedPoint> spaced_dual_line = getSpacedLine(dual_line, current_seed_line_index,
