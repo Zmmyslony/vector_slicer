@@ -254,7 +254,7 @@ void FilledPattern::updateSeedPoints() {
         }
         std::vector<vali> dual_line = findDualLine(root_point);
         std::vector<SeedPoint> spaced_dual_line = getSpacedLine(dual_line, current_seed_line_index,
-                                                                0);
+                                                                (int)getPrintRadius());
         current_seed_line_index++;
         if (is_random_filling_enabled) {
             std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
