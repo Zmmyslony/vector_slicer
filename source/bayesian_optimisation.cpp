@@ -334,13 +334,14 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
         best_config_vector.emplace_back(filling_config.getSeedSpacing());
         upper_bound_vector.emplace_back(max_separation);
         double normalised_double_spacing = (print_radius * 2 - min_separation) / (max_separation - min_separation);
-        double normalised_double_one_spacing = (print_radius * 2 + 1 - min_separation) / (max_separation - min_separation);
+        double normalised_double_one_spacing =
+                (print_radius * 2 + 1 - min_separation) / (max_separation - min_separation);
         fixed_guesses = stack(fixed_guesses, {normalised_double_spacing, normalised_double_one_spacing});
     }
     if (pattern.isRepulsionMagnitudeOptimised()) {
         lower_bound_vector.emplace_back(0);
         best_config_vector.emplace_back(filling_config.getRepulsion());
-        upper_bound_vector.emplace_back(4);
+        upper_bound_vector.emplace_back(2);
         fixed_guesses = stack(fixed_guesses, {0, 0.25});
     }
     if (pattern.isRepulsionAngleOptimised()) {
