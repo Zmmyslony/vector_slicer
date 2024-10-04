@@ -133,8 +133,10 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
     ;
     std::stringstream header_s;
     header_s << std::setprecision(2);
-    header_s << "# Generated using Vector Slicer " << SLICER_VER << " on " << time << std::endl
-             << "# Michał Zmyślony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
+    header_s << "# Generated using Vector Slicer " << std::endl
+             << "# Author: Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
+             << "# Version: " << SLICER_VER << std::endl
+             << "# Creation date: " << time << std::endl
              << "# Source directory: " << pattern_name << std::endl
              << "# Print diameter: " << print_diameter << std::endl;
     header_s << std::endl;
