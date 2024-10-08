@@ -1,7 +1,7 @@
 @echo off
 TITLE Vector Slicer installation
 
-SET cwd=$(pwd)
+set pwd=%CD%
 IF EXIST "C:\src\vcpkg\" (
     cd C:\src\vcpkg\
     git pull
@@ -16,11 +16,12 @@ IF EXIST "C:\src\vcpkg\" (
      vcpkg integrate install
 )
 
-cmake_path=-DCMAKE_TOOLCHAIN_FILE=C:\src\vcpkg\scripts\buildsystems\vcpkg.cmake
+set cmake_path="C:/src/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
 @echo Installing Vector Slicer
-cd cwd
+cd %pwd%
+
 git pull
-cmake -S ./ -B ./build $(cmake_path)
+cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=%cmake_path%
 cmake --build ./build --config Release -j4
 
