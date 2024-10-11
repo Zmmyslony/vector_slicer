@@ -462,6 +462,9 @@ double FilledPattern::getOverlap(const std::vector<vali> &points_to_check) {
             overlap += number_of_times_filled[point[0]][point[1]] - 1;
         }
     }
+    if (points_count == 0) {
+        return 0;
+    }
     return (double) overlap / (double) points_count;
 }
 
