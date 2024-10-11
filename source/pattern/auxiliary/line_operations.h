@@ -48,4 +48,6 @@ separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordina
 
 bool isLooped(const std::vector<vali> &line);
 
+std::vector<vali> pixeliseLine(const vald &line);
+
 #endif //VECTOR_SLICER_LINE_OPERATIONS_H

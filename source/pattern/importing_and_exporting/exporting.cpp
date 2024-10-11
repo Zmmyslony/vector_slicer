@@ -30,41 +30,6 @@
 #include "../simulation/simulation.h"
 
 
-std::string readRowToString(const std::vector<int> &row) {
-    std::string row_string;
-    for (auto &element: row) {
-        row_string += std::to_string(element);
-        row_string += ",";
-    }
-    row_string.pop_back();
-    row_string += "\n";
-    return row_string;
-}
-
-
-std::string readRowToString(const std::vector<double> &row) {
-    std::string row_string;
-    for (auto &element: row) {
-        row_string += std::to_string(element);
-        row_string += ",";
-    }
-    row_string.pop_back();
-    row_string += "\n";
-    return row_string;
-}
-
-
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path) {
-    std::ofstream file(path.string());
-    if (file.is_open()) {
-        for (auto &row: table) {
-            file << readRowToString(row);
-        }
-        file.close();
-    }
-}
-
-
 std::stringstream convertVectorTableToStream(const std::vector<std::vector<int>> &table_first,
                                              const std::vector<std::vector<int>> &table_second) {
     std::stringstream stream;
@@ -168,8 +133,10 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
     ;
     std::stringstream header_s;
     header_s << std::setprecision(2);
-    header_s << "# Generated using Vector Slicer " << SLICER_VER << " on " << time << std::endl
-             << "# Michał Zmyślony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
+    header_s << "# Generated using Vector Slicer " << std::endl
+             << "# Author: Michal Zmyslony, University of Cambridge, mlz22@cam.ac.uk" << std::endl
+             << "# Version: " << SLICER_VER << std::endl
+             << "# Creation date: " << time << std::endl
              << "# Source directory: " << pattern_name << std::endl
              << "# Print diameter: " << print_diameter << std::endl;
     header_s << std::endl;

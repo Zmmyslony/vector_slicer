@@ -48,7 +48,7 @@ def refine_low_magnitude_splay(shape_grid, theta_grid, splay):
 
 
 def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=None,
-                 is_splay_shown=False, is_labels_shown=False):
+                 is_splay_shown=False, is_labels_shown=False, is_director_shown=True):
     mpl.rcParams.update({'font.size': 8})
     refine_low_magnitude_splay(shape_grid, theta_grid, splay)
     fig = plt.figure(figsize=[4, 3], dpi=450)
@@ -80,8 +80,10 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
     divider = make_axes_locatable(ax)
     # cax = divider.append_axes("right", size="5%", pad=0.05)
     # plt.colorbar(ticks=np.arange(2), label="", cax=cax)
-    ax.set_xlim(x_min - (x_max - shape.x_min) * 0.05, x_max + (x_max - x_min) * 0.05)
-    ax.set_ylim(y_min - (y_max - shape.y_min) * 0.05, y_max + (y_max - y_min) * 0.05)
+    dx = (x_max - x_min) * 0.02
+    dy = (y_max - y_min) * 0.02
+    ax.set_xlim(x_min - dx, x_max + dx)
+    ax.set_ylim(y_min - dy, y_max + dy)
 
     x_mesh = np.linspace(x_min, x_max, shape_grid.shape[0], endpoint=True)
     y_mesh = np.linspace(y_min, y_max, shape_grid.shape[1], endpoint=True)
@@ -91,21 +93,17 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
     refined_splay = refine_low_magnitude_splay(shape_grid, theta_grid, splay)
     splay_norm = np.linalg.norm(refined_splay, axis=2)
 
-    ax.streamplot(x_mesh,
-                  y_mesh,
-                  x_vector.transpose(),
-                  y_vector.transpose(),
-                  density=streamplot_density,
-                  arrowsize=0,
-                  integration_direction="both",
-                  zorder=1)
+    if is_director_shown:
+        ax.streamplot(x_mesh,
+                      y_mesh,
+                      x_vector.transpose(),
+                      y_vector.transpose(),
+                      density=streamplot_density,
+                      arrowsize=0,
+                      integration_direction="both",
+                      zorder=1)
 
     if is_splay_shown:
-        if splay_norm.max() > 1:
-            norm = colors.LogNorm(vmax=splay_norm.max())
-        else:
-            norm = colors.Normalize(vmin=0, vmax=1)
-
         resolution = 15
         x_size = splay.shape[0]
         y_size = splay.shape[1]
@@ -115,17 +113,16 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
             scale = int(y_size / resolution)
         else:
             scale = 1
+        index_offset = int(scale / 2)
 
-        splayplot = ax.quiver(x_mesh[::scale],
-                              y_mesh[::scale],
-                              refined_splay[::scale, ::scale, 0].transpose(),
-                              refined_splay[::scale, ::scale, 1].transpose(),
-                              color="tab:orange",
-                              zorder=2
-                              )
-
-        # cax2 = divider.append_axes("right", size="5%", pad=0.1)
-        # plt.colorbar(streamplot.lines, cax=cax2, label="splay")
+        ax.quiver(x_mesh[index_offset::scale],
+                  y_mesh[index_offset::scale],
+                  refined_splay[index_offset::scale, index_offset::scale, 0].transpose(),
+                  refined_splay[index_offset::scale, index_offset::scale, 1].transpose(),
+                  color="tab:orange",
+                  zorder=2,
+                  width=0.008
+                  )
 
     if is_labels_shown:
         ax.set_xlabel("x [mm]")
@@ -135,10 +132,10 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
         ax.set_xticklabels([])
         ax.axis('off')
 
+    plt.tight_layout()
     if filename is None:
         plt.show()
     else:
-        plt.tight_layout()
         plt.savefig(filename, format='png', transparent=True)
         plt.close()
 
@@ -322,8 +319,9 @@ class Pattern:
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
 
-    def generateInputFiles(self, line_width_millimetre: float, pattern_name=None, line_width_pixel: int = 9,
-                           filling_method=None, is_displayed=False, tiling: Tiling = None, is_splay_shown=False):
+    def generateInputFiles(self, line_width_millimetre: float, pattern_name:str=None, line_width_pixel: int = 9,
+                           filling_method=None, is_displayed=False, tiling: Tiling = None, is_splay_shown=False,
+                           is_director_shown=True) -> str:
         """
         Generates theta, splay and config files for the pattern.
         :param line_width_millimetre: printing line width used for meshing.
@@ -388,7 +386,7 @@ class Pattern:
             director_filename = get_plot_output_directory() / f"{pattern_name}_design.png"
 
         plot_pattern(shape_grid, mesh, director_grid, self.domain, splay_grid, filename=director_filename,
-                     is_splay_shown=is_splay_shown)
+                     is_splay_shown=is_splay_shown, is_director_shown=is_director_shown)
         current_stage += 1
 
         print(f"{time.time() - begin_time:.3f}s: [{current_stage:d}/{stage_count:d}]  Plotting complete.")

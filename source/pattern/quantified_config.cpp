@@ -131,7 +131,18 @@ double QuantifiedConfig::localDirectorAgreement(int i, int j) {
     if (isnan(local_director_agreement)) {
         return 0;
     }
+    insertIntoBucket(local_director_agreement);
     return local_director_agreement;
+}
+
+void QuantifiedConfig::insertIntoBucket(double local_director_agreement) {
+    double disagreement_angle = acos(local_director_agreement);
+    if (local_director_agreement >= 1) {
+        disagreement_angle = 0;
+    }
+    unsigned int bucket = int(disagreement_angle / bucket_size);
+    director_disagreement_distribution[bucket]++;
+    total_angular_director_disagreement += disagreement_angle;
 }
 
 
@@ -152,6 +163,8 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     }
 
     if (number_of_filled_elements > 0) {
+        average_angular_director_disagreement =
+                total_angular_director_disagreement / (double) number_of_filled_elements;
         return 1 - (double) director_agreement / (double) number_of_filled_elements;
     } else {
         return 1;
@@ -190,17 +203,18 @@ void QuantifiedConfig::printDisagreement() const {
     double overlap_ratio = overlap_disagreement / disagreement * 100;
     double director_ratio = director_disagreement / disagreement * 100;
 
-    stream << std::setprecision(2);
+    stream << std::setprecision(3);
 
     stream << std::endl;
     stream << "Disagreement " << disagreement * path_multiplier << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tEmpty spot\t" << empty_spots * path_multiplier << "\t" << empty_spot_disagreement << "\t"
+    stream << "\tCoverage\t" <<  (1 - empty_spots) * 100<< "%\t" << empty_spot_disagreement << "\t"
            << empty_spot_ratio << std::endl;
-    stream << "\tOverlap\t\t" << average_overlap * path_multiplier << "\t" << overlap_disagreement << "\t"
+    stream << "\tOverlap\t\t" << average_overlap * 100 << "%\t" << overlap_disagreement << "\t"
            << overlap_ratio << std::endl;
-    stream << "\tDirector\t" << average_director_disagreement * path_multiplier << "\t" << director_disagreement
+    stream << "\tDirector\t" << average_director_disagreement << "\t" << director_disagreement
            << "\t" << director_ratio << std::endl;
+    stream << "\tAngle disagreement\t" << average_angular_director_disagreement * 180 / M_PI << "°" << std::endl;
     stream << "\n\tPaths\t" << paths_number << std::endl;
     stream << "\tPaths multiplier\t" << path_multiplier << std::endl;
 
@@ -309,6 +323,10 @@ std::vector<std::vector<double>> QuantifiedConfig::localDisagreementGrid() {
         disagreement_grid.emplace_back(disagreement_row);
     }
     return disagreement_grid;
+}
+
+const std::vector<unsigned int> &QuantifiedConfig::getDirectorDisagreementDistribution() const {
+    return director_disagreement_distribution;
 }
 
 
