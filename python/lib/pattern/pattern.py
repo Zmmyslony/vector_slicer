@@ -319,9 +319,9 @@ class Pattern:
         shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
         return shape_copy
 
-    def generateInputFiles(self, line_width_millimetre: float, pattern_name=None, line_width_pixel: int = 9,
+    def generateInputFiles(self, line_width_millimetre: float, pattern_name:str=None, line_width_pixel: int = 9,
                            filling_method=None, is_displayed=False, tiling: Tiling = None, is_splay_shown=False,
-                           is_director_shown=True):
+                           is_director_shown=True) -> str:
         """
         Generates theta, splay and config files for the pattern.
         :param line_width_millimetre: printing line width used for meshing.
