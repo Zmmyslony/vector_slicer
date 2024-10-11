@@ -34,7 +34,8 @@ FillingMethodConfig::FillingMethodConfig(const fs::path &config_path) :
         minimal_line_length(readKeyDouble(config_path, "minimal_line_length")),
         discontinuity_angular_threshold(readKeyDouble(config_path, "discontinuity_angular_threshold")),
         discontinuity_behaviour(readKeyInt(config_path, "discontinuity_behaviour")),
-        splay_line_behaviour(readKeyInt(config_path, "splay_line_behaviour")) {
+        splay_line_behaviour(readKeyInt(config_path, "splay_line_behaviour")),
+        sorting_method(readKeyInt(config_path, "sorting_method")){
 }
 
 FillingMethodConfig::FillingMethodConfig(const fs::path &local_path, const fs::path &config_path) {

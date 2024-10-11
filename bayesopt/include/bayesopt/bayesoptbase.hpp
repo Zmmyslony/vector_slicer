@@ -40,183 +40,196 @@
 namespace bayesopt {
 
 
-  //Forward declaration
-  class PosteriorModel;
-  class ProbabilityDistribution;
-  class Dataset;
-  class BOptState;
+    //Forward declaration
+    class PosteriorModel;
 
-  typedef boost::numeric::ublas::vector<double>                   vectord;
-  typedef boost::numeric::ublas::vector<int>                      vectori;
-  typedef boost::numeric::ublas::matrix<double>                   matrixd;
-  typedef std::vector<vectord>                                   vecOfvec;
+    class ProbabilityDistribution;
 
-  /** \addtogroup BayesOpt
-   *  \brief Main module for Bayesian optimization
-   */
-  /*@{*/
+    class Dataset;
 
-  /**
-   * \brief Abstract module for Bayesian optimization.
-   *
-   * This module provides Bayesian optimization using different
-   * non-parametric processes (Gaussian process or Student's t
-   * process) as distributions over surrogate functions.
-   *
-   * \see ContinuousModel for implementations of this module for
-   * a continuous input spaces
-   *
-   * \see DiscreteModel for implementations of this module for
-   * a discrete input spaces or categorical input variables
-   */
-  class BAYESOPT_API BayesOptBase
-  {
-  public:
-    /** 
-     * Constructor
-     * @param params set of parameters (see parameters.hpp)
+    class BOptState;
+
+    typedef boost::numeric::ublas::vector<double> vectord;
+    typedef boost::numeric::ublas::vector<int> vectori;
+    typedef boost::numeric::ublas::matrix<double> matrixd;
+    typedef std::vector<vectord> vecOfvec;
+
+    /** \addtogroup BayesOpt
+     *  \brief Main module for Bayesian optimization
      */
-    BayesOptBase(size_t dim, Parameters params);
+    /*@{*/
 
-    /** 
-     * Default destructor
-     */
-    virtual ~BayesOptBase();
-
-    /** 
-     * \brief Function that defines the actual function to be optimized.
-     * This function must be modified (overriden) according to the
-     * specific problem.
+    /**
+     * \brief Abstract module for Bayesian optimization.
      *
-     * @param query point to be evaluated. 
-     * @return value of the function at the point evaluated.
-     */
-    virtual double evaluateSample( const vectord &query ) = 0;
-    
-
-    /** 
-     * \brief This function checks if the query is valid or not. It can
-     * be used to introduce arbitrary constrains. Since the Gaussian
-     * process assumes smoothness, constrains are managed by the inner
-     * optimizer (e.g.:DIRECT), being highly time consuming. If the
-     * constrain is very tricky, DIRECT will need much more function
-     * evaluations.
+     * This module provides Bayesian optimization using different
+     * non-parametric processes (Gaussian process or Student's t
+     * process) as distributions over surrogate functions.
      *
-     * Note: This function is experimental. Thus it is not made pure virtual.
-     * Using it is completely optional.
-     * 
-     * @param query point to be evaluated.
-     * 
-     * @return boolean value showing if the the function is valid at
-     *         the query point or not.
-     */ 
-    virtual bool checkReachability( const vectord &query )
-    { return true; };
-
-
-    /** 
-     * \brief Execute the optimization process of the function defined
-     * in evaluateSample.
-     * 
-     * @see evaluateSample
-     * @see checkReachability
+     * \see ContinuousModel for implementations of this module for
+     * a continuous input spaces
      *
-     * @param bestPoint returns point with the optimum value in a ublas::vector.
+     * \see DiscreteModel for implementations of this module for
+     * a discrete input spaces or categorical input variables
      */
-    void optimize(vectord &bestPoint);
+    class BAYESOPT_API BayesOptBase {
+    public:
+        /**
+         * Constructor
+         * @param params set of parameters (see parameters.hpp)
+         */
+        BayesOptBase(size_t dim, Parameters params);
 
-    /** 
-     * \brief Execute ONE step the optimization process of the
-     * function defined in evaluateSample.  
-     */  
-    void stepOptimization();
+        /**
+         * Default destructor
+         */
+        virtual ~BayesOptBase();
 
-    /** Initialize the optimization process.  */
-    void initializeOptimization();
-    
-    /** Once the optimization has been perfomed, return the optimal point. */
-    vectord getFinalResult();
+        /**
+         * \brief Function that defines the actual function to be optimized.
+         * This function must be modified (overriden) according to the
+         * specific problem.
+         *
+         * @param query point to be evaluated.
+         * @return value of the function at the point evaluated.
+         */
+        virtual double evaluateSample(const vectord &query) = 0;
 
-    /** Saves the current state of the optimization process into a state class. */
-    void saveOptimization(BOptState &state);
-    
-    /** Restores the optimization process of a previous execution */
-    void restoreOptimization(BOptState state);
 
-    // Getters and Setters
-    ProbabilityDistribution* getPrediction(const vectord& query);
-    const Dataset* getData();
-    Parameters* getParameters();
-    double getValueAtMinimum();
-    size_t getCurrentIter();
-    double evaluateCriteria(const vectord& query);
+        /**
+         * \brief This function checks if the query is valid or not. It can
+         * be used to introduce arbitrary constrains. Since the Gaussian
+         * process assumes smoothness, constrains are managed by the inner
+         * optimizer (e.g.:DIRECT), being highly time consuming. If the
+         * constrain is very tricky, DIRECT will need much more function
+         * evaluations.
+         *
+         * Note: This function is experimental. Thus it is not made pure virtual.
+         * Using it is completely optional.
+         *
+         * @param query point to be evaluated.
+         *
+         * @return boolean value showing if the the function is valid at
+         *         the query point or not.
+         */
+        virtual bool checkReachability(const vectord &query) { return true; };
 
-  protected:
-    /** Get optimal point in the inner space (e.g.: [0-1] hypercube) */
-    vectord getPointAtMinimum();
 
-    /** Wrapper for the target function adding any preprocessing or
-	constraint. It also maps the box constrains to the [0,1]
-	hypercube if applicable. */
-    double evaluateSampleInternal( const vectord &query );
+        /**
+         * \brief Execute the optimization process of the function defined
+         * in evaluateSample.
+         *
+         * @see evaluateSample
+         * @see checkReachability
+         *
+         * @param bestPoint returns point with the optimum value in a ublas::vector.
+         */
+        void optimize(vectord &bestPoint);
 
-    /** Sample a single point in the input space. Used for epsilon
-	greedy exploration. */
-    virtual vectord samplePoint() = 0;
+        /**
+         * \brief Execute ONE step the optimization process of the
+         * function defined in evaluateSample.
+         */
+        void stepOptimization();
 
-    /** 
-     * \brief Call the inner optimization method to find the optimal
-     * point acording to the criteria.  
-     * @param xOpt optimal point
-     */
-    virtual void findOptimal(vectord &xOpt) = 0;
-  
-    /** Remap the point x to the original space (e.g.:
-	unnormalization) */
-    virtual vectord remapPoint(const vectord& x) = 0;
+        /**
+         * \brief Execute ONE step the optimization process of the
+         * function defined in evaluateSample for predefined normalised coordinates.
+         */
+        void stepOptimization(const vectord &xNext);
 
-    /** Selects the initial set of points to build the surrogate model. */
-    virtual void generateInitialPoints(matrixd& xPoints) = 0;
+        /** Initialize the optimization process.  */
+        void initializeOptimization();
 
-    /** 
-     * \brief Print data for every step according to the verbose level
-     * 
-     * @param iteration iteration number 
-     * @param xNext next point
-     * @param yNext function value at next point
-     */
-    void plotStepData(size_t iteration, const vectord& xNext,
-			      double yNext);
-        
-    /** Eases the process of saving a state during initial samples */
-    void saveInitialSamples(matrixd xPoints);
-    void saveResponse(double yPoint, bool clear);
+        /** Once the optimization has been perfomed, return the optimal point. */
+        vectord getFinalResult();
 
-  protected:
-    Parameters mParameters;                    ///< Configuration parameters
-    size_t mDims;                                   ///< Number of dimensions
-    size_t mCurrentIter;                        ///< Current iteration number
-    boost::mt19937 mEngine;                      ///< Random number generator
+        /** Saves the current state of the optimization process into a state class. */
+        void saveOptimization(BOptState &state);
 
-  private:
-    boost::scoped_ptr<PosteriorModel> mModel;
-    double mYPrev;
-    size_t mCounterStuck;
-  private:
+        /** Restores the optimization process of a previous execution */
+        void restoreOptimization(BOptState state);
 
-    BayesOptBase();
+        // Getters and Setters
+        ProbabilityDistribution *getPrediction(const vectord &query);
 
-    /** 
-     * \brief Selects the next point to evaluate according to a certain
-     * criteria or metacriteria
-     * 
-     * @return next point to evaluate
-     */
-    vectord nextPoint();  
+        const Dataset *getData();
 
-  };
+        Parameters *getParameters();
 
-  /**@}*/
+        double getValueAtMinimum();
+
+        size_t getCurrentIter();
+
+        double evaluateCriteria(const vectord &query);
+
+    protected:
+        /** Get optimal point in the inner space (e.g.: [0-1] hypercube) */
+        vectord getPointAtMinimum();
+
+        /** Wrapper for the target function adding any preprocessing or
+        constraint. It also maps the box constrains to the [0,1]
+        hypercube if applicable. */
+        double evaluateSampleInternal(const vectord &query);
+
+        /** Sample a single point in the input space. Used for epsilon
+        greedy exploration. */
+        virtual vectord samplePoint() = 0;
+
+        /**
+         * \brief Call the inner optimization method to find the optimal
+         * point acording to the criteria.
+         * @param xOpt optimal point
+         */
+        virtual void findOptimal(vectord &xOpt) = 0;
+
+        /** Remap the point x to the original space (e.g.:
+        unnormalization) */
+        virtual vectord remapPoint(const vectord &x) = 0;
+
+        /** Selects the initial set of points to build the surrogate model. */
+        virtual void generateInitialPoints(matrixd &xPoints) = 0;
+
+        /**
+         * \brief Print data for every step according to the verbose level
+         *
+         * @param iteration iteration number
+         * @param xNext next point
+         * @param yNext function value at next point
+         */
+        void plotStepData(size_t iteration, const vectord &xNext,
+                          double yNext);
+
+        /** Eases the process of saving a state during initial samples */
+        void saveInitialSamples(matrixd xPoints);
+
+        void saveResponse(double yPoint, bool clear);
+
+        boost::scoped_ptr<PosteriorModel> mModel;
+    protected:
+        Parameters mParameters;                    ///< Configuration parameters
+        size_t mDims;                                   ///< Number of dimensions
+        size_t mCurrentIter;                        ///< Current iteration number
+        boost::mt19937 mEngine;                      ///< Random number generator
+
+    private:
+        double mYPrev;
+        size_t mCounterStuck;
+    private:
+
+        BayesOptBase();
+
+        /**
+         * \brief Selects the next point to evaluate according to a certain
+         * criteria or metacriteria
+         *
+         * @return next point to evaluate
+         */
+        vectord nextPoint();
+
+    };
+
+    /**@}*/
 
 
 

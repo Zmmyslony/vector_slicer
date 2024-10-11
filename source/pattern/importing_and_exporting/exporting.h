@@ -35,9 +35,9 @@ using vali = std::valarray<int>;
 using vald = std::valarray<double>;
 
 
-void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path);
-
-void exportVectorTableToFile(const std::vector<std::vector<double>> &table, const fs::path &filename);
+//void exportVectorTableToFile(const std::vector<std::vector<int>> &table, const fs::path &path);
+//
+//void exportVectorTableToFile(const std::vector<std::vector<double>> &table, const fs::path &filename);
 
 void exportVectorTableToFile(const std::string &header, const std::vector<std::vector<int>> &table_first,
                              const std::vector<std::vector<int>> &table_second, fs::path &filename);
@@ -63,4 +63,37 @@ void exportOverlap(const std::vector<std::vector<std::vector<double>>> &overlap_
 
 void exportCoordVector(const coord_vector &vector, const fs::path &filename);
 
+//void exportRowToFile(const std::vector<unsigned int> &row, const fs::path &path);
+
+template<typename T>
+std::string readRowToString(const std::vector<T> &row) {
+    std::string row_string;
+    for (auto &element: row) {
+        row_string += std::to_string(element);
+        row_string += ",";
+    }
+    row_string.pop_back();
+    row_string += "\n";
+    return row_string;
+}
+
+template<typename T>
+void exportRowToFile(const std::vector<T> &row, const fs::path &path) {
+    std::ofstream file(path.string());
+    if (file.is_open()) {
+        file << readRowToString(row);
+        file.close();
+    }
+}
+
+template<typename T>
+void exportVectorTableToFile(const std::vector<std::vector<T>> &table, const fs::path &path) {
+    std::ofstream file(path.string());
+    if (file.is_open()) {
+        for (auto &row: table) {
+            file << readRowToString(row);
+        }
+        file.close();
+    }
+}
 #endif //VECTOR_SLICER_EXPORTING_H

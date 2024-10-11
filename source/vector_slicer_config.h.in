@@ -30,6 +30,7 @@
 #define DISAGREEMENT_CONFIG "${PROJECT_SOURCE_DIR}/configuration/disagreement.cfg"
 #define FILLING_CONFIG "${PROJECT_SOURCE_DIR}/configuration/filling.cfg"
 
+#define OUTPUT_PATH "${PROJECT_SOURCE_DIR}/output"
 #define LOGS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/logs"
 #define CONFIG_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/best_configs"
 #define FILLED_MATRIX_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/filled_matrices"
@@ -37,6 +38,7 @@
 #define OVERLAP_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/overlap"
 #define PATHS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/paths"
 #define SEED_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/used_seeds"
+#define DISAGREEMENT_BUCKETS_PATH "${PROJECT_SOURCE_DIR}/output/bucketed_disagreement"
 
 #define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"
 

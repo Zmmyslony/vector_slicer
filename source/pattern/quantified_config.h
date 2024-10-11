@@ -28,6 +28,8 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <cfloat>
 
+#define DISAGREEMENT_BUCKET_COUNT 90
+
 typedef boost::numeric::ublas::vector<double> vectord;
 
 /// Class quantifying how given FillingConfig works for a number of seeds
@@ -43,6 +45,10 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double empty_spot_disagreement = DBL_MAX;
     double overlap_disagreement = DBL_MAX;
     double director_disagreement = DBL_MAX;
+    std::vector<unsigned int> director_disagreement_distribution = std::vector<unsigned int>(DISAGREEMENT_BUCKET_COUNT, 0);
+    double bucket_size = M_PI_2 / (DISAGREEMENT_BUCKET_COUNT - 1);
+    double total_angular_director_disagreement = 0;
+    double average_angular_director_disagreement = DBL_MAX;
 
     double calculateEmptySpots();
 
@@ -51,6 +57,8 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double calculateDirectorDisagreement();
 
     double localDirectorAgreement(int i, int j);
+
+    void insertIntoBucket(double local_director_agreement);
 
 public:
 
@@ -72,6 +80,8 @@ public:
     [[nodiscard]] FillingConfig getConfig() const;
 
     [[nodiscard]] double getDisagreement() const;
+
+    const std::vector<unsigned int> &getDirectorDisagreementDistribution() const;
 
     /// Fills the pattern
     void evaluate();
