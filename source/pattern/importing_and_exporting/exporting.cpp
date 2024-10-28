@@ -124,11 +124,14 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
     time_t ttime = time(nullptr);
     char time[26];
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     ctime_s(time, sizeof time, &ttime);
-#endif
-#ifdef __linux__
+#elif __linux__
     ctime_r(&ttime, time);
+#elif __APPLE__
+    ctime_r(&ttime, time);
+#else
+    error "Unknown compiler"
 #endif
     ;
     std::stringstream header_s;
