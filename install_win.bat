@@ -26,7 +26,7 @@ git pull
 cmake -S ./ -B ./build -DCMAKE_TOOLCHAIN_FILE=%cmake_path%
 cmake --build ./build --config Release -j4
 
-setx /M VECTOR_SLICER_OUTPUT "%pwd%\output"
-setx /M VECTOR_SLICER_API "%pwd%\build\Release\vector_slicer_api.dll"
+setx VECTOR_SLICER_OUTPUT "%pwd%\output"
+setx VECTOR_SLICER_API "%pwd%\build\Release\vector_slicer_api.dll"
 
 cmd /k
