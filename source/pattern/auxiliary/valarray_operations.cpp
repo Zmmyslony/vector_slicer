@@ -122,7 +122,6 @@ vali perpendicular(const vali &vector) {
 }
 
 double cross(const vald &vector_first, const vald &vector_second) {
-
     return vector_first[0] * vector_second[1] - vector_first[1] * vector_second[0];
 }
 

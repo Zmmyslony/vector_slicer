@@ -29,7 +29,14 @@
 
 
 bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
-    double cross_product = cross(edge_point_second - edge_point_first, itod(point) - edge_point_first);
+    return isLeftOfEdge(itod(point), edge_point_first, edge_point_second, is_exclusive);
+}
+
+bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+    double cross_product = (edge_point_second[0] - edge_point_first[0]) * (point[1] - edge_point_first[1]) -
+            (edge_point_second[1] - edge_point_first[1]) * (point[0] - edge_point_first[0]);
+
+//    double cross_product = cross(edge_point_second - edge_point_first, point - edge_point_first);
     if (is_exclusive) {
         return cross_product > 0;
     } else {
@@ -37,19 +44,22 @@ bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &e
     }
 }
 
-bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
-    return isLeftOfEdge(dtoi(point), edge_point_first, edge_point_second, is_exclusive);
-}
-
 bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
                    const vald &corner_fourth, bool is_exclusive) {
-    bool is_left_of_first_edge = isLeftOfEdge(point, corner_first, corner_second, is_exclusive);
-    bool is_left_of_second_edge = isLeftOfEdge(point, corner_second, corner_third, false);
+    vald point_d = itod(point);
 
-    bool is_left_of_third_edge = isLeftOfEdge(point, corner_third, corner_fourth, false);
-    bool is_left_of_fourth_edge = isLeftOfEdge(point, corner_fourth, corner_first, false);
+    return (isLeftOfEdge(point_d, corner_first, corner_second, is_exclusive) &&
+            isLeftOfEdge(point_d, corner_second, corner_third, false) &&
+            isLeftOfEdge(point_d, corner_third, corner_fourth, false) &&
+            isLeftOfEdge(point_d, corner_fourth, corner_first, false));
 
-    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
+//    bool is_left_of_first_edge = isLeftOfEdge(point_d, corner_first, corner_second, is_exclusive);
+//    bool is_left_of_second_edge = isLeftOfEdge(point_d, corner_second, corner_third, false);
+//
+//    bool is_left_of_third_edge = isLeftOfEdge(point_d, corner_third, corner_fourth, false);
+//    bool is_left_of_fourth_edge = isLeftOfEdge(point_d, corner_fourth, corner_first, false);
+
+//    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
 }
 
 
