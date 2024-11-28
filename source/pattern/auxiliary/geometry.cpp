@@ -20,21 +20,21 @@
 //
 
 #include <vector>
-#include <valarray>
 #include <algorithm>
 #include <iostream>
 
 #include "geometry.h"
 #include "valarray_operations.h"
+#include "simple_math_operations.h"
 
 
-bool isLeftOfEdge(const vali &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+bool isLeftOfEdge(const veci &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive) {
     return isLeftOfEdge(itod(point), edge_point_first, edge_point_second, is_exclusive);
 }
 
-bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive) {
+bool isLeftOfEdge(const vecd &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive) {
     double cross_product = (edge_point_second[0] - edge_point_first[0]) * (point[1] - edge_point_first[1]) -
-            (edge_point_second[1] - edge_point_first[1]) * (point[0] - edge_point_first[0]);
+                           (edge_point_second[1] - edge_point_first[1]) * (point[0] - edge_point_first[0]);
 
 //    double cross_product = cross(edge_point_second - edge_point_first, point - edge_point_first);
     if (is_exclusive) {
@@ -44,9 +44,9 @@ bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &e
     }
 }
 
-bool isInRectangle(const vali &point, const vald &corner_first, const vald &corner_second, const vald &corner_third,
-                   const vald &corner_fourth, bool is_exclusive) {
-    vald point_d = itod(point);
+bool isInRectangle(const veci &point, const vecd &corner_first, const vecd &corner_second, const vecd &corner_third,
+                   const vecd &corner_fourth, bool is_exclusive) {
+    vecd point_d = itod(point);
 
     return (isLeftOfEdge(point_d, corner_first, corner_second, is_exclusive) &&
             isLeftOfEdge(point_d, corner_second, corner_third, false) &&
@@ -72,13 +72,13 @@ double maxValue(const std::vector<double> &values) {
 }
 
 
-std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald corner_third,
-                                   vald corner_fourth, bool is_exclusive) {
+std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd corner_third,
+                                   vecd corner_fourth, bool is_exclusive) {
     std::vector<double> x_coordinates = {corner_first[0], corner_second[0], corner_third[0], corner_fourth[0]};
     std::vector<double> y_coordinates = {corner_first[1], corner_second[1], corner_third[1], corner_fourth[1]};
 
-    vald midpoint_first = (corner_second + corner_first) / 2;
-    vald midpoint_second = (corner_third + corner_fourth) / 2;
+    vecd midpoint_first = multiply(add(corner_second, corner_first), 1. / 2);
+    vecd midpoint_second = multiply(add(corner_third, corner_fourth), 1. / 2);
 
     // Error 1: Edge 3-4 is flipped - swap corners 3 & 4.
     if (!isLeftOfEdge(midpoint_first, corner_third, corner_fourth, false)) {
@@ -92,12 +92,12 @@ std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald c
 
     // Error 3: Corner 4 is right of 1-2 - replace 4 with midpoint between 1 and 3
     if (!isLeftOfEdge(corner_fourth, corner_first, corner_second, false)) {
-        corner_fourth = (corner_third + corner_first) / 2;
+        corner_fourth = multiply(add(corner_third, corner_first), 1. / 2);
     }
 
     // Error 4: Corner 3 is right of 1-2 - replace 3 with midpoint between 2 and 4
     if (!isLeftOfEdge(corner_third, corner_first, corner_second, false)) {
-        corner_third = (corner_fourth + corner_second) / 2;
+        corner_third = multiply(add(corner_fourth, corner_second), 1. / 2);
     }
 
     int x_min = (int) minValue(x_coordinates);
@@ -105,11 +105,11 @@ std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald c
     int y_min = (int) minValue(y_coordinates);
     int y_max = (int) maxValue(y_coordinates) + 1;
 
-    std::vector<vali> points_to_fill;
+    std::vector<veci> points_to_fill;
 
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
         for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
-            vali top_point = {x_curr, y_curr};
+            veci top_point = {x_curr, y_curr};
             if (isInRectangle(top_point, corner_first, corner_second, corner_third, corner_fourth, is_exclusive)) {
                 points_to_fill.push_back(top_point);
             }
@@ -120,64 +120,64 @@ std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald c
 
 /// Adds to the primary vector the orientation corrected secondary vector, and resizes it so that the projection
 /// onto primary vector is equal 1.
-vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector) {
-    vald resultant;
+vecd normalisedResultant(const vecd &primary_vector, const vecd &secondary_vector) {
+    vecd resultant;
     if (dot(primary_vector, secondary_vector) < 0) {
-        resultant = normalize(normalize(primary_vector) - normalize(secondary_vector));
+        resultant = normalize(subtract(normalize(primary_vector), normalize(secondary_vector)));
     } else {
-        resultant = normalize(normalize(primary_vector) + normalize(secondary_vector));
+        resultant = normalize(add(normalize(primary_vector), normalize(secondary_vector)));
     }
     double projection = dot(resultant, normalize(primary_vector));
 
-    return resultant / projection;
+    return multiply(resultant, 1. / projection);
 }
 
 
-std::vector<vali>
-findHalfCircleCentres(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
-                      const vald &last_director) {
+std::vector<veci>
+findHalfCircleCentres(const veci &last_point, const veci &previous_point, double radius, bool is_last_point_filled,
+                      const vecd &last_director) {
 
-    vald displacements = normalize(last_point - previous_point);
-    vald tangent = normalisedResultant(displacements, last_director);
-    vald normal = perpendicular(tangent) * radius;
+    vecd displacements = normalize(subtract(last_point, previous_point));
+    vecd tangent = normalisedResultant(displacements, last_director);
+    vecd normal = multiply(perpendicular(tangent), radius);
 
-    std::vector<vali> points_to_fill;
+    std::vector<veci> points_to_fill;
     int range = (int) radius + 1;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
-            vali displacement = {x_displacement, y_displacement};
-            bool is_on_correct_side = isLeftOfEdge(displacement, normal, -normal, is_last_point_filled);
+            veci displacement = {x_displacement, y_displacement};
+            bool is_on_correct_side = isLeftOfEdge(displacement, normal, multiply(normal, -1), is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
-                points_to_fill.emplace_back(displacement + last_point);
+                points_to_fill.emplace_back(add(displacement, last_point));
             }
         }
     }
     return points_to_fill;
 }
 
-std::vector<vali>
-findHalfCircleEdges(const vali &centre_position, vald corner_one, vald corner_two, double radius,
-                    bool is_last_point_filled, const vald &last_move_direction) {
-    vald normal = perpendicular(last_move_direction);
-    corner_one -= itod(centre_position);
-    corner_two -= itod(centre_position);
+std::vector<veci>
+findHalfCircleEdges(const veci &centre_position, vecd corner_one, vecd corner_two, double radius,
+                    bool is_last_point_filled, const vecd &last_move_direction) {
+    vecd normal = perpendicular(last_move_direction);
+    corner_one = subtract(corner_one, itod(centre_position));
+    corner_two = subtract(corner_two, itod(centre_position));
 
     if (dot(normal, corner_one) < 0) {
-        vald tmp = corner_one;
+        vecd tmp = corner_one;
         corner_one = corner_two;
         corner_two = tmp;
     }
 
-    std::vector<vali> points_to_fill;
+    std::vector<veci> points_to_fill;
     int range = (int) radius + 1;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
-            vali displacement = {x_displacement, y_displacement};
+            veci displacement = {x_displacement, y_displacement};
             bool is_on_correct_side = isLeftOfEdge(displacement, corner_one, corner_two, is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
-                points_to_fill.emplace_back(displacement + centre_position);
+                points_to_fill.emplace_back(add(displacement, centre_position));
             }
         }
     }
@@ -185,12 +185,12 @@ findHalfCircleEdges(const vali &centre_position, vald corner_one, vald corner_tw
 }
 
 
-std::vector<vali> findPointsInCircle(double radius) {
-    std::vector<vali> points_in_circle;
+std::vector<veci> findPointsInCircle(double radius) {
+    std::vector<veci> points_in_circle;
     int range = (int) radius;
     for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
-            vali displacement = {i, j};
+            veci displacement = {i, j};
             if (norm(displacement) <= radius) {
                 points_in_circle.push_back(displacement);
             }
@@ -200,6 +200,6 @@ std::vector<vali> findPointsInCircle(double radius) {
 }
 
 
-std::vector<vali> findPointsInCircle(int radius) {
+std::vector<veci> findPointsInCircle(int radius) {
     return findPointsInCircle((double) radius);
 }

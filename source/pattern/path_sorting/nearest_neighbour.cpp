@@ -25,11 +25,11 @@
 #include <cfloat>
 #include <iostream>
 
-std::vector<Path> nearestNeighbourSort(const FilledPattern &pattern, const vali &starting_coordinates) {
+std::vector<Path> nearestNeighbourSort(const FilledPattern &pattern, const veci &starting_coordinates) {
     bool is_vector_sorted = pattern.desired_pattern.get().isVectorSorted();
     std::vector<Path> unsorted_paths = pattern.getSequenceOfPaths();
     std::vector<Path> sorted_paths;
-    vali previous_end = starting_coordinates;
+    veci previous_end = starting_coordinates;
     int j = 0;
     while (!unsorted_paths.empty()) {
         int i_nearest = 0;

@@ -22,46 +22,45 @@
 #ifndef VECTOR_SLICER_VALARRAY_OPERATIONS_H
 #define VECTOR_SLICER_VALARRAY_OPERATIONS_H
 
-#include <valarray>
 #include <vector>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-using matrix_d = std::valarray<vald>;
+using matrix_d = std::vector<vecd>;
 
-vald itod(const vali &int_array);
+vecd itod(const veci &int_array);
 
-vali dtoi(const vald &double_array);
+veci dtoi(const vecd &double_array);
 
-double generalNorm(const vald &array, const double &exponent);
+double generalNorm(const vecd &array, const double &exponent);
 
-double norm(const vald &array);
+double norm(const vecd &array);
 
-double norm(const vali &array);
+double norm(const veci &array);
 
-vald generalNormalize(const vald &array, const double &exponent);
+vecd generalNormalize(const vecd &array, const double &exponent);
 
-vald normalize(const vald &array);
+vecd normalize(const vecd &array);
 
-vald normalize(const vali &array);
+vecd normalize(const veci &array);
 
-double dot(const vald &array_first, const vald &array_second);
+double dot(const vecd &array_first, const vecd &array_second);
 
-vald perpendicular(const vald &vector);
+vecd perpendicular(const vecd &vector);
 
-vali perpendicular(const vali &vector);
+veci perpendicular(const veci &vector);
 
-double cross(const vald &vector_first, const vald &vector_second);
+double cross(const vecd &vector_first, const vecd &vector_second);
 
-void printArray(const std::vector<vali> &array);
+void printArray(const std::vector<veci> &array);
 
-void printArray(const std::vector<vald> &array);
+void printArray(const std::vector<vecd> &array);
 
-double angle(const vald &array_first, const vald &array_second);
+double angle(const vecd &array_first, const vecd &array_second);
 
-vald multiply(matrix_d mat, vald vec);
+vecd multiply(matrix_d mat, vecd vec);
 
-matrix_d tensor(vald vec_first, vald vec_second);
+matrix_d tensor(vecd vec_first, vecd vec_second);
 
 #endif //VECTOR_SLICER_VALARRAY_OPERATIONS_H

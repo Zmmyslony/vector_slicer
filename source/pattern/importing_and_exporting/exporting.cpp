@@ -105,7 +105,7 @@ void exportVectorTableToFile(const std::vector<std::vector<double>> &table, cons
 }
 
 
-std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::valarray<int>>> &grid_of_coordinates,
+std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vector<int>>> &grid_of_coordinates,
                                          int index) {
     std::vector<std::vector<int>> table;
     table.reserve(grid_of_coordinates.size());
@@ -170,7 +170,7 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 
 
 void
-exportPathSequence(const std::vector<std::vector<std::vector<std::valarray<int>>>> &grids_of_paths, const fs::path path,
+exportPathSequence(const std::vector<std::vector<std::vector<std::vector<int>>>> &grids_of_paths, const fs::path path,
                    const std::string &suffix, double print_diameter, const Simulation &simulation) {
     std::string header = generateHeader(suffix, print_diameter, simulation);
     exportHeaderToFile(header, path);
@@ -213,13 +213,13 @@ std::vector<std::vector<int>> importTableInt(const fs::path &filename) {
     return table;
 }
 
-std::vector<std::vector<std::valarray<int>>> mergeTwoTables(const std::vector<std::vector<int>> &x_table,
-                                                            const std::vector<std::vector<int>> &y_table) {
-    std::vector<std::vector<std::valarray<int>>> merged_table;
+std::vector<std::vector<std::vector<int>>> mergeTwoTables(const std::vector<std::vector<int>> &x_table,
+                                                          const std::vector<std::vector<int>> &y_table) {
+    std::vector<std::vector<std::vector<int>>> merged_table;
     for (int i = 0; i < x_table.size(); i++) {
-        std::vector<std::valarray<int>> merged_row;
+        std::vector<std::vector<int>> merged_row;
         for (int j = 0; j < x_table[i].size(); j++) {
-            std::valarray<int> merged_element = {x_table[i][j], y_table[i][j]};
+            std::vector<int> merged_element = {x_table[i][j], y_table[i][j]};
             merged_row.push_back(merged_element);
         }
         merged_table.push_back(merged_row);
@@ -228,18 +228,18 @@ std::vector<std::vector<std::valarray<int>>> mergeTwoTables(const std::vector<st
 }
 
 
-std::vector<std::vector<std::valarray<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix) {
+std::vector<std::vector<std::vector<int>>> read3DVectorFromFile(const fs::path &path, const std::string &suffix) {
     fs::path x_filename = path / ("x_" + suffix + ".csv");
     fs::path y_filename = path / ("y_" + suffix + ".csv");
 
     std::vector<std::vector<int>> x_table = importTableInt(x_filename);
     std::vector<std::vector<int>> y_table = importTableInt(y_filename);
 
-    std::vector<std::vector<std::valarray<int>>> merged_tables = mergeTwoTables(x_table, y_table);
+    std::vector<std::vector<std::vector<int>>> merged_tables = mergeTwoTables(x_table, y_table);
     return merged_tables;
 }
 
-void exportVector(const std::vector<vali> &vector, const std::string &filename) {
+void exportVector(const std::vector<veci> &vector, const std::string &filename) {
     std::ofstream file(filename, std::ios_base::app);
 
     if (file.is_open()) {
@@ -249,7 +249,7 @@ void exportVector(const std::vector<vali> &vector, const std::string &filename) 
     }
 }
 
-void exportVector(const std::vector<vald> &vector, const std::string &filename) {
+void exportVector(const std::vector<vecd> &vector, const std::string &filename) {
     std::ofstream file(filename, std::ios_base::app);
 
     if (file.is_open()) {
@@ -259,13 +259,13 @@ void exportVector(const std::vector<vald> &vector, const std::string &filename) 
     }
 }
 
-void printVector(const std::vector<vald> &vector) {
+void printVector(const std::vector<vecd> &vector) {
     for (auto &point: vector) {
         std::cout << point[0] << "," << point[1] << std::endl;
     }
 }
 
-void printVector(const std::vector<vali> &vector) {
+void printVector(const std::vector<veci> &vector) {
     for (auto &point: vector) {
         std::cout << point[0] << "," << point[1] << std::endl;
     }

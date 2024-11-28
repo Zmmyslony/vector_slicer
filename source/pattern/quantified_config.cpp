@@ -30,6 +30,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <vector>
+#include <random>
 
 
 QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern,
@@ -119,8 +120,8 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
 
-    vald filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
-    vald desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
+    vecd filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
+    vecd desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
                              desired_pattern.get().getYFieldPreferred()[i][j]};
     double filled_director_norm = norm(filled_director);
     double desired_director_norm = norm(desired_director);
@@ -155,7 +156,7 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
             if (number_of_times_filled[i][j] > 0 &&
-                desired_pattern.get().isInShape(vali{i, j})) {
+                desired_pattern.get().isInShape(veci{i, j})) {
                 director_agreement += localDirectorAgreement(i, j);
                 number_of_filled_elements++;
             }
@@ -208,7 +209,7 @@ void QuantifiedConfig::printDisagreement() const {
     stream << std::endl;
     stream << "Disagreement " << disagreement * path_multiplier << std::endl;
     stream << "\tType \t\tValue \tDisagreement \tPercentage" << std::endl;
-    stream << "\tCoverage\t" <<  (1 - empty_spots) * 100<< "%\t" << empty_spot_disagreement << "\t"
+    stream << "\tCoverage\t" << (1 - empty_spots) * 100 << "%\t" << empty_spot_disagreement << "\t"
            << empty_spot_ratio << std::endl;
     stream << "\tOverlap\t\t" << average_overlap * 100 << "%\t" << overlap_disagreement << "\t"
            << overlap_ratio << std::endl;
@@ -261,6 +262,52 @@ double QuantifiedConfig::getDisagreement(int seeds, int threads, bool is_disagre
     int return_index = disagreements.size() * (1 - disagreement_percentile);
     return disagreements[return_index];
 }
+
+double QuantifiedConfig::averagedFillDensity(const veci &position, int averaging_radius) const {
+    int x_size = desired_pattern.get().getDimensions()[0];
+    int y_size = desired_pattern.get().getDimensions()[1];
+
+    int target_count = 0;
+    int filling_count = 0;
+    int tracked_pixels = 0;
+    for (int x = position[0] - averaging_radius; x <= position[0] + averaging_radius; x++) {
+        if (x < 0 || x >= x_size) {
+            continue;
+        }
+        for (int y = position[1] - averaging_radius; y <= position[1] + averaging_radius; y++) {
+            if (y < 0 || y >= y_size) {
+                continue;
+            }
+            target_count += desired_pattern.get().getShapeMatrix()[x][y];
+            filling_count += number_of_times_filled[x][y];
+            tracked_pixels++;
+        }
+    }
+    return (double) (filling_count - target_count) / (double) tracked_pixels;
+}
+
+std::vector<double> QuantifiedConfig::sampleFillDensities(uint16_t sample_count, int averaging_radius) const {
+    int x_size = desired_pattern.get().getDimensions()[0];
+    int y_size = desired_pattern.get().getDimensions()[1];
+
+    std::mt19937 random_engine(getSeed());
+    std::uniform_int_distribution x_distribution(0, x_size - 1);
+    std::uniform_int_distribution y_distribution(0, y_size - 1);
+
+    std::vector<double> sampled_fill_densities;
+    sampled_fill_densities.reserve(sample_count);
+    for (int i = 0; i < sample_count; i++) {
+        veci position = {x_distribution(random_engine), y_distribution(random_engine)};
+//        if (!desired_pattern.get().isInShape(position)) {
+//            i--;
+//            continue;
+//        }
+        double fill_density = averagedFillDensity(position, averaging_radius);
+        sampled_fill_densities.emplace_back(fill_density);
+    }
+    return sampled_fill_densities;
+}
+
 
 std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int threads) {
     std::vector<QuantifiedConfig> configs_with_various_seeds;

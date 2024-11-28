@@ -45,7 +45,8 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double empty_spot_disagreement = DBL_MAX;
     double overlap_disagreement = DBL_MAX;
     double director_disagreement = DBL_MAX;
-    std::vector<unsigned int> director_disagreement_distribution = std::vector<unsigned int>(DISAGREEMENT_BUCKET_COUNT, 0);
+    std::vector<unsigned int> director_disagreement_distribution = std::vector<unsigned int>(DISAGREEMENT_BUCKET_COUNT,
+                                                                                             0);
     double bucket_size = M_PI_2 / (DISAGREEMENT_BUCKET_COUNT - 1);
     double total_angular_director_disagreement = 0;
     double average_angular_director_disagreement = DBL_MAX;
@@ -59,6 +60,8 @@ class QuantifiedConfig : FilledPattern, public Simulation {
     double localDirectorAgreement(int i, int j);
 
     void insertIntoBucket(double local_director_agreement);
+
+    double averagedFillDensity(const veci &position, int averaging_radius) const;
 
 public:
 
@@ -96,6 +99,8 @@ public:
     void printDisagreement() const;
 
     std::vector<std::vector<double>> localDisagreementGrid();
+
+    std::vector<double> sampleFillDensities(uint16_t sample_count, int averaging_radius) const;
 };
 
 

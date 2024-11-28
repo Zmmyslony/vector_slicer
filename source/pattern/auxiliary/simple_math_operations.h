@@ -23,9 +23,10 @@
 #define VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H
 
 #include <vector>
-#include <valarray>
+#include <stdexcept>
+#include <algorithm>
 
-using vald = std::valarray<double>;
+using vecd = std::vector<double>;
 
 
 int roundUp(double);
@@ -34,14 +35,14 @@ int sgn(double number);
 
 double decimalPart(double number);
 
-std::vector<std::vector<std::valarray<double>>>
+std::vector<std::vector<std::vector<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
             int threads);
 
 std::vector<std::vector<double>>
-vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array, int threads);
+vectorArrayNorm(const std::vector<std::vector<std::vector<double>>> &vector_array, int threads);
 
-std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array, int threads);
+std::vector<std::vector<vecd>> normalizeVectorArray(const std::vector<std::vector<vecd>> &vector_array, int threads);
 
 std::vector<int> findNullRows(const std::vector<std::vector<int>> &array, int padding);
 
@@ -146,5 +147,72 @@ T max_array(const std::vector<std::vector<T>> &array) {
     return *std::max_element(arr_min.begin(), arr_min.end());
 };
 
+template<typename T>
+std::vector<T> add(std::vector<T> obj_one, const std::vector<T> &obj_two) {
+    if (obj_one.size() != obj_two.size()) {
+        throw std::runtime_error("Cannot add two vectors of uneven sizes.");
+    }
+    for (int i = 0; i < obj_one.size(); i++) {
+        obj_one[i] += obj_two[i];
+    }
+    return obj_one;
+}
+
+template<typename T>
+std::vector<T> subtract(std::vector<T> obj_one, const std::vector<T> &obj_two) {
+    if (obj_one.size() != obj_two.size()) {
+        throw std::runtime_error("Cannot add two vectors of uneven sizes.");
+    }
+    for (int i = 0; i < obj_one.size(); i++) {
+        obj_one[i] -= obj_two[i];
+    }
+    return obj_one;
+}
+
+template<typename T>
+std::vector<T> multiply(std::vector<T> obj_one, double multiplier) {
+    for (int i = 0; i < obj_one.size(); i++) {
+        obj_one[i] *= multiplier;
+    }
+    return obj_one;
+}
+
+template<typename T>
+std::vector<T> divide(std::vector<T> obj_one, double divisor) {
+    for (int i = 0; i < obj_one.size(); i++) {
+        obj_one[i] /= divisor;
+    }
+    return obj_one;
+}
+
+template<typename T>
+std::vector<T> abs(std::vector<T> obj_one) {
+    for (int i = 0; i < obj_one.size(); i++) {
+        obj_one[i] = std::abs(obj_one[i]);
+    }
+    return obj_one;
+}
+
+std::vector<double> operator*(const std::vector<double> &self, double multiplier);
+std::vector<double> operator*(double multiplier, const std::vector<double> &self);
+std::vector<double> operator/(const std::vector<double> &self, double divisor);
+
+std::vector<double> operator/(double divisor, const std::vector<double> &self);
+
+std::vector<double> operator+(const std::vector<double> &self, const std::vector<double> &other);
+
+std::vector<double> operator-(const std::vector<double> &self, const std::vector<double> &other);
+
+std::vector<int> operator*(const std::vector<int> &self, double multiplier);
+
+std::vector<int> operator*(double multiplier, const std::vector<int> &self);
+
+std::vector<int> operator/(const std::vector<int> &self, double divisor);
+
+std::vector<int> operator/(double divisor, const std::vector<int> &self);
+
+std::vector<int> operator+(const std::vector<int> &self, const std::vector<int> &other);
+
+std::vector<int> operator-(const std::vector<int> &self, const std::vector<int> &other);
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

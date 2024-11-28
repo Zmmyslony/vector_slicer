@@ -43,11 +43,11 @@ double decimalPart(double number) {
     return number - floor(number);
 }
 
-std::vector<std::vector<vald>>
+std::vector<std::vector<vecd>>
 joinTables(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
            int threads) {
     assert((x_field.size() == y_field.size()));
-    std::vector<std::vector<vald>> joined_table(x_field.size(), std::vector<vald>(x_field[0].size()));
+    std::vector<std::vector<vecd>> joined_table(x_field.size(), std::vector<vecd>(x_field[0].size()));
 
     omp_set_num_threads(threads);
 #pragma omp parallel for
@@ -61,7 +61,7 @@ joinTables(const std::vector<std::vector<double>> &x_field, const std::vector<st
 }
 
 std::vector<std::vector<matrix_d>>
-tensorWithItself(const std::vector<std::vector<std::valarray<double>>> &director, int threads) {
+tensorWithItself(const std::vector<std::vector<std::vector<double>>> &director, int threads) {
     std::vector<std::vector<matrix_d>> result(director.size(), std::vector<matrix_d>(director[0].size()));
 
     omp_set_num_threads(threads);
@@ -76,16 +76,16 @@ tensorWithItself(const std::vector<std::vector<std::valarray<double>>> &director
 
 
 /// Calculation of the splay from the gradient theorem where Q = n (tensor) n, and splay is Q . Div(Q).b
-std::vector<std::vector<std::valarray<double>>>
+std::vector<std::vector<std::vector<double>>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
             int threads) {
-    std::vector<std::vector<vald>> director = normalizeVectorArray(joinTables(x_field, y_field, threads), threads);
+    std::vector<std::vector<vecd>> director = normalizeVectorArray(joinTables(x_field, y_field, threads), threads);
     std::vector<std::vector<matrix_d>> q_tensor = tensorWithItself(director, threads);
 
-    std::vector<std::vector<vald>> splay_table(x_field.size(), std::vector<vald>(x_field[0].size()));
+    std::vector<std::vector<vecd>> splay_table(x_field.size(), std::vector<vecd>(x_field[0].size()));
     // Temporarily use 0 splay values
-    splay_table.front() = {x_field[0].size(), std::valarray<double>{0, 0}};
-    splay_table.back() = {x_field[0].size(), std::valarray<double>{0, 0}};
+    splay_table.front() = {x_field[0].size(), std::vector<double>{0, 0}};
+    splay_table.back() = {x_field[0].size(), std::vector<double>{0, 0}};
 
     omp_set_num_threads(threads);
 #pragma omp parallel for
@@ -94,18 +94,18 @@ splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<s
         splay_table[i].front() = {0, 0};
         splay_table[i].back() = {0, 0};
         for (int j = 1; j < director[i].size() - 1; j++) {
-            std::valarray<double> q_divergence;
+            std::vector<double> q_divergence;
             q_divergence = multiply(q_tensor[i + 1][j], {1, 0});
-            q_divergence += multiply(q_tensor[i][j + 1], {0, 1});
-            q_divergence += multiply(q_tensor[i - 1][j], {-1, 0});
-            q_divergence += multiply(q_tensor[i][j - 1], {0, -1});
+            q_divergence = add(q_divergence, multiply(q_tensor[i][j + 1], {0, 1}));
+            q_divergence = add(q_divergence, multiply(q_tensor[i - 1][j], {-1, 0}));
+            q_divergence = add(q_divergence, multiply(q_tensor[i][j - 1], {0, -1}));
 
-            q_divergence += multiply(q_tensor[i + 1][j + 1], {0.5, 0.5});
-            q_divergence += multiply(q_tensor[i - 1][j + 1], {-0.5, 0.5});
-            q_divergence += multiply(q_tensor[i + 1][j - 1], {0.5, -0.5});
-            q_divergence += multiply(q_tensor[i - 1][j - 1], {-0.5, -0.5});
+            q_divergence = add(q_divergence, multiply(q_tensor[i + 1][j + 1], {0.5, 0.5}));
+            q_divergence = add(q_divergence, multiply(q_tensor[i - 1][j + 1], {-0.5, 0.5}));
+            q_divergence = add(q_divergence, multiply(q_tensor[i + 1][j - 1], {0.5, -0.5}));
+            q_divergence = add(q_divergence, multiply(q_tensor[i - 1][j - 1], {-0.5, -0.5}));
 
-            vald current_splay = multiply(q_tensor[i][j], q_divergence);
+            vecd current_splay = multiply(q_tensor[i][j], q_divergence);
             splay_table[i][j] = current_splay;
         }
     }
@@ -125,7 +125,7 @@ splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<s
 
 
 std::vector<std::vector<double>>
-vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_array, int threads) {
+vectorArrayNorm(const std::vector<std::vector<std::vector<double>>> &vector_array, int threads) {
     std::vector<std::vector<double>> norms(vector_array.size(), std::vector<double>(vector_array[0].size()));
 
     omp_set_num_threads(threads);
@@ -138,8 +138,8 @@ vectorArrayNorm(const std::vector<std::vector<std::valarray<double>>> &vector_ar
     return norms;
 }
 
-std::vector<std::vector<vald>> normalizeVectorArray(const std::vector<std::vector<vald>> &vector_array, int threads) {
-    std::vector<std::vector<vald>> norms(vector_array.size(), std::vector<vald>(vector_array[0].size()));
+std::vector<std::vector<vecd>> normalizeVectorArray(const std::vector<std::vector<vecd>> &vector_array, int threads) {
+    std::vector<std::vector<vecd>> norms(vector_array.size(), std::vector<vecd>(vector_array[0].size()));
 
     omp_set_num_threads(threads);
 #pragma omp parallel for
@@ -193,3 +193,50 @@ std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array, int
     return {left_empty_columns - padding, right_empty_columns - padding};
 }
 
+std::vector<double> operator*(const std::vector<double> &self, double multiplier) {
+    return multiply(self, multiplier);
+}
+
+std::vector<double> operator*(double multiplier, const std::vector<double> &self) {
+    return self * multiplier;
+}
+
+std::vector<double> operator/(const std::vector<double> &self, double divisor) {
+    return divide(self, divisor);
+}
+
+std::vector<double> operator/(double divisor, const std::vector<double> &self) {
+    return divide(self, divisor);
+}
+
+std::vector<double> operator+(const std::vector<double> &self, const std::vector<double> &other) {
+    return add(self, other);
+}
+
+std::vector<double> operator-(const std::vector<double> &self, const std::vector<double> &other) {
+    return subtract(self, other);
+}
+
+std::vector<int> operator*(const std::vector<int> &self, double multiplier) {
+    return multiply(self, multiplier);
+}
+
+std::vector<int> operator*(double multiplier, const std::vector<int> &self) {
+    return self * multiplier;
+}
+
+std::vector<int> operator/(const std::vector<int> &self, double divisor) {
+    return divide(self, divisor);
+}
+
+std::vector<int> operator/(double divisor, const std::vector<int> &self) {
+    return divide(self, divisor);
+}
+
+std::vector<int> operator+(const std::vector<int> &self, const std::vector<int> &other) {
+    return add(self, other);
+}
+
+std::vector<int> operator-(const std::vector<int> &self, const std::vector<int> &other) {
+    return subtract(self, other);
+}

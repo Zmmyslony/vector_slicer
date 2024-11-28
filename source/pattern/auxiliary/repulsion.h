@@ -36,15 +36,14 @@
 
 #include <vector>
 #include <tuple>
-#include <valarray>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-vald
+vecd
 getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                      const std::vector<std::vector<int>> &filled_table, const vald &tangent, double radius,
-                      const vald &coordinates, const vali &sizes, double repulsion_coefficient,
+                      const std::vector<std::vector<int>> &filled_table, const vecd &tangent, double radius,
+                      const vecd &coordinates, const veci &sizes, double repulsion_coefficient,
                       double maximal_repulsion_angle);
 
 

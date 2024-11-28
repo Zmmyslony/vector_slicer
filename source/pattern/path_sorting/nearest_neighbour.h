@@ -23,14 +23,13 @@
 #define VECTOR_SLICER_NEAREST_NEIGHBOUR_H
 
 #include <vector>
-#include <valarray>
 #include "../path.h"
 #include "../filled_pattern.h"
 
-using vali = std::valarray<int>;
+using veci = std::vector<int>;
 
 
 std::vector<Path>
-nearestNeighbourSort(const FilledPattern &pattern, const vali& starting_coordinates);
+nearestNeighbourSort(const FilledPattern &pattern, const veci& starting_coordinates);
 
 #endif //VECTOR_SLICER_NEAREST_NEIGHBOUR_H

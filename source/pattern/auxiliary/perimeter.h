@@ -24,34 +24,33 @@
 
 #include <vector>
 #include <tuple>
-#include <valarray>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-std::vector<vali> circleDisplacements(double radius);
+std::vector<veci> circleDisplacements(double radius);
 
-bool isInRange(const vali &position, const vali &dimensions);
+bool isInRange(const veci &position, const veci &dimensions);
 
-bool isEmpty(const vali &position, const std::vector<std::vector<int>> &table);
+bool isEmpty(const veci &position, const std::vector<std::vector<int>> &table);
 
 bool
 isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                const std::vector<vali> &perimeter_displacements_list, const vali &coordinates,
-                const vali &sizes);
+                const std::vector<veci> &perimeter_displacements_list, const veci &coordinates,
+                const veci &sizes);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const vali &coordinates,
-              const vali &sizes);
+bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const veci &coordinates,
+              const veci &sizes);
 
-std::vector<vali>
-findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+std::vector<veci>
+findAllPerimeters(const std::vector<std::vector<int>> &shape_matrix, const veci &sizes);
 
-std::vector<vali>
-findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes);
+std::vector<veci>
+findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const veci &sizes);
 
 
-std::vector<std::vector<vali>>
-findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const vali &sizes,
-                        const std::vector<std::vector<vald>> &splay_array);
+std::vector<std::vector<veci>>
+findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const veci &sizes,
+                        const std::vector<std::vector<vecd>> &splay_array);
 
 #endif //VECTOR_SLICER_PERIMETER_H

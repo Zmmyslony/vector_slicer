@@ -32,10 +32,10 @@ std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> 
 
 std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
 
-std::valarray<int> getTableDimensions(std::string &filename);
+std::vector<int> getTableDimensions(std::string &filename);
 
-std::valarray<int> getTableDimensions(const std::vector<std::vector<int>> &table);
+std::vector<int> getTableDimensions(const std::vector<std::vector<int>> &table);
 
-std::vector<std::vector<std::valarray<double>>> readFileToTableDoubleVector(const std::string &filename);
+std::vector<std::vector<std::vector<double>>> readFileToTableDoubleVector(const std::string &filename);
 
 #endif //VECTOR_SLICER_TABLE_READING_H

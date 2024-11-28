@@ -24,32 +24,31 @@
 
 #include <utility>
 #include <vector>
-#include <valarray>
 #include <algorithm>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-std::vector<vali> findPointsToFill(vald corner_first, vald corner_second, vald corner_third,
-                                   vald corner_fourth, bool is_exclusive);
+std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd corner_third,
+                                   vecd corner_fourth, bool is_exclusive);
 
-vald normalisedResultant(const vald &primary_vector, const vald &secondary_vector);
+vecd normalisedResultant(const vecd &primary_vector, const vecd &secondary_vector);
 
-std::vector<vali> findPointsInCircle(double radius);
+std::vector<veci> findPointsInCircle(double radius);
 
-std::vector<vali> findPointsInCircle(int radius);
+std::vector<veci> findPointsInCircle(int radius);
 
-bool isLeftOfEdge(const vald &point, const vald &edge_point_first, const vald &edge_point_second, bool is_exclusive);
+bool isLeftOfEdge(const vecd &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive);
 
-std::vector<vali>
-findHalfCircleCentres(const vali &last_point, const vali &previous_point, double radius, bool is_last_point_filled,
-                      const vald &last_director);
+std::vector<veci>
+findHalfCircleCentres(const veci &last_point, const veci &previous_point, double radius, bool is_last_point_filled,
+                      const vecd &last_director);
 
 /// Finds coordinates in half-circle based on position of the centre-point and two edges of previous path segment.
-std::vector<vali>
-findHalfCircleEdges(const vali &centre_position, vald corner_one, vald corner_two, double radius,
-                    bool is_last_point_filled, const vald &last_move_direction);
+std::vector<veci>
+findHalfCircleEdges(const veci &centre_position, vecd corner_one, vecd corner_two, double radius,
+                    bool is_last_point_filled, const vecd &last_move_direction);
 
-std::vector<vali> generateLineDisplacements(const vald &tangent, double radius);
+std::vector<veci> generateLineDisplacements(const vecd &tangent, double radius);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

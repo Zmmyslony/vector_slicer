@@ -39,6 +39,7 @@
 #define PATHS_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/paths"
 #define SEED_EXPORT_PATH "${PROJECT_SOURCE_DIR}/output/used_seeds"
 #define DISAGREEMENT_BUCKETS_PATH "${PROJECT_SOURCE_DIR}/output/bucketed_disagreement"
+#define SAMPLED_DENSITY "${PROJECT_SOURCE_DIR}/output/sampled_density"
 
 #define PATTERNS_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/patterns"
 

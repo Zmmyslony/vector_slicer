@@ -40,10 +40,10 @@
 
 namespace fs = boost::filesystem;
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-using pattern = std::vector<std::vector<vali>>;
+using pattern = std::vector<std::vector<veci>>;
 
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims) :
@@ -226,7 +226,7 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
  * @param start coordinates where from the sorting should start from. Is overwritten by last position of the last path in sequence.
  * @return
  */
-std::vector<Path> sort_paths(const FilledPattern &pattern, vali &start) {
+std::vector<Path> sort_paths(const FilledPattern &pattern, veci &start) {
     int sorting_method = pattern.desired_pattern.get().getSortingMethod();
     std::vector<Path> sorted_paths;
     switch (sorting_method) {
@@ -246,8 +246,8 @@ std::vector<Path> sort_paths(const FilledPattern &pattern, vali &start) {
 }
 
 /// Extracts coordinate sequences from path sequence.
-std::vector<std::vector<vali>> extract_coordinates(const std::vector<Path> &paths) {
-    std::vector<std::vector<vali>> position_sequences;
+std::vector<std::vector<veci>> extract_coordinates(const std::vector<Path> &paths) {
+    std::vector<std::vector<veci>> position_sequences;
     position_sequences.reserve(paths.size());
     for (auto &path: paths) {
         position_sequences.emplace_back(path.getPositionSequence());
@@ -280,12 +280,14 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     fs::path overlap_directory = createCsvPath(OVERLAP_EXPORT_PATH, pattern_name);
     fs::path seed_directory = createCsvPath(SEED_EXPORT_PATH, pattern_name);
     fs::path bucketed_disagreement = createCsvPath(DISAGREEMENT_BUCKETS_PATH, pattern_name);
+    fs::path sampled_densities = createCsvPath(SAMPLED_DENSITY, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     std::vector<std::vector<std::vector<double>>> sorted_overlaps;
     double print_diameter = 0;
     int number_of_layers = patterns[0].getNumberOfLayers();
-    vali starting_coordinates = {0, 0};
+    exportRowToFile(patterns[0].sampleFillDensities(1000, patterns[0].getConfig().getPrintRadius() * 9), sampled_densities);
+    veci starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         pattern.updatePathsOverlap();
@@ -405,7 +407,7 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
-    parameters.n_init_samples = 50;
+    parameters.n_init_samples = 20;
     parameters.l_type = L_MCMC;
     parameters.force_jump = best_pattern.getRelearningIterations();
     parameters.n_iter_relearn = best_pattern.getRelearningIterations();

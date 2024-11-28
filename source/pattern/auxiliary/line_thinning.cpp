@@ -125,7 +125,7 @@ bool isSurroundedByFilledElements(const std::set<veci> &shape, const veci &coord
 
 
 coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<int>> &shape_matrix) {
-    std::vector<vali> circle = findPointsInCircle(radius);
+    std::vector<veci> circle = findPointsInCircle(radius);
     coord_set grown_pattern;
     for (auto &element: shape) {
         for (auto &displacement: circle) {

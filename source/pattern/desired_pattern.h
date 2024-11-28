@@ -27,7 +27,6 @@
 #include <math.h>
 #include <string>
 #include <vector>
-#include <valarray>
 #include <set>
 #include "simulation/filling_method_config.h"
 #include "auxiliary/line_thinning.h"
@@ -39,8 +38,8 @@
 #define SPLAY_LINE_CENTRES 0
 #define SPLAY_LINE_BOUNDARIES 1
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
@@ -48,16 +47,16 @@ using veci = std::vector<int>;
 /// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
 /// with the information about its continuous edges
 class DesiredPattern {
-    vali dimensions;
+    veci dimensions;
     /// Each element is one continuous edge of the pattern
-    std::vector<std::vector<vali>> perimeter_list;
+    std::vector<std::vector<veci>> perimeter_list;
     std::vector<veci> shape_matrix;
     std::vector<vecd> x_field_preferred;
     std::vector<vecd> y_field_preferred;
     std::vector<vecd> splay_array;
-    std::vector<std::vector<std::valarray<double>>> splay_vector_array;
-    std::vector<std::vector<vali>> splay_sorted_empty_spots;
-    std::vector<std::vector<vali>> lines_of_minimal_density;
+    std::vector<std::vector<vecd>> splay_vector_array;
+    std::vector<std::vector<veci>> splay_sorted_empty_spots;
+    std::vector<std::vector<veci>> lines_of_minimal_density;
 
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
@@ -86,7 +85,7 @@ class DesiredPattern {
     /// Splay seeding: List of all initial coords in the shape.
     coord_vector coord_in_shape;
 
-    [[nodiscard]] std::vector<std::vector<vali>> binBySplay(unsigned int bins);
+    [[nodiscard]] std::vector<std::vector<veci>> binBySplay(unsigned int bins);
 
 
     coord_set findPointsOfZeroSplay(const coord &starting_coordinate);
@@ -94,15 +93,15 @@ class DesiredPattern {
     void adjustMargins();
 
 
-    [[nodiscard]] vald getMove(const vald &position, double distance, const vald &displacement) const;
+    [[nodiscard]] vecd getMove(const vecd &position, double distance, const vecd &displacement) const;
 
     void updateIntegralCurve(const coord &starting_coordinate);
 
-    void updateIntegralCurveInDirection(coord current_coord, vald current_position,
-                                        vald current_travel_direction);
+    void updateIntegralCurveInDirection(coord current_coord, vecd current_position,
+                                        vecd current_travel_direction);
 
 
-    vald getSplayVector(const coord &coordinate);
+    vecd getSplayVector(const coord &coordinate);
 
     std::vector<double> directedSplayMagnitude(const coord_vector &integral_curve);
 
@@ -132,29 +131,29 @@ public:
 
     [[nodiscard]] const std::vector<vecd> &getYFieldPreferred() const;
 
-    [[nodiscard]] const vali &getDimensions() const;
+    [[nodiscard]] const veci &getDimensions() const;
 
-    [[nodiscard]] const std::vector<std::vector<vali>> &getSplaySortedEmptySpots() const;
+    [[nodiscard]] const std::vector<std::vector<veci>> &getSplaySortedEmptySpots() const;
 
-    [[nodiscard]] const std::vector<std::vector<std::valarray<int>>> &getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<std::vector<int>>> &getPerimeterList() const;
 
-    [[nodiscard]] double getSplay(const vali &point) const;
+    [[nodiscard]] double getSplay(const veci &point) const;
 
     [[nodiscard]] bool isVectorFilled() const;
 
     [[nodiscard]] bool isVectorSorted() const;
 
-    [[nodiscard]] vald getDirector(vali positions) const;
+    [[nodiscard]] vecd getDirector(veci positions) const;
 
-    [[nodiscard]] vald getDirector(const vald &positions) const;
+    [[nodiscard]] vecd getDirector(const vecd &positions) const;
 
-    [[nodiscard]] bool isInShape(const vali &position) const;
+    [[nodiscard]] bool isInShape(const veci &position) const;
 
     [[nodiscard]] bool isSplayProvided() const;
 
     void setSplayVector(const std::string &path);
 
-    [[nodiscard]] const std::vector<std::vector<vali>> &getLineDensityMinima() const;
+    [[nodiscard]] const std::vector<std::vector<veci>> &getLineDensityMinima() const;
 
     void updateProperties();
 

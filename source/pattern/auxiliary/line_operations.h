@@ -36,18 +36,17 @@
 
 #include <vector>
 #include <tuple>
-#include <valarray>
 
-using vald = std::valarray<double>;
-using vali = std::valarray<int>;
+using vecd = std::vector<double>;
+using veci = std::vector<int>;
 
-std::vector<std::vector<vali>> separateLines(std::vector<vali> &sorted_perimeters, double separation_distance);
+std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeters, double separation_distance);
 
-std::vector<std::vector<vali>>
-separateIntoLines(std::vector<vali> &unsorted_perimeters, vali starting_coordinates, double separation_distance);
+std::vector<std::vector<veci>>
+separateIntoLines(std::vector<veci> &unsorted_perimeters, veci starting_coordinates, double separation_distance);
 
-bool isLooped(const std::vector<vali> &line);
+bool isLooped(const std::vector<veci> &line);
 
-std::vector<vali> pixeliseLine(const vald &line);
+std::vector<veci> pixeliseLine(const vecd &line);
 
 #endif //VECTOR_SLICER_LINE_OPERATIONS_H

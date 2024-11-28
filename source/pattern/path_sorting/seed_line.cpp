@@ -20,6 +20,7 @@
 //
 
 #include "seed_line.h"
+#include "../auxiliary/simple_math_operations.h"
 
 
 int countLines(const std::vector<Path> &paths) {
@@ -83,7 +84,7 @@ void sort_by_seed_index(std::vector<Path> &seed_line) {
 bool is_line_closed(const std::vector<Path> &seed_line, double spacing) {
     SeedPoint first_seed = seed_line.front().getSeedPoint();
     SeedPoint last_seed = seed_line.back().getSeedPoint();
-    double seed_distance = norm(first_seed.getCoordinates() - last_seed.getCoordinates());
+    double seed_distance = norm(subtract(first_seed.getCoordinates(), last_seed.getCoordinates()));
     return seed_distance <= spacing;
 }
 
@@ -95,7 +96,7 @@ SeedLine::SeedLine(const std::vector<Path> &unsorted_seed_pairs, double distance
 }
 
 
-double SeedLine::loopDistance(const vali &point, bool is_vector_sorted) {
+double SeedLine::loopDistance(const veci &point, bool is_vector_sorted) {
     double closest_distance = paths.front().distance(point, is_vector_sorted);
 
     for (int i = 1; i < paths.size(); i++) {
@@ -109,7 +110,7 @@ double SeedLine::loopDistance(const vali &point, bool is_vector_sorted) {
 }
 
 
-double SeedLine::distance(const vali &point, bool is_vector_sorted) {
+double SeedLine::distance(const veci &point, bool is_vector_sorted) {
     if (is_closed) {
         return loopDistance(point, is_vector_sorted);
     }
@@ -135,7 +136,7 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
         for (int i = 1; i < paths.size(); i++) {
             int i_current = (i_closest + i) % paths.size();
             int i_previous = (i_closest + i - 1) % paths.size();
-            vali end_point = paths[i_previous].endPoint();
+            veci end_point = paths[i_previous].endPoint();
             paths[i_current].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i_current]);
         }
@@ -145,14 +146,14 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
     if (is_reversed) {
         sorted_paths.emplace_back(paths.back());
         for (int i = paths.size() - 2; i >= 0; i--) {
-            vali end_point = paths[i + 1].endPoint();
+            veci end_point = paths[i + 1].endPoint();
             paths[i].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i]);
         }
     } else {
         sorted_paths.emplace_back(paths.front());
         for (int i = 1; i < paths.size(); i++) {
-            vali end_point = paths[i - 1].endPoint();
+            veci end_point = paths[i - 1].endPoint();
             paths[i].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i]);
         }
@@ -160,7 +161,7 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
     return sorted_paths;
 }
 
-vali SeedLine::endPoint() const {
+veci SeedLine::endPoint() const {
     if (paths.size() == 1) {
         return paths.front().endPoint();
     }
@@ -179,7 +180,7 @@ vali SeedLine::endPoint() const {
     }
 }
 
-SeedLine getClosestLine(std::vector<SeedLine> &seed_lines, vali &starting_point, bool is_vector_sorted) {
+SeedLine getClosestLine(std::vector<SeedLine> &seed_lines, veci &starting_point, bool is_vector_sorted) {
     SeedLine closest_line = seed_lines.front();
     int i_closest = 0;
     for (int i = 1; i < seed_lines.size(); i++) {
@@ -194,10 +195,10 @@ SeedLine getClosestLine(std::vector<SeedLine> &seed_lines, vali &starting_point,
 }
 
 
-std::vector<Path> seedLineSort(const FilledPattern &pattern, vali &starting_point) {
+std::vector<Path> seedLineSort(const FilledPattern &pattern, veci &starting_point) {
     bool is_vector_sorted = pattern.desired_pattern.get().isVectorSorted();
     std::vector<SeedLine> seed_lines = groupIntoSeedLines(pattern);
-    vali end_point = starting_point;
+    veci end_point = starting_point;
     std::vector<Path> sorted_paths;
     while (!seed_lines.empty()) {
         SeedLine closest_line = getClosestLine(seed_lines, end_point, is_vector_sorted);

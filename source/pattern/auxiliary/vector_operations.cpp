@@ -23,18 +23,9 @@
 
 #include <numeric>
 #include <stdexcept>
+#include <cmath>
 
 #include "valarray_operations.h"
-
-std::vector<std::valarray<int>>
-stitchTwoVectors(std::vector<std::valarray<int>> backwards_vector, std::vector<std::valarray<int>> forwards_vector) {
-    std::reverse(backwards_vector.begin(), backwards_vector.end());
-    if (!backwards_vector.empty()) {
-        backwards_vector.pop_back();
-    }
-    backwards_vector.insert(backwards_vector.end(), forwards_vector.begin(), forwards_vector.end());
-    return backwards_vector;
-}
 
 double mean(const vecd &data) {
     double sum = std::accumulate(std::begin(data), std::end(data), 0.0);
@@ -53,13 +44,6 @@ double standardDeviation(const vecd &data) {
     return standard_deviation;
 }
 
-vecd itod(const std::vector<int> &vector) {
-    return {vector.begin(), vector.end()};
-}
-
-std::vector<int> dtoi(const vecd &vector) {
-    return {vector.begin(), vector.end()};
-}
 
 vecd add(const vecd &first, const vecd &second) {
     if (first.size() == second.size()) {
@@ -85,22 +69,6 @@ veci add(const veci &first, const veci &second) {
     }
 }
 
-vali vectoval(const veci &vec) {
-    return {vec.data(), vec.size()};
-}
-
-vald vectoval(const vecd &vec) {
-    return {vec.data(), vec.size()};
-}
-
-double dot(const vecd &first, const vecd &second) {
-    return dot(vectoval(first), vectoval(second));
-}
-
-double norm(const vecd &vec) {
-    return norm(vectoval(vec));
-}
-
 vecd scale(const vecd &vec, double scale) {
     vecd vec_rescaled;
     for (auto &element: vec) {
@@ -109,20 +77,12 @@ vecd scale(const vecd &vec, double scale) {
     return vec_rescaled;
 }
 
-vecd normalize(const vecd &vec) {
-    double vec_norm = norm(vec);
-    if (vec_norm > 0) {
-        return scale(vec, 1 / vec_norm);
-    } else {
-        return vec;
-    }
-}
 
-veci valtovec(const vali &vec) {
+veci valtovec(const veci &vec) {
     return {std::begin(vec), std::end(vec)};
 }
 
-vecd valtovec(const vald &vec) {
+vecd valtovec(const vecd &vec) {
     return {std::begin(vec), std::end(vec)};
 }
 

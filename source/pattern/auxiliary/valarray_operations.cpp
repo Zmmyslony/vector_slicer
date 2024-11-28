@@ -28,23 +28,23 @@
 #include <iostream>
 #include <string>
 
-vald itod(const vali &int_array) {
-    vald double_array(int_array.size());
+vecd itod(const veci &int_array) {
+    vecd double_array(int_array.size());
     for (int i = 0; i < int_array.size(); i++) {
         double_array[i] = (double) int_array[i];
     }
     return double_array;
 }
 
-vali dtoi(const vald &double_array) {
-    vali int_array(double_array.size());
+veci dtoi(const vecd &double_array) {
+    veci int_array(double_array.size());
     for (int i = 0; i < double_array.size(); i++) {
         int_array[i] = lround(double_array[i]);
     }
     return int_array;
 }
 
-double generalNorm(const vald &array, const double &exponent) {
+double generalNorm(const vecd &array, const double &exponent) {
     double sum = 0;
     for (auto &element: array) {
         sum += pow(element, exponent);
@@ -56,27 +56,33 @@ double generalNorm(const vald &array, const double &exponent) {
     }
 }
 
-double norm(const vald &array) {
+double norm(const vecd &array) {
     return generalNorm(array, 2);
 }
 
-double norm(const vali &array) {
+double norm(const veci &array) {
     return norm(itod(array));
 }
 
-vald generalNormalize(const vald &array, const double &exponent) {
-    return array / generalNorm(array, exponent);
+vecd generalNormalize(const vecd &array, const double &exponent) {
+    double norm = generalNorm(array, exponent);
+    vecd normalized_array;
+    normalized_array.reserve(array.size());
+    for (auto & val: array) {
+        normalized_array.emplace_back(val / norm);
+    }
+    return normalized_array ;
 }
 
-vald normalize(const vald &array) {
+vecd normalize(const vecd &array) {
     return generalNormalize(array, 2);
 }
 
-vald normalize(const vali &array) {
+vecd normalize(const veci &array) {
     return normalize(itod(array));
 }
 
-double dot(const vald &array_first, const vald &array_second) {
+double dot(const vecd &array_first, const vecd &array_second) {
     double dot_product = 0;
     if (array_first.size() != array_second.size()) {
         throw std::invalid_argument(
@@ -89,7 +95,7 @@ double dot(const vald &array_first, const vald &array_second) {
     return dot_product;
 }
 
-double angle(const vald &array_first, const vald &array_second) {
+double angle(const vecd &array_first, const vecd &array_second) {
     double dot_product = dot(array_first, array_second);
     double length_first = norm(array_first);
     double length_second = norm(array_second);
@@ -107,26 +113,26 @@ double angle(const vald &array_first, const vald &array_second) {
 }
 
 
-vald perpendicular(const vald &vector) {
+vecd perpendicular(const vecd &vector) {
     if (vector.size() != 2) {
         throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
     }
     return {-vector[1], vector[0]};
 }
 
-vali perpendicular(const vali &vector) {
+veci perpendicular(const veci &vector) {
     if (vector.size() != 2) {
         throw std::invalid_argument("Perpendicular: Size of the valarray not equal to 2.\n");
     }
     return {-vector[1], vector[0]};
 }
 
-double cross(const vald &vector_first, const vald &vector_second) {
+double cross(const vecd &vector_first, const vecd &vector_second) {
     return vector_first[0] * vector_second[1] - vector_first[1] * vector_second[0];
 }
 
 
-void printArray(const std::vector<vali> &array) {
+void printArray(const std::vector<veci> &array) {
     for (auto &row: array) {
         std::cout << "(";
         for (auto &element: row) {
@@ -137,7 +143,7 @@ void printArray(const std::vector<vali> &array) {
     std::cout << std::endl;
 }
 
-void printArray(const std::vector<vald> &array) {
+void printArray(const std::vector<vecd> &array) {
     for (auto &row: array) {
         std::cout << "(";
         for (auto &element: row) {
@@ -148,8 +154,8 @@ void printArray(const std::vector<vald> &array) {
     std::cout << std::endl;
 }
 
-vald multiply(matrix_d mat, vald vec) {
-    vald result(mat.size());
+vecd multiply(matrix_d mat, vecd vec) {
+    vecd result(mat.size());
     for (int i = 0; i < mat.size(); i++) {
         if (mat[i].size() != vec.size()) {
             throw std::runtime_error("Uneven sizes in matrix and vector multiplication.");
@@ -163,8 +169,8 @@ vald multiply(matrix_d mat, vald vec) {
     return result;
 }
 
-matrix_d tensor(vald vec_first, vald vec_second) {
-    matrix_d result(vald(vec_second.size()), vec_first.size());
+matrix_d tensor(vecd vec_first, vecd vec_second) {
+    matrix_d result(vec_first.size(), vecd(vec_second.size()));
     for (int i = 0; i < vec_first.size(); i++) {
         for (int j = 0; j < vec_second.size(); j++) {
             result[i][j] = vec_first[i] * vec_second[j];
