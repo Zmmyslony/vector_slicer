@@ -41,6 +41,8 @@
 #include "auxiliary/vector_operations.h"
 #include "simulation/filling_method_config.h"
 
+#include "vector_slicer_config.h"
+
 /// Numerical threshold for splay, indicating which values of it ought to be treated as zero.
 #define ZERO_SPLAY_THRESHOLD 1e-6
 
@@ -97,6 +99,9 @@ DesiredPattern::DesiredPattern(const std::string &shape_filename, const std::str
 
 
 void DesiredPattern::updateProperties() {
+#ifdef TIMING
+    auto t1 = std::chrono::high_resolution_clock::now();
+#endif
     adjustMargins();
     if (!isSplayProvided()) {
         splay_vector_array = splayVector(x_field_preferred, y_field_preferred, threads);
@@ -118,6 +123,15 @@ void DesiredPattern::updateProperties() {
     splay_sorted_empty_spots = binBySplay(bin_number);
     perimeter_list = findSeparatedPerimeters(shape_matrix, dimensions, splay_vector_array);
     is_pattern_updated = true;
+#ifdef TIMING
+    time_t end_time;
+    time(&end_time);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms = t2 - t1;
+    double us_per_pix =
+            1000 * ms.count() / (dimensions[0] * dimensions[1]);
+    std::cout << "Initialisation duration: " << ms.count() << "ms (" << us_per_pix << " us/pix)" << std::endl;
+#endif
 }
 
 void DesiredPattern::isPatternUpdated() const {

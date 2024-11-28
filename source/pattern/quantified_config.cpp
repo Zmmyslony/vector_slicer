@@ -24,6 +24,8 @@
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
 
+#include "vector_slicer_config.h"
+
 #include <utility>
 #include <cmath>
 #include <omp.h>
@@ -31,7 +33,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
-
+#include <iostream>
 
 QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern,
                                    const Simulation &simulation) :
@@ -173,6 +175,9 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
 }
 
 void QuantifiedConfig::evaluate() {
+#ifdef TIMING
+    auto t1 = std::chrono::high_resolution_clock::now();
+#endif
     setup();
     fillWithPaths(*this);
     empty_spots = calculateEmptySpots();
@@ -195,6 +200,16 @@ void QuantifiedConfig::evaluate() {
     disagreement = empty_spot_disagreement + overlap_disagreement + director_disagreement;
 
     total_disagreement = disagreement * path_multiplier;
+#ifdef TIMING
+    time_t end_time;
+    time(&end_time);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms = t2 - t1;
+    double us_per_pix =
+            1000 * ms.count() / (desired_pattern.get().getDimensions()[0] * desired_pattern.get().getDimensions()[1]);
+    std::cout << "Iteration duration: " << ms.count() << " ms (" << us_per_pix << " us/pix)" << std::endl;
+    throw std::runtime_error("Timing finished.");
+#endif
 }
 
 void QuantifiedConfig::printDisagreement() const {
