@@ -240,3 +240,41 @@ std::vector<int> operator+(const std::vector<int> &self, const std::vector<int> 
 std::vector<int> operator-(const std::vector<int> &self, const std::vector<int> &other) {
     return subtract(self, other);
 }
+
+double norm(const coord_d &coordinate) {
+    return sqrt(coordinate.first * coordinate.first + coordinate.second * coordinate.second);
+}
+
+double norm(const coord &coordinate) {
+    return sqrt(coordinate.first * coordinate.first + coordinate.second * coordinate.second);
+}
+
+coord_d normalized(const coord_d &coordinate) {
+    double norm_value = norm(coordinate);
+    return {coordinate.first / norm_value, coordinate.second / norm_value};
+}
+
+coord_d normalized(const coord &coordinate) {
+    double norm_value = norm(coordinate);
+    return {coordinate.first / norm_value, coordinate.second / norm_value};
+}
+
+double dot(const coord_d &first, const coord_d &second) {
+    return first.first * second.first + second.first * second.second;
+}
+
+coord_d operator+(const coord_d &first, const coord_d &second) {
+    return {first.first + second.first, second.first + second.second};
+}
+
+coord_d operator-(const coord_d &first, const coord_d &second) {
+    return {first.first - second.first, second.first - second.second};
+}
+
+coord_d operator*(const coord_d &first, double multiplier) {
+    return {first.first * multiplier, first.second * multiplier};
+}
+
+coord_d operator/(const coord_d &first, double divisor) {
+    return {first.first / divisor, first.second / divisor};
+}

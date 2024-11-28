@@ -26,6 +26,9 @@
 #include <stdexcept>
 #include <algorithm>
 
+using coord = std::pair<uint16_t, uint16_t>;
+using coord_d = std::pair<double, double>;
+
 using vecd = std::vector<double>;
 
 
@@ -214,5 +217,24 @@ std::vector<int> operator/(double divisor, const std::vector<int> &self);
 std::vector<int> operator+(const std::vector<int> &self, const std::vector<int> &other);
 
 std::vector<int> operator-(const std::vector<int> &self, const std::vector<int> &other);
+
+double norm(const coord_d &coordinate);
+
+double norm(const coord &coordinate);
+
+coord_d normalized(const coord_d &coordinate);
+
+coord_d normalized(const coord &coordinate);
+
+double dot(const coord_d &first, const coord_d &second);
+
+coord_d operator+(const coord_d &first, const coord_d &second);
+
+coord_d operator-(const coord_d &first, const coord_d &second);
+
+coord_d operator*(const coord_d &first, double multiplier);
+
+coord_d operator/(const coord_d &first, double divisor);
+
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

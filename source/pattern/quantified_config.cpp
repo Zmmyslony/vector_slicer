@@ -23,7 +23,7 @@
 #include "filling_patterns.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/valarray_operations.h"
-
+#include "auxiliary/simple_math_operations.h"
 #include "vector_slicer_config.h"
 
 #include <utility>
@@ -122,8 +122,8 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
 
-    vecd filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
-    vecd desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
+    coord_d filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
+    coord_d desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
                              desired_pattern.get().getYFieldPreferred()[i][j]};
     double filled_director_norm = norm(filled_director);
     double desired_director_norm = norm(desired_director);

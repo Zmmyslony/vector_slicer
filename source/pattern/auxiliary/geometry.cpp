@@ -82,13 +82,17 @@ double maxValue(const std::vector<double> &values) {
 }
 
 
-std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd corner_third,
-                                   vecd corner_fourth, bool is_exclusive) {
-    std::vector<double> x_coordinates = {corner_first[0], corner_second[0], corner_third[0], corner_fourth[0]};
-    std::vector<double> y_coordinates = {corner_first[1], corner_second[1], corner_third[1], corner_fourth[1]};
+std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second, coord_d corner_third,
+                                    coord_d corner_fourth, bool is_exclusive) {
+    std::vector<double> x_coordinates = {corner_first.first, corner_second.first, corner_third.first, corner_fourth.first};
+    std::vector<double> y_coordinates = {corner_first.second, corner_second.second, corner_third.second, corner_fourth.second};
+    int x_min = (int) minValue(x_coordinates);
+    int x_max = (int) maxValue(x_coordinates) + 1;
+    int y_min = (int) minValue(y_coordinates);
+    int y_max = (int) maxValue(y_coordinates) + 1;
 
-    vecd midpoint_first = multiply(add(corner_second, corner_first), 1. / 2);
-    vecd midpoint_second = multiply(add(corner_third, corner_fourth), 1. / 2);
+    coord_d midpoint_first = (corner_second + corner_first) / 2;
+    coord_d midpoint_second = (corner_third + corner_fourth) / 2;
 
     // Error 1: Edge 3-4 is flipped - swap corners 3 & 4.
     if (!isLeftOfEdge(midpoint_first, corner_third, corner_fourth, false)) {
@@ -102,42 +106,24 @@ std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd c
 
     // Error 3: Corner 4 is right of 1-2 - replace 4 with midpoint between 1 and 3
     if (!isLeftOfEdge(corner_fourth, corner_first, corner_second, false)) {
-        corner_fourth = multiply(add(corner_third, corner_first), 1. / 2);
+        corner_fourth = (corner_third+ corner_first) / 2;
     }
 
     // Error 4: Corner 3 is right of 1-2 - replace 3 with midpoint between 2 and 4
     if (!isLeftOfEdge(corner_third, corner_first, corner_second, false)) {
-        corner_third = multiply(add(corner_fourth, corner_second), 1. / 2);
+        corner_third = (corner_fourth + corner_second) / 2;
     }
 
-    int x_min = (int) minValue(x_coordinates);
-    int x_max = (int) maxValue(x_coordinates) + 1;
-    int y_min = (int) minValue(y_coordinates);
-    int y_max = (int) maxValue(y_coordinates) + 1;
-
-    coord_d corner_first_c = to_coord(corner_first);
-    coord_d corner_second_c = to_coord(corner_second);
-    coord_d corner_third_c = to_coord(corner_third);
-    coord_d corner_fourth_c = to_coord(corner_fourth);
-
     std::vector<coord> coords_to_fill;
-    coords_to_fill.reserve((x_max - x_min) * (y_max - y_min));
-
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
         for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
             coord pos({x_curr, y_curr});
-            if (isInRectangle(pos, corner_first_c, corner_second_c, corner_third_c, corner_fourth_c, is_exclusive)) {
+            if (isInRectangle(pos, corner_first, corner_second, corner_third, corner_fourth, is_exclusive)) {
                 coords_to_fill.push_back(pos);
             }
         }
     }
-    std::vector<veci> points_to_fill;
-    points_to_fill.reserve(coords_to_fill.size());
-    for (coord & coord : coords_to_fill) {
-        points_to_fill.emplace_back(veci({coord.first, coord.second}));
-    }
-
-    return points_to_fill;
+    return coords_to_fill;
 }
 
 /// Adds to the primary vector the orientation corrected secondary vector, and resizes it so that the projection
