@@ -28,15 +28,10 @@
 #include "simple_math_operations.h"
 
 
-bool isLeftOfEdge(const veci &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive) {
-    return isLeftOfEdge(itod(point), edge_point_first, edge_point_second, is_exclusive);
-}
 
 bool isLeftOfEdge(const vecd &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive) {
     double cross_product = (edge_point_second[0] - edge_point_first[0]) * (point[1] - edge_point_first[1]) -
                            (edge_point_second[1] - edge_point_first[1]) * (point[0] - edge_point_first[0]);
-
-//    double cross_product = cross(edge_point_second - edge_point_first, point - edge_point_first);
     if (is_exclusive) {
         return cross_product > 0;
     } else {
@@ -44,22 +39,37 @@ bool isLeftOfEdge(const vecd &point, const vecd &edge_point_first, const vecd &e
     }
 }
 
-bool isInRectangle(const veci &point, const vecd &corner_first, const vecd &corner_second, const vecd &corner_third,
-                   const vecd &corner_fourth, bool is_exclusive) {
-    vecd point_d = itod(point);
+bool isLeftOfEdge(const veci &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive) {
+    return isLeftOfEdge(itod(point), edge_point_first, edge_point_second, is_exclusive);
+}
 
-    return (isLeftOfEdge(point_d, corner_first, corner_second, is_exclusive) &&
-            isLeftOfEdge(point_d, corner_second, corner_third, false) &&
-            isLeftOfEdge(point_d, corner_third, corner_fourth, false) &&
-            isLeftOfEdge(point_d, corner_fourth, corner_first, false));
 
-//    bool is_left_of_first_edge = isLeftOfEdge(point_d, corner_first, corner_second, is_exclusive);
-//    bool is_left_of_second_edge = isLeftOfEdge(point_d, corner_second, corner_third, false);
-//
-//    bool is_left_of_third_edge = isLeftOfEdge(point_d, corner_third, corner_fourth, false);
-//    bool is_left_of_fourth_edge = isLeftOfEdge(point_d, corner_fourth, corner_first, false);
+coord_d to_coord(const vecd &vec) {
+    return coord_d({vec[0], vec[1]});
+}
 
-//    return (is_left_of_first_edge && is_left_of_second_edge && is_left_of_third_edge && is_left_of_fourth_edge);
+coord_d to_coord(const veci &vec) {
+    return coord_d({vec[0], vec[1]});
+}
+
+bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const coord_d &edge_point_second, bool is_exclusive) {
+    double cross_product = (edge_point_second.first - edge_point_first.first) * (point.second - edge_point_first.second) -
+                           (edge_point_second.second - edge_point_first.second) * (point.first - edge_point_first.first);
+
+    if (is_exclusive) {
+        return cross_product > 0;
+    } else {
+        return cross_product >= 0;
+    }
+}
+
+bool isInRectangle(const coord_d &point, const coord_d &corner_first, const coord_d &corner_second, const coord_d &corner_third,
+                   const coord_d &corner_fourth, bool is_exclusive) {
+
+    return (isLeftOfEdge(point, corner_first, corner_second, is_exclusive) &&
+            isLeftOfEdge(point, corner_second, corner_third, false) &&
+            isLeftOfEdge(point, corner_third, corner_fourth, false) &&
+            isLeftOfEdge(point, corner_fourth, corner_first, false));
 }
 
 
@@ -105,16 +115,28 @@ std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd c
     int y_min = (int) minValue(y_coordinates);
     int y_max = (int) maxValue(y_coordinates) + 1;
 
-    std::vector<veci> points_to_fill;
+    coord_d corner_first_c = to_coord(corner_first);
+    coord_d corner_second_c = to_coord(corner_second);
+    coord_d corner_third_c = to_coord(corner_third);
+    coord_d corner_fourth_c = to_coord(corner_fourth);
+
+    std::vector<coord> coords_to_fill;
+    coords_to_fill.reserve((x_max - x_min) * (y_max - y_min));
 
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
         for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
-            veci top_point = {x_curr, y_curr};
-            if (isInRectangle(top_point, corner_first, corner_second, corner_third, corner_fourth, is_exclusive)) {
-                points_to_fill.push_back(top_point);
+            coord pos({x_curr, y_curr});
+            if (isInRectangle(pos, corner_first_c, corner_second_c, corner_third_c, corner_fourth_c, is_exclusive)) {
+                coords_to_fill.push_back(pos);
             }
         }
     }
+    std::vector<veci> points_to_fill;
+    points_to_fill.reserve(coords_to_fill.size());
+    for (coord & coord : coords_to_fill) {
+        points_to_fill.emplace_back(veci({coord.first, coord.second}));
+    }
+
     return points_to_fill;
 }
 
@@ -140,13 +162,15 @@ findHalfCircleCentres(const veci &last_point, const veci &previous_point, double
     vecd displacements = normalize(subtract(last_point, previous_point));
     vecd tangent = normalisedResultant(displacements, last_director);
     vecd normal = multiply(perpendicular(tangent), radius);
+    coord_d normal_c = {normal[0], normal[1]};
+    coord_d normal_opposite_c = {-normal[0], -normal[1]};
 
     std::vector<veci> points_to_fill;
     int range = (int) radius + 1;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
             veci displacement = {x_displacement, y_displacement};
-            bool is_on_correct_side = isLeftOfEdge(displacement, normal, multiply(normal, -1), is_last_point_filled);
+            bool is_on_correct_side = isLeftOfEdge({x_displacement, y_displacement}, normal_c, normal_opposite_c, is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
                 points_to_fill.emplace_back(add(displacement, last_point));
@@ -168,13 +192,15 @@ findHalfCircleEdges(const veci &centre_position, vecd corner_one, vecd corner_tw
         corner_one = corner_two;
         corner_two = tmp;
     }
+    coord_d corner_one_c = {corner_one[0], corner_one[1]};
+    coord_d corner_two_c = {corner_two[0], corner_two[1]};
 
     std::vector<veci> points_to_fill;
     int range = (int) radius + 1;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
             veci displacement = {x_displacement, y_displacement};
-            bool is_on_correct_side = isLeftOfEdge(displacement, corner_one, corner_two, is_last_point_filled);
+            bool is_on_correct_side = isLeftOfEdge({x_displacement, y_displacement}, corner_one_c, corner_two_c, is_last_point_filled);
 
             if (norm(displacement) <= radius && is_on_correct_side) {
                 points_to_fill.emplace_back(add(displacement, centre_position));

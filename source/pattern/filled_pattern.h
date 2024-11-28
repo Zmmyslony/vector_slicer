@@ -58,7 +58,7 @@ class FilledPattern : public FillingConfig {
     /// All seed points from all suitable perimeters, line order is shuffled and point order within a line is also shuffled.
     std::vector<std::vector<SeedPoint>> perimeter_seeds;
     /// All possible points where a path can start, binned based on their splay.
-    std::vector<std::vector<veci>> binned_root_points;
+    std::vector<std::vector<coord>> binned_root_points;
     /// Parameter allowing for controlling whether dual seeding based reseeding occurs. Default: true
     bool is_reseeding_enabled = true;
     /// Switches whether seeds from seed line are taken at random or consecutively. Default: true

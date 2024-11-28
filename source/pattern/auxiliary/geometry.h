@@ -24,10 +24,14 @@
 
 #include <utility>
 #include <vector>
+#include <cstdint>
 #include <algorithm>
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
+
+using coord = std::pair<uint16_t, uint16_t>;
+using coord_d = std::pair<double, double>;
 
 std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd corner_third,
                                    vecd corner_fourth, bool is_exclusive);

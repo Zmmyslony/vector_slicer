@@ -44,6 +44,8 @@ using veci = std::vector<int>;
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
+using coord = std::pair<uint16_t, uint16_t>;
+
 /// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
 /// with the information about its continuous edges
 class DesiredPattern {
@@ -55,7 +57,7 @@ class DesiredPattern {
     std::vector<vecd> y_field_preferred;
     std::vector<vecd> splay_array;
     std::vector<std::vector<vecd>> splay_vector_array;
-    std::vector<std::vector<veci>> splay_sorted_empty_spots;
+    std::vector<std::vector<coord>> splay_sorted_empty_spots;
     std::vector<std::vector<veci>> lines_of_minimal_density;
 
     bool is_vector_filled = false;
@@ -85,7 +87,7 @@ class DesiredPattern {
     /// Splay seeding: List of all initial coords in the shape.
     coord_vector coord_in_shape;
 
-    [[nodiscard]] std::vector<std::vector<veci>> binBySplay(unsigned int bins);
+    [[nodiscard]] std::vector<std::vector<coord>> binBySplay(unsigned int bins);
 
 
     coord_set findPointsOfZeroSplay(const coord &starting_coordinate);
@@ -133,7 +135,7 @@ public:
 
     [[nodiscard]] const veci &getDimensions() const;
 
-    [[nodiscard]] const std::vector<std::vector<veci>> &getSplaySortedEmptySpots() const;
+    [[nodiscard]] const std::vector<std::vector<coord>> &getSplaySortedEmptySpots() const;
 
     [[nodiscard]] const std::vector<std::vector<std::vector<int>>> &getPerimeterList() const;
 
@@ -172,6 +174,8 @@ public:
     [[nodiscard]] bool isPointsRemoved() const;
 
     [[nodiscard]] bool isInShape(const coord &coordinate) const;
+
+    double getSplay(const coord &point) const;
 
 };
 

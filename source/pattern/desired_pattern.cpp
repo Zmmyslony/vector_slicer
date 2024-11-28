@@ -218,17 +218,20 @@ const std::vector<vecd> &DesiredPattern::getYFieldPreferred() const {
     return y_field_preferred;
 }
 
+double DesiredPattern::getSplay(const coord &point) const {
+    return splay_array[point.first][point.second];
+}
 
 double DesiredPattern::getSplay(const veci &point) const {
     return splay_array[point[0]][point[1]];
 }
 
-std::vector<veci> findFillableCells(const std::vector<veci> &shape_matrix) {
-    std::vector<veci> fillable_cells;
+std::vector<coord> findFillableCells(const std::vector<veci> &shape_matrix) {
+    std::vector<coord> fillable_cells;
     for (int i = 0; i < shape_matrix.size(); i++) {
         for (int j = 0; j < shape_matrix[i].size(); j++) {
             if (shape_matrix[i][j]) {
-                fillable_cells.push_back({i, j});
+                fillable_cells.emplace_back(i, j);
             }
         }
     }
@@ -236,8 +239,8 @@ std::vector<veci> findFillableCells(const std::vector<veci> &shape_matrix) {
 }
 
 
-std::vector<std::vector<veci>> DesiredPattern::binBySplay(unsigned int bins) {
-    std::vector<veci> unsorted_coordinates = findFillableCells(shape_matrix);
+std::vector<std::vector<coord>> DesiredPattern::binBySplay(unsigned int bins) {
+    std::vector<coord> unsorted_coordinates = findFillableCells(shape_matrix);
     if (unsorted_coordinates.empty()) {
         return {};
     }
@@ -252,7 +255,7 @@ std::vector<std::vector<veci>> DesiredPattern::binBySplay(unsigned int bins) {
         return {unsorted_coordinates};
     }
 
-    std::vector<std::vector<veci>> binned_coordinates(bins);
+    std::vector<std::vector<coord>> binned_coordinates(bins);
     for (int i = 0; i < unsorted_coordinates.size(); i++) {
         unsigned int bin = (double) (bins - 1) * (coordinates_splay[i] - min_splay) / (max_splay - min_splay);
         binned_coordinates[bin].push_back(unsorted_coordinates[i]);
@@ -261,7 +264,7 @@ std::vector<std::vector<veci>> DesiredPattern::binBySplay(unsigned int bins) {
     return binned_coordinates;
 }
 
-const std::vector<std::vector<veci>> &DesiredPattern::getSplaySortedEmptySpots() const {
+const std::vector<std::vector<coord>> &DesiredPattern::getSplaySortedEmptySpots() const {
     return splay_sorted_empty_spots;
 }
 

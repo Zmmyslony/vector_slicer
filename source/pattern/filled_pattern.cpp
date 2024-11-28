@@ -164,7 +164,7 @@ FilledPattern::FilledPattern(const DesiredPattern &desired_pattern, int print_ra
  * ought to be more suitable for rooting a seed line.
  */
 void FilledPattern::setupRootPoints() {
-    std::vector<std::vector<veci>> root_points = desired_pattern.get().getSplaySortedEmptySpots();
+    std::vector<std::vector<coord>> root_points = desired_pattern.get().getSplaySortedEmptySpots();
     if (root_points.empty()) {
         return;
     }
@@ -831,9 +831,9 @@ veci FilledPattern::getFillablePoint() {
     if (binned_root_points.empty()) {
         return INVALID_POSITION;
     }
-    veci last_element = binned_root_points.back().back();
+    coord last_coord = binned_root_points.back().back();
     binned_root_points.back().pop_back();
-    return last_element;
+    return {last_coord.first, last_coord.second};
 }
 
 
