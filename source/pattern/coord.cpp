@@ -39,8 +39,7 @@ coord_d normalized(const coord_d &point) {
 }
 
 coord_d normalized(const coord &point) {
-    double norm_val = norm(point);
-    return {(double)point.first / norm_val, (double)point.second / norm_val};
+    return point / norm(point);
 }
 
 

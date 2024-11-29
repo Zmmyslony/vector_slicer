@@ -283,20 +283,22 @@ coord FilledPattern::findRemainingRootPoint() {
     return INVALID_POSITION;
 }
 
+void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_direction, int value) {
 
-coord_d alignDirection(const coord &previous_step) {
-    // Aligns the director to be in (-pi /2, pi/2], so subsequent additions of the director do not
-    coord_d normalized_direction = normalized(previous_step);
-    if (previous_step.first > 0 || previous_step.first == 0 && previous_step.second > 0) {
-        return normalized_direction;
-    } else {
-        return -1 * normalized_direction;
+    if (isInRange(point)) {
+        number_of_times_filled[point.first][point.second] += value;
+
+        if (normalized_direction.first * x_field_filled[point.first][point.second] +
+            normalized_direction.second * y_field_filled[point.first][point.second] < 0) {
+            value *= -1;
+        }
+        x_field_filled[point.first][point.second] += normalized_direction.first * value;
+        y_field_filled[point.first][point.second] += normalized_direction.second * value;
     }
 }
 
-
-void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_direction, int value) {
-    if (isInRange(point)) {
+void FilledPattern::fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value) {
+        if (isInRange(point)) {
         number_of_times_filled[point.first][point.second] += value;
         x_field_filled[point.first][point.second] += normalized_direction.first * value;
         y_field_filled[point.first][point.second] += normalized_direction.second * value;
@@ -305,7 +307,7 @@ void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_dire
 
 
 void FilledPattern::fillPointsFromList(const std::vector<coord> &points_to_fill, const coord &direction, int value) {
-    coord_d normalized_direction = alignDirection(direction);
+    coord_d normalized_direction = normalized(direction);
     for (auto &point: points_to_fill) {
         fillPoint(point, normalized_direction, value);
     }
@@ -315,11 +317,23 @@ void FilledPattern::fillPointsFromList(const std::vector<coord> &points_to_fill,
 void FilledPattern::fillPointsFromDisplacement(const coord &starting_position,
                                                const std::vector<coord> &list_of_displacements,
                                                const coord &previous_step, int value) {
-    coord_d normalized_direction = alignDirection(previous_step);
+    coord_d normalized_direction = normalized(previous_step);
     for (auto &displacement: list_of_displacements) {
         coord point = starting_position + displacement;
         if (isInRange(point)) {
             fillPoint(point, normalized_direction, value);
+        }
+    }
+}
+
+void FilledPattern::fillPointsFromDisplacementNonAligned(const coord &starting_position,
+                                               const std::vector<coord> &list_of_displacements,
+                                               const coord &previous_step, int value) {
+    coord_d normalized_direction = normalized(previous_step);
+    for (auto &displacement: list_of_displacements) {
+        coord point = starting_position + displacement;
+        if (isInRange(point)) {
+            fillPointNonAligned(point, normalized_direction, value);
         }
     }
 }
@@ -357,9 +371,9 @@ coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previo
 
     if (getRepulsion() > 0) {
         coord_d repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
-                                               new_step, getPrintRadius(),
-                                               new_positions, desired_pattern.get().getDimensions(),
-                                               getRepulsion(), getRepulsionAngle());
+                                                  new_step, getPrintRadius(),
+                                                  new_positions, desired_pattern.get().getDimensions(),
+                                                  getRepulsion(), getRepulsionAngle());
         new_positions = new_positions + repulsion;
         new_step = new_step + repulsion;
     }
@@ -388,8 +402,7 @@ bool FilledPattern::isDirectorContinuous(const coord &previous_coordinates, cons
 
 /// Returns bool depending whether propagation was successful.
 bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length) {
-    coord current_coordinates = positions;
-    if (!isInRange(current_coordinates)) { return false; }
+    if (!isInRange(positions)) { return false; }
 
     // Try creating the longest possible step
     coord_d new_positions = INVALID_POSITION;
@@ -407,7 +420,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
                     new_positions = potential_positions;
                     break;
                 case DISCONTINUITY_STICK:
-                    if (isDirectorContinuous(current_coordinates, potential_positions)) {
+                    if (isDirectorContinuous(positions, potential_positions)) {
                         if (isValid(previous_positions)) {
                             new_positions = previous_positions;
                         } else {
@@ -416,7 +429,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
                     }
                     break;
                 case DISCONTINUITY_TERMINATE:
-                    if (isDirectorContinuous(current_coordinates, potential_positions)) {
+                    if (isDirectorContinuous(positions, potential_positions)) {
                         new_positions = potential_positions;
                     }
                     break;
@@ -430,15 +443,13 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
 
     previous_step = new_positions - positions;
     positions = new_positions;
-    coord new_coordinates = new_positions;
 
-    coord new_step_int = new_coordinates - current_coordinates;
-    coord_d tangent = normalisedResultant(previous_step, getDirector(new_coordinates));
+    coord_d tangent = normalisedResultant(previous_step, getDirector(new_positions));
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
-    current_path.addPoint(new_coordinates, new_positions + normal, new_positions - normal);
-    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(isFilled(current_coordinates));
-    fillPointsFromList(current_points_to_fill, new_step_int, 1);
+    current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
+    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(isFilled(positions));
+    fillPointsFromList(current_points_to_fill, previous_step, 1);
     return true;
 }
 
@@ -504,14 +515,14 @@ Path FilledPattern::generateNewPath(const SeedPoint &seed_point) {
 
 
 void FilledPattern::fillPointsInCircle(const coord &coordinates) {
-    fillPointsFromDisplacement(coordinates, print_circle, {1, 0});
+    fillPointsFromDisplacementNonAligned(coordinates, print_circle, {1, 0}, 1);
     list_of_points.push_back(coordinates);
 }
 
 
 void FilledPattern::removePoints() {
     for (auto &position: list_of_points) {
-        fillPointsFromDisplacement(position, print_circle, {1, 0}, -1);
+        fillPointsFromDisplacementNonAligned(position, print_circle, {1, 0}, -1);
     }
     list_of_points.clear();
 }
@@ -557,9 +568,10 @@ void FilledPattern::removeShortLines(double length_coefficient) {
 
 void
 FilledPattern::fillPointsInHalfCircle(const coord &last_coordinate, const coord &previous_coordinate, int value) {
-    std::vector<coord> half_circle_points = findHalfCircleCentres(last_coordinate, previous_coordinate, getPrintRadius(),
-                                                                 isFilled(last_coordinate),
-                                                                 getDirector(last_coordinate));
+    std::vector<coord> half_circle_points = findHalfCircleCentres(last_coordinate, previous_coordinate,
+                                                                  getPrintRadius(),
+                                                                  isFilled(last_coordinate),
+                                                                  getDirector(last_coordinate));
     fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
 
@@ -591,9 +603,9 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
     coord_d last_move_direction = last_coordinate - previous_coordinate;
 
     std::vector<coord> half_circle_points = findHalfCircleEdges(last_coordinate, corner_first, corner_second,
-                                                               getPrintRadius(),
-                                                               isFilled(last_coordinate),
-                                                               last_move_direction);
+                                                                getPrintRadius(),
+                                                                isFilled(last_coordinate),
+                                                                last_move_direction);
     fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
 
@@ -720,7 +732,8 @@ std::vector<SeedPoint> FilledPattern::getSpacedLineOverlapping(const std::vector
 }
 
 
-std::vector<SeedPoint> FilledPattern::getSpacedLine(const std::vector<coord> &line, int line_index, int starting_index) {
+std::vector<SeedPoint>
+FilledPattern::getSpacedLine(const std::vector<coord> &line, int line_index, int starting_index) {
     double separation = getSeedSpacing();
     std::vector<SeedPoint> separated_starting_points = {{line[starting_index], getDirector(line[starting_index]),
                                                          line_index, starting_index}};
@@ -795,7 +808,7 @@ bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direc
 
     for (auto &displacement: collision_list) {
         if (isLeftOfEdge(displacement, normal, -1 * normal, true) &&
-            !isFree(coordinate + (coord_d)displacement)) {
+            !isFree(coordinate + (coord_d) displacement)) {
             return true;
         }
     }

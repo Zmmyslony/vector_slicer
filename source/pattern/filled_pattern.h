@@ -200,6 +200,13 @@ public:
     bool isFilled(const coord_d &coordinates) const;
 
     bool isFree(const coord_d &coordinate) const;
+
+    void
+    fillPointsFromDisplacementNonAligned(const coord &starting_position,
+                                         const std::vector<coord> &list_of_displacements,
+                                         const coord &previous_step, int value);
+
+    void fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value);
 };
 
 
