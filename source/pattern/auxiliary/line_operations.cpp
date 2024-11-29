@@ -41,17 +41,17 @@
 #include "valarray_operations.h"
 #include "simple_math_operations.h"
 
-void removeElement(std::vector<veci> &array, int index) {
+void removeElement(std::vector<coord> &array, int index) {
     array.erase(array.begin() + index);
 }
 
-veci findClosestNeighbour(std::vector<veci> &array, veci &element) {
-    veci closest_element;
+coord findClosestNeighbour(std::vector<coord> &array, coord &element) {
+    coord closest_element;
     auto closest_distance = DBL_MAX;
 
     int i_min = 0;
     for (int i = 0; i < array.size(); i++) {
-        double distance = norm(subtract(array[i], element));
+        double distance = norm(array[i] - element);
         if (distance < closest_distance) {
             closest_element = array[i];
             i_min = i;
@@ -63,24 +63,24 @@ veci findClosestNeighbour(std::vector<veci> &array, veci &element) {
 }
 
 /// Checks if the line forms a loop.
-bool isLooped(const std::vector<veci> &line) {
-    veci first = line.front();
-    veci last = line.back();
-    return norm(subtract(first, last)) <= 2;
+bool isLooped(const std::vector<coord> &line) {
+    coord first = line.front();
+    coord last = line.back();
+    return norm(first - last) <= 2;
 }
 
-std::vector<std::vector<veci>>
-separateIntoLines(std::vector<veci> &unsorted_perimeters, veci starting_coordinates, double separation_distance) {
-    veci current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
-    std::vector<std::vector<veci>> forwards_paths;
-    std::vector<std::vector<veci>> backwards_paths;
+std::vector<std::vector<coord>>
+separateIntoLines(std::vector<coord> &unsorted_perimeters, coord starting_coordinates, double separation_distance) {
+    coord current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
+    std::vector<std::vector<coord>> forwards_paths;
+    std::vector<std::vector<coord>> backwards_paths;
 
-    std::vector<veci> current_path = {current_element};
+    std::vector<coord> current_path = {current_element};
 
     bool is_backwards_path_filled = false;
     while (!unsorted_perimeters.empty()) {
         current_element = findClosestNeighbour(unsorted_perimeters, current_element);
-        double distance = norm(subtract(current_element, current_path.back()));
+        double distance = norm(current_element - current_path.back());
         if (distance > separation_distance) {
             if (is_backwards_path_filled) {
                 is_backwards_path_filled = false;
@@ -101,9 +101,9 @@ separateIntoLines(std::vector<veci> &unsorted_perimeters, veci starting_coordina
         backwards_paths.emplace_back();
     }
 
-    std::vector<std::vector<veci>> separated_paths;
+    std::vector<std::vector<coord>> separated_paths;
     for (int i = 0; i < forwards_paths.size(); i++) {
-        std::vector<veci> joined_path({forwards_paths[i].begin() + 1, forwards_paths[i].end()});
+        std::vector<coord> joined_path({forwards_paths[i].begin() + 1, forwards_paths[i].end()});
         std::reverse(joined_path.begin(), joined_path.end());
         joined_path.insert(joined_path.end(), backwards_paths[i].begin(), backwards_paths[i].end());
         if (joined_path.size() > 20) {
@@ -133,9 +133,9 @@ std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeter
 }
 
 /// Creates pixel representation of a line - Bresenham's line algorithm. Works only when dx >= dy and dx > 0.
-std::vector<veci> pixeliseLineBase(const vecd &line) {
-    int dx = line[0];
-    int dy = line[1];
+std::vector<coord> pixeliseLineBase(const coord_d &line) {
+    int dx = line.first;
+    int dy = line.second;
     int yi = 1;
     if (dy < 0) {
         yi = -1;
@@ -144,10 +144,10 @@ std::vector<veci> pixeliseLineBase(const vecd &line) {
     int D = 2 * dy - dx;
     int y = 0;
 
-    std::vector<veci> coordinates;
+    std::vector<coord> coordinates;
 
     for (int x = 0; x <= dx; x++) {
-        coordinates.emplace_back(veci{x, y});
+        coordinates.emplace_back(coord{x, y});
         if (D > 0) {
             y += yi;
             D += 2 * dy - 2 * dx;
@@ -159,37 +159,37 @@ std::vector<veci> pixeliseLineBase(const vecd &line) {
     return coordinates;
 }
 
-std::vector<veci> x_y_swap(std::vector<veci> vec) {
+std::vector<coord> x_y_swap(std::vector<coord> vec) {
     for (int i = 0; i < vec.size(); i++) {
-        std::swap(vec[i][0], vec[i][1]);
+        std::swap(vec[i].first, vec[i].second);
     }
     return vec;
 }
 
-std::vector<veci> x_invert_sign(std::vector<veci> vec) {
+std::vector<coord> x_invert_sign(std::vector<coord> vec) {
     for (int i = 0; i < vec.size(); i++) {
-        vec[i][0] *= -1;
+        vec[i].first *= -1;
     }
     return vec;
 }
 
-std::vector<veci> pixeliseLine(const vecd &line) {
-    double dx = line[0];
-    double dy = line[1];
+std::vector<coord> pixeliseLine(const coord_d &line) {
+    double dx = line.first;
+    double dy = line.second;
     if (fabs(dx) >= fabs(dy)) {
         if (dx >= 0) {
             return pixeliseLineBase(line);
         } else {
-            std::vector<veci> line = pixeliseLineBase({-dx, dy});
-            return x_invert_sign(line);
+            std::vector<coord> pixel_line = pixeliseLineBase({-dx, dy});
+            return x_invert_sign(pixel_line);
         }
     } else {
         if (dy >= 0) {
-            std::vector<veci> line = pixeliseLineBase({dy, dx});
-            return x_y_swap(line);
+            std::vector<coord> pixel_line = pixeliseLineBase({dy, dx});
+            return x_y_swap(pixel_line);
         } else {
-            std::vector<veci> line = pixeliseLineBase({-dy, dx});
-            return x_y_swap(x_invert_sign(line));
+            std::vector<coord> pixel_line = pixeliseLineBase({-dy, dx});
+            return x_y_swap(x_invert_sign(pixel_line));
         }
     }
 }

@@ -24,6 +24,7 @@
 
 #include "filled_pattern.h"
 #include "simulation/simulation.h"
+#include "coord.h"
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <cfloat>
@@ -32,7 +33,6 @@
 
 typedef boost::numeric::ublas::vector<double> vectord;
 
-using coord = std::pair<uint16_t, uint16_t>;
 using coord_d = std::pair<double, double>;
 
 /// Class quantifying how given FillingConfig works for a number of seeds

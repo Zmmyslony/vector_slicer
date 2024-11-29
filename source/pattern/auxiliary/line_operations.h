@@ -36,17 +36,18 @@
 
 #include <vector>
 #include <tuple>
+#include "../coord.h"
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
 std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeters, double separation_distance);
 
-std::vector<std::vector<veci>>
-separateIntoLines(std::vector<veci> &unsorted_perimeters, veci starting_coordinates, double separation_distance);
+std::vector<std::vector<coord>>
+separateIntoLines(std::vector<coord> &unsorted_perimeters, coord starting_coordinates, double separation_distance);
 
-bool isLooped(const std::vector<veci> &line);
+bool isLooped(const std::vector<coord> &line);
 
-std::vector<veci> pixeliseLine(const vecd &line);
+std::vector<coord> pixeliseLine(const coord_d &line);
 
 #endif //VECTOR_SLICER_LINE_OPERATIONS_H

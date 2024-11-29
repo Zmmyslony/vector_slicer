@@ -105,7 +105,7 @@ void exportVectorTableToFile(const std::vector<std::vector<double>> &table, cons
 }
 
 
-std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vector<int>>> &grid_of_coordinates,
+std::vector<std::vector<int>> indexTable(const std::vector<std::vector<coord>> &grid_of_coordinates,
                                          int index) {
     std::vector<std::vector<int>> table;
     table.reserve(grid_of_coordinates.size());
@@ -113,7 +113,11 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<std::vect
         std::vector<int> new_row;
         new_row.reserve(row.size());
         for (auto &element: row) {
-            new_row.push_back(element[index]);
+            if (index == 0) {
+                new_row.push_back(element.first);
+            } else if (index == 1) {
+                new_row.push_back(element.second);
+            }
         }
         table.push_back(new_row);
     }
@@ -170,7 +174,7 @@ std::string generateHeader(const std::string &pattern_name, double print_diamete
 
 
 void
-exportPathSequence(const std::vector<std::vector<std::vector<std::vector<int>>>> &grids_of_paths, const fs::path path,
+exportPathSequence(const std::vector<std::vector<std::vector<coord>>> &grids_of_paths, const fs::path path,
                    const std::string &suffix, double print_diameter, const Simulation &simulation) {
     std::string header = generateHeader(suffix, print_diameter, simulation);
     exportHeaderToFile(header, path);

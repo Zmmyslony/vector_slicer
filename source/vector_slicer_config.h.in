@@ -18,6 +18,10 @@
 #ifndef INCLUDE_GUARD
 #define INCLUDE_GUARD
 
+// Uncomment to do a timing run, where instead of generating pattern it inialises it and does a first iteration to
+// benchmark the speed.
+// #define TIMING
+
 #define SLICER_NAME "@PROJECT_NAME@"
 #define SLICER_VER  "@PROJECT_VERSION@"
 #define SLICER_VER_MAJOR "@PROJECT_VERSION_MAJOR@"

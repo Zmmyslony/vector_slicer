@@ -25,17 +25,18 @@
 #include <vector>
 #include <valarray>
 #include <string>
+#include "../coord.h"
 
 std::vector<std::vector<double>> readFileToTableDouble(const std::string &filename);
 
-std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table);
+std::vector<std::vector<uint8_t>> tableDoubleToInt(std::vector<std::vector<double>> &double_table);
 
-std::vector<std::vector<int>> readFileToTableInt(const std::string &filename);
+std::vector<std::vector<uint8_t>> readFileToTableInt(const std::string &filename);
 
 std::vector<int> getTableDimensions(std::string &filename);
 
-std::vector<int> getTableDimensions(const std::vector<std::vector<int>> &table);
+std::vector<int> getTableDimensions(const std::vector<std::vector<u_int8_t>> &table);
 
-std::vector<std::vector<std::vector<double>>> readFileToTableDoubleVector(const std::string &filename);
+std::vector<std::vector<coord_d>> readFileToTableDoubleVector(const std::string &filename);
 
 #endif //VECTOR_SLICER_TABLE_READING_H

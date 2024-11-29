@@ -31,7 +31,6 @@
 #include "seed_point.h"
 
 using vecd = std::vector<double>;
-using veci = std::vector<int>;
 
 enum rootPointSearchStage {
     SplayFilling, PerimeterFilling, RemainingFilling
@@ -43,14 +42,14 @@ class FilledPattern : public FillingConfig {
     std::mt19937 random_engine;
 
     std::vector<Path> sequence_of_paths;
-    std::vector<veci> print_circle;
-    std::vector<veci> repulsion_circle;
-    std::vector<veci> list_of_points;
-    std::vector<veci> collision_list;
+    std::vector<coord> print_circle;
+    std::vector<coord> repulsion_circle;
+    std::vector<coord> list_of_points;
+    std::vector<coord> collision_list;
     /// Shuffled seed points from the current seed line.
     std::vector<SeedPoint> seed_points;
     /// List of seed lines obtained from the DesiredPattern
-    std::vector<std::vector<veci>> seed_lines;
+    std::vector<std::vector<coord>> seed_lines;
     /// Keeps track of which seed line are we using currently.
     int current_seed_line_index = 0;
     /// All seed points from all suitable splay lines, line order is shuffled and point order within a line is also shuffled.
@@ -64,77 +63,73 @@ class FilledPattern : public FillingConfig {
     /// Switches whether seeds from seed line are taken at random or consecutively. Default: true
     bool is_random_filling_enabled = true;
 
-    void fillPoint(const veci &point, const vecd &normalized_direction, int value);
+    void fillPoint(const coord &point, const coord_d &normalized_direction, int value);
 
-    void fillPointsFromList(const std::vector<veci> &points_to_fill, const veci &direction, int value);
+    void fillPointsFromList(const std::vector<coord> &points_to_fill, const coord &direction, int value);
 
-    void fillPointsFromDisplacement(const veci &starting_position, const std::vector<veci> &list_of_displacements,
-                                    const veci &previous_step, int value);
+    void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
+                                    const coord &previous_step, int value);
 
-    void fillPointsFromDisplacement(const veci &starting_position, const std::vector<veci> &list_of_displacements,
-                                    const veci &previous_step);
+    void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
+                                    const coord &previous_step);
 
-    vecd getNewStep(vecd &real_coordinates, int &length, vecd &previous_move) const;
+    coord_d getNewStep(coord_d &real_coordinates, coord_d &previous_move, int &length) const;
 
-    bool propagatePath(Path &current_path, vecd &positions, vecd &previous_step, int length);
+    bool propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length);
 
 
-    [[nodiscard]] matrix_d getDualTensor(const veci &coordinates) const;
+    [[nodiscard]] matrix_d getDualTensor(const coord &coordinates) const;
 
-    double distance(const veci &first_point, const veci &second_point);
+    double distance(const coord &first_point, const coord &second_point);
 
-    void updateDualLineInDirection(coord_set &line_elements, coord_vector &line, vecd previous_dual_director);
+    void updateDualLineInDirection(coord_set &line_elements, coord_vector &line, coord_d previous_dual_director);
 
-    veci findRemainingRootPoint();
+    coord findRemainingRootPoint();
 
-    veci getFillablePoint();
+    coord getFillablePoint();
 
 /// Removes a selected path and removes the points which were filled while creating the path
     void removeLine(Path path);
 
-    [[nodiscard]] bool isFilled(const veci &coordinates) const;
-
-    [[nodiscard]] bool isFillable(const veci &point) const;
+    [[nodiscard]] bool isFillable(const coord &point) const;
 
     [[nodiscard]] bool isFillablePointLeft() const;
 
-    std::vector<veci> findDualLine(const veci &start);
+    std::vector<coord> findDualLine(const coord &start);
 
-    void tryAddingPointToSpacedLine(const veci &current_position, veci &previous_position,
+    void tryAddingPointToSpacedLine(const coord &current_position, coord &previous_position,
                                     bool &is_filled_coordinate_encountered, double separation,
                                     std::vector<SeedPoint> &separated_starting_points, int line_index,
                                     int point_index);
 
-    std::vector<SeedPoint> getSpacedLine(const std::vector<veci> &line, int line_index, int starting_index);
+    std::vector<SeedPoint> getSpacedLine(const std::vector<coord> &line, int line_index, int starting_index);
 
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
-    Path generateNewPathForDirection(const SeedPoint &seed_point, const vecd &starting_step);
+    Path generateNewPathForDirection(const SeedPoint &seed_point, const coord_d &starting_step);
 
     void updateSeedPoints();
 
     void setupRootPoints();
 
-    std::vector<std::vector<SeedPoint>> separateLines(std::vector<std::vector<veci>> list_of_lines, int line_index);
+    std::vector<std::vector<SeedPoint>> separateLines(std::vector<std::vector<coord>> list_of_lines, int line_index);
 
-    vecd calculateNextPosition(vecd &positions, vecd &previous_step, int length);
+    coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length);
 
-    [[nodiscard]] bool isDirectorContinuous(const veci &previous_coordinates, const veci &new_coordinates) const;
+    [[nodiscard]] bool isDirectorContinuous(const coord &previous_coordinates, const coord &new_coordinates) const;
 
-    [[nodiscard]] bool isInRange(const veci &index) const;
+    [[nodiscard]] bool isInRange(const coord &index) const;
 
-    [[nodiscard]] bool isInRange(const vecd &index) const;
-
-    double getOverlap(const std::vector<veci> &points_to_check);
+    double getOverlap(const std::vector<coord> &points_to_check);
 
     void updatePathOverlap(Path &path);
 
-    vecd getDirector(const vecd &coordinates) const;
+    coord_d getDirector(const vecd &coordinates) const;
 
-    vecd getDirector(const veci &coordinates) const;
+    coord_d getDirector(const coord &coordinates) const;
 
-    bool isFree(const veci &coordinate) const;
+    bool isFree(const coord &coordinate) const;
 
-    bool isTerminable(const veci &coordinate, const vecd &direction);
+    bool isTerminable(const coord_d &coordinate, const coord_d &direction);
 
     std::vector<unsigned int> findOverlappingSeedLines();
 
@@ -142,11 +137,15 @@ class FilledPattern : public FillingConfig {
 
     std::vector<SeedPoint> getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indexes);
 
-    std::vector<SeedPoint> getSpacedLineRandom(const std::vector<veci> &line, int line_index);
+    std::vector<SeedPoint> getSpacedLineRandom(const std::vector<coord> &line, int line_index);
 
-    std::vector<SeedPoint> getSpacedLineOverlapping(const std::vector<veci> &line, int line_index);
+    std::vector<SeedPoint> getSpacedLineOverlapping(const std::vector<coord> &line, int line_index);
 
     void extendSeedLines();
+
+protected:
+    [[nodiscard]] bool isFilled(const coord &coordinates) const;
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;
@@ -155,7 +154,7 @@ public:
 
     std::reference_wrapper<const DesiredPattern> desired_pattern;
 
-    std::vector<std::vector<int>> number_of_times_filled;
+    std::vector<std::vector<uint8_t>> number_of_times_filled;
 
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length,
                   unsigned int seed);
@@ -174,10 +173,10 @@ public:
     void removePoints();
 
     /// Fills points around the coordinates in a radius of print_radius
-    void fillPointsInCircle(const veci &coordinates);
+    void fillPointsInCircle(const coord &coordinates);
 
     /// Fills points in half circle at the end of the path
-    void fillPointsInHalfCircle(const veci &last_coordinate, const veci &previous_coordinate, int value);
+    void fillPointsInHalfCircle(const coord &last_coordinate, const coord &previous_coordinate, int value);
 
     /// Looks for a suitable point where a new path can be started from. If
     SeedPoint findSeedPoint();
@@ -197,6 +196,10 @@ public:
     std::vector<coord> getSeedCoordinates();
 
     void fillPointsInHalfCircle(const Path &path, int value, bool is_front);
+
+    bool isFilled(const coord_d &coordinates) const;
+
+    bool isFree(const coord_d &coordinate) const;
 };
 
 

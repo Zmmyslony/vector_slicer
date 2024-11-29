@@ -46,7 +46,7 @@ double norm(const vecd& vec);
 
 vecd scale(const vecd &vec, double scale);
 
-//vecd normalize(const vecd &vec);
+vecd normalize(const vecd &vec);
 
 
 

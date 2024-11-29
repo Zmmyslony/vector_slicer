@@ -23,22 +23,23 @@
 #define VECTOR_SLICER_SEED_POINT_H
 
 #include <vector>
+#include "coord.h"
 
 using veci = std::vector<int>;
 using vecd = std::vector<double>;
 
 class SeedPoint {
-    veci coordinates;
-    vecd director;
+    coord coordinates;
+    coord_d director;
     int seed_line{};
     int index{};
 
 public:
     SeedPoint();
 
-    SeedPoint(veci coordinates, vecd director, int seed_line, int index);
+    SeedPoint(coord coordinates, coord_d director, int seed_line, int index);
 
-    const veci &getCoordinates() const;
+    const coord & getCoordinates() const;
 
     int getSeedLine() const;
 
@@ -46,7 +47,7 @@ public:
 
     bool isInvalid() const;
 
-    const vecd &getDirector() const;
+    const coord_d & getDirector() const;
 
 };
 

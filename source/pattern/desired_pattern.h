@@ -39,26 +39,20 @@
 #define SPLAY_LINE_BOUNDARIES 1
 
 using vecd = std::vector<double>;
-using veci = std::vector<int>;
-
-using vecd = std::vector<double>;
-using veci = std::vector<int>;
-
-using coord = std::pair<uint16_t, uint16_t>;
 
 /// \brief Contains the information about the desired vector field such as its shape and local preferred direction, together
 /// with the information about its continuous edges
 class DesiredPattern {
-    veci dimensions;
+    std::vector<int> dimensions;
     /// Each element is one continuous edge of the pattern
-    std::vector<std::vector<veci>> perimeter_list;
-    std::vector<veci> shape_matrix;
-    std::vector<vecd> x_field_preferred;
-    std::vector<vecd> y_field_preferred;
-    std::vector<vecd> splay_array;
-    std::vector<std::vector<vecd>> splay_vector_array;
+    std::vector<std::vector<coord>> perimeter_list;
+    std::vector<std::vector<u_int8_t>> shape_matrix;
+    std::vector<std::vector<coord_d>> splay_vector_array;
+    std::vector<std::vector<double>> x_field_preferred;
+    std::vector<std::vector<double>> y_field_preferred;
+    std::vector<std::vector<double>> splay_array;
     std::vector<std::vector<coord>> splay_sorted_empty_spots;
-    std::vector<std::vector<veci>> lines_of_minimal_density;
+    std::vector<std::vector<coord>> lines_of_minimal_density;
 
     bool is_vector_filled = false;
     bool is_vector_sorted = false;
@@ -95,15 +89,15 @@ class DesiredPattern {
     void adjustMargins();
 
 
-    [[nodiscard]] vecd getMove(const vecd &position, double distance, const vecd &displacement) const;
+    [[nodiscard]] coord_d getMove(const coord_d &position, double distance, const coord_d &displacement) const;
 
     void updateIntegralCurve(const coord &starting_coordinate);
 
-    void updateIntegralCurveInDirection(coord current_coord, vecd current_position,
-                                        vecd current_travel_direction);
+    void updateIntegralCurveInDirection(coord current_coord, coord_d current_position,
+                                        coord_d current_travel_direction);
 
 
-    vecd getSplayVector(const coord &coordinate);
+    coord_d getSplayVector(const coord &coordinate);
 
     std::vector<double> directedSplayMagnitude(const coord_vector &integral_curve);
 
@@ -124,38 +118,38 @@ public:
     DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
                    bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
-    DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
+    DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field, std::vector<std::vector<double>> y_field,
                    bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
-    [[nodiscard]] const std::vector<veci> &getShapeMatrix() const;
+    [[nodiscard]] const std::vector<std::vector<uint8_t>> & getShapeMatrix() const;
 
     [[nodiscard]] const std::vector<vecd> &getXFieldPreferred() const;
 
     [[nodiscard]] const std::vector<vecd> &getYFieldPreferred() const;
 
-    [[nodiscard]] const veci &getDimensions() const;
+    [[nodiscard]] const std::vector<int> &getDimensions() const;
 
     [[nodiscard]] const std::vector<std::vector<coord>> &getSplaySortedEmptySpots() const;
 
-    [[nodiscard]] const std::vector<std::vector<std::vector<int>>> &getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<coord>> & getPerimeterList() const;
 
-    [[nodiscard]] double getSplay(const veci &point) const;
+    [[nodiscard]] double getSplay(const coord &point) const;
 
     [[nodiscard]] bool isVectorFilled() const;
 
     [[nodiscard]] bool isVectorSorted() const;
 
-    [[nodiscard]] vecd getDirector(veci positions) const;
+    [[nodiscard]] coord_d getDirector(coord positions) const;
 
-    [[nodiscard]] vecd getDirector(const vecd &positions) const;
+    [[nodiscard]] coord_d getDirector(const coord_d &positions) const;
 
-    [[nodiscard]] bool isInShape(const veci &position) const;
+    [[nodiscard]] bool isInShape(const coord &position) const;
 
     [[nodiscard]] bool isSplayProvided() const;
 
     void setSplayVector(const std::string &path);
 
-    [[nodiscard]] const std::vector<std::vector<veci>> &getLineDensityMinima() const;
+    [[nodiscard]] const std::vector<std::vector<coord>> &getLineDensityMinima() const;
 
     void updateProperties();
 
@@ -173,10 +167,7 @@ public:
 
     [[nodiscard]] bool isPointsRemoved() const;
 
-    [[nodiscard]] bool isInShape(const coord &coordinate) const;
-
-    double getSplay(const coord &point) const;
-
+    bool isInShape(const coord_d &coordinate) const;
 };
 
 

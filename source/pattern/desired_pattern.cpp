@@ -50,7 +50,7 @@
 DesiredPattern::DesiredPattern() = default;
 
 
-DesiredPattern::DesiredPattern(std::vector<veci> shape_field, std::vector<vecd> x_field, std::vector<vecd> y_field,
+DesiredPattern::DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field, std::vector<std::vector<double>> y_field,
                                bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
@@ -142,8 +142,8 @@ void DesiredPattern::isPatternUpdated() const {
 
 
 void DesiredPattern::adjustMargins() {
-    veci null_rows = findNullRows(shape_matrix, 10);
-    veci null_columns = findNullColumns(shape_matrix, 10);
+    std::vector<int> null_rows = findNullRows(shape_matrix, 10);
+    std::vector<int> null_columns = findNullColumns(shape_matrix, 10);
 
     adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
     adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);
@@ -155,40 +155,40 @@ void DesiredPattern::adjustMargins() {
 }
 
 
-vecd DesiredPattern::getDirector(veci positions) const {
-    while (positions[0] < 0) {
-        positions[0]++;
+coord_d DesiredPattern::getDirector(coord positions) const {
+    while (positions.first < 0) {
+        positions.first = 0;
     }
-    while (positions[0] >= dimensions[0]) {
-        positions[0]--;
+    while (positions.first >= dimensions[0]) {
+        positions.first = dimensions[0] - 1;
     }
-    while (positions[1] < 0) {
-        positions[1]++;
+    while (positions.second < 0) {
+        positions.second = 0;
     }
-    while (positions[1] >= dimensions[1]) {
-        positions[1]--;
+    while (positions.second >= dimensions[1]) {
+        positions.second = dimensions[1] - 1;
     }
-    return vecd({x_field_preferred[positions[0]][positions[1]],
-                 y_field_preferred[positions[0]][positions[1]]});
+    return coord_d({x_field_preferred[positions.first][positions.second],
+                 y_field_preferred[positions.first][positions.second]});
 }
 
 
-vecd DesiredPattern::getDirector(const vecd &positions) const {
-    int x_base = (int) positions[0];
-    int y_base = (int) positions[1];
-    double x_fraction = 1 - (positions[0] - floor(positions[0]));
-    double y_fraction = 1 - (positions[1] - floor(positions[1]));
+coord_d DesiredPattern::getDirector(const coord_d &positions) const {
+    int x_base = (int) positions.first;
+    int y_base = (int) positions.second;
+    double x_fraction = 1 - (positions.first - floor(positions.first));
+    double y_fraction = 1 - (positions.second - floor(positions.second));
 
-    vecd director = {0, 0};
-    director = director + x_fraction * y_fraction * getDirector(veci{x_base, y_base});
+    coord_d director = {0, 0};
+    director = director + x_fraction * y_fraction * getDirector(coord{x_base, y_base});
     if (x_fraction < 1) {
-        director = director + (1 - x_fraction) * y_fraction * getDirector(veci{x_base + 1, y_base});
+        director = director + (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
     }
     if (x_fraction < 1 && y_fraction < 1) {
-        director = director + (1 - x_fraction) * (1 - y_fraction) * getDirector(veci{x_base + 1, y_base + 1});
+        director = director + (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
     }
     if (y_fraction < 1) {
-        director = director + x_fraction * (1 - y_fraction) * getDirector(veci{x_base, y_base + 1});
+        director = director + x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
     }
 
     return director;
@@ -200,11 +200,10 @@ bool DesiredPattern::isInShape(const coord &coordinate) const {
            shape_matrix[coordinate.first][coordinate.second];
 }
 
-
-bool DesiredPattern::isInShape(const std::vector<int> &position) const {
-    return 0 <= position[0] && position[0] < dimensions[0] &&
-           0 <= position[1] && position[1] < dimensions[1] &&
-           shape_matrix[position[0]][position[1]];
+bool DesiredPattern::isInShape(const coord_d &coordinate) const {
+    return 0 <= coordinate.first && coordinate.first < dimensions[0] &&
+           0 <= coordinate.second && coordinate.second < dimensions[1] &&
+           shape_matrix[coordinate.first][coordinate.second];
 }
 
 
@@ -213,12 +212,12 @@ const std::vector<int> &DesiredPattern::getDimensions() const {
 }
 
 
-const std::vector<std::vector<std::vector<int>>> &DesiredPattern::getPerimeterList() const {
+const std::vector<std::vector<coord>> & DesiredPattern::getPerimeterList() const {
     return perimeter_list;
 }
 
 
-const std::vector<veci> &DesiredPattern::getShapeMatrix() const {
+const std::vector<std::vector<uint8_t>> & DesiredPattern::getShapeMatrix() const {
     return shape_matrix;
 }
 
@@ -236,11 +235,8 @@ double DesiredPattern::getSplay(const coord &point) const {
     return splay_array[point.first][point.second];
 }
 
-double DesiredPattern::getSplay(const veci &point) const {
-    return splay_array[point[0]][point[1]];
-}
 
-std::vector<coord> findFillableCells(const std::vector<veci> &shape_matrix) {
+std::vector<coord> findFillableCells(const std::vector<std::vector<uint8_t>> &shape_matrix) {
     std::vector<coord> fillable_cells;
     for (int i = 0; i < shape_matrix.size(); i++) {
         for (int j = 0; j < shape_matrix[i].size(); j++) {
@@ -310,20 +306,11 @@ void DesiredPattern::setSplayVector(const std::string &path) {
     }
 }
 
-vecd coord_to_val(const coord &x) {
-    return itod(veci{x.first, x.second});
-}
-
-coord val_to_coord(const vecd &x_d) {
-    veci x = dtoi(x_d);
-    return {x[0], x[1]};
-}
-
 
 /// Returns vector along the director in the same direction as previous displacement
-vecd DesiredPattern::getMove(const vecd &position, double distance, const vecd &displacement) const {
-    veci coordinates = dtoi(position);
-    vecd undirected_move = getDirector(coordinates);
+coord_d DesiredPattern::getMove(const coord_d &position, double distance, const coord_d &displacement) const {
+    coord coordinates = position;
+    coord_d undirected_move = getDirector(coordinates);
     if (dot(undirected_move, displacement) >= 0) {
         return distance * undirected_move;
     } else {
@@ -332,12 +319,12 @@ vecd DesiredPattern::getMove(const vecd &position, double distance, const vecd &
 }
 
 double distance(const coord &first, const coord &second) {
-    return norm(veci{first.first - second.first, first.second - second.second});
+    return norm(coord{first.first - second.first, first.second - second.second});
 }
 
 
-void DesiredPattern::updateIntegralCurveInDirection(coord current_coord, vecd current_position,
-                                                    vecd current_travel_direction) {
+void DesiredPattern::updateIntegralCurveInDirection(coord current_coord, coord_d current_position,
+                                                    coord_d current_travel_direction) {
 
     auto start = std::chrono::system_clock::now();
     is_coordinate_used[current_coord.first][current_coord.second] = 0;
@@ -355,16 +342,16 @@ void DesiredPattern::updateIntegralCurveInDirection(coord current_coord, vecd cu
         is_coordinate_used[current_coord.first][current_coord.second] = 0;
         current_travel_direction = getMove(current_position, 1, current_travel_direction);
         current_position = current_position + current_travel_direction;
-        current_coord = val_to_coord(current_position);
+        current_coord = current_position;
     }
 }
 
 
 void DesiredPattern::updateIntegralCurve(const coord &starting_coordinate) {
-    vecd current_position = coord_to_val(starting_coordinate);
-    vecd current_travel_direction = getDirector(current_position);
+    coord_d current_position = starting_coordinate;
+    coord_d current_travel_direction = getDirector(current_position);
 
-    coord current_coord = val_to_coord(current_position);
+    coord current_coord = starting_coordinate;
 
     updateIntegralCurveInDirection(current_coord, current_position, current_travel_direction);
     if (!integral_curve_coords.empty()) {
@@ -378,7 +365,7 @@ void DesiredPattern::updateIntegralCurve(const coord &starting_coordinate) {
     }
 }
 
-vecd DesiredPattern::getSplayVector(const coord &coordinate) {
+coord_d DesiredPattern::getSplayVector(const coord &coordinate) {
     return splay_vector_array[coordinate.first][coordinate.second];
 }
 
@@ -386,14 +373,14 @@ vecd DesiredPattern::getSplayVector(const coord &coordinate) {
 std::vector<double> DesiredPattern::directedSplayMagnitude(const coord_vector &integral_curve) {
     std::vector<double> directed_splay(integral_curve.size());
 
-    vecd displacement = coord_to_val(integral_curve[0]) - coord_to_val(integral_curve[1]);
+    coord_d displacement = integral_curve[0] - integral_curve[1];
 
-    displacement = getMove(coord_to_val(integral_curve.front()), 1, displacement);
-    vecd splay = getSplayVector(integral_curve.front());
+    displacement = getMove(integral_curve.front(), 1, displacement);
+    coord_d splay = getSplayVector(integral_curve.front());
     directed_splay[0] = dot(splay, displacement);
 
     for (int i = 1; i < integral_curve.size(); i++) {
-        displacement = getMove(coord_to_val(integral_curve[i]), 1, displacement);
+        displacement = getMove(integral_curve[i], 1, displacement);
         splay = getSplayVector(integral_curve[i]);
 
         directed_splay[i] = dot(displacement, splay);
@@ -403,7 +390,7 @@ std::vector<double> DesiredPattern::directedSplayMagnitude(const coord_vector &i
 
 /// Checks whether any of the neighbours of the last element exists in the coordinate line in the first 3 coordinates
 /// if the length of the curve is longer than 6 coordiantes.
-bool isLooped(const coord_vector &coordinate_line) {
+bool isLoopedAnywhere(const coord_vector &coordinate_line) {
     if (coordinate_line.size() <= 6) {
         return false;
     }
@@ -452,10 +439,10 @@ bool isValidSplayFreeLineEnd(bool is_boundary_last_in_curve, double splay) {
 }
 
 bool DesiredPattern::isBoundary(const coord &coordinate) {
-    veci coord_i = {coordinate.first, coordinate.second};
+    coord coord_i = {coordinate.first, coordinate.second};
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
-            veci displacement = {i, j};
+            coord displacement = {i, j};
             bool is_out_of_bounds = !isInShape(coord_i + displacement);
             if (is_out_of_bounds) {
                 return true;
@@ -478,7 +465,7 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
     coord_set valid_coords_set;
     coord_set zero_splay_boundary_nodes;
 
-    bool is_integral_curve_looped = isLooped(integral_curve_coords);
+    bool is_integral_curve_looped = isLoopedAnywhere(integral_curve_coords);
     bool is_last_in_curve = !is_integral_curve_looped;
 
     while (!integral_curve_coords.empty()) {
@@ -494,7 +481,7 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
         if (isValidSplayFreeLineEnd(is_current_boundary && is_last_in_curve, splay) &&
             !current_splay_free_line.empty()) {
             current_splay_free_line.emplace_back(coordinate);
-            bool is_looped = isLooped(current_splay_free_line);
+            bool is_looped = isLoopedAnywhere(current_splay_free_line);
 
             if (!is_looped) {
                 if (zero_splay_boundary_nodes.empty() || splay_line_behaviour == SPLAY_LINE_CENTRES) {
@@ -523,7 +510,7 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
 }
 
 
-coord_vector shape_coordinates_vector(const std::vector<std::vector<int>> &shape_matrix) {
+coord_vector shape_coordinates_vector(const std::vector<std::vector<uint8_t>> &shape_matrix) {
     coord_vector candidate_set;
     for (int i = 0; i < shape_matrix.size(); i++) {
         for (int j = 0; j < shape_matrix[i].size(); j++) {
@@ -577,9 +564,9 @@ void DesiredPattern::findLineDensityMinima() {
     std::cout << "\rSearch for seeding lines complete." << std::endl;
     solution_set = skeletonize(solution_set, 5, shape_matrix);
 
-    std::vector<veci> line_density_minima_local;
+    std::vector<coord> line_density_minima_local;
     for (auto &vector: solution_set) {
-        line_density_minima_local.emplace_back(veci{vector.first, vector.second});
+        line_density_minima_local.emplace_back(coord{vector.first, vector.second});
     }
 
     if (line_density_minima_local.empty()) {
@@ -587,7 +574,7 @@ void DesiredPattern::findLineDensityMinima() {
                      "Proceeding with dual seeding. " << std::endl;
         return;
     }
-    std::vector<std::vector<veci>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
+    std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
                                                                                           {0, 0}, sqrt(2));
     if (separated_lines_of_minimal_density.size() > 1) {
         std::cout << " \t" << separated_lines_of_minimal_density.size() << " splay seeding lines found."
@@ -598,7 +585,7 @@ void DesiredPattern::findLineDensityMinima() {
     lines_of_minimal_density = separated_lines_of_minimal_density;
 }
 
-const std::vector<std::vector<veci>> &DesiredPattern::getLineDensityMinima() const {
+const std::vector<std::vector<coord>> &DesiredPattern::getLineDensityMinima() const {
     return lines_of_minimal_density;
 }
 

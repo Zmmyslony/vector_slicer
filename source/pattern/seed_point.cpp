@@ -20,20 +20,21 @@
 //
 
 #include "seed_point.h"
+#include "coord.h"
 
 #include <utility>
 #include <stdexcept>
 
 SeedPoint::SeedPoint() = default;
 
-SeedPoint::SeedPoint(veci coordinates, vecd director, int seed_line, int index) :
+SeedPoint::SeedPoint(coord coordinates, coord_d director, int seed_line, int index) :
         coordinates(std::move(coordinates)),
         seed_line(seed_line),
         index(index),
         director(std::move(director)) {}
 
 
-const veci &SeedPoint::getCoordinates() const {
+const coord & SeedPoint::getCoordinates() const {
     return coordinates;
 }
 
@@ -46,16 +47,13 @@ int SeedPoint::getIndex() const {
 }
 
 bool SeedPoint::isInvalid() const {
-    if (coordinates.size() == 0) {
-        throw std::runtime_error("ERROR Seed point has empty coordinates.");
-    }
-    if (coordinates[0] == -1 &&
-        coordinates[1] == -1) {
+    if (coordinates.first == -1 &&
+        coordinates.second == -1) {
         return true;
     }
     return false;
 }
 
-const vecd &SeedPoint::getDirector() const {
+const coord_d & SeedPoint::getDirector() const {
     return director;
 }

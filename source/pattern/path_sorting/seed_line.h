@@ -35,23 +35,23 @@ class SeedLine {
     bool is_closed = false;
     /// Index of closest element to previous point
     int i_closest = 0;
-    double loopDistance(const veci &point, bool is_vector_sorted);
+    double loopDistance(const coord &point, bool is_vector_sorted);
 
 public:
 
     SeedLine(const std::vector<Path> &unsorted_seed_pairs, double distance_threshold);
 
     /// Returns last coordinate of the last path (taking into the account ordering) within a seed line.
-    veci endPoint() const;
+    coord endPoint() const;
 
     /// Calculates the closest distance between the line and a point.
-    double distance(const veci &point, bool is_vector_sorted);
+    double distance(const coord &point, bool is_vector_sorted);
 
     /// Returns sorted paths, starting from the path with lowest distance from distance function.
     std::vector<Path> getOrderedPaths(bool is_vector_filled);
 };
 
 
-std::vector<Path> seedLineSort(const FilledPattern &pattern, veci &starting_point);
+std::vector<Path> seedLineSort(const FilledPattern &pattern, coord &starting_point);
 
 #endif //VECTOR_SLICER_SEED_LINE_H

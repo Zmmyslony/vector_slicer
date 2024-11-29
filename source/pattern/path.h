@@ -24,6 +24,7 @@
 
 #include <vector>
 #include "seed_point.h"
+#include "coord.h"
 
 using veci = std::vector<int>;
 using vecd = std::vector<double>;
@@ -31,55 +32,55 @@ using vecd = std::vector<double>;
 /// Contains the sequence of coordinates that form a single path
 class Path {
     SeedPoint seed_point;
-    std::vector<veci> sequence_of_positions;
     std::vector<double> overlap;
-    std::vector<vecd> positive_path_edge;
-    std::vector<vecd> negative_path_edge;
+    std::vector<coord> sequence_of_positions;
+    std::vector<coord_d> positive_path_edge;
+    std::vector<coord_d> negative_path_edge;
 
     bool is_reversed = false;
     /// Distance between the point and the start of the path.
-    double vectorDistance(const veci &point) const;
+    double vectorDistance(const coord &point) const;
     /// Shorter distance between the point and the start of the path, which reverses the path when needed.
-    double tensorDistance(const veci &point);
+    double tensorDistance(const coord &point);
 public:
 
     explicit Path(SeedPoint seed, double print_radius);
 
     Path(const Path& forward_path, const Path& backward_path);
 
-    void addPoint(const veci &positions, double segment_overlap, const vecd &positive_edge, const vecd &negative_edge);
+    void addPoint(const coord &positions, double segment_overlap, const coord_d &positive_edge, const coord_d &negative_edge);
 
-    void addPoint(const veci &positions, const vecd &positive_edge, const vecd &negative_edge);
+    void addPoint(const coord &positions, const coord_d &positive_edge, const coord_d &negative_edge);
 
-    const std::vector<vecd> &getPositivePathEdge() const;
+    const std::vector<coord_d> & getPositivePathEdge() const;
 
-    const std::vector<vecd> &getNegativePathEdge() const;
+    const std::vector<coord_d> & getNegativePathEdge() const;
 
-    [[nodiscard]] veci first() const ;
+    [[nodiscard]] coord first() const ;
 
-    [[nodiscard]] veci last() const ;
+    [[nodiscard]] coord last() const ;
 
     [[nodiscard]] unsigned int size() const;
 
-    [[nodiscard]] veci secondToLast() const;
+    [[nodiscard]] coord secondToLast() const;
 
-    [[nodiscard]] veci second() const;
+    [[nodiscard]] coord second() const;
 
     double getLength();
 
     const SeedPoint &getSeedPoint() const;
 
     /// Vector or tensor distance
-    double distance(const veci& point, bool is_vector_filled);
+    double distance(const coord &point, bool is_vector_filled);
 
     /// Last point taking into account the directionality
-    [[nodiscard]] veci endPoint() const;
+    [[nodiscard]] coord endPoint() const;
 
     /// Returns sequence of positions in forward or backward order depending on isReversed
-    std::vector<veci> getPositionSequence() const;
+    std::vector<coord> getPositionSequence() const;
 
     /// Return position at index
-    veci position(unsigned int index);
+    coord position(unsigned int index);
 
     std::vector<double> getOverlap() const;
 
@@ -87,9 +88,9 @@ public:
 
     bool isReversed() const;
 
-    std::vector<veci> findPointsToFill(int i, bool is_position_filled) const;
+    std::vector<coord> findPointsToFill(int i, bool is_position_filled) const;
 
-    std::vector<veci> findPointsToFill(bool is_position_filled) const;
+    std::vector<coord> findPointsToFill(bool is_position_filled) const;
 };
 
 

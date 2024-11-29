@@ -95,7 +95,7 @@ double dot(const vecd &array_first, const vecd &array_second) {
     return dot_product;
 }
 
-double angle(const vecd &array_first, const vecd &array_second) {
+double angle(const coord_d &array_first, const coord_d &array_second) {
     double dot_product = dot(array_first, array_second);
     double length_first = norm(array_first);
     double length_second = norm(array_second);
@@ -154,27 +154,20 @@ void printArray(const std::vector<vecd> &array) {
     std::cout << std::endl;
 }
 
-vecd multiply(matrix_d mat, vecd vec) {
-    vecd result(mat.size());
-    for (int i = 0; i < mat.size(); i++) {
-        if (mat[i].size() != vec.size()) {
-            throw std::runtime_error("Uneven sizes in matrix and vector multiplication.");
-        }
-        double element = 0;
-        for (int j = 0; j < mat[i].size(); j++) {
-            element += mat[i][j] * vec[j];
-        }
-        result[i] = element;
-    }
+coord_d matrix_multiply(matrix_d mat, coord_d vec) {
+    coord_d result;
+    result.first = vec.first * mat[0][0] + vec.second * mat[1][0];
+    result.second = vec.first * mat[0][1] + vec.second * mat[1][1];
+
     return result;
 }
 
-matrix_d tensor(vecd vec_first, vecd vec_second) {
-    matrix_d result(vec_first.size(), vecd(vec_second.size()));
-    for (int i = 0; i < vec_first.size(); i++) {
-        for (int j = 0; j < vec_second.size(); j++) {
-            result[i][j] = vec_first[i] * vec_second[j];
-        }
-    }
+matrix_d tensor(coord_d vec_first, coord_d vec_second) {
+    matrix_d result(2, vecd(2));
+    result[0][0] = vec_first.first * vec_second.first;
+    result[1][0] = vec_first.second * vec_second.first;
+    result[0][1] = vec_first.first * vec_second.second;
+    result[1][1] = vec_first.second * vec_second.second;
+
     return result;
 }

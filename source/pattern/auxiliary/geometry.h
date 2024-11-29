@@ -27,32 +27,36 @@
 #include <cstdint>
 #include <algorithm>
 
+#include "../coord.h"
+#include "vector_operations.h"
+
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
-using coord = std::pair<uint16_t, uint16_t>;
 using coord_d = std::pair<double, double>;
 
-std::vector<veci> findPointsToFill(vecd corner_first, vecd corner_second, vecd corner_third,
-                                   vecd corner_fourth, bool is_exclusive);
+std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second, coord_d corner_third,
+                                   coord_d corner_fourth, bool is_exclusive);
 
-vecd normalisedResultant(const vecd &primary_vector, const vecd &secondary_vector);
+coord_d normalisedResultant(const coord_d &primary_vector, const coord_d &secondary_vector);
 
-std::vector<veci> findPointsInCircle(double radius);
+std::vector<coord> findPointsInCircle(double radius);
 
-std::vector<veci> findPointsInCircle(int radius);
+std::vector<coord> findPointsInCircle(int radius);
 
-bool isLeftOfEdge(const vecd &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive);
+bool isLeftOfEdge(const coord &point, const coord_d &edge_point_first, const coord_d &edge_point_second, bool is_exclusive);
 
-std::vector<veci>
-findHalfCircleCentres(const veci &last_point, const veci &previous_point, double radius, bool is_last_point_filled,
-                      const vecd &last_director);
+bool isLeftOfEdge(const coord_d &point, const vecd &edge_point_first, const vecd &edge_point_second, bool is_exclusive);
+
+std::vector<coord>
+findHalfCircleCentres(const coord &last_point, const coord &previous_point, double radius, bool is_last_point_filled,
+                      const coord_d &last_director);
 
 /// Finds coordinates in half-circle based on position of the centre-point and two edges of previous path segment.
-std::vector<veci>
-findHalfCircleEdges(const veci &centre_position, vecd corner_one, vecd corner_two, double radius,
-                    bool is_last_point_filled, const vecd &last_move_direction);
+std::vector<coord>
+findHalfCircleEdges(const coord &centre_position, coord_d corner_one, coord_d corner_two, double radius,
+                    bool is_last_point_filled, const coord_d &last_move_direction);
 
-std::vector<veci> generateLineDisplacements(const vecd &tangent, double radius);
+std::vector<coord> generateLineDisplacements(const coord_d &tangent, double radius);
 
 #endif //VECTOR_SLICER_GEOMETRY_H

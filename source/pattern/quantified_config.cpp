@@ -34,6 +34,7 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <thread>
 
 QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern,
                                    const Simulation &simulation) :
@@ -121,21 +122,33 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
+    coord_d filled_director = normalized(coord_d{x_field_filled[i][j], y_field_filled[i][j]});
 
-    coord_d filled_director = {x_field_filled[i][j], y_field_filled[i][j]};
-    coord_d desired_director = {desired_pattern.get().getXFieldPreferred()[i][j],
-                             desired_pattern.get().getYFieldPreferred()[i][j]};
-    double filled_director_norm = norm(filled_director);
-    double desired_director_norm = norm(desired_director);
-    double current_director_agreement = dot(filled_director, desired_director);
+    coord_d desired_director = normalized(coord_d
+                                                  {desired_pattern.get().getXFieldPreferred()[i][j],
+                                                   desired_pattern.get().getYFieldPreferred()[i][j]});
 
-    double local_director_agreement = std::abs(current_director_agreement) /
-                                      (filled_director_norm * desired_director_norm);
-    if (isnan(local_director_agreement)) {
+    double director_agreement = std::fabs(dot(filled_director, desired_director));
+    if (isnan(director_agreement)) {
         return 0;
     }
-    insertIntoBucket(local_director_agreement);
-    return local_director_agreement;
+    insertIntoBucket(director_agreement);
+//    if (director_agreement < 0.4) {
+//        double r = sqrt(pow(i - desired_pattern.get().getDimensions()[0] / 2, 2) +
+//                        pow(j - desired_pattern.get().getDimensions()[1] / 2, 2));
+//        if (r < 180) {
+//            std::cout << director_agreement << " " << i << " " << j << std::endl;
+//
+//            std::cout << desired_pattern.get().getXFieldPreferred()[i][j] << " "
+//                      << desired_pattern.get().getYFieldPreferred()[i][j] << " " << desired_director.first << " "
+//                      << desired_director.second << std::endl;
+//
+//            std::cout << x_field_filled[i][j] << " " << y_field_filled[i][j] << " " << filled_director.first << " "
+//                      << filled_director.second << std::endl << std::endl;
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//        }
+//    }
+    return director_agreement;
 }
 
 void QuantifiedConfig::insertIntoBucket(double local_director_agreement) {
@@ -157,14 +170,12 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
 
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
-            if (number_of_times_filled[i][j] > 0 &&
-                desired_pattern.get().isInShape(veci{i, j})) {
+            if (isFilled(coord{i, j})) {
                 director_agreement += localDirectorAgreement(i, j);
                 number_of_filled_elements++;
             }
         }
     }
-
     if (number_of_filled_elements > 0) {
         average_angular_director_disagreement =
                 total_angular_director_disagreement / (double) number_of_filled_elements;

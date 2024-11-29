@@ -40,70 +40,70 @@
 #include "simple_math_operations.h"
 
 
-std::vector<veci> generateLineDisplacements(const vecd &tangent, double radius) {
-    vecd normal = multiply(normalize(perpendicular(tangent)), radius);
-    vecd normal_abs = abs(normal);
-    int distance_i = (int) std::max(normal_abs[0], normal_abs[1]);
-    std::vector<veci> displacement_list;
+std::vector<coord> generateLineDisplacements(const coord_d &tangent, double radius) {
+    coord_d normal = normalized(perpendicular(tangent)) * radius;
+
+    int distance_i = (int) std::max(fabs(normal.first), fabs(normal.second));
+    std::vector<coord> displacement_list;
     for (int i = -distance_i; i <= distance_i; i++) {
-        vecd displacement_d = multiply(normal, (double) i / (double) distance_i);
-        displacement_list.push_back(dtoi(displacement_d));
+        coord_d displacement_d = normal * (double) i / (double) distance_i;
+        displacement_list.emplace_back(displacement_d);
     }
     return displacement_list;
 }
 
 
-vecd
-getRepulsionFromDisplacement(const vecd &coordinates, const std::vector<veci> &current_displacements, const veci &sizes,
-                             const std::vector<std::vector<int>> &shape_matrix,
-                             const std::vector<std::vector<int>> &filled_table) {
+coord_d
+getRepulsionFromDisplacement(const coord_d &coordinates, const std::vector<coord> &current_displacements,
+                             const veci &sizes,
+                             const std::vector<std::vector<uint8_t>> &shape_matrix,
+                             const std::vector<std::vector<uint8_t>> &filled_table) {
     int number_of_repulsing_coordinates = 0;
-    vecd empty_spot_attraction = {0, 0};
-
+    coord_d empty_spot_attraction = {0, 0};
+    coord i_coords = {coordinates.first + 0.5, coordinates.second + 0.5};
     for (auto &displacement: current_displacements) {
-        veci neighbour = add(dtoi(coordinates), displacement);
+        coord neighbour = i_coords + displacement;
         if (isInRange(neighbour, sizes) &&
             !isEmpty(neighbour, shape_matrix) &&
             isEmpty(neighbour, filled_table)) {
 
-            empty_spot_attraction = add(empty_spot_attraction, itod(displacement));
+            empty_spot_attraction = empty_spot_attraction + (coord_d) displacement;
             number_of_repulsing_coordinates++;
         }
     }
     if (number_of_repulsing_coordinates != 0) {
-        empty_spot_attraction = divide(empty_spot_attraction, number_of_repulsing_coordinates);
+        empty_spot_attraction = empty_spot_attraction / number_of_repulsing_coordinates;
     }
     return empty_spot_attraction;
 }
 
 
-vecd getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                           const std::vector<std::vector<int>> &filled_table, const vecd &tangent, double radius,
-                           const vecd &coordinates, const veci &sizes, double repulsion_coefficient,
-                           double maximal_repulsion_angle) {
-    std::vector<veci> normal_displacements = generateLineDisplacements(tangent, radius - 1);
-    vecd maximal_repulsion_vector = multiply(
+coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
+                              const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent,
+                              double radius,
+                              const coord_d &coordinates, const veci &sizes, double repulsion_coefficient,
+                              double maximal_repulsion_angle) {
+    std::vector<coord> normal_displacements = generateLineDisplacements(tangent, radius - 1);
+    coord_d maximal_repulsion_vector =
             getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
-                                         shape_matrix, filled_table),
-            repulsion_coefficient);
+                                         shape_matrix, filled_table) * repulsion_coefficient;
 
     double maximal_repulsion_length = norm(maximal_repulsion_vector);
     if (maximal_repulsion_length < 1) {
         return maximal_repulsion_vector;
     }
-    veci maximal_repulsion_vector_i = dtoi(maximal_repulsion_vector);
-    int maximal_repulsion_length_i = std::max(std::abs(maximal_repulsion_vector_i[0]),
-                                              std::abs(maximal_repulsion_vector_i[1]));
+    int maximal_repulsion_length_i = (int) std::max(fabs(maximal_repulsion_vector.first),
+                                                    fabs(maximal_repulsion_vector.second));
 
-    vecd previous_displacement = {0, 0};
+    coord_d previous_displacement = {0, 0};
     for (int i = 1; i <= maximal_repulsion_length_i; i++) {
-        vecd local_displacement = multiply(maximal_repulsion_vector, (double) i / (double) maximal_repulsion_length_i);
-        vecd local_repulsion = multiply(
-                getRepulsionFromDisplacement(add(coordinates, local_displacement), normal_displacements,
-                                             sizes, shape_matrix, filled_table),
-                repulsion_coefficient);
+        coord_d local_displacement = maximal_repulsion_vector * (double) i / (double) maximal_repulsion_length_i;
+        coord_d local_repulsion =
+                getRepulsionFromDisplacement(coordinates + local_displacement, normal_displacements,
+                                             sizes, shape_matrix, filled_table) *
+                repulsion_coefficient;
 
-        double local_angle = angle(tangent, add(tangent, local_repulsion));
+        double local_angle = angle(tangent, tangent + local_repulsion);
         bool is_maximal_angle_exceeded = local_angle >= maximal_repulsion_angle;
         // Test to see if the repulsion has changed its sign, resulting in over repulsing
         bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) < 0;

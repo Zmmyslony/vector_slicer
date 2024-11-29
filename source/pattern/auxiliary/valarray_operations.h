@@ -23,6 +23,7 @@
 #define VECTOR_SLICER_VALARRAY_OPERATIONS_H
 
 #include <vector>
+#include "geometry.h"
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
@@ -57,10 +58,10 @@ void printArray(const std::vector<veci> &array);
 
 void printArray(const std::vector<vecd> &array);
 
-double angle(const vecd &array_first, const vecd &array_second);
+double angle(const coord_d &array_first, const coord_d &array_second);
 
-vecd multiply(matrix_d mat, vecd vec);
+coord_d matrix_multiply(matrix_d mat, coord_d vec);
 
-matrix_d tensor(vecd vec_first, vecd vec_second);
+matrix_d tensor(coord_d vec_first, coord_d vec_second);
 
 #endif //VECTOR_SLICER_VALARRAY_OPERATIONS_H

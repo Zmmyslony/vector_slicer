@@ -43,7 +43,7 @@ namespace fs = boost::filesystem;
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
-using pattern = std::vector<std::vector<veci>>;
+using pattern = std::vector<std::vector<coord>>;
 
 
 BayesianOptimisation::BayesianOptimisation(QuantifiedConfig problem, bayesopt::Parameters parameters, int dims) :
@@ -226,7 +226,7 @@ fs::path createCsvPath(const std::string &directory, const std::string &filename
  * @param start coordinates where from the sorting should start from. Is overwritten by last position of the last path in sequence.
  * @return
  */
-std::vector<Path> sort_paths(const FilledPattern &pattern, veci &start) {
+std::vector<Path> sort_paths(const FilledPattern &pattern, coord &start) {
     int sorting_method = pattern.desired_pattern.get().getSortingMethod();
     std::vector<Path> sorted_paths;
     switch (sorting_method) {
@@ -246,8 +246,8 @@ std::vector<Path> sort_paths(const FilledPattern &pattern, veci &start) {
 }
 
 /// Extracts coordinate sequences from path sequence.
-std::vector<std::vector<veci>> extract_coordinates(const std::vector<Path> &paths) {
-    std::vector<std::vector<veci>> position_sequences;
+std::vector<std::vector<coord>> extract_coordinates(const std::vector<Path> &paths) {
+    std::vector<std::vector<coord>> position_sequences;
     position_sequences.reserve(paths.size());
     for (auto &path: paths) {
         position_sequences.emplace_back(path.getPositionSequence());
@@ -287,7 +287,7 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     double print_diameter = 0;
     int number_of_layers = patterns[0].getNumberOfLayers();
     exportRowToFile(patterns[0].sampleFillDensities(1000, patterns[0].getConfig().getPrintRadius() * 9), sampled_densities);
-    veci starting_coordinates = {0, 0};
+    coord starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
         pattern.updatePathsOverlap();

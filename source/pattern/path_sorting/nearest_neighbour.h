@@ -30,6 +30,6 @@ using veci = std::vector<int>;
 
 
 std::vector<Path>
-nearestNeighbourSort(const FilledPattern &pattern, const veci& starting_coordinates);
+nearestNeighbourSort(const FilledPattern &pattern, const coord &starting_coordinates);
 
 #endif //VECTOR_SLICER_NEAREST_NEIGHBOUR_H

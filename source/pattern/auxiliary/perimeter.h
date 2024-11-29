@@ -24,22 +24,23 @@
 
 #include <vector>
 #include <tuple>
+#include "../coord.h"
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
-std::vector<veci> circleDisplacements(double radius);
+std::vector<coord> circleDisplacements(double radius);
 
-bool isInRange(const veci &position, const veci &dimensions);
+bool isInRange(const coord &position, const veci &dimensions);
 
-bool isEmpty(const veci &position, const std::vector<std::vector<int>> &table);
+bool isEmpty(const coord &position, const std::vector<std::vector<uint8_t>> &table);
 
 bool
-isPerimeterFree(const std::vector<std::vector<int>> &filled_table, const std::vector<std::vector<int>> &shape_table,
-                const std::vector<veci> &perimeter_displacements_list, const veci &coordinates,
+isPerimeterFree(const std::vector<std::vector<uint8_t>> &filled_table, const std::vector<std::vector<uint8_t>> &shape_table,
+                const std::vector<coord> &perimeter_displacements_list, const coord &coordinates,
                 const veci &sizes);
 
-bool isOnEdge(const std::vector<std::vector<int>> &shape_table, const veci &coordinates,
+bool isOnEdge(const std::vector<std::vector<uint8_t>> &shape_table, const coord &coordinates,
               const veci &sizes);
 
 std::vector<veci>
@@ -49,8 +50,8 @@ std::vector<veci>
 findSortedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const veci &sizes);
 
 
-std::vector<std::vector<veci>>
-findSeparatedPerimeters(const std::vector<std::vector<int>> &shape_matrix, const veci &sizes,
-                        const std::vector<std::vector<vecd>> &splay_array);
+std::vector<std::vector<coord>>
+findSeparatedPerimeters(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes,
+                        const std::vector<std::vector<coord_d>> &splay_array);
 
 #endif //VECTOR_SLICER_PERIMETER_H

@@ -8,5 +8,6 @@
     example_azimuthal_10_mm_square
     example_radial_10_mm
 
-example_three_charge_field
-three_charge_field
+    example_three_charge_field
+    three_charge_field
+radial_5_mm

@@ -36,14 +36,15 @@
 
 #include <vector>
 #include <tuple>
+#include "geometry.h"
 
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
-vecd
-getLineBasedRepulsion(const std::vector<std::vector<int>> &shape_matrix,
-                      const std::vector<std::vector<int>> &filled_table, const vecd &tangent, double radius,
-                      const vecd &coordinates, const veci &sizes, double repulsion_coefficient,
+coord_d
+getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
+                      const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent, double radius,
+                      const coord_d &coordinates, const veci &sizes, double repulsion_coefficient,
                       double maximal_repulsion_angle);
 
 

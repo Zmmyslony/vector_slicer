@@ -26,7 +26,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-using coord = std::pair<uint16_t, uint16_t>;
+using coord = std::pair<int16_t, int16_t>;
 using coord_d = std::pair<double, double>;
 
 using vecd = std::vector<double>;
@@ -38,18 +38,18 @@ int sgn(double number);
 
 double decimalPart(double number);
 
-std::vector<std::vector<std::vector<double>>>
+std::vector<std::vector<coord_d>>
 splayVector(const std::vector<std::vector<double>> &x_field, const std::vector<std::vector<double>> &y_field,
             int threads);
 
 std::vector<std::vector<double>>
-vectorArrayNorm(const std::vector<std::vector<std::vector<double>>> &vector_array, int threads);
+vectorArrayNorm(const std::vector<std::vector<coord_d>> &vector_array, int threads);
 
-std::vector<std::vector<vecd>> normalizeVectorArray(const std::vector<std::vector<vecd>> &vector_array, int threads);
+std::vector<std::vector<coord_d>> normalizeVectorArray(const std::vector<std::vector<coord_d>> &vector_array, int threads);
 
-std::vector<int> findNullRows(const std::vector<std::vector<int>> &array, int padding);
+std::vector<int> findNullRows(const std::vector<std::vector<uint8_t>> &array, int padding);
 
-std::vector<int> findNullColumns(const std::vector<std::vector<int>> &array, int padding);
+std::vector<int> findNullColumns(const std::vector<std::vector<uint8_t>> &array, int padding);
 
 template<typename T>
 std::vector<std::vector<T>> zero_like(std::vector<std::vector<T>> obj) {
@@ -71,13 +71,7 @@ std::vector<std::valarray<T>> zero_like(std::vector<std::valarray<T>> obj) {
     return obj;
 }
 
-template<typename T>
-std::vector<T> zero_like(std::vector<T> obj) {
-    for (auto &el: obj) {
-        el = 0;
-    }
-    return obj;
-}
+
 
 template<typename T>
 std::valarray<T> zero_like(std::valarray<T> obj) {
@@ -90,6 +84,19 @@ std::valarray<T> zero_like(std::valarray<T> obj) {
 template<typename T>
 T zero_like(T obj) {
     return 0;
+}
+
+template<typename T>
+std::pair<T, T> zero_like(std::pair<T, T> obj) {
+    return {0, 0};
+}
+
+template<typename T>
+std::vector<T> zero_like(std::vector<T> obj) {
+    for (auto &el: obj) {
+        el = zero_like(el);
+    }
+    return obj;
 }
 
 template<typename T>
@@ -125,7 +132,6 @@ void adjustRowsAndColumns(std::vector<std::vector<T>> &array, const std::vector<
                           const std::vector<int> &columns_to_remove) {
     adjust_rows(array, rows_to_remove);
     adjust_columns(array, columns_to_remove);
-
 }
 
 /// Minimum value of 2D vector array
@@ -197,7 +203,9 @@ std::vector<T> abs(std::vector<T> obj_one) {
 }
 
 std::vector<double> operator*(const std::vector<double> &self, double multiplier);
+
 std::vector<double> operator*(double multiplier, const std::vector<double> &self);
+
 std::vector<double> operator/(const std::vector<double> &self, double divisor);
 
 std::vector<double> operator/(double divisor, const std::vector<double> &self);
@@ -218,23 +226,6 @@ std::vector<int> operator+(const std::vector<int> &self, const std::vector<int> 
 
 std::vector<int> operator-(const std::vector<int> &self, const std::vector<int> &other);
 
-double norm(const coord_d &coordinate);
-
-double norm(const coord &coordinate);
-
-coord_d normalized(const coord_d &coordinate);
-
-coord_d normalized(const coord &coordinate);
-
-double dot(const coord_d &first, const coord_d &second);
-
-coord_d operator+(const coord_d &first, const coord_d &second);
-
-coord_d operator-(const coord_d &first, const coord_d &second);
-
-coord_d operator*(const coord_d &first, double multiplier);
-
-coord_d operator/(const coord_d &first, double divisor);
 
 
 #endif //VECTOR_SLICER_SIMPLE_MATH_OPERATIONS_H

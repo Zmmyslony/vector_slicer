@@ -56,15 +56,15 @@ std::vector<std::vector<double>> readFileToTableDouble(const std::string &filena
     return table;
 }
 
-std::vector<std::vector<std::vector<double>>> readFileToTableDoubleVector(const std::string &filename) {
+std::vector<std::vector<coord_d>> readFileToTableDoubleVector(const std::string &filename) {
 
     std::vector<std::vector<double>> table = readFileToTableDouble(filename);
 
-    std::vector<std::vector<std::vector<double>>> vector_table;
+    std::vector<std::vector<coord_d>> vector_table;
     for (auto &row: table) {
-        std::vector<std::vector<double>> vector_row;
+        std::vector<coord_d> vector_row;
         for (int i = 0; i < row.size(); i += 2) {
-            vector_row.emplace_back(std::vector<double>{row[i], row[i + 1]});
+            vector_row.emplace_back(coord_d{row[i], row[i + 1]});
         }
         vector_table.emplace_back(vector_row);
     }
@@ -72,13 +72,13 @@ std::vector<std::vector<std::vector<double>>> readFileToTableDoubleVector(const 
     return vector_table;
 }
 
-std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> &double_table) {
-    std::vector<std::vector<int>> int_table;
+std::vector<std::vector<uint8_t>> tableDoubleToInt(std::vector<std::vector<double>> &double_table) {
+    std::vector<std::vector<uint8_t>> int_table;
     for (auto &row: double_table) {
-        std::vector<int> int_row;
+        std::vector<uint8_t> int_row;
         int_row.reserve(row.size());
         for (auto &element: row) {
-            int_row.push_back((int) element);
+            int_row.push_back((uint8_t) element);
         }
         int_table.push_back(int_row);
     }
@@ -86,7 +86,7 @@ std::vector<std::vector<int>> tableDoubleToInt(std::vector<std::vector<double>> 
 }
 
 
-std::vector<std::vector<int>> readFileToTableInt(const std::string &filename) {
+std::vector<std::vector<uint8_t>> readFileToTableInt(const std::string &filename) {
     std::vector<std::vector<double>> double_table = readFileToTableDouble(filename);
     return (tableDoubleToInt(double_table));
 }
@@ -121,7 +121,7 @@ std::vector<int> getTableDimensions(std::string &filename) {
 }
 
 
-std::vector<int> getTableDimensions(const std::vector<std::vector<int>> &table) {
+std::vector<int> getTableDimensions(const std::vector<std::vector<u_int8_t>> &table) {
     std::vector<int> size;
     size = {(int) table.size(), (int) table[0].size()};
     return size;
