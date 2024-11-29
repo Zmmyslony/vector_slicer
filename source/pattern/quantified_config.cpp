@@ -122,6 +122,9 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
+    if (!desired_pattern.get().getShapeMatrix()[i][j]) {
+    return 1;
+    }
     coord_d filled_director = normalized(coord_d{x_field_filled[i][j], y_field_filled[i][j]});
 
     coord_d desired_director = normalized(coord_d
@@ -133,21 +136,6 @@ double QuantifiedConfig::localDirectorAgreement(int i, int j) {
         return 0;
     }
     insertIntoBucket(director_agreement);
-//    if (director_agreement < 0.4) {
-//        double r = sqrt(pow(i - desired_pattern.get().getDimensions()[0] / 2, 2) +
-//                        pow(j - desired_pattern.get().getDimensions()[1] / 2, 2));
-//        if (r < 180) {
-//            std::cout << director_agreement << " " << i << " " << j << std::endl;
-//
-//            std::cout << desired_pattern.get().getXFieldPreferred()[i][j] << " "
-//                      << desired_pattern.get().getYFieldPreferred()[i][j] << " " << desired_director.first << " "
-//                      << desired_director.second << std::endl;
-//
-//            std::cout << x_field_filled[i][j] << " " << y_field_filled[i][j] << " " << filled_director.first << " "
-//                      << filled_director.second << std::endl << std::endl;
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-//        }
-//    }
     return director_agreement;
 }
 
