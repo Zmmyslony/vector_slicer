@@ -35,11 +35,10 @@
 
 #include <cfloat>
 #include <cmath>
-#include <cstdlib>
-#include <iostream>
 
 #include "valarray_operations.h"
 #include "simple_math_operations.h"
+
 
 void removeElement(std::vector<coord> &array, int index) {
     array.erase(array.begin() + index);

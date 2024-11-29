@@ -124,7 +124,7 @@ bool isSurroundedByFilledElements(const std::set<veci> &shape, const veci &coord
 }
 
 
-coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<int>> &shape_matrix) {
+coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<uint8_t>> &shape_matrix) {
     std::vector<coord> circle = findPointsInCircle(radius);
     coord_set grown_pattern;
     for (auto &element: shape) {
@@ -140,8 +140,9 @@ coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<
 
 
 coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vector<uint8_t>> &shape_matrix) {
+    shape = grow_pattern(shape, grow_size, shape_matrix);
     /// Instead of doing the skeletonisation until convergence, we only aim to reduce what was added by the growth.
-    for (int i = 0; i <= grow_size; i++) {
+    for (int i = 0; i <= grow_size * 2; i++) {
         coord_vector coordinates_to_remove_stage_one;
         for (auto &coordinate: shape) {
             if (isRemovedEastSouth(shape, coordinate)) {

@@ -540,6 +540,16 @@ bool DesiredPattern::isCoordinateViable(const coord &coordinate) {
     return is_coordinate_used[coordinate.first][coordinate.second];
 }
 
+void exportCoord(const coord_set &vec, const fs::path& output) {
+    std::ofstream file(output.string());
+    if (file.is_open()) {
+        for (auto &el: vec) {
+            file << el.first << "," << el.second << std::endl;
+        }
+    }
+    file.close();
+}
+
 void DesiredPattern::findLineDensityMinima() {
     auto t0 = std::chrono::system_clock::now();
     std::cout << "Beginning search for seeding lines." << std::endl;

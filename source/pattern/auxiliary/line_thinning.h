@@ -43,7 +43,7 @@
 /// Zhang-Suen line thinning algorithm
 coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vector<uint8_t>> &shape_matrix);
 
-coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<int>> &shape_matrix);
+coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<uint8_t>> &shape_matrix);
 
 
 #endif //VECTOR_SLICER_LINE_THINNING_H
