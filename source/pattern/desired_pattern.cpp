@@ -128,9 +128,9 @@ void DesiredPattern::updateProperties() {
     time(&end_time);
     auto t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> ms = t2 - t1;
-    double us_per_pix =
-            1000 * ms.count() / (dimensions[0] * dimensions[1]);
-    std::cout << "Initialisation duration: " << ms.count() << "ms (" << us_per_pix << " us/pix)" << std::endl;
+    double ns_per_pix =
+            1000000 * ms.count() / (dimensions[0] * dimensions[1]);
+    std::cout << "Initialisation duration: " << ms.count() << "ms (" << ns_per_pix << " ns/pix)" << std::endl;
 #endif
 }
 

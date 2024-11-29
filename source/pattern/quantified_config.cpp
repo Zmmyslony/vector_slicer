@@ -204,9 +204,9 @@ void QuantifiedConfig::evaluate() {
     time(&end_time);
     auto t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> ms = t2 - t1;
-    double us_per_pix =
-            1000 * ms.count() / (desired_pattern.get().getDimensions()[0] * desired_pattern.get().getDimensions()[1]);
-    std::cout << "Iteration duration: " << ms.count() << " ms (" << us_per_pix << " us/pix)" << std::endl;
+    double ns_per_pix =
+            1000000 * ms.count() / (desired_pattern.get().getDimensions()[0] * desired_pattern.get().getDimensions()[1]);
+    std::cout << "Iteration duration: " << ms.count() << " ms (" << ns_per_pix << " ns/pix)" << std::endl;
     throw std::runtime_error("Timing finished.");
 #endif
 }
