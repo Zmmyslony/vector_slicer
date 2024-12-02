@@ -33,16 +33,12 @@
 using vecd = std::vector<double>;
 using veci = std::vector<int>;
 
-using coord_d = std::pair<double, double>;
-
 std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second, coord_d corner_third,
                                    coord_d corner_fourth, bool is_exclusive);
 
 coord_d normalisedResultant(const coord_d &primary_vector, const coord_d &secondary_vector);
 
-std::vector<coord> findPointsInCircle(double radius);
-
-std::vector<coord> findPointsInCircle(int radius);
+std::vector<coord> findPointsInDisk(double radius);
 
 bool isLeftOfEdge(const coord &point, const coord_d &edge_point_first, const coord_d &edge_point_second, bool is_exclusive);
 
@@ -54,7 +50,7 @@ findHalfCircleCentres(const coord &last_point, const coord &previous_point, doub
 
 /// Finds coordinates in half-circle based on position of the centre-point and two edges of previous path segment.
 std::vector<coord>
-findHalfCircleEdges(const coord &centre_position, coord_d corner_one, coord_d corner_two, double radius,
+findHalfCircleEdges(const coord_d &centre_position, coord_d corner_one, coord_d corner_two, double radius,
                     bool is_last_point_filled, const coord_d &last_move_direction);
 
 std::vector<coord> generateLineDisplacements(const coord_d &tangent, double radius);

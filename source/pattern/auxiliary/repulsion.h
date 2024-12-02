@@ -43,9 +43,9 @@ using veci = std::vector<int>;
 
 coord_d
 getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
-                      const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent, double radius,
-                      const coord_d &coordinates, const veci &sizes, double repulsion_coefficient,
-                      double maximal_repulsion_angle);
+                      const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent,
+                      const coord_d &coordinates, const veci &sizes, double radius,
+                      double repulsion_coefficient, double maximal_repulsion_angle);
 
 
 #endif //VECTOR_SLICER_REPULSION_H

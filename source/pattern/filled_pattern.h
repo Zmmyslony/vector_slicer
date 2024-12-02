@@ -65,7 +65,7 @@ class FilledPattern : public FillingConfig {
 
     void fillPoint(const coord &point, const coord_d &normalized_direction, int value);
 
-    void fillPointsFromList(const std::vector<coord> &points_to_fill, const coord &direction, int value);
+    void fillPointsFromList(const std::vector<coord> &points_to_fill, const coord_d &direction, int value);
 
     void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
                                     const coord &previous_step, int value);
@@ -115,7 +115,7 @@ class FilledPattern : public FillingConfig {
 
     coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length);
 
-    [[nodiscard]] bool isDirectorContinuous(const coord &previous_coordinates, const coord &new_coordinates) const;
+    [[nodiscard]] bool isDirectorContinuous(const coord_d &previous_coordinates, const coord_d &new_coordinates) const;
 
     [[nodiscard]] bool isInRange(const coord &index) const;
 
@@ -123,7 +123,7 @@ class FilledPattern : public FillingConfig {
 
     void updatePathOverlap(Path &path);
 
-    coord_d getDirector(const vecd &coordinates) const;
+    coord_d getDirector(const coord_d &coordinates) const;
 
     coord_d getDirector(const coord &coordinates) const;
 
@@ -135,7 +135,7 @@ class FilledPattern : public FillingConfig {
 
     std::vector<SeedPoint> getSeedsFromRandomSeedLine();
 
-    std::vector<SeedPoint> getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indexes);
+    std::vector<SeedPoint> getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indices);
 
     std::vector<SeedPoint> getSpacedLineRandom(const std::vector<coord> &line, int line_index);
 
@@ -207,6 +207,8 @@ public:
                                          const coord &previous_step, int value);
 
     void fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value);
+
+    bool isInRange(const coord_d &index) const;
 };
 
 

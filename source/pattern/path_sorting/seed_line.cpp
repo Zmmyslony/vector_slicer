@@ -97,10 +97,11 @@ SeedLine::SeedLine(const std::vector<Path> &unsorted_seed_pairs, double distance
 
 
 double SeedLine::loopDistance(const coord &point, bool is_vector_sorted) {
-    double closest_distance = paths.front().distance(point, is_vector_sorted);
+    coord_d point_d = to_coord_d(point);
+    double closest_distance = paths.front().distance(point_d, is_vector_sorted);
 
     for (int i = 1; i < paths.size(); i++) {
-        double distance = paths[i].distance(point, is_vector_sorted);
+        double distance = paths[i].distance(point_d, is_vector_sorted);
         if (distance < closest_distance) {
             closest_distance = distance;
             i_closest = i;
@@ -114,9 +115,10 @@ double SeedLine::distance(const coord &point, bool is_vector_sorted) {
     if (is_closed) {
         return loopDistance(point, is_vector_sorted);
     }
+    coord_d point_d = to_coord_d(point);
 
-    double front_distance = paths.front().distance(point, is_vector_sorted);
-    double back_distance = paths.back().distance(point, is_vector_sorted);
+    double front_distance = paths.front().distance(point_d, is_vector_sorted);
+    double back_distance = paths.back().distance(point_d, is_vector_sorted);
 
     if (back_distance < front_distance) {
         is_reversed = true;
@@ -136,7 +138,7 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
         for (int i = 1; i < paths.size(); i++) {
             int i_current = (i_closest + i) % paths.size();
             int i_previous = (i_closest + i - 1) % paths.size();
-            coord end_point = paths[i_previous].endPoint();
+            coord_d end_point = paths[i_previous].endPoint();
             paths[i_current].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i_current]);
         }
@@ -146,14 +148,14 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
     if (is_reversed) {
         sorted_paths.emplace_back(paths.back());
         for (int i = paths.size() - 2; i >= 0; i--) {
-            coord end_point = paths[i + 1].endPoint();
+            coord_d end_point = paths[i + 1].endPoint();
             paths[i].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i]);
         }
     } else {
         sorted_paths.emplace_back(paths.front());
         for (int i = 1; i < paths.size(); i++) {
-            coord end_point = paths[i - 1].endPoint();
+            coord_d end_point = paths[i - 1].endPoint();
             paths[i].distance(end_point, is_vector_filled);
             sorted_paths.emplace_back(paths[i]);
         }
@@ -161,7 +163,7 @@ std::vector<Path> SeedLine::getOrderedPaths(bool is_vector_filled) {
     return sorted_paths;
 }
 
-coord SeedLine::endPoint() const {
+coord_d SeedLine::endPoint() const {
     if (paths.size() == 1) {
         return paths.front().endPoint();
     }
@@ -204,7 +206,7 @@ std::vector<Path> seedLineSort(const FilledPattern &pattern, coord &starting_poi
         SeedLine closest_line = getClosestLine(seed_lines, end_point, is_vector_sorted);
         std::vector<Path> ordered_paths = closest_line.getOrderedPaths(is_vector_sorted);
         sorted_paths.insert(sorted_paths.end(), ordered_paths.begin(), ordered_paths.end());
-        end_point = closest_line.endPoint();
+        end_point = coord(closest_line.endPoint());
     }
     return sorted_paths;
 }

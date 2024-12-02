@@ -41,9 +41,6 @@
 #include "geometry.h"
 #include "vector_operations.h"
 
-coord add(const coord &current, const coord &other) {
-    return {current.first + other.first, current.second + other.second};
-}
 
 /// Based on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm Step 1
 bool isRemovedEastSouth(const coord_set &shape, const coord &coordinate) {
@@ -125,12 +122,12 @@ bool isSurroundedByFilledElements(const std::set<veci> &shape, const veci &coord
 
 
 coord_set grow_pattern(const coord_set &shape, double radius, const std::vector<std::vector<uint8_t>> &shape_matrix) {
-    std::vector<coord> circle = findPointsInCircle(radius);
+    std::vector<coord> circle = findPointsInDisk(radius);
     coord_set grown_pattern;
     for (auto &element: shape) {
         for (auto &displacement: circle) {
             coord current = element + displacement;
-            if (shape_matrix[current.first][current.second]) {
+            if (shape_matrix[current.x][current.y]) {
                 grown_pattern.insert(current);
             }
         }

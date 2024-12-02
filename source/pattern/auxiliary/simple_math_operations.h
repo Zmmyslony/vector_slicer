@@ -25,9 +25,8 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include "../coord.h"
 
-using coord = std::pair<int16_t, int16_t>;
-using coord_d = std::pair<double, double>;
 
 using vecd = std::vector<double>;
 
@@ -51,56 +50,30 @@ std::vector<int> findNullRows(const std::vector<std::vector<uint8_t>> &array, in
 
 std::vector<int> findNullColumns(const std::vector<std::vector<uint8_t>> &array, int padding);
 
-template<typename T>
-std::vector<std::vector<T>> zero_like(std::vector<std::vector<T>> obj) {
-    for (auto &el: obj) {
-        for (auto &sub_el: el) {
-            sub_el = 0;
-        }
-    }
-    return obj;
-}
 
-template<typename T>
-std::vector<std::valarray<T>> zero_like(std::vector<std::valarray<T>> obj) {
-    for (auto &el: obj) {
-        for (auto &sub_el: el) {
-            sub_el = 0;
-        }
-    }
-    return obj;
-}
-
-
-
-template<typename T>
-std::valarray<T> zero_like(std::valarray<T> obj) {
-    for (auto &el: obj) {
-        el = 0;
-    }
-    return obj;
-}
-
-template<typename T>
-T zero_like(T obj) {
+inline uint8_t zero_like(const uint8_t &data) {
     return 0;
 }
 
-template<typename T>
-std::pair<T, T> zero_like(std::pair<T, T> obj) {
+inline double zero_like(const double &data) {
+    return 0;
+}
+
+inline coord_d zero_like (const coord_d &data) {
     return {0, 0};
 }
 
-template<typename T>
-std::vector<T> zero_like(std::vector<T> obj) {
-    for (auto &el: obj) {
+template <typename T>
+std::vector<T> zero_like(std::vector<T> vector) {
+    for (auto &el : vector) {
         el = zero_like(el);
     }
-    return obj;
+    return vector;
 }
 
 template<typename T>
 std::vector<T> adjust_rows(std::vector<T> &array, const std::vector<int> &rows_to_remove) {
+    // Removal or addition of 'zero' elements at the front of the vector
     if (rows_to_remove[0] > 0) {
         array.erase(array.begin(), array.begin() + rows_to_remove[0]);
     } else if (rows_to_remove[0] < 0) {
@@ -108,6 +81,8 @@ std::vector<T> adjust_rows(std::vector<T> &array, const std::vector<int> &rows_t
         T zeros = zero_like(array[0]);
         array.insert(it, -rows_to_remove[0], zeros);
     }
+
+    // Removal or addition of 'zero' elements at the back of the vector
     if (rows_to_remove[1] > 0) {
         array.erase(array.end() - rows_to_remove[1], array.end());
     } else if (rows_to_remove[1] < 0) {

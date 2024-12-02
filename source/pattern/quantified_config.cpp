@@ -71,7 +71,7 @@ QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, vectord pa
 
 QuantifiedConfig::QuantifiedConfig(QuantifiedConfig &template_config, int seed) :
         QuantifiedConfig(template_config) {
-    setConfigOption(Seed, std::to_string(seed));
+    setSeed(seed);
 }
 
 
@@ -123,19 +123,18 @@ double QuantifiedConfig::calculateAverageOverlap() {
 
 double QuantifiedConfig::localDirectorAgreement(int i, int j) {
     if (!desired_pattern.get().getShapeMatrix()[i][j]) {
-    return 1;
+        return 1;
     }
     coord_d filled_director = normalized(coord_d{x_field_filled[i][j], y_field_filled[i][j]});
-
-    coord_d desired_director = normalized(coord_d
-                                                  {desired_pattern.get().getXFieldPreferred()[i][j],
-                                                   desired_pattern.get().getYFieldPreferred()[i][j]});
+    coord_d desired_director = desired_pattern.get().getDirector(coord{i, j});
 
     double director_agreement = std::fabs(dot(filled_director, desired_director));
     if (isnan(director_agreement)) {
         return 0;
     }
-    insertIntoBucket(director_agreement);
+#ifdef DISGAREEMENT_ANGULAR
+        insertIntoBucket(director_agreement);
+#endif
     return director_agreement;
 }
 
@@ -165,8 +164,11 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
         }
     }
     if (number_of_filled_elements > 0) {
+#ifdef DISGAREEMENT_ANGULAR
         average_angular_director_disagreement =
                 total_angular_director_disagreement / (double) number_of_filled_elements;
+#endif
+
         return 1 - (double) director_agreement / (double) number_of_filled_elements;
     } else {
         return 1;
@@ -229,7 +231,9 @@ void QuantifiedConfig::printDisagreement() const {
            << overlap_ratio << std::endl;
     stream << "\tDirector\t" << average_director_disagreement << "\t" << director_disagreement
            << "\t" << director_ratio << std::endl;
+#ifdef DISGAREEMENT_ANGULAR
     stream << "\tAngle disagreement\t" << average_angular_director_disagreement * 180 / M_PI << "°" << std::endl;
+#endif
     stream << "\n\tPaths\t" << paths_number << std::endl;
     stream << "\tPaths multiplier\t" << path_multiplier << std::endl;
 
@@ -341,6 +345,7 @@ std::vector<QuantifiedConfig> QuantifiedConfig::findBestSeeds(int seeds, int thr
     int number_of_layers = getNumberOfLayers();
 
     std::vector<QuantifiedConfig> configs_to_export;
+    configs_to_export.reserve(number_of_layers);
     for (int i = 0; i < number_of_layers; i++) {
         configs_to_export.emplace_back(*this, disagreements[i].second);
     }

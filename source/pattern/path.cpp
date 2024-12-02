@@ -28,20 +28,21 @@
 #include "auxiliary/geometry.h"
 
 void
-Path::addPoint(const coord &positions, double segment_overlap, const coord_d &positive_edge, const coord_d &negative_edge) {
+Path::addPoint(const coord_d &positions, double segment_overlap, const coord_d &positive_edge,
+               const coord_d &negative_edge) {
     sequence_of_positions.push_back(positions);
     overlap.push_back(segment_overlap);
     negative_path_edge.push_back(negative_edge);
     positive_path_edge.push_back(positive_edge);
 }
 
-void Path::addPoint(const coord &positions, const coord_d &positive_edge, const coord_d &negative_edge) {
+void Path::addPoint(const coord_d &positions, const coord_d &positive_edge, const coord_d &negative_edge) {
     addPoint(positions, 0, positive_edge, negative_edge);
 }
 
 
-Path::Path(SeedPoint seed, double print_radius) : seed_point(std::move(seed)) {
-    coord_d positions = seed_point.getCoordinates();
+Path::Path(SeedPoint seed, double print_radius) : seed_point(seed) {
+    coord_d positions = to_coord_d(seed_point.getCoordinates());
     coord_d tangent = normalized(seed_point.getDirector());
     coord_d normal = perpendicular(tangent) * print_radius;
     addPoint(positions, positions + normal, positions - normal);
@@ -72,22 +73,22 @@ Path::Path(const Path &forward_path, const Path &backward_path) {
 }
 
 /// Returns the first position in the path.
-coord Path::first() const {
+coord_d Path::first() const {
     return sequence_of_positions.front();
 }
 
 /// Returns the second position in the path.
-coord Path::second() const {
+coord_d Path::second() const {
     return sequence_of_positions[1];
 }
 
 /// Returns last position in the path.
-coord Path::last() const {
+coord_d Path::last() const {
     return sequence_of_positions.back();
 }
 
 /// Returns second to last position in the path.
-coord Path::secondToLast() const {
+coord_d Path::secondToLast() const {
     return sequence_of_positions[sequence_of_positions.size() - 2];
 }
 
@@ -105,13 +106,13 @@ const SeedPoint &Path::getSeedPoint() const {
 }
 
 /// Returns distance between the point and the first() point.
-double Path::vectorDistance(const coord &point) const {
+double Path::vectorDistance(const coord_d &point) const {
     return norm(point - first());
 }
 
 /// Returns shorter distance between point and  first() or last(). If distance from last() is closer, marks path as
 /// reversed.
-double Path::tensorDistance(const coord &point) {
+double Path::tensorDistance(const coord_d &point) {
     double forward_distance = norm(point - first());
     double backward_distance = norm(point - last());
     if (backward_distance < forward_distance) {
@@ -125,7 +126,7 @@ double Path::tensorDistance(const coord &point) {
 
 
 /// Last point taking into the account whether path is reversed.
-coord Path::endPoint() const {
+coord_d Path::endPoint() const {
     if (is_reversed) {
         return first();
     } else {
@@ -133,7 +134,7 @@ coord Path::endPoint() const {
     }
 }
 
-double Path::distance(const coord &point, bool is_vector_filled) {
+double Path::distance(const coord_d &point, bool is_vector_filled) {
     if (is_vector_filled) {
         return vectorDistance(point);
     } else {
@@ -141,9 +142,9 @@ double Path::distance(const coord &point, bool is_vector_filled) {
     }
 }
 
-std::vector<coord> Path::getPositionSequence() const {
+std::vector<coord_d> Path::getPositionSequence() const {
     if (is_reversed) {
-        std::vector<coord> position_sequence = sequence_of_positions;
+        std::vector<coord_d> position_sequence = sequence_of_positions;
         std::reverse(position_sequence.begin(), position_sequence.end());
         return position_sequence;
     } else {
@@ -151,7 +152,20 @@ std::vector<coord> Path::getPositionSequence() const {
     }
 }
 
-coord Path::position(unsigned int index) {
+std::vector<coord> Path::getCoordinateSequence() const {
+    std::vector<coord_d> position_sequence = sequence_of_positions;
+    if (is_reversed) {
+        std::reverse(position_sequence.begin(), position_sequence.end());
+    }
+    std::vector<coord> coord_sequence;
+    coord_sequence.reserve(position_sequence.size());
+    for (auto &pos : position_sequence) {
+        coord_sequence.emplace_back(pos);
+    }
+    return coord_sequence;
+}
+
+coord_d Path::position(unsigned int index) {
     return sequence_of_positions[index];
 }
 
@@ -191,11 +205,11 @@ std::vector<coord> Path::findPointsToFill(bool is_position_filled) const {
     return findPointsToFill(size() - 1, is_position_filled);
 }
 
-const std::vector<coord_d> & Path::getPositivePathEdge() const {
+const std::vector<coord_d> &Path::getPositivePathEdge() const {
     return positive_path_edge;
 }
 
-const std::vector<coord_d> & Path::getNegativePathEdge() const {
+const std::vector<coord_d> &Path::getNegativePathEdge() const {
     return negative_path_edge;
 }
 

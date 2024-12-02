@@ -22,47 +22,153 @@
 #include "coord.h"
 #include <cmath>
 
-double norm(const coord_d &point) {
-    return sqrt(point.first * point.first + point.second * point.second);
+
+coord_d::coord_d() : x(0), y(0) {}
+
+coord_d::coord_d(double x_val, double y_val) : x(x_val), y(y_val) {}
+
+coord_d coord_d::operator+(const coord_d &other) const {
+    return {x + other.x, y + other.y};
 }
 
-double norm(const coord &point) {
-    return sqrt(point.first * point.first + point.second * point.second);
+coord_d coord_d::operator-(const coord_d &other) const {
+    return {x - other.x, y - other.y};
 }
 
-void normalize(coord_d &point) {
-    point /= norm(point);
+void coord_d::operator+=(const coord_d &other) {
+    x += other.x;
+    y += other.y;
 }
 
-coord_d normalized(const coord_d &point) {
-    return point / norm(point);
+void coord_d::operator-=(const coord_d &other) {
+    *this = *this - other;
 }
 
-coord_d normalized(const coord &point) {
-    return point / norm(point);
+coord_d coord_d::operator*(double multiplier) const {
+    return {x * multiplier, y * multiplier};
 }
 
+void coord_d::operator*=(double multiplier) {
+    x *= multiplier;
+    y *= multiplier;
+}
+
+coord_d coord_d::operator/(double divisor) const {
+    return {x / divisor, y / divisor};
+}
+
+void coord_d::operator/=(double divisor) {
+    *this = *this / divisor;
+}
+
+bool coord_d::operator==(const coord_d &other) const {
+    return (x == other.x) && (y == other.y);
+}
+
+double coord_d::norm() const {
+    return sqrt(x * x + y * y);
+}
+
+coord_d coord_d::normalized() const {
+    return *this / norm();
+}
+
+void coord_d::normalize() {
+    *this = normalized();
+}
+
+coord::coord() : x(-1), y(-1) {}
+
+coord::coord(short x_val, short y_val) : x(x_val), y(y_val) {}
+
+coord coord::operator+(const coord &other) const {
+    return {static_cast<short>(x + other.x), static_cast<short>(y + other.y)};
+}
+
+coord coord::operator-(const coord &other) const {
+    return {static_cast<short>(x - other.x), static_cast<short>(y - other.y)};
+}
+
+void coord::operator+=(const coord &other) {
+    *this = *this + other;
+}
+
+void coord::operator-=(const coord &other) {
+    *this = *this - other;
+}
+
+coord coord::operator*(int multiplier) const {
+    return {static_cast<short>(x * multiplier), static_cast<short>(y * multiplier)};
+}
+
+void coord::operator*=(int multiplier) {
+    *this = *this * multiplier;
+}
+
+double coord::norm() const {
+    return sqrt(x * x + y * y);
+}
+
+coord_d coord::normalized() const {
+    return coord_d((double) x, (double) y) / norm();
+}
+
+bool coord::operator==(const coord &other) const {
+    return (x == other.x) && (y == other.y);
+}
+
+coord::coord(const coord_d &other) {
+    x = (short) lround(other.x);
+    y = (short) lround(other.y);
+}
+
+coord_d coord::operator*(double multiplier) const {
+    return {(double) x * multiplier, (double) y * multiplier};
+}
+
+coord_d coord::operator+(const coord_d &other) const {
+    return {(double) x + other.x, (double) y + other.y};
+}
+
+coord_d coord::operator-(const coord_d &other) const {
+    return {(double) x - other.x, (double) y - other.y};
+}
+
+coord::coord(int x_val, int y_val) : x((short)x_val), y((short)y_val) {}
+
+bool coord::operator!=(const coord &other) const {
+    return !(*this == other);
+}
 
 double dot(const coord_d &lhs, const coord_d &rhs) {
-    return lhs.first * rhs.first + lhs.second * rhs.second;
+    return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
 double dot(const coord &lhs, const coord &rhs) {
-    return lhs.first * rhs.first + lhs.second * rhs.second;
+    return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
 double cross(const coord_d &lhs, const coord_d &rhs) {
-    return lhs.first * rhs.second - lhs.second * rhs.first;
+    return lhs.x * rhs.y - lhs.y * rhs.x;
 }
 
 double cross(const coord &lhs, const coord &rhs) {
-    return lhs.first * rhs.second - lhs.second * rhs.first;
+    return lhs.x * rhs.y - lhs.y * rhs.x;
 }
 
 coord perpendicular(const coord &point) {
-    return {-point.second, point.first};
+    return {static_cast<short>(-point.y), point.x};
 }
 
 coord_d perpendicular(const coord_d &point) {
-    return {-point.second, point.first};
+    return {-point.y, point.x};
 }
+
+coord_d to_coord_d(const coord &other) {
+    return {(double)other.x, (double)other.y};
+}
+
+
+
+
+

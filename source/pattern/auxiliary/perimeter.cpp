@@ -35,7 +35,7 @@ std::vector<coord> circleDisplacements(double radius) {
     for (int i = -range; i <= range; i++) {
         for (int j = -range; j <= range; j++) {
             if (ceil(sqrt(i * i + j * j) - radius) == 0) {
-                perimeter_list.push_back({i, j});
+                perimeter_list.emplace_back(i, j);
             }
         }
     }
@@ -45,13 +45,13 @@ std::vector<coord> circleDisplacements(double radius) {
 
 
 bool isInRange(const coord &position, const veci &dimensions) {
-    return (0 <= position.first && position.first < dimensions[0] &&
-            0 <= position.second && position.second < dimensions[1]);
+    return (0 <= position.x && position.x < dimensions[0] &&
+            0 <= position.y && position.y < dimensions[1]);
 }
 
 
 bool isEmpty(const coord &position, const std::vector<std::vector<uint8_t>> &table) {
-    return (table[position.first][position.second] == 0);
+    return (table[position.x][position.y] == 0);
 }
 
 
@@ -109,7 +109,7 @@ getOutwardPointingVector(const coord &current_position, const std::vector<std::v
         if (!isInRange(coordinates, sizes) ||
             isEmpty(coordinates, shape_matrix)) {
             number_of_empty_points++;
-            sum_of_empty_point_displacements += displacement;
+            sum_of_empty_point_displacements += to_coord_d(displacement);
         }
     }
     if (number_of_empty_points > 0) {
@@ -128,7 +128,7 @@ bool isValidPerimeterPoint(const coord &positions, const std::vector<std::vector
     }
 
     coord_d outward_pointing_vector = normalized(getOutwardPointingVector(positions, shape_matrix, sizes, tested_circle));
-    coord_d current_splay = splay_array[positions.first][positions.second];
+    coord_d current_splay = splay_array[positions.x][positions.y];
 
     // Threshold is set slightly below zero to improve stability for numerically calculated splay
     double zero_splay_threshold = -1e-10;

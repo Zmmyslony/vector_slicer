@@ -47,8 +47,8 @@ int SeedPoint::getIndex() const {
 }
 
 bool SeedPoint::isInvalid() const {
-    if (coordinates.first == -1 &&
-        coordinates.second == -1) {
+    if (coordinates.x == -1 &&
+        coordinates.y == -1) {
         return true;
     }
     return false;

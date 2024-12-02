@@ -150,6 +150,10 @@ fillingMethod stringToMethod(const std::string &string_option) {
 }
 
 
+void FillingConfig::setSeed(int seed_value) {
+    seed = seed_value;
+}
+
 void FillingConfig::setConfigOption(const configOptions &option, const std::string &value) {
     switch (option) {
         case InitialSeedingMethod:

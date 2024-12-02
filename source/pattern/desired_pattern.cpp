@@ -29,6 +29,7 @@
 #include <iostream>
 #include <math.h>
 #include <cfloat>
+#include <fstream>
 #include <iterator>
 #include <random>
 
@@ -50,7 +51,8 @@
 DesiredPattern::DesiredPattern() = default;
 
 
-DesiredPattern::DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field, std::vector<std::vector<double>> y_field,
+DesiredPattern::DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field,
+                               std::vector<std::vector<double>> y_field,
                                bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling) :
         shape_matrix(std::move(shape_field)),
         x_field_preferred(std::move(x_field)),
@@ -155,55 +157,39 @@ void DesiredPattern::adjustMargins() {
 }
 
 
-coord_d DesiredPattern::getDirector(coord positions) const {
-    while (positions.first < 0) {
-        positions.first = 0;
+coord_d DesiredPattern::getDirector(const coord &positions) const {
+    if (positions.x < 0 || positions.x >= dimensions[0] ||
+        positions.y < 0 || positions.y >= dimensions[1]) {
+        return {0, 0};
     }
-    while (positions.first >= dimensions[0]) {
-        positions.first = dimensions[0] - 1;
-    }
-    while (positions.second < 0) {
-        positions.second = 0;
-    }
-    while (positions.second >= dimensions[1]) {
-        positions.second = dimensions[1] - 1;
-    }
-    return coord_d({x_field_preferred[positions.first][positions.second],
-                 y_field_preferred[positions.first][positions.second]});
+    return coord_d({x_field_preferred[positions.x][positions.y],
+                    y_field_preferred[positions.x][positions.y]});
 }
 
 
 coord_d DesiredPattern::getDirector(const coord_d &positions) const {
-    int x_base = (int) positions.first;
-    int y_base = (int) positions.second;
-    double x_fraction = 1 - (positions.first - floor(positions.first));
-    double y_fraction = 1 - (positions.second - floor(positions.second));
+    int x_base = floor(positions.x);
+    int y_base = floor(positions.y);
+    double x_fraction = 1 - (positions.x - floor(positions.x));
+    double y_fraction = 1 - (positions.y - floor(positions.y));
 
     coord_d director = {0, 0};
-    director = director + x_fraction * y_fraction * getDirector(coord{x_base, y_base});
-    if (x_fraction < 1) {
-        director = director + (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
-    }
-    if (x_fraction < 1 && y_fraction < 1) {
-        director = director + (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
-    }
-    if (y_fraction < 1) {
-        director = director + x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
-    }
+    director += x_fraction * y_fraction * getDirector(coord{x_base, y_base});
+    director += (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
+    director += (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
+    director += x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
 
     return director;
 }
 
 bool DesiredPattern::isInShape(const coord &coordinate) const {
-    return 0 <= coordinate.first && coordinate.first < dimensions[0] &&
-           0 <= coordinate.second && coordinate.second < dimensions[1] &&
-           shape_matrix[coordinate.first][coordinate.second];
+    return 0 <= coordinate.x && coordinate.x < dimensions[0] &&
+           0 <= coordinate.y && coordinate.y < dimensions[1] &&
+           shape_matrix[coordinate.x][coordinate.y];
 }
 
 bool DesiredPattern::isInShape(const coord_d &coordinate) const {
-    return 0 <= coordinate.first && coordinate.first < dimensions[0] &&
-           0 <= coordinate.second && coordinate.second < dimensions[1] &&
-           shape_matrix[coordinate.first][coordinate.second];
+    return isInShape(coord(coordinate));
 }
 
 
@@ -212,12 +198,12 @@ const std::vector<int> &DesiredPattern::getDimensions() const {
 }
 
 
-const std::vector<std::vector<coord>> & DesiredPattern::getPerimeterList() const {
+const std::vector<std::vector<coord>> &DesiredPattern::getPerimeterList() const {
     return perimeter_list;
 }
 
 
-const std::vector<std::vector<uint8_t>> & DesiredPattern::getShapeMatrix() const {
+const std::vector<std::vector<uint8_t>> &DesiredPattern::getShapeMatrix() const {
     return shape_matrix;
 }
 
@@ -232,7 +218,7 @@ const std::vector<vecd> &DesiredPattern::getYFieldPreferred() const {
 }
 
 double DesiredPattern::getSplay(const coord &point) const {
-    return splay_array[point.first][point.second];
+    return splay_array[point.x][point.y];
 }
 
 
@@ -308,18 +294,28 @@ void DesiredPattern::setSplayVector(const std::string &path) {
 
 
 /// Returns vector along the director in the same direction as previous displacement
-coord_d DesiredPattern::getMove(const coord_d &position, double distance, const coord_d &displacement) const {
-    coord coordinates = position;
-    coord_d undirected_move = getDirector(coordinates);
+coord_d DesiredPattern::getMove(const coord_d &position, const coord_d &displacement) const {
+    coord_d undirected_move = getDirector(position);
     if (dot(undirected_move, displacement) >= 0) {
-        return distance * undirected_move;
+        return undirected_move;
     } else {
-        return -distance * undirected_move;
+        return -1.0 * undirected_move;
     }
 }
 
+/// Returns vector along the director in the same direction as previous displacement
+coord_d DesiredPattern::getMove(const coord &position, const coord_d &displacement) const {
+    coord_d undirected_move = getDirector(position);
+    if (dot(undirected_move, displacement) >= 0) {
+        return 1.0 * undirected_move;
+    } else {
+        return -1.0 * undirected_move;
+    }
+}
+
+
 double distance(const coord &first, const coord &second) {
-    return norm(coord{first.first - second.first, first.second - second.second});
+    return norm(first - second);
 }
 
 
@@ -327,28 +323,28 @@ void DesiredPattern::updateIntegralCurveInDirection(coord current_coord, coord_d
                                                     coord_d current_travel_direction) {
 
     auto start = std::chrono::system_clock::now();
-    is_coordinate_used[current_coord.first][current_coord.second] = 0;
+    is_coordinate_used[current_coord.x][current_coord.y] = 0;
 
     while (
             isInShape(current_coord) &&
-            (!is_coordinate_in_curve[current_coord.first][current_coord.second] ||
+            (!is_coordinate_in_curve[current_coord.x][current_coord.y] ||
              (integral_curve_coords.back() == current_coord))
             ) {
-        is_coordinate_in_curve[current_coord.first][current_coord.second] = 1;
+        is_coordinate_in_curve[current_coord.x][current_coord.y] = 1;
         // Avoid doubling the entries.
         if (integral_curve_coords.empty() || current_coord != integral_curve_coords.back()) {
             integral_curve_coords.emplace_back(current_coord);
         }
-        is_coordinate_used[current_coord.first][current_coord.second] = 0;
-        current_travel_direction = getMove(current_position, 1, current_travel_direction);
+        is_coordinate_used[current_coord.x][current_coord.y] = 0;
+        current_travel_direction = getMove(current_position, current_travel_direction);
         current_position = current_position + current_travel_direction;
-        current_coord = current_position;
+        current_coord = coord(current_position);
     }
 }
 
 
 void DesiredPattern::updateIntegralCurve(const coord &starting_coordinate) {
-    coord_d current_position = starting_coordinate;
+    coord_d current_position = to_coord_d(starting_coordinate);
     coord_d current_travel_direction = getDirector(current_position);
 
     coord current_coord = starting_coordinate;
@@ -361,26 +357,26 @@ void DesiredPattern::updateIntegralCurve(const coord &starting_coordinate) {
     updateIntegralCurveInDirection(current_coord, current_position, -1 * current_travel_direction);
 
     for (auto &coord: integral_curve_coords) {
-        is_coordinate_in_curve[coord.first][coord.second] = 0;
+        is_coordinate_in_curve[coord.x][coord.y] = 0;
     }
 }
 
 coord_d DesiredPattern::getSplayVector(const coord &coordinate) {
-    return splay_vector_array[coordinate.first][coordinate.second];
+    return splay_vector_array[coordinate.x][coordinate.y];
 }
 
 /// The magnitude splay in the direction from back to front.
 std::vector<double> DesiredPattern::directedSplayMagnitude(const coord_vector &integral_curve) {
     std::vector<double> directed_splay(integral_curve.size());
 
-    coord_d displacement = integral_curve[0] - integral_curve[1];
+    coord_d displacement = to_coord_d(integral_curve[0] - integral_curve[1]);
 
-    displacement = getMove(integral_curve.front(), 1, displacement);
+    displacement = getMove(integral_curve.front(), displacement);
     coord_d splay = getSplayVector(integral_curve.front());
     directed_splay[0] = dot(splay, displacement);
 
     for (int i = 1; i < integral_curve.size(); i++) {
-        displacement = getMove(integral_curve[i], 1, displacement);
+        displacement = getMove(integral_curve[i], displacement);
         splay = getSplayVector(integral_curve[i]);
 
         directed_splay[i] = dot(displacement, splay);
@@ -396,8 +392,8 @@ bool isLoopedAnywhere(const coord_vector &coordinate_line) {
     }
     coord_set front_set(coordinate_line.begin(), coordinate_line.begin() + 3);
     coord last_coord = coordinate_line.back();
-    int x = coordinate_line.back().first;
-    int y = coordinate_line.back().second;
+    int x = coordinate_line.back().x;
+    int y = coordinate_line.back().y;
     coord_vector neighbours = {
             last_coord + coord{1, 0},
             last_coord + coord{1, 1},
@@ -439,7 +435,7 @@ bool isValidSplayFreeLineEnd(bool is_boundary_last_in_curve, double splay) {
 }
 
 bool DesiredPattern::isBoundary(const coord &coordinate) {
-    coord coord_i = {coordinate.first, coordinate.second};
+    coord coord_i = {coordinate.x, coordinate.y};
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
             coord displacement = {i, j};
@@ -470,7 +466,7 @@ coord_set DesiredPattern::findPointsOfZeroSplay(const coord &starting_coordinate
 
     while (!integral_curve_coords.empty()) {
         coord coordinate = integral_curve_coords.back();
-        is_coordinate_in_curve[coordinate.first][coordinate.second] = 0;
+        is_coordinate_in_curve[coordinate.x][coordinate.y] = 0;
         integral_curve_coords.pop_back();
         if (integral_curve_coords.empty()) { is_last_in_curve = !is_integral_curve_looped; }
         double splay = directed_splay.back();
@@ -537,14 +533,14 @@ void DesiredPattern::initialiseSplaySeeding() {
 }
 
 bool DesiredPattern::isCoordinateViable(const coord &coordinate) {
-    return is_coordinate_used[coordinate.first][coordinate.second];
+    return is_coordinate_used[coordinate.x][coordinate.y];
 }
 
-void exportCoord(const coord_set &vec, const fs::path& output) {
+void exportCoord(const coord_set &vec, const fs::path &output) {
     std::ofstream file(output.string());
     if (file.is_open()) {
         for (auto &el: vec) {
-            file << el.first << "," << el.second << std::endl;
+            file << el.x << "," << el.y << std::endl;
         }
     }
     file.close();
@@ -573,10 +569,10 @@ void DesiredPattern::findLineDensityMinima() {
 
     std::cout << "\rSearch for seeding lines complete." << std::endl;
     solution_set = skeletonize(solution_set, 5, shape_matrix);
-
+//    exportCoord(solution_set, "/home/mlz22/OneDrive/tmp/splay_lines.csv");
     std::vector<coord> line_density_minima_local;
     for (auto &vector: solution_set) {
-        line_density_minima_local.emplace_back(coord{vector.first, vector.second});
+        line_density_minima_local.emplace_back(coord{vector.x, vector.y});
     }
 
     if (line_density_minima_local.empty()) {
@@ -585,7 +581,7 @@ void DesiredPattern::findLineDensityMinima() {
         return;
     }
     std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
-                                                                                          {0, 0}, sqrt(2));
+                                                                                           {0, 0}, sqrt(2));
     if (separated_lines_of_minimal_density.size() > 1) {
         std::cout << " \t" << separated_lines_of_minimal_density.size() << " splay seeding lines found."
                   << std::endl;

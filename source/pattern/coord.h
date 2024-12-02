@@ -27,125 +27,118 @@
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 
-using coord = std::pair<int16_t, int16_t>;
-using coord_d = std::pair<double, double>;
-
-struct pairhash {
+class coord_d {
 public:
-    uint32_t operator()(const std::pair<uint16_t, uint16_t> &x) const {
-        return x.first * 65536 + x.second;
-    }
+    double x;
+    double y;
+
+    coord_d();
+
+    coord_d(double x, double y);
+
+    coord_d operator+(const coord_d &other) const;
+
+    coord_d operator-(const coord_d &other) const;
+
+    void operator+=(const coord_d &other);
+
+    void operator-=(const coord_d &other);
+
+    coord_d operator*(double multiplier) const;
+
+    void operator*=(double multiplier);
+
+    coord_d operator/(double divisor) const;
+
+    void operator/=(double divisor);
+
+    bool operator==(const coord_d &other) const;
+
+    [[nodiscard]] double norm() const;
+
+    [[nodiscard]] coord_d normalized() const;
+
+    void normalize();
 };
-
-using coord_set = std::unordered_set<coord, pairhash>;
-using coord_sequence = std::set<coord>;
-using coord_vector = std::vector<coord>;
-
-inline coord operator+(const coord &lhs, const coord &rhs) {
-    return {lhs.first + rhs.first, lhs.second + rhs.second};
-}
-
-inline void operator+=(coord &lhs, const coord &rhs) {
-    lhs = lhs + rhs;
-}
-
-inline coord operator-(const coord &lhs, const coord &rhs) {
-    return {lhs.first - rhs.first, lhs.second - rhs.second};
-}
-
-inline void operator-=(coord &lhs, const coord &rhs) {
-    lhs = lhs - rhs;
-}
-
-//inline coord operator*(const coord &lhs, int multiplier) {
-//    return {lhs.first * multiplier, lhs.second * multiplier};
-//}
-//
-//inline void operator*=(coord &lhs, int multiplier) {
-//    lhs = lhs * multiplier;
-//}
-//
-//inline coord operator/(const coord &lhs, int divisor) {
-//    return {lhs.first / divisor, lhs.second / divisor};
-//}
-//
-//inline void operator/=(coord &lhs, int divisor) {
-//    lhs = lhs / divisor;
-//}
-
-inline coord_d operator*(const coord &lhs, double multiplier) {
-    return {(double)lhs.first * multiplier, (double)lhs.second * multiplier};
-}
-
-inline coord_d operator/(const coord &lhs, double divisor) {
-    return lhs * (1 / divisor);
-}
-
-
-inline coord_d operator+(const coord_d &lhs, const coord_d &rhs) {
-    return {lhs.first + rhs.first, lhs.second + rhs.second};
-}
-
-inline void operator+=(coord_d &lhs, const coord_d &rhs) {
-    lhs = lhs + rhs;
-}
-
-inline coord_d operator-(const coord_d &lhs, const coord_d &rhs) {
-    return {lhs.first - rhs.first, lhs.second - rhs.second};
-}
-
-inline void operator-=(coord_d &lhs, const coord_d &rhs) {
-    lhs = lhs - rhs;
-}
-
-inline coord_d operator*(const coord_d &lhs, double multiplier) {
-    return {lhs.first * multiplier, lhs.second * multiplier};
-}
-
-inline coord_d operator*(double multiplier, const coord_d &lhs) {
-    return {lhs.first * multiplier, lhs.second * multiplier};
-}
-
-inline void operator*=(coord_d &lhs, double multiplier) {
-    lhs = lhs * multiplier;
-}
-
-inline coord_d operator/(const coord_d &lhs, double divisor) {
-    return lhs * (1 / divisor);
-}
-
-inline void operator/=(coord_d &lhs, double divisor) {
-    lhs = lhs / divisor;
-}
-
-double norm(const coord_d &point);
-
-double norm(const coord &point);
-
-void normalize(coord_d &point);
-
-coord_d normalized(const coord_d &point);
-
-coord_d normalized(const coord &point);
 
 double dot(const coord_d &lhs, const coord_d &rhs);
 
-double dot(const coord &lhs, const coord &rhs);
-
 double cross(const coord_d &lhs, const coord_d &rhs);
+
+coord_d perpendicular(const coord_d &point);
+
+class coord {
+public:
+    short x;
+    short y;
+
+    coord();
+
+    coord(short x, short y);
+
+    coord(int x, int y);
+
+    explicit coord(const coord_d &other);
+
+    coord operator+(const coord &other) const;
+
+    coord operator-(const coord &other) const;
+
+    void operator+=(const coord &other);
+
+    void operator-=(const coord &other);
+
+    coord operator*(int multiplier) const;
+
+    coord_d operator*(double multiplier) const;
+
+    void operator*=(int multiplier);
+
+    bool operator==(const coord &other) const;
+
+    bool operator!=(const coord &other) const;
+
+    coord_d operator+(const coord_d &other) const;
+
+    coord_d operator-(const coord_d &other) const;
+
+    [[nodiscard]] double norm() const;
+
+    coord_d normalized() const;
+
+};
+
+double dot(const coord &lhs, const coord &rhs);
 
 double cross(const coord &lhs, const coord &rhs);
 
 coord perpendicular(const coord &point);
 
-coord_d perpendicular(const coord_d &point);
+inline double norm(const coord &pt) { return pt.norm(); }
 
-inline bool operator==(const coord &lhs, const coord &rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
-}
+inline coord_d normalized(const coord &pt) { return pt.normalized(); }
 
-inline bool operator==(const coord_d &lhs, const coord_d &rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+inline double norm(const coord_d &pt) { return pt.norm(); }
+
+inline coord_d normalized(const coord_d &pt) { return pt.normalized(); }
+
+struct coord_hash {
+public:
+    unsigned int operator()(const coord &x) const {
+        return ((int) x.x + 32768) * 65536 + ((int)x.y + 32768);
+    }
+};
+
+using coord_set = std::unordered_set<coord, coord_hash>;
+using coord_sequence = std::set<coord>;
+using coord_vector = std::vector<coord>;
+
+coord_d to_coord_d(const coord &other);
+
+inline coord_d operator*(double multiplier, const coord_d &pt) { return pt * multiplier; }
+
+inline coord_d operator+(coord_d second, const coord &first) {
+    return {(double)first.x + second.x, (double)first.y + second.y};
 }
 
 #endif //VECTOR_SLICER_COORD_H

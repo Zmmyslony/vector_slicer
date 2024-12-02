@@ -241,7 +241,8 @@ std::vector<Path> sort_paths(const FilledPattern &pattern, coord &start) {
     }
 
     // Update for use in next layer.
-    start = sorted_paths.back().endPoint();
+    // TODO Fix the use of coord_d in both sorting methods.
+    start = coord(sorted_paths.back().endPoint());
     return sorted_paths;
 }
 
@@ -250,7 +251,7 @@ std::vector<std::vector<coord>> extract_coordinates(const std::vector<Path> &pat
     std::vector<std::vector<coord>> position_sequences;
     position_sequences.reserve(paths.size());
     for (auto &path: paths) {
-        position_sequences.emplace_back(path.getPositionSequence());
+        position_sequences.emplace_back(path.getCoordinateSequence());
     }
     return position_sequences;
 }
@@ -280,13 +281,13 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     fs::path overlap_directory = createCsvPath(OVERLAP_EXPORT_PATH, pattern_name);
     fs::path seed_directory = createCsvPath(SEED_EXPORT_PATH, pattern_name);
     fs::path bucketed_disagreement = createCsvPath(DISAGREEMENT_BUCKETS_PATH, pattern_name);
-    fs::path sampled_densities = createCsvPath(SAMPLED_DENSITY, pattern_name);
+//    fs::path sampled_densities = createCsvPath(SAMPLED_DENSITY, pattern_name);
 
     std::vector<pattern> sorted_patterns;
     std::vector<std::vector<std::vector<double>>> sorted_overlaps;
-    double print_diameter = 0;
+    double print_diameter = patterns[0].getFilledPattern().getPrintRadius() * 2;
     int number_of_layers = patterns[0].getNumberOfLayers();
-    exportRowToFile(patterns[0].sampleFillDensities(1000, patterns[0].getConfig().getPrintRadius() * 9), sampled_densities);
+
     coord starting_coordinates = {0, 0};
     for (int i = 0; i < number_of_layers; i++) {
         FilledPattern pattern = patterns[i].getFilledPattern();
@@ -295,7 +296,6 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 
         sorted_patterns.emplace_back(extract_coordinates(sorted_paths));
         sorted_overlaps.emplace_back(extract_overlap(sorted_paths));
-        print_diameter = pattern.getPrintRadius() * 2;
     }
 
     exportConfigList(patterns, best_config_directory, number_of_layers);

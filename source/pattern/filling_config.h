@@ -109,6 +109,8 @@ public:
     [[nodiscard]] int getStepLength() const;
 
     std::string getConfigOption(configOptions option);
+
+    void setSeed(int seed_value);
 };
 
 configOptions stringToConfig(const std::string &string_option);

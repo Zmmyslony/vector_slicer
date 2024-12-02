@@ -46,7 +46,7 @@ class DesiredPattern {
     std::vector<int> dimensions;
     /// Each element is one continuous edge of the pattern
     std::vector<std::vector<coord>> perimeter_list;
-    std::vector<std::vector<u_int8_t>> shape_matrix;
+    std::vector<std::vector<uint8_t>> shape_matrix;
     std::vector<std::vector<coord_d>> splay_vector_array;
     std::vector<std::vector<double>> x_field_preferred;
     std::vector<std::vector<double>> y_field_preferred;
@@ -89,13 +89,14 @@ class DesiredPattern {
     void adjustMargins();
 
 
-    [[nodiscard]] coord_d getMove(const coord_d &position, double distance, const coord_d &displacement) const;
+    [[nodiscard]] coord_d getMove(const coord_d &position, const coord_d &displacement) const;
 
     void updateIntegralCurve(const coord &starting_coordinate);
 
     void updateIntegralCurveInDirection(coord current_coord, coord_d current_position,
                                         coord_d current_travel_direction);
 
+    coord_d getMove(const coord &position, const coord_d &displacement) const;
 
     coord_d getSplayVector(const coord &coordinate);
 
@@ -118,10 +119,11 @@ public:
     DesiredPattern(const std::string &shape_filename, const std::string &theta_field_filename,
                    bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
-    DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field, std::vector<std::vector<double>> y_field,
+    DesiredPattern(std::vector<std::vector<uint8_t>> shape_field, std::vector<std::vector<double>> x_field,
+                   std::vector<std::vector<double>> y_field,
                    bool is_splay_filling_enabled, int threads, const FillingMethodConfig &filling);
 
-    [[nodiscard]] const std::vector<std::vector<uint8_t>> & getShapeMatrix() const;
+    [[nodiscard]] const std::vector<std::vector<uint8_t>> &getShapeMatrix() const;
 
     [[nodiscard]] const std::vector<vecd> &getXFieldPreferred() const;
 
@@ -131,7 +133,7 @@ public:
 
     [[nodiscard]] const std::vector<std::vector<coord>> &getSplaySortedEmptySpots() const;
 
-    [[nodiscard]] const std::vector<std::vector<coord>> & getPerimeterList() const;
+    [[nodiscard]] const std::vector<std::vector<coord>> &getPerimeterList() const;
 
     [[nodiscard]] double getSplay(const coord &point) const;
 
@@ -139,7 +141,7 @@ public:
 
     [[nodiscard]] bool isVectorSorted() const;
 
-    [[nodiscard]] coord_d getDirector(coord positions) const;
+    [[nodiscard]] coord_d getDirector(const coord &positions) const;
 
     [[nodiscard]] coord_d getDirector(const coord_d &positions) const;
 

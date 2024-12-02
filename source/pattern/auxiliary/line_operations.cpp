@@ -133,8 +133,8 @@ std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeter
 
 /// Creates pixel representation of a line - Bresenham's line algorithm. Works only when dx >= dy and dx > 0.
 std::vector<coord> pixeliseLineBase(const coord_d &line) {
-    int dx = line.first;
-    int dy = line.second;
+    int dx = line.x;
+    int dy = line.y;
     int yi = 1;
     if (dy < 0) {
         yi = -1;
@@ -160,21 +160,21 @@ std::vector<coord> pixeliseLineBase(const coord_d &line) {
 
 std::vector<coord> x_y_swap(std::vector<coord> vec) {
     for (int i = 0; i < vec.size(); i++) {
-        std::swap(vec[i].first, vec[i].second);
+        std::swap(vec[i].x, vec[i].y);
     }
     return vec;
 }
 
 std::vector<coord> x_invert_sign(std::vector<coord> vec) {
     for (int i = 0; i < vec.size(); i++) {
-        vec[i].first *= -1;
+        vec[i].x *= -1;
     }
     return vec;
 }
 
 std::vector<coord> pixeliseLine(const coord_d &line) {
-    double dx = line.first;
-    double dy = line.second;
+    double dx = line.x;
+    double dy = line.y;
     if (fabs(dx) >= fabs(dy)) {
         if (dx >= 0) {
             return pixeliseLineBase(line);

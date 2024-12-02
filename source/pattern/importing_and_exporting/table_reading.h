@@ -35,7 +35,7 @@ std::vector<std::vector<uint8_t>> readFileToTableInt(const std::string &filename
 
 std::vector<int> getTableDimensions(std::string &filename);
 
-std::vector<int> getTableDimensions(const std::vector<std::vector<u_int8_t>> &table);
+std::vector<int> getTableDimensions(const std::vector<std::vector<uint8_t>> &table);
 
 std::vector<std::vector<coord_d>> readFileToTableDoubleVector(const std::string &filename);
 

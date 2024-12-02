@@ -121,7 +121,7 @@ std::vector<int> getTableDimensions(std::string &filename) {
 }
 
 
-std::vector<int> getTableDimensions(const std::vector<std::vector<u_int8_t>> &table) {
+std::vector<int> getTableDimensions(const std::vector<std::vector<uint8_t>> &table) {
     std::vector<int> size;
     size = {(int) table.size(), (int) table[0].size()};
     return size;

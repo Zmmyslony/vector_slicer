@@ -10,4 +10,4 @@
 
     example_three_charge_field
     three_charge_field
-radial_5_mm
+azimuthal_10_mm

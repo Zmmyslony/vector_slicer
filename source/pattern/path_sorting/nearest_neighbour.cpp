@@ -29,7 +29,7 @@ std::vector<Path> nearestNeighbourSort(const FilledPattern &pattern, const coord
     bool is_vector_sorted = pattern.desired_pattern.get().isVectorSorted();
     std::vector<Path> unsorted_paths = pattern.getSequenceOfPaths();
     std::vector<Path> sorted_paths;
-    coord previous_end = starting_coordinates;
+    coord_d previous_end = to_coord_d(starting_coordinates);
     int j = 0;
     while (!unsorted_paths.empty()) {
         int i_nearest = 0;

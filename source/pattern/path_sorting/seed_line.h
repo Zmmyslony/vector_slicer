@@ -42,7 +42,7 @@ public:
     SeedLine(const std::vector<Path> &unsorted_seed_pairs, double distance_threshold);
 
     /// Returns last coordinate of the last path (taking into the account ordering) within a seed line.
-    coord endPoint() const;
+    coord_d endPoint() const;
 
     /// Calculates the closest distance between the line and a point.
     double distance(const coord &point, bool is_vector_sorted);

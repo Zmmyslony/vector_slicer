@@ -33,54 +33,56 @@ using vecd = std::vector<double>;
 class Path {
     SeedPoint seed_point;
     std::vector<double> overlap;
-    std::vector<coord> sequence_of_positions;
+    std::vector<coord_d> sequence_of_positions;
     std::vector<coord_d> positive_path_edge;
     std::vector<coord_d> negative_path_edge;
 
     bool is_reversed = false;
     /// Distance between the point and the start of the path.
-    double vectorDistance(const coord &point) const;
+    double vectorDistance(const coord_d &point) const;
     /// Shorter distance between the point and the start of the path, which reverses the path when needed.
-    double tensorDistance(const coord &point);
+    double tensorDistance(const coord_d &point);
 public:
 
     explicit Path(SeedPoint seed, double print_radius);
 
     Path(const Path& forward_path, const Path& backward_path);
 
-    void addPoint(const coord &positions, double segment_overlap, const coord_d &positive_edge, const coord_d &negative_edge);
+    void addPoint(const coord_d &positions, double segment_overlap, const coord_d &positive_edge, const coord_d &negative_edge);
 
-    void addPoint(const coord &positions, const coord_d &positive_edge, const coord_d &negative_edge);
+    void addPoint(const coord_d &positions, const coord_d &positive_edge, const coord_d &negative_edge);
 
     const std::vector<coord_d> & getPositivePathEdge() const;
 
     const std::vector<coord_d> & getNegativePathEdge() const;
 
-    [[nodiscard]] coord first() const ;
+    [[nodiscard]] coord_d first() const ;
 
-    [[nodiscard]] coord last() const ;
+    [[nodiscard]] coord_d last() const ;
 
     [[nodiscard]] unsigned int size() const;
 
-    [[nodiscard]] coord secondToLast() const;
+    [[nodiscard]] coord_d secondToLast() const;
 
-    [[nodiscard]] coord second() const;
+    [[nodiscard]] coord_d second() const;
 
     double getLength();
 
     const SeedPoint &getSeedPoint() const;
 
     /// Vector or tensor distance
-    double distance(const coord &point, bool is_vector_filled);
+    double distance(const coord_d &point, bool is_vector_filled);
 
     /// Last point taking into account the directionality
-    [[nodiscard]] coord endPoint() const;
+    [[nodiscard]] coord_d endPoint() const;
 
     /// Returns sequence of positions in forward or backward order depending on isReversed
-    std::vector<coord> getPositionSequence() const;
+    std::vector<coord_d> getPositionSequence() const;
+
+    std::vector<coord> getCoordinateSequence() const;
 
     /// Return position at index
-    coord position(unsigned int index);
+    coord_d position(unsigned int index);
 
     std::vector<double> getOverlap() const;
 

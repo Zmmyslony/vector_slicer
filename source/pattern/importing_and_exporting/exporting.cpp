@@ -114,9 +114,9 @@ std::vector<std::vector<int>> indexTable(const std::vector<std::vector<coord>> &
         new_row.reserve(row.size());
         for (auto &element: row) {
             if (index == 0) {
-                new_row.push_back(element.first);
+                new_row.push_back(element.x);
             } else if (index == 1) {
-                new_row.push_back(element.second);
+                new_row.push_back(element.y);
             }
         }
         table.push_back(new_row);
@@ -279,7 +279,7 @@ void exportCoordVector(const coord_vector &vector, const fs::path &filename) {
     std::ofstream file(filename.string());
     if (file.is_open()) {
         for (auto &coord: vector) {
-            file << coord.first << "," << coord.second << std::endl;
+            file << coord.x << "," << coord.y << std::endl;
         }
     }
     file.close();

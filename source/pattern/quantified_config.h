@@ -33,8 +33,6 @@
 
 typedef boost::numeric::ublas::vector<double> vectord;
 
-using coord_d = std::pair<double, double>;
-
 /// Class quantifying how given FillingConfig works for a number of seeds
 class QuantifiedConfig : FilledPattern, public Simulation {
     double empty_spots = 0;
