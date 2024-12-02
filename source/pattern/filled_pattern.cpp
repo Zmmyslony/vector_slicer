@@ -356,9 +356,8 @@ coord_d FilledPattern::getDirector(const coord &coordinates) const {
 
 coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_move, int &length) const {
     coord_d new_move = getDirector(real_coordinates) * length;
-    double is_opposite_to_previous_step = dot(new_move, previous_move);
 
-    if (is_opposite_to_previous_step >= 0) {
+    if (dot(new_move, previous_move) >= 0) {
         return new_move;
     } else {
         return -1 * new_move;
@@ -401,7 +400,8 @@ bool FilledPattern::isInRange(const coord_d &index) const {
 bool FilledPattern::isDirectorContinuous(const coord_d &previous_coordinates, const coord_d &new_coordinates) const {
     coord_d previous_director = getDirector(previous_coordinates);
     coord_d new_director = getDirector(new_coordinates);
-    double product = dot(previous_director, new_director) / (norm(previous_director) * norm(new_director));
+    double product = dot(previous_director, new_director);
+
     if (!desired_pattern.get().isVectorFilled()) { product = fabs(product); }
 
     return product >= desired_pattern.get().getDiscontinuityThresholdCos();
@@ -413,34 +413,34 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
 
     // Try creating the longest possible step
     coord_d new_positions = INVALID_POSITION;
-    coord_d potential_positions = INVALID_POSITION;
     /// Keeps last valid position, even if it is discontinuous.
-    coord_d previous_positions = INVALID_POSITION;
-
+    coord_d last_discontinuous_positions = INVALID_POSITION;
+    int final_length = 0;
     while (--length > 1 && !isValid(new_positions)) {
-        previous_positions = potential_positions;
-        potential_positions = calculateNextPosition(positions, previous_step, length);
+        final_length = length;
+        new_positions = calculateNextPosition(positions, previous_step, length);
 
-        if (isInRange(potential_positions)) {
+        if (isInRange(new_positions)) {
             switch (desired_pattern.get().getDiscontinuityBehaviour()) {
 
                 case DISCONTINUITY_IGNORE:
-                    new_positions = potential_positions;
                     break;
                 case DISCONTINUITY_STICK:
-                    if (isDirectorContinuous(positions, potential_positions)) {
-                        if (isValid(previous_positions)) {
-                            new_positions = previous_positions;
-                        } else {
-                            new_positions = potential_positions;
+                    if (isDirectorContinuous(positions, new_positions)) {
+                        if (isValid(last_discontinuous_positions)) {
+                            new_positions = last_discontinuous_positions;
                         }
+                        break;
+                    } else {
+                        last_discontinuous_positions = new_positions;
+                        new_positions = INVALID_POSITION;
                     }
-                    break;
                 case DISCONTINUITY_TERMINATE:
-                    if (isDirectorContinuous(positions, potential_positions)) {
-                        new_positions = potential_positions;
+                    if (isDirectorContinuous(positions, new_positions)) {
+                        break;
+                    } else {
+                        new_positions = INVALID_POSITION;
                     }
-                    break;
             }
         }
     }
@@ -512,16 +512,19 @@ Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, con
     coord_d current_positions = to_coord_d(seed_point.getCoordinates());
     coord_d current_step = starting_step;
 
-    while (propagatePath(path, current_positions, current_step, getStepLength())) {}
+    bool is_previous_propagation_successful = true;
+    while (is_previous_propagation_successful) {
+        is_previous_propagation_successful = propagatePath(path, current_positions, current_step, getStepLength());
+    }
 
     return path;
 }
 
 
 Path FilledPattern::generateNewPath(const SeedPoint &seed_point) {
-    coord_d starting_step = getDirector(seed_point.getCoordinates());
+    const coord_d starting_step = getDirector(seed_point.getCoordinates());
     Path forward_path = generateNewPathForDirection(seed_point, starting_step);
-    Path backward_path = generateNewPathForDirection(seed_point, -1 * starting_step);
+    Path backward_path = generateNewPathForDirection(seed_point, (-1) * starting_step);
 
     return {forward_path, backward_path};
 }
