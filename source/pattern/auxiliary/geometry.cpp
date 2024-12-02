@@ -45,7 +45,7 @@ bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const c
                   bool is_exclusive) {
     double cross_product =
             (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y) -
-            (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y);
+            (edge_point_second.y - edge_point_first.y) * (point.x - edge_point_first.x);
 
     if (is_exclusive) {
         return cross_product > 0;
@@ -95,17 +95,16 @@ std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second,
     int y_min = (int) minValue(y_coordinates);
     int y_max = (int) maxValue(y_coordinates) + 1;
 
-    coord_d midpoint_first = (corner_second + corner_first) / 2;
-    coord_d midpoint_second = (corner_third + corner_fourth) / 2;
+    coord_d centre_point = (corner_first + corner_second + corner_third + corner_fourth) / 4;
 
-    // Error 1: Edge 3-4 is flipped - swap corners 3 & 4.
-    if (!isLeftOfEdge(midpoint_first, corner_third, corner_fourth, false)) {
-        std::swap(corner_third, corner_fourth);
+    // Error 1: Edge 1-2 is flipped - swap corners 1 & 2.
+    if (!isLeftOfEdge(centre_point, corner_first, corner_second, false)) {
+        std::swap(corner_first, corner_second);
     }
 
-    // Error 2: Edge 1-2 is flipped - swap corners 1 & 2.
-    if (!isLeftOfEdge(midpoint_second, corner_first, corner_second, false)) {
-        std::swap(corner_first, corner_second);
+    // Error 2: Edge 3-4 is flipped - swap corners 3 & 4.
+    if (!isLeftOfEdge(centre_point, corner_third, corner_fourth, false)) {
+        std::swap(corner_third, corner_fourth);
     }
 
     // Error 3: Corner 4 is right of 1-2 - replace 4 with midpoint between 1 and 3
