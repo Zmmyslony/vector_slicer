@@ -157,7 +157,7 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
 
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
-            if (isFilled(coord{i, j})) {
+            if (number_of_times_filled[i][j] > 0) {
                 director_agreement += localDirectorAgreement(i, j);
                 number_of_filled_elements++;
             }
