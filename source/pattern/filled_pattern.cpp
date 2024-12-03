@@ -121,6 +121,8 @@ void FilledPattern::setup() {
     random_engine = std::mt19937(getSeed());
     print_circle = findPointsInDisk(getPrintRadius());
     collision_list = circleDisplacements(getTerminationRadius());
+    // Insert a trivial displacement at the front to check if the current coordinate is free during the collision tests.
+    collision_list.emplace(collision_list.begin(), 0, 0);
 
     switch (getInitialSeedingMethod()) {
         case Splay:
@@ -183,7 +185,7 @@ std::vector<unsigned int> FilledPattern::findOverlappingSeedLines() {
     std::vector<unsigned int> overlapping_indices;
     for (int i = 0; i < seed_lines.size(); i++) {
         for (auto &coordinate: seed_lines[i]) {
-            if (isFilled(coordinate)) {
+            if (!isFillable(coordinate)) {
                 overlapping_indices.emplace_back(i);
                 break;
             }
@@ -220,7 +222,7 @@ FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &
 std::vector<SeedPoint> FilledPattern::getSpacedLineOverlapping(const std::vector<coord> &line, int line_index) {
     std::vector<int> i_overlapping;
     for (int i = 0; i < line.size(); i++) {
-        if (isFilled(line[i])) {
+        if (!isFillable(line[i])) {
             i_overlapping.emplace_back(i);
         }
     }
@@ -276,7 +278,7 @@ void FilledPattern::updateSeedPoints() {
 coord FilledPattern::findRemainingRootPoint() {
     while (isFillablePointLeft()) {
         coord test_point = getFillablePoint();
-        if (isFillable(test_point)) {
+        if (!isTerminable(test_point)) {
             return test_point;
         }
     }
@@ -415,18 +417,17 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     coord_d new_positions = INVALID_POSITION;
     /// Keeps last valid position, even if it is discontinuous.
     coord_d last_discontinuous_positions = INVALID_POSITION;
-    int final_length = 0;
+
     while (--length > 1 && !isValid(new_positions)) {
-        final_length = length;
         new_positions = calculateNextPosition(positions, previous_step, length);
 
         if (isInRange(new_positions)) {
+            bool is_director_continuous = isDirectorContinuous(positions, new_positions);
             switch (desired_pattern.get().getDiscontinuityBehaviour()) {
-
                 case DISCONTINUITY_IGNORE:
                     break;
                 case DISCONTINUITY_STICK:
-                    if (isDirectorContinuous(positions, new_positions)) {
+                    if (is_director_continuous) {
                         if (isValid(last_discontinuous_positions)) {
                             new_positions = last_discontinuous_positions;
                         }
@@ -436,7 +437,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
                         new_positions = INVALID_POSITION;
                     }
                 case DISCONTINUITY_TERMINATE:
-                    if (isDirectorContinuous(positions, new_positions)) {
+                    if (is_director_continuous) {
                         break;
                     } else {
                         new_positions = INVALID_POSITION;
@@ -450,7 +451,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     }
 
     previous_step = new_positions - positions;
-    if (norm(previous_step) < 2) {
+    if (norm(previous_step) < 1) {
         return false;
     }
 
@@ -458,7 +459,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
-    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(isFilled(positions));
+    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(!isFillable(positions));
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
@@ -549,7 +550,7 @@ void FilledPattern::removeLine(Path path) {
     std::vector<coord> current_points_to_fill;
     coord_d current_coordinates = path.position(1);
     coord_d previous_coordinates = path.position(0);
-    current_points_to_fill = path.findPointsToFill(1, !isFilled(previous_coordinates));
+    current_points_to_fill = path.findPointsToFill(1, isFillable(previous_coordinates));
 
     coord_d new_step = current_coordinates - previous_coordinates;
     fillPointsFromList(current_points_to_fill, new_step, -1);
@@ -558,7 +559,7 @@ void FilledPattern::removeLine(Path path) {
         current_coordinates = path.position(i);
         previous_coordinates = path.position(i - 1);
         coord_d second_previous_coordinates = path.position(i - 2);
-        current_points_to_fill = path.findPointsToFill(i, !isFilled(previous_coordinates));
+        current_points_to_fill = path.findPointsToFill(i, isFillable(previous_coordinates));
 
         new_step = current_coordinates - previous_coordinates;
         fillPointsFromList(current_points_to_fill, new_step, -1);
@@ -612,7 +613,7 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
 
     std::vector<coord> half_circle_points = findHalfCircleEdges(last_coordinate, corner_first, corner_second,
                                                                 getPrintRadius(),
-                                                                isFilled(last_coordinate),
+                                                                !isFillable(last_coordinate),
                                                                 last_move_direction);
     fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
@@ -644,7 +645,7 @@ FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector 
     coord_d position = to_coord_d(current_coord);
 
     while (
-            isFillable(current_coord) &&
+            !isTerminable(current_coord) &&
             (line_elements.find(current_coord) == line_elements.end() ||
              (line.back() == current_coord))
             ) {
@@ -704,8 +705,7 @@ void FilledPattern::tryAddingPointToSpacedLine(const coord &current_position, co
                                                std::vector<SeedPoint> &separated_starting_points, int line_index,
                                                int point_index) {
     double current_distance = distance(current_position, previous_position);
-    if (!isInRange(current_position) ||
-        isFilled(current_position)) {
+    if (!isFillable(current_position)) {
         is_filled_coordinate_encountered = true;
         previous_position = current_position;
     } else if (!is_filled_coordinate_encountered && current_distance >= separation ||
@@ -750,51 +750,40 @@ FilledPattern::getSpacedLine(const std::vector<coord> &line, int line_index, int
     return separated_starting_points;
 }
 
-
-bool FilledPattern::isFilled(const coord &coordinates) const {
-    if (desired_pattern.get().isInShape(coordinates)) {
-        return number_of_times_filled[coordinates.x][coordinates.y];
-    } else {
-        return true;
-    }
-}
-
-bool FilledPattern::isFilled(const coord_d &coordinates) const {
-    if (desired_pattern.get().isInShape(coordinates)) {
-        return number_of_times_filled[lround(coordinates.x)][lround(coordinates.y)];
-    } else {
-        return true;
-    }
-}
-
-
-bool FilledPattern::isFillable(const coord &point) const {
-    return desired_pattern.get().isInShape(point) &&
-           !isFilled(point) &&
-           isPerimeterFree(number_of_times_filled, desired_pattern.get().getShapeMatrix(),
-                           collision_list, point, desired_pattern.get().getDimensions());
+/// Tests if the coordinate is within the pattern and unfilled.
+bool FilledPattern::isFillable(const coord &coordinate) const {
+    return desired_pattern.get().isInShape(coordinate) && number_of_times_filled[coordinate.x][coordinate.y] == 0;
 }
 
 /// Tests if the coordinate is within the pattern and unfilled.
-bool FilledPattern::isFree(const coord &coordinate) const {
-    return desired_pattern.get().isInShape(coordinate) && !isFilled(coordinate);
+bool FilledPattern::isFillable(const coord_d &coordinate) const {
+    return isFillable(coord(coordinate));
 }
 
-/// Tests if the coordinate is within the pattern and unfilled.
-bool FilledPattern::isFree(const coord_d &coordinate) const {
-    return desired_pattern.get().isInShape(coordinate) && !isFilled(coordinate);
+bool FilledPattern::isFilled(const coord &coordinate) const {
+    return isInRange(coordinate) && number_of_times_filled[coordinate.x][coordinate.y];
+}
+
+
+bool FilledPattern::isTerminable(const coord &point) const {
+    for (const coord &displacement : collision_list) {
+        if (!isFillable(displacement + point)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direction) {
     if (getTerminationRadius() <= 0) {
-        return !isFree(coordinate);
+        return !isFillable(coordinate);
     }
     coord_d tangent = normalized(direction) * getTerminationRadius();
     coord_d normal = perpendicular(tangent);
 
     for (auto &displacement: collision_list) {
         if (isLeftOfEdge(displacement, normal, -1 * normal, true) &&
-            !isFree(coordinate + to_coord_d(displacement))) {
+            !isFillable(coordinate + to_coord_d(displacement))) {
             return true;
         }
     }

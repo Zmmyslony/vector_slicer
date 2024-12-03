@@ -91,7 +91,7 @@ class FilledPattern : public FillingConfig {
 /// Removes a selected path and removes the points which were filled while creating the path
     void removeLine(Path path);
 
-    [[nodiscard]] bool isFillable(const coord &point) const;
+    [[nodiscard]] bool isTerminable(const coord &point) const;
 
     [[nodiscard]] bool isFillablePointLeft() const;
 
@@ -127,7 +127,7 @@ class FilledPattern : public FillingConfig {
 
     coord_d getDirector(const coord &coordinates) const;
 
-    bool isFree(const coord &coordinate) const;
+    bool isFillable(const coord &coordinate) const;
 
     bool isTerminable(const coord_d &coordinate, const coord_d &direction);
 
@@ -143,8 +143,6 @@ class FilledPattern : public FillingConfig {
 
     void extendSeedLines();
 
-protected:
-    [[nodiscard]] bool isFilled(const coord &coordinates) const;
 
 public:
 
@@ -197,9 +195,8 @@ public:
 
     void fillPointsInHalfCircle(const Path &path, int value, bool is_front);
 
-    bool isFilled(const coord_d &coordinates) const;
 
-    bool isFree(const coord_d &coordinate) const;
+    bool isFillable(const coord_d &coordinate) const;
 
     void
     fillPointsFromDisplacementNonAligned(const coord &starting_position,
@@ -209,6 +206,8 @@ public:
     void fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value);
 
     bool isInRange(const coord_d &index) const;
+
+    bool isFilled(const coord &coordinate) const;
 };
 
 
