@@ -132,7 +132,7 @@ double QuantifiedConfig::localDirectorAgreement(int i, int j) {
     if (isnan(director_agreement)) {
         return 0;
     }
-#ifdef DISGAREEMENT_ANGULAR
+#ifdef DISAGREEMENT_ANGULAR
         insertIntoBucket(director_agreement);
 #endif
     return director_agreement;
@@ -164,7 +164,7 @@ double QuantifiedConfig::calculateDirectorDisagreement() {
         }
     }
     if (number_of_filled_elements > 0) {
-#ifdef DISGAREEMENT_ANGULAR
+#ifdef DISAGREEMENT_ANGULAR
         average_angular_director_disagreement =
                 total_angular_director_disagreement / (double) number_of_filled_elements;
 #endif
@@ -231,7 +231,7 @@ void QuantifiedConfig::printDisagreement() const {
            << overlap_ratio << std::endl;
     stream << "\tDirector\t" << average_director_disagreement << "\t" << director_disagreement
            << "\t" << director_ratio << std::endl;
-#ifdef DISGAREEMENT_ANGULAR
+#ifdef DISAGREEMENT_ANGULAR
     stream << "\tAngle disagreement\t" << average_angular_director_disagreement * 180 / M_PI << "°" << std::endl;
 #endif
     stream << "\n\tPaths\t" << paths_number << std::endl;
