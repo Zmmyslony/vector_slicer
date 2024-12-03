@@ -68,7 +68,7 @@ class FillingConfig {
     /// Legacy. Additional radius away from the print_radius that ought to be checked for other filled points.
     double repulsion_radius = 0;
     /// Maximal angle away from the preferred that a line can be repulsed before termination.
-    double repulsion_angle = M_PI;
+    double repulsion_angle = M_PI / 2;
 
     double repulsion_angle_cosine = 0;
 

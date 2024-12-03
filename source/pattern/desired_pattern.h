@@ -170,6 +170,8 @@ public:
     [[nodiscard]] bool isPointsRemoved() const;
 
     bool isInShape(const coord_d &coordinate) const;
+
+    bool isInRange(const coord &coordinate) const;
 };
 
 

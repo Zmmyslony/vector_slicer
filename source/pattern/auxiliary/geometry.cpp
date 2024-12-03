@@ -139,7 +139,6 @@ coord_d normalisedResultant(const coord_d &primary_vector, const coord_d &second
         resultant = normalized(normalized(primary_vector) + normalized(secondary_vector));
     }
     double projection = dot(resultant, normalized(primary_vector));
-
     return resultant / projection;
 }
 
@@ -172,23 +171,20 @@ findHalfCircleCentres(const coord &last_point, const coord &previous_point, doub
 std::vector<coord>
 findHalfCircleEdges(const coord_d &centre_position, coord_d corner_one, coord_d corner_two, double radius,
                     bool is_last_point_filled, const coord_d &last_move_direction) {
-    coord_d normal = perpendicular(last_move_direction);
-    corner_one -= centre_position;
-    corner_two -= centre_position;
-
-    if (dot(normal, corner_one) < 0) { std::swap(corner_one, corner_two); }
+    if (!isLeftOfEdge(centre_position + last_move_direction, corner_one, corner_two, false)) { std::swap(corner_one, corner_two); }
 
     std::vector<coord> points_to_fill;
     int range = (int) radius + 1;
-    coord displacement;
+    auto centre = coord(centre_position);
+    coord position;
     for (int x_displacement = -range; x_displacement <= range; x_displacement++) {
         for (int y_displacement = -range; y_displacement <= range; y_displacement++) {
-            displacement = {x_displacement, y_displacement};
-            bool is_on_correct_side = isLeftOfEdge(displacement, corner_one, corner_two,
+            position = centre + coord{x_displacement, y_displacement};
+            bool is_on_correct_side = isLeftOfEdge(position, corner_one, corner_two,
                                                    is_last_point_filled);
 
-            if (norm(displacement) <= radius && is_on_correct_side) {
-                points_to_fill.emplace_back(centre_position + displacement);
+            if (is_on_correct_side && (x_displacement * x_displacement + y_displacement * y_displacement) <= (radius * radius)) {
+                points_to_fill.emplace_back(position);
             }
         }
     }

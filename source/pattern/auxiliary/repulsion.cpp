@@ -82,7 +82,7 @@ getRepulsionFromDisplacement(const coord_d &coordinates, const std::vector<coord
 coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
                               const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent,
                               const coord_d &coordinates, const veci &sizes, double radius,
-                              double repulsion_coefficient, double maximum_repulsion_cos) {
+                              double repulsion_coefficient, double minimum_projection) {
     std::vector<coord> normal_displacements = generateLineDisplacements(tangent, radius - 1);
     coord_d maximal_repulsion_vector =
             getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
@@ -90,8 +90,8 @@ coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_mat
 
     double maximal_repulsion_length = norm(maximal_repulsion_vector);
     if (maximal_repulsion_length < 1) {
-        double repulsion_cos = dot(tangent.normalized(), (tangent + maximal_repulsion_vector).normalized());
-        bool is_maximal_angle_exceeded = repulsion_cos >= maximum_repulsion_cos;
+        double repulsion_projection = dot(tangent.normalized(), (tangent + maximal_repulsion_vector).normalized());
+        bool is_maximal_angle_exceeded = (repulsion_projection <= minimum_projection);
         if (is_maximal_angle_exceeded) {
             return {0, 0};
         } else {
@@ -110,7 +110,7 @@ coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_mat
                 repulsion_coefficient;
 
         double repulsion_cos = dot(tangent.normalized(), (tangent + local_repulsion).normalized());
-        bool is_maximal_angle_exceeded = repulsion_cos >= maximum_repulsion_cos;
+        bool is_maximal_angle_exceeded = repulsion_cos <= minimum_projection;
         // Test to see if the repulsion has changed its sign, resulting in over repulsing
         bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) < 0;
         if (is_maximal_angle_exceeded || is_repulsion_inverted) {

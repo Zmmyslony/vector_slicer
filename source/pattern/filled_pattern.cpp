@@ -121,8 +121,6 @@ void FilledPattern::setup() {
     random_engine = std::mt19937(getSeed());
     print_circle = findPointsInDisk(getPrintRadius());
     collision_list = circleDisplacements(getTerminationRadius());
-    // Insert a trivial displacement at the front to check if the current coordinate is free during the collision tests.
-    collision_list.emplace(collision_list.begin(), 0, 0);
 
     switch (getInitialSeedingMethod()) {
         case Splay:
@@ -388,11 +386,11 @@ coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previo
 }
 
 bool FilledPattern::isInRange(const coord &index) const {
-    return ::isInRange(index, desired_pattern.get().getDimensions());
+    return desired_pattern.get().isInRange(index);
 }
 
 bool FilledPattern::isInRange(const coord_d &index) const {
-    return ::isInRange(coord(index), desired_pattern.get().getDimensions());
+    return desired_pattern.get().isInRange(coord(index));
 }
 
 
@@ -408,7 +406,7 @@ bool FilledPattern::isDirectorContinuous(const coord_d &previous_coordinates, co
 
 /// Returns bool depending whether propagation was successful.
 bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length) {
-    if (!isInRange(positions)) { return false; }
+    if (!desired_pattern.get().isInShape(positions)) { return false; }
 
     // Try creating the longest possible step
     coord_d new_positions = INVALID_POSITION;
@@ -418,7 +416,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     while (--length > 1 && !isValid(new_positions)) {
         new_positions = calculateNextPosition(positions, previous_step, length);
 
-        if (isInRange(new_positions)) {
+        if (desired_pattern.get().isInShape(new_positions)) {
             bool is_director_continuous = isDirectorContinuous(positions, new_positions);
             switch (desired_pattern.get().getDiscontinuityBehaviour()) {
                 case DISCONTINUITY_IGNORE:
@@ -443,20 +441,16 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
         }
     }
 
-    if (!isValid(new_positions)) {
-        return false;
-    }
+    if (!isValid(new_positions)) { return false; }
 
     previous_step = new_positions - positions;
-    if (norm(previous_step) < 1) {
-        return false;
-    }
+    if (norm(previous_step) < 1) { return false; }
 
-    coord_d tangent = normalisedResultant(previous_step, getDirector(new_positions));
+    coord_d tangent = normalisedResultant(previous_step, getDirector(positions));
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
-    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(!isFillable(positions));
+    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(!isFilled(coord(positions)));
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
@@ -587,20 +581,19 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
     coord_d previous_coordinate = path.secondToLast();
     coord_d corner_first = path.getNegativePathEdge().back();
     coord_d corner_second = path.getPositivePathEdge().back();
+    double distance = 0;
     if (is_front) {
         last_coordinate = path.first();
-        double distance = 0;
-        int i = 0;
-        while (distance == 0 && i != path.size()) {
+        int i = 1;
+        while (distance < 1 && i != path.size()) {
             previous_coordinate = path.getPositionSequence()[i++];
             distance = norm(last_coordinate - previous_coordinate);
         }
         corner_first = path.getNegativePathEdge().front();
         corner_second = path.getPositivePathEdge().front();
     } else {
-        double distance = 0;
-        unsigned int i = path.size();
-        while (distance == 0 && i != 0) {
+        unsigned int i = path.size() - 1;
+        while (distance < 1 && i != 0) {
             previous_coordinate = path.getPositionSequence()[--i];
             distance = norm(last_coordinate - previous_coordinate);
         }
@@ -610,7 +603,7 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
 
     std::vector<coord> half_circle_points = findHalfCircleEdges(last_coordinate, corner_first, corner_second,
                                                                 getPrintRadius(),
-                                                                !isFillable(last_coordinate),
+                                                                isFilled(coord(last_coordinate)),
                                                                 last_move_direction);
     fillPointsFromList(half_circle_points, last_coordinate - previous_coordinate, value);
 }
@@ -763,8 +756,10 @@ bool FilledPattern::isFilled(const coord &coordinate) const {
 
 
 bool FilledPattern::isTerminable(const coord &point) const {
-    for (const coord &displacement : collision_list) {
-        if (!isFillable(displacement + point)) {
+    if (!isFillable(point)) { return true; }
+
+    for (const coord &displacement: collision_list) {
+        if (isFilled(point + displacement)) {
             return true;
         }
     }
@@ -777,10 +772,9 @@ bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direc
     }
     coord_d tangent = normalized(direction) * getTerminationRadius();
     coord_d normal = perpendicular(tangent);
-
+    auto point = coord(coordinate);
     for (auto &displacement: collision_list) {
-        if (isLeftOfEdge(displacement, normal, -1 * normal, true) &&
-            !isFillable(coordinate + to_coord_d(displacement))) {
+        if (isFilled(point + displacement) && isLeftOfEdge(displacement, normal, -1 * normal, true)) {
             return true;
         }
     }

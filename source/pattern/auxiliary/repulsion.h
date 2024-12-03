@@ -45,7 +45,7 @@ coord_d
 getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
                       const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent,
                       const coord_d &coordinates, const veci &sizes, double radius,
-                      double repulsion_coefficient, double maximum_repulsion_cos);
+                      double repulsion_coefficient, double minimum_projection);
 
 
 #endif //VECTOR_SLICER_REPULSION_H

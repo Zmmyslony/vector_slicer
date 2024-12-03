@@ -182,10 +182,14 @@ coord_d DesiredPattern::getDirector(const coord_d &positions) const {
     return director;
 }
 
-bool DesiredPattern::isInShape(const coord &coordinate) const {
+bool DesiredPattern::isInRange(const coord &coordinate) const {
     return 0 <= coordinate.x && coordinate.x < dimensions[0] &&
-           0 <= coordinate.y && coordinate.y < dimensions[1] &&
-           shape_matrix[coordinate.x][coordinate.y];
+           0 <= coordinate.y && coordinate.y < dimensions[1];
+}
+
+
+bool DesiredPattern::isInShape(const coord &coordinate) const {
+    return isInRange(coordinate) && shape_matrix[coordinate.x][coordinate.y];
 }
 
 bool DesiredPattern::isInShape(const coord_d &coordinate) const {
