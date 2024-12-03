@@ -350,7 +350,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
         lower_bound_vector.emplace_back(0);
         best_config_vector.emplace_back(filling_config.getRepulsionAngle());
         upper_bound_vector.emplace_back(M_PI / 2);
-        fixed_guesses = stack(fixed_guesses, {1});
+        fixed_guesses = stack(fixed_guesses, {0, 1});
     }
 
     std::reverse(lower_bound_vector.begin(), lower_bound_vector.end());
