@@ -450,7 +450,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
-    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(!isFilled(coord(positions)));
+    std::vector<coord> current_points_to_fill = current_path.findPointsToFill(isFilled(coord(positions)));
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
@@ -767,9 +767,9 @@ bool FilledPattern::isTerminable(const coord &point) const {
 }
 
 bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direction) {
-    if (getTerminationRadius() <= 0) {
-        return !isFillable(coordinate);
-    }
+    if (!isFillable(coordinate)) { return true; }
+    if (getTerminationRadius() <= 0) { return !isFillable(coordinate); }
+
     coord_d tangent = normalized(direction) * getTerminationRadius();
     coord_d normal = perpendicular(tangent);
     auto point = coord(coordinate);
