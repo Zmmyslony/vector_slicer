@@ -56,7 +56,7 @@ class FillingConfig {
     /// Distance between the new point and the nearest filled point deciding when the line will terminate.
     double collision_radius = 0;
     /// Multiplier deciding how much the lines will try to avoid one another.
-    double repulsion = 0;
+    double repulsion = 1;
     /// Length of each step in pixels.
     int step_length;
     /// See FillingMethod
