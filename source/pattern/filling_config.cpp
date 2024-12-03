@@ -187,6 +187,7 @@ void FillingConfig::setConfigOption(const configOptions &option, const std::stri
             break;
         case RepulsionAngle:
             repulsion_angle = std::stod(value);
+            repulsion_angle_cosine = cos(repulsion_angle);
     }
 }
 
@@ -325,6 +326,11 @@ FillingConfig::FillingConfig() : FillingConfig(Splay, 5,
 double FillingConfig::getRepulsionRadius() const {
     return repulsion_radius;
 }
+
+double FillingConfig::getRepulsionAngleCosine() const {
+    return repulsion_angle_cosine;
+}
+
 
 double FillingConfig::getRepulsionAngle() const {
     return repulsion_angle;

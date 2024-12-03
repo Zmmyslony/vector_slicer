@@ -70,6 +70,8 @@ class FillingConfig {
     /// Maximal angle away from the preferred that a line can be repulsed before termination.
     double repulsion_angle = M_PI;
 
+    double repulsion_angle_cosine = 0;
+
     void readLineOfConfig(std::vector<std::string> line);
 
 public:
@@ -92,6 +94,8 @@ public:
     [[nodiscard]] double getRepulsionRadius() const;
 
     [[nodiscard]] double getRepulsionAngle() const;
+
+    [[nodiscard]] double getRepulsionAngleCosine() const;
 
     explicit FillingConfig();
 

@@ -366,9 +366,6 @@ coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_m
     }
 }
 
-bool isReversed(const vecd &first_step, const vecd &second_step) {
-    return dot(first_step, second_step) <= 0;
-}
 
 coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previous_step, int length) {
     coord_d new_step = getNewStep(positions, previous_step, length);
@@ -377,7 +374,7 @@ coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previo
     if (getRepulsion() > 0) {
         coord_d repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
                                                   new_step, new_positions, desired_pattern.get().getDimensions(),
-                                                  getPrintRadius(), getRepulsion(), getRepulsionAngle());
+                                                  getPrintRadius(), getRepulsion(), getRepulsionAngleCosine());
         new_positions = new_positions + repulsion;
         new_step = new_step + repulsion;
     }

@@ -112,24 +112,6 @@ separateIntoLines(std::vector<coord> &unsorted_perimeters, coord starting_coordi
     return separated_paths;
 }
 
-std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeters, double separation_distance) {
-    std::vector<std::vector<veci>> separated_perimeters;
-    std::vector<veci> current_subpath = {sorted_perimeters.front()};
-    for (int i = 1; i < sorted_perimeters.size(); i++) {
-        veci displacement_vector = subtract(sorted_perimeters[i], sorted_perimeters[i - 1]);
-        if (norm(displacement_vector) > separation_distance && !current_subpath.empty()) {
-            separated_perimeters.emplace_back(current_subpath);
-            current_subpath.clear();
-        } else {
-            current_subpath.emplace_back(sorted_perimeters[i]);
-        }
-    }
-//    if (!current_subpath.empty()) {
-    if (current_subpath.size() > 20) {
-        separated_perimeters.emplace_back(current_subpath);
-    }
-    return separated_perimeters;
-}
 
 /// Creates pixel representation of a line - Bresenham's line algorithm. Works only when dx >= dy and dx > 0.
 std::vector<coord> pixeliseLineBase(const coord_d &line) {

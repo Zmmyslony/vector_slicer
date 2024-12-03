@@ -82,7 +82,7 @@ getRepulsionFromDisplacement(const coord_d &coordinates, const std::vector<coord
 coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_matrix,
                               const std::vector<std::vector<uint8_t>> &filled_table, const coord_d &tangent,
                               const coord_d &coordinates, const veci &sizes, double radius,
-                              double repulsion_coefficient, double maximal_repulsion_angle) {
+                              double repulsion_coefficient, double maximum_repulsion_cos) {
     std::vector<coord> normal_displacements = generateLineDisplacements(tangent, radius - 1);
     coord_d maximal_repulsion_vector =
             getRepulsionFromDisplacement(coordinates, normal_displacements, sizes,
@@ -103,8 +103,8 @@ coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_mat
                                              sizes, shape_matrix, filled_table) *
                 repulsion_coefficient;
 
-        double local_angle = angle(tangent, tangent + local_repulsion);
-        bool is_maximal_angle_exceeded = local_angle >= maximal_repulsion_angle;
+        double repulsion_cos = dot(tangent.normalized(), (tangent + local_repulsion).normalized());
+        bool is_maximal_angle_exceeded = repulsion_cos >= maximum_repulsion_cos;
         // Test to see if the repulsion has changed its sign, resulting in over repulsing
         bool is_repulsion_inverted = dot(local_repulsion, maximal_repulsion_vector) < 0;
         if (is_maximal_angle_exceeded || is_repulsion_inverted) {

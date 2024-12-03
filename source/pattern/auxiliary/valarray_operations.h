@@ -58,7 +58,7 @@ void printArray(const std::vector<veci> &array);
 
 void printArray(const std::vector<vecd> &array);
 
-double angle(const coord_d &array_first, const coord_d &array_second);
+double cosine_value(const coord_d &array_first, const coord_d &array_second);
 
 coord_d matrix_multiply(matrix_d mat, coord_d vec);
 
