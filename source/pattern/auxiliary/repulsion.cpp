@@ -90,7 +90,13 @@ coord_d getLineBasedRepulsion(const std::vector<std::vector<uint8_t>> &shape_mat
 
     double maximal_repulsion_length = norm(maximal_repulsion_vector);
     if (maximal_repulsion_length < 1) {
-        return maximal_repulsion_vector;
+        double repulsion_cos = dot(tangent.normalized(), (tangent + maximal_repulsion_vector).normalized());
+        bool is_maximal_angle_exceeded = repulsion_cos >= maximum_repulsion_cos;
+        if (is_maximal_angle_exceeded) {
+            return {0, 0};
+        } else {
+            return maximal_repulsion_vector;
+        }
     }
     int maximal_repulsion_length_i = (int) std::max(fabs(maximal_repulsion_vector.x),
                                                     fabs(maximal_repulsion_vector.y));
