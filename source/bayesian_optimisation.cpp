@@ -67,9 +67,13 @@ double BayesianOptimisation::evaluateSample(const vectord &x_in) {
         std::cerr << "ERROR: This only works for " << dims << "D inputs." << std::endl
                   << "ERROR: Using only first " << dims << " components." << std::endl;
     }
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     problem = QuantifiedConfig(problem, x_in);
     double disagreement = problem.getDisagreement(seeds, threads, is_disagreement_details_printed,
                                                   disagreement_percentile);
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    evaluation_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
     return disagreement;
 }
 
@@ -184,6 +188,10 @@ void BayesianOptimisation::optimizeControlled(vectord &x_out, int max_steps, int
         }
     }
     x_out = getFinalResult();
+}
+
+long BayesianOptimisation::getEvaluationTimeNs() const {
+    return evaluation_time_ns;
 }
 
 
@@ -307,10 +315,9 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
     exportRowToFile(patterns[0].getDirectorDisagreementDistribution(), bucketed_disagreement);
 }
 
-QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
-                                  FillingConfig filling_config,
-                                  Simulation &simulation,
-                                  bayesopt::Parameters optimisation_parameters, int dims) {
+QuantifiedConfig
+generalOptimiser(const DesiredPattern &desired_pattern, FillingConfig filling_config, Simulation &simulation,
+                 bayesopt::Parameters optimisation_parameters, int dims, double &filling_duration_ns) {
 
     QuantifiedConfig pattern(desired_pattern, filling_config, simulation);
     BayesianOptimisation pattern_optimisation(pattern, std::move(optimisation_parameters), dims);
@@ -381,6 +388,7 @@ QuantifiedConfig generalOptimiser(const DesiredPattern &desired_pattern,
             throw error;
         }
     }
+    filling_duration_ns = (double) pattern_optimisation.getEvaluationTimeNs();
     return {pattern, best_config};
 }
 
@@ -425,13 +433,13 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
                (int) best_pattern.isCollisionRadiusOptimised() +
                (int) best_pattern.isStartingPointSeparationOptimised();
 
-
+    double filling_duration_ns = 0;
     if (dims == 0) {
         std::cout << "No parameter was chosen for optimisation. Optimising only over seeds. \n"
                      "You can enable optimisation_parameters in bayesian_configuration.cfg" << std::endl;
     } else {
         best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
-                                        parameters, dims);
+                                        parameters, dims, filling_duration_ns);
     }
 
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
@@ -446,8 +454,9 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
     best_fills[0].getConfig().printConfig();
     best_fills[0].printDisagreement();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Execution time " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " s."
-              << std::endl;
+    double total_time = (double) std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+    double filling_time = filling_duration_ns / 1e9;
+    std::cout << "Execution time " << total_time << " s (filling " << filling_time << " s)" << std::endl;
 }
 
 

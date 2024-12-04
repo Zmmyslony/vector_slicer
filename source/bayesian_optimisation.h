@@ -36,6 +36,11 @@ class BayesianOptimisation : public bayesopt::ContinuousModel {
     int dims;
     bool is_disagreement_details_printed = false;
     double disagreement_percentile = 0.5;
+    long evaluation_time_ns = 0;
+public:
+    long getEvaluationTimeNs() const;
+
+private:
 
     bool is_repulsion_angle_optimised = true;
     bool is_repulsion_magnitude_optimised = true;
