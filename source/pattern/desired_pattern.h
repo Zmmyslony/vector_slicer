@@ -108,6 +108,10 @@ class DesiredPattern {
 
     bool isBoundary(const coord &coordinate);
 
+    double getDirectorY(int x, int y) const;
+
+    double getDirectorX(int x, int y) const;
+
 public:
 
     DesiredPattern();

@@ -166,6 +166,22 @@ coord_d DesiredPattern::getDirector(const coord &positions) const {
                     y_field_preferred[positions.x][positions.y]});
 }
 
+double DesiredPattern::getDirectorX(int x, int y) const {
+    if (x < 0 || x >= dimensions[0] ||
+        y < 0 || y >= dimensions[1]) {
+        return 0;
+    }
+    return x_field_preferred[x][y];
+}
+
+double DesiredPattern::getDirectorY(int x, int y) const {
+    if (x < 0 || x >= dimensions[0] ||
+        y < 0 || y >= dimensions[1]) {
+        return 0;
+    }
+    return y_field_preferred[x][y];
+}
+
 
 coord_d DesiredPattern::getDirector(const coord_d &positions) const {
     int x_base = floor(positions.x);
@@ -173,13 +189,24 @@ coord_d DesiredPattern::getDirector(const coord_d &positions) const {
     double x_fraction = 1 - (positions.x - floor(positions.x));
     double y_fraction = 1 - (positions.y - floor(positions.y));
 
-    coord_d director = {0, 0};
-    director += x_fraction * y_fraction * getDirector(coord{x_base, y_base});
-    director += (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
-    director += (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
-    director += x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
+    double x_director =  x_fraction * y_fraction * getDirectorX(x_base, y_base);
+    x_director += (1 - x_fraction) * y_fraction * getDirectorX(x_base + 1, y_base);
+    x_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorX(x_base + 1, y_base + 1);
+    x_director += x_fraction * (1 - y_fraction) * getDirectorX(x_base, y_base + 1);
 
-    return director;
+    double y_director =  x_fraction * y_fraction * getDirectorY(x_base, y_base);
+    y_director += (1 - x_fraction) * y_fraction * getDirectorY(x_base + 1, y_base);
+    y_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorY(x_base + 1, y_base + 1);
+    y_director += x_fraction * (1 - y_fraction) * getDirectorY(x_base, y_base + 1);
+
+    return {x_director, y_director};
+//    coord_d director = {0, 0};
+//    director += x_fraction * y_fraction * getDirector(coord{x_base, y_base});
+//    director += (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
+//    director += (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
+//    director += x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
+
+//    return director;
 }
 
 bool DesiredPattern::isInRange(const coord &coordinate) const {
