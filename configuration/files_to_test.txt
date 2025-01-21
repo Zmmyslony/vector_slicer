@@ -10,4 +10,4 @@
 
     example_three_charge_field
     three_charge_field
-azimuthal_10_mm
+defect_r_10.0_c_-1.0

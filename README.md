@@ -16,6 +16,13 @@ realised by modification of the penalty function.
 
 Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and suggestions.
 
+## Citing
+If used in the research work that will be published, please use the following publication for citation:
+
+[1] Michał Zmyślony M., Klaudia Dradrach, John S. Biggins,
+Slicing vector fields into tool paths for additive manufacturing of nematic elastomers,
+Additive Manufacturing, Volume 97, 2025, 104604, ISSN 2214-8604, https://doi.org/10.1016/j.addma.2024.104604.
+
 ***
 
 ## Installation guide

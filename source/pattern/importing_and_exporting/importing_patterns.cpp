@@ -1,6 +1,9 @@
-// Copyright (c) 2022-2023, Michał Zmyślony, mlz22@cam.ac.uk.
+// Copyright (c) 2022-2025, Michał Zmyślony, mlz22@cam.ac.uk.
 //
-// Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
+// Please cite following publication if you use any part of this code in work you publish or distribute:
+// [1] Michał Zmyślony M., Klaudia Dradrach, John S. Biggins,
+//    Slicing vector fields into tool paths for additive manufacturing of nematic elastomers,
+//    Additive Manufacturing, Volume 97, 2025, 104604, ISSN 2214-8604, https://doi.org/10.1016/j.addma.2024.104604.
 //
 // This file is part of Vector Slicer.
 //
