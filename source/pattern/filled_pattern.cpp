@@ -91,25 +91,24 @@ void FilledPattern::extendSeedLines() {
         coord_d previous_displacement = to_coord_d(seed_line.front() - seed_line[3]);
         if (dot(front_dual, previous_displacement) < 0) { front_dual = front_dual * (-1); }
 
-        coord_d back_dual = perpendicular(getDirector(seed_line.back()));
-        previous_displacement = to_coord_d(seed_line.back() - seed_line[seed_line.size() - 4]);
-        if (dot(back_dual, previous_displacement) < 0) { back_dual = back_dual * (-1); }
-
-        std::vector<coord> front_displacements = pixeliseLine(front_dual * getSeedSpacing());
-        std::vector<coord> back_displacements = pixeliseLine(back_dual * getSeedSpacing());
-
+        std::vector<coord> front_displacements = pixeliseLine(front_dual * 2 * getSeedSpacing());
         coord front = seed_line.front();
         for (auto &displacement: front_displacements) {
             coord current = front + displacement;
-            if (desired_pattern.get().isInShape(current)) {
+            if (desired_pattern.get().isInRange(current)) {
                 seed_line.insert(seed_line.begin(), current);
             }
         }
 
+        coord_d back_dual = perpendicular(getDirector(seed_line.back()));
+        previous_displacement = to_coord_d(seed_line.back() - seed_line[seed_line.size() - 4]);
+        if (dot(back_dual, previous_displacement) < 0) { back_dual = back_dual * (-1); }
+
+        std::vector<coord> back_displacements = pixeliseLine(back_dual * 2 * getSeedSpacing());
         coord back = seed_line.back();
         for (auto &displacement: back_displacements) {
             coord current = back + displacement;
-            if (desired_pattern.get().isInShape(current)) {
+            if (desired_pattern.get().isInRange(current)) {
                 seed_line.emplace_back(current);
             }
         }
@@ -183,7 +182,7 @@ std::vector<unsigned int> FilledPattern::findOverlappingSeedLines() {
     std::vector<unsigned int> overlapping_indices;
     for (int i = 0; i < seed_lines.size(); i++) {
         for (auto &coordinate: seed_lines[i]) {
-            if (!isFillable(coordinate)) {
+            if (isFilled(coordinate)) {
                 overlapping_indices.emplace_back(i);
                 break;
             }
@@ -193,8 +192,24 @@ std::vector<unsigned int> FilledPattern::findOverlappingSeedLines() {
 }
 
 std::vector<SeedPoint> FilledPattern::getSeedsFromRandomSeedLine() {
+//    uint sum_of_sizes = 0;
+//    for (auto &seed_line  : seed_lines) {
+//        sum_of_sizes += seed_line.size();
+//    }
+//    std::uniform_int_distribution<> distribution(0, sum_of_sizes - 1);
+//    int i_raw = distribution(random_engine);
+//    uint previous_line_end = 0;
+//    int i = 0;
+//    for (int j = 0; i < seed_lines.size(); j++) {
+//        if (i_raw >= previous_line_end && i_raw < previous_line_end + seed_lines[j].size()) {
+//            i = j;
+//            break;
+//        }
+//        previous_line_end += seed_lines[j].size();
+//    }
+    
     std::uniform_int_distribution<> distribution(0, seed_lines.size() - 1);
-    int i = distribution(random_engine);
+    unsigned int i = distribution(random_engine);
     std::vector<coord> current_seed_line = seed_lines[i];
     seed_lines.erase(seed_lines.begin() + i);
 
@@ -209,6 +224,22 @@ std::vector<SeedPoint> FilledPattern::getSpacedLineRandom(const std::vector<coor
 
 std::vector<SeedPoint>
 FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indices) {
+//    uint sum_of_sizes = 0;
+//    for (uint j : overlapping_indices) {
+//        sum_of_sizes += seed_lines[j].size();
+//    }
+//    std::uniform_int_distribution<> distribution(0, sum_of_sizes - 1);
+//    int i_raw = distribution(random_engine);
+//    uint previous_line_end = 0;
+//    int i = 0;
+//    for (uint j : overlapping_indices) {
+//        if (i_raw >= previous_line_end && i_raw < previous_line_end + seed_lines[j].size()) {
+//            i = j;
+//            break;
+//        }
+//        previous_line_end += seed_lines[j].size();
+//    }
+
     std::uniform_int_distribution<> distribution(0, overlapping_indices.size() - 1);
     unsigned int i = overlapping_indices[distribution(random_engine)];
     std::vector<coord> current_seed_line = seed_lines[i];
@@ -220,7 +251,7 @@ FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &
 std::vector<SeedPoint> FilledPattern::getSpacedLineOverlapping(const std::vector<coord> &line, int line_index) {
     std::vector<int> i_overlapping;
     for (int i = 0; i < line.size(); i++) {
-        if (!isFillable(line[i])) {
+        if (isFilled(line[i])) {
             i_overlapping.emplace_back(i);
         }
     }
@@ -818,6 +849,10 @@ std::vector<coord> FilledPattern::getSeedCoordinates() {
         seed_coordinates.emplace_back(coordinates);
     }
     return seed_coordinates;
+}
+
+void FilledPattern::setIsReseedingEnabled(bool is_reseeding_enabled) {
+    FilledPattern::is_reseeding_enabled = is_reseeding_enabled;
 }
 
 #pragma clang diagnostic pop

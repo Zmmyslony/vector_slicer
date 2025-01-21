@@ -208,6 +208,8 @@ public:
     bool isInRange(const coord_d &index) const;
 
     bool isFilled(const coord &coordinate) const;
+
+    void setIsReseedingEnabled(bool is_reseeding_enabled);
 };
 
 

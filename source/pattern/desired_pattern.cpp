@@ -599,7 +599,7 @@ void DesiredPattern::findLineDensityMinima() {
     }
 
     std::cout << "\rSearch for seeding lines complete." << std::endl;
-    solution_set = skeletonize(solution_set, 5, shape_matrix);
+    solution_set = skeletonize(solution_set, 10, shape_matrix);
 //    exportCoord(solution_set, "/home/mlz22/OneDrive/tmp/splay_lines.csv");
     std::vector<coord> line_density_minima_local;
     for (auto &vector: solution_set) {
