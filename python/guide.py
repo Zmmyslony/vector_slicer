@@ -153,7 +153,7 @@ def example_extensive():
     """ This example shows a whole workflow with multiple patterns being generated, sliced and plotted."""
     # The path is relative to the parent of the Slicer's lib files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
-    slicer = Slicer("build")
+    slicer = Slicer()
 
     # Define domains that are used for pattern generation. See basic.py for predefined shapes.
     annulus = shapes.annulus(5, 10)
@@ -228,7 +228,7 @@ def example_extensive():
 if __name__ == "__main__":
     # The path is relative to the parent of the Slicer's lib files, i.e. the directory into which the project
     # was pulled if the installation guide was directly followed.
-    slicer = Slicer("build")
+    slicer = Slicer()
     complete_usage_example(slicer)
 
     line_width = 0.2

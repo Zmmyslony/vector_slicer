@@ -66,25 +66,31 @@ def configure_slicer(slicer):
     slicer.slice_pattern_seeds_only.argtypes = [ctypes.c_char_p, ctypes.c_int]
 
 
-def import_slicer(build_directory):
+def import_slicer(build_directory=None):
     """
     Imports slicer library and configures it for operation.
-    :param build_directory:
+    :param build_directory: If None it tries to load it using the environment variable 'VECTOR_SLICER_API'
     :return:
     """
-    project_directory = get_project_directory()
+    if build_directory is None:
+        vector_slicer_lib_path = os.environ.get('VECTOR_SLICER_API')
+        if vector_slicer_lib_path is None:
+            raise Exception("VECTOR_SLICER_API environment variable is not set to point to the built library.")
 
-
-    if sys.platform == "win32":
-        library_name = "vector_slicer_api.dll"
-    elif sys.platform == "linux":
-        library_name = "libvector_slicer_api.so"
-    elif sys.platform == "darwin":
-        library_name = "libvector_slicer_api.dylib"
     else:
-        raise Exception("Unrecognised platform " + sys.platform)
+        project_directory = get_project_directory()
+        if sys.platform == "win32":
+            library_name = "vector_slicer_api.dll"
+        elif sys.platform == "linux":
+            library_name = "libvector_slicer_api.so"
+        elif sys.platform == "darwin":
+            library_name = "libvector_slicer_api.dylib"
+        else:
+            raise Exception("Unrecognised platform " + sys.platform)
 
-    vector_slicer_lib_path = project_directory / build_directory / library_name
+        vector_slicer_lib_path = project_directory / build_directory / library_name
+
+
     if not os.path.exists(vector_slicer_lib_path):
         print(f"Vector Slicer Api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose the "
               f"correct build directory.")

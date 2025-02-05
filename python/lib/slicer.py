@@ -43,7 +43,7 @@ from lib import slicer_setup
 
 
 class Slicer:
-    def __init__(self, build_directory):
+    def __init__(self, build_directory=None):
         self.slicer = slicer_setup.import_slicer(build_directory)
         slicer_setup.configure_slicer(self.slicer)
 
