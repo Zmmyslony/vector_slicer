@@ -36,6 +36,8 @@ cd vector_slicer
 sudo chmod +x ./install_lin.sh
 ./install_lin.sh
 ```
+Please export environment variables according to the instructions displayed after installation
+in order for the python scripts to work as intended.
 
 ### macOS
 **Warning: This software uses OpenMP and so is incompatible with AppleClang.
@@ -46,8 +48,10 @@ In the desired parent directory run
 git clone https://github.com/Zmmyslony/vector_slicer.git
 cd vector_slicer
 sudo chmod +x ./install_mac.sh
-./install_lin.sh
+./install_mac.sh
 ```
+Please export environment variables according to the instructions displayed after installation
+in order for the python scripts to work as intended.
 
 ### Windows
 In the desired parent directory run in terminal
@@ -67,9 +71,9 @@ For most users Python operation is recommended as it contains input file generat
 while C++ usage requires the input files to be separately generated. 
 
 Due to the variety of gcode formats in use, the slicer does NOT generate the output in gcode, but rather in abstract
-pixel-based coordinates. There is a separate program for translating it into gcode (https://github.com/Zmmyslony/Vector_Slicer_GCode), 
-however, at the time of writing this, it only directly supports Hyrel printers, specifically, System 30M, but other formats
-can also be implemented on request.
+pixel-based coordinates. There is a separate package for translating it into gcode (https://github.com/Zmmyslony/VectorSlicerGCode), 
+however, at the time of writing this, it directly supports Hyrel's System 30M and Prusa's MK4S, but can be configured
+for other printers as well.
 
 ***
 
