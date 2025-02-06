@@ -73,6 +73,23 @@ def radial_symmetry(director: Director, x_centre=0, y_centre=0) -> Director:
     return Director(symmetric_director)
 
 
+def topological_defect(charge, zero_phase, x_centre=0, y_centre=0):
+    """
+    Creates a pattern corresponding to a topological defect with the prescribed charge and zero phase.
+    :param charge:
+    :param zero_phase:
+    :param x_centre:
+    :param y_centre:
+    :return:
+    """
+    def director(v):
+        v_offset = v - np.array([x_centre, y_centre])
+        radial_angle = np.arctan2(v_offset[:, :, 1], v_offset[:, :, 0])
+
+        return np.mod(radial_angle * charge + zero_phase, 2 * np.pi)
+    return Director(director)
+
+
 def spiral(angle, x_centre=0, y_centre=0) -> Director:
     """
     Returns spiral director of constant angle in relation to radial direction
@@ -81,7 +98,7 @@ def spiral(angle, x_centre=0, y_centre=0) -> Director:
     :param y_centre:
     :return:
     """
-    return radial_symmetry(uniaxial_alignment(angle), x_centre, y_centre)
+    return topological_defect(1, angle, x_centre, y_centre)
 
 
 def azimuthal(x_centre=0, y_centre=0) -> Director:
