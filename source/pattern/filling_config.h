@@ -118,6 +118,8 @@ public:
     std::string getConfigOption(configOptions option);
 
     void setSeed(int seed_value);
+
+    bool isSplayFillingEnabled(); static
 };
 
 configOptions stringToConfig(const std::string &string_option);
