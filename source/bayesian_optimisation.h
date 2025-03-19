@@ -82,4 +82,7 @@ void recalculateBestConfig(const fs::path &pattern_path);
 
 /// Scans a certain number of seeds and finds the best one.
 void optimisePatternSeeds(const fs::path &pattern_path, const fs::path &config_path, int seeds);
+
+/// Same as optimise PatternSeeds, but uses the config from the pattern path.
+void variableWidthOptimisation(const fs::path &pattern_path, int seeds);
 #endif //VECTOR_SLICER_BAYESIAN_OPTIMISATION_H

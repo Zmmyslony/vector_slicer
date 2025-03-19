@@ -319,8 +319,9 @@ void exportPatterns(const std::vector<QuantifiedConfig> &patterns, const fs::pat
 }
 
 QuantifiedConfig
-generalOptimiser(const DesiredPattern &desired_pattern, FillingConfig filling_config, Simulation &simulation,
-                 bayesopt::Parameters optimisation_parameters, int dims, double &filling_duration_ns) {
+bayesianOptimisationCore(const DesiredPattern &desired_pattern, FillingConfig filling_config,
+                         const Simulation &simulation,
+                         bayesopt::Parameters optimisation_parameters, int dims, double &filling_duration_ns) {
 
     QuantifiedConfig pattern(desired_pattern, filling_config, simulation);
     BayesianOptimisation pattern_optimisation(pattern, std::move(optimisation_parameters), dims);
@@ -395,26 +396,14 @@ generalOptimiser(const DesiredPattern &desired_pattern, FillingConfig filling_co
     return {pattern, best_config};
 }
 
+QuantifiedConfig bayesianOptimisation(
+        const DesiredPattern &desired_pattern, FillingConfig filling_config,
+        const Simulation &simulation, std::string pattern_name) {
 
-void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
-    std::string pattern_name = pattern_path.filename().string();
-    fs::path initial_config_path = pattern_path / "config.txt";
+    QuantifiedConfig best_pattern(desired_pattern, filling_config, simulation);
 
-    createDirectory(pattern_path.parent_path().parent_path() / "output");
-    createDirectory(LOGS_EXPORT_PATH);
-    createDirectory(OPTIMISATION_EXPORT_PATH);
     fs::path optimisation_log_path = createTxtPath(LOGS_EXPORT_PATH, pattern_name);
     fs::path optimisation_save_path = createTxtPath(OPTIMISATION_EXPORT_PATH, pattern_name);
-
-    Simulation simulation(pattern_path, is_default_used);
-    FillingConfig initial_config(initial_config_path);
-    bool is_splay_filling_enabled = initial_config.getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
-                                                              simulation.getThreads(), simulation);
-
-    QuantifiedConfig best_pattern(desired_pattern, initial_config, simulation);
 
     bayesopt::Parameters parameters;
     parameters.random_seed = 0;
@@ -441,25 +430,61 @@ void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
         std::cout << "No parameter was chosen for optimisation. Optimising only over seeds. \n"
                      "You can enable optimisation_parameters in bayesian_configuration.cfg" << std::endl;
     } else {
-        best_pattern = generalOptimiser(desired_pattern, initial_config, simulation,
-                                        parameters, dims, filling_duration_ns);
+        best_pattern = bayesianOptimisationCore(desired_pattern, filling_config, simulation,
+                                                parameters, dims, filling_duration_ns);
     }
 
-    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(
-            best_pattern.getFinalSeeds(), best_pattern.getThreads());
+    return best_pattern;
+}
+
+std::vector<QuantifiedConfig> optimisation(
+        const DesiredPattern &desired_pattern, FillingConfig filling_config,
+        const Simulation &simulation, const fs::path &pattern_path, bool is_bayesian_optimisation_enabled
+        ) {
+    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
+    std::string pattern_name = pattern_path.filename().string();
+
+    QuantifiedConfig best_pattern(desired_pattern, filling_config, simulation);
+    if (is_bayesian_optimisation_enabled) {
+        best_pattern = bayesianOptimisation(desired_pattern, filling_config, simulation, pattern_name);
+    }
+
+    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(best_pattern.getFinalSeeds(),
+                                                                          best_pattern.getThreads());
 
     exportPatterns(best_fills, pattern_path, simulation);
-    std::vector<FillingConfig> config_list;
-    for (auto &filled_config: best_fills) {
-        config_list.emplace_back(filled_config.getConfig());
-    }
 
     best_fills[0].getConfig().printConfig();
     best_fills[0].printDisagreement();
+    return best_fills;
+}
+
+void setupDirectories(const fs::path &pattern_path) {
+    createDirectory(pattern_path.parent_path().parent_path() / "output");
+    createDirectory(LOGS_EXPORT_PATH);
+    createDirectory(OPTIMISATION_EXPORT_PATH);
+}
+
+
+void optimisePattern(const fs::path &pattern_path, bool is_default_used, bool is_bayesian_optimisation_enabled) {
+    setupDirectories(pattern_path);
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    Simulation simulation(pattern_path, is_default_used);
+    fs::path initial_config_path = pattern_path / "config.txt";
+    FillingConfig initial_config(initial_config_path);
+
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path,
+                                                              simulation.getThreads(), simulation);
+
+    optimisation(desired_pattern, initial_config, simulation, pattern_path, is_bayesian_optimisation_enabled);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     double total_time = (double) std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
-    double filling_time = filling_duration_ns / 1e9;
-    std::cout << "Execution time " << total_time << " s (filling " << filling_time << " s)" << std::endl;
+
+    std::cout << "Execution time " << total_time << " s" << std::endl;
+}
+
+void optimisePattern(const fs::path &pattern_path, bool is_default_used) {
+    optimisePattern(pattern_path, is_default_used, true);
 }
 
 
@@ -467,14 +492,12 @@ void fillPattern(const fs::path &pattern_path, const fs::path &config_path) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
-    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing config path."); }
-    std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
-    bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
+    std::vector<FillingConfig> optimised_configs = readMultiSeedConfig(config_path);
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path,
                                                               simulation.getThreads(), simulation);
     std::vector<QuantifiedConfig> filled_configs;
     for (int i = 0; i < 10; i++) {
-        filled_configs.emplace_back(desired_pattern, best_config[i], simulation);
+        filled_configs.emplace_back(desired_pattern, optimised_configs[i], simulation);
     }
 
     int threads = simulation.getThreads();
@@ -493,24 +516,38 @@ void optimisePatternSeeds(const fs::path &pattern_path, const fs::path &config_p
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
-    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing config path."); }
-    std::vector<FillingConfig> best_config = readMultiSeedConfig(config_path);
-    bool is_splay_filling_enabled = best_config[0].getInitialSeedingMethod() == Splay;
-    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, is_splay_filling_enabled,
-                                                              simulation.getThreads(), simulation);
-    QuantifiedConfig best_pattern(desired_pattern, best_config[0], simulation);
+    FillingConfig optimised_config = readMultiSeedConfig(config_path)[0];
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, simulation.getThreads(), simulation);
+    QuantifiedConfig best_pattern(desired_pattern, optimised_config, simulation);
 
     std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(seeds, best_pattern.getThreads());
 
     exportPatterns(best_fills, pattern_path, simulation);
-    std::vector<FillingConfig> config_list;
-    for (auto &filled_config: best_fills) {
-        config_list.emplace_back(filled_config.getConfig());
-    }
-
     best_fills[0].getConfig().printConfig();
     best_fills[0].printDisagreement();
+    std::cout << "Pattern filled." << std::endl;
 }
+
+void variableWidthOptimisation(const fs::path &pattern_path, int seeds) {
+    std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
+
+    Simulation simulation(pattern_path, true);
+    simulation.setOverlapWeight(simulation.getOverlapWeight() / 100);
+    fs::path config_path = pattern_path / "config.txt";
+    FillingConfig optimised_config(config_path);
+    optimised_config.convertToVariableWidth();
+
+    DesiredPattern desired_pattern = openPatternFromDirectory(pattern_path, simulation.getThreads(), simulation);
+    QuantifiedConfig best_pattern(desired_pattern, optimised_config, simulation);
+
+    std::vector<QuantifiedConfig> best_fills = best_pattern.findBestSeeds(seeds, best_pattern.getThreads());
+
+    exportPatterns(best_fills, pattern_path, simulation);
+    best_fills[0].getConfig().printConfig();
+    best_fills[0].printDisagreement();
+    std::cout << "Pattern filled." << std::endl;
+}
+
 
 void recalculateBestConfig(const fs::path &pattern_path) {
     std::string pattern_name = pattern_path.filename().string();

@@ -49,7 +49,7 @@ bool isValid(const coord_d &positions) {
     return positions.x >= 0 && positions.y >= 0;
 }
 
-FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
+FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, const FillingConfig new_config) :
         desired_pattern(std::cref(new_desired_pattern)),
         FillingConfig(new_config) {
     desired_pattern.get().isPatternUpdated();
@@ -210,7 +210,7 @@ std::vector<SeedPoint> FilledPattern::getSeedsFromRandomSeedLine() {
 //        }
 //        previous_line_end += seed_lines[j].size();
 //    }
-    
+
     std::uniform_int_distribution<> distribution(0, seed_lines.size() - 1);
     unsigned int i = distribution(random_engine);
     std::vector<coord> current_seed_line = seed_lines[i];
@@ -319,8 +319,7 @@ coord FilledPattern::findRemainingRootPoint() {
 }
 
 void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_direction, int value) {
-
-    if (isInRange(point)) {
+    if (isInRange(point) && number_of_times_filled[point.x][point.y] + value >= 0) {
         number_of_times_filled[point.x][point.y] += value;
 
         if (normalized_direction.x * x_field_filled[point.x][point.y] +
@@ -333,7 +332,7 @@ void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_dire
 }
 
 void FilledPattern::fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value) {
-    if (isInRange(point)) {
+    if (isInRange(point) && number_of_times_filled[point.x][point.y] + value >= 0) {
         number_of_times_filled[point.x][point.y] += value;
         x_field_filled[point.x][point.y] += normalized_direction.x * value;
         y_field_filled[point.x][point.y] += normalized_direction.y * value;

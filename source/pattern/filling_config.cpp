@@ -351,3 +351,9 @@ bool FillingConfig::isSplayFillingEnabled() {
 bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, FillingConfig &second_config) {
     return first_config.getConfigOption(option) == second_config.getConfigOption(option);
 }
+
+void FillingConfig::convertToVariableWidth() {
+    repulsion = 1;
+    collision_radius = 1;
+    starting_point_separation = 2 * print_radius;
+}

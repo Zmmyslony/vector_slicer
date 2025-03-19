@@ -162,7 +162,7 @@ public:
 
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
-    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
+    FilledPattern(const DesiredPattern &new_desired_pattern, const FillingConfig new_config);
 
     /// Sets up the objects deriving from the FillingConfig
     void setup();

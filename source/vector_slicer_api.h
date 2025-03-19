@@ -40,6 +40,9 @@ SLICER_DLLEXPORT void slice_pattern(const char *pattern_directory, bool is_defau
 /// Re-slices pattern based on previously exported best config.
 SLICER_DLLEXPORT void re_slice_pattern(const char *pattern_directory);
 
+/// Slices pattern using variable width preset, i.e. no optimisation but seeds.
+SLICER_DLLEXPORT void slice_pattern_variable_width(const char *pattern_directory, int seeds);
+
 
 
 #endif //VECTOR_SLICER_VECTOR_SLICER_API_H

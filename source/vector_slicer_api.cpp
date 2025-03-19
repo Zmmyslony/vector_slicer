@@ -46,3 +46,7 @@ SLICER_DLLEXPORT void slice_pattern_seeds_only(const char *pattern_directory, in
     optimisePatternSeeds(pattern_directory, pattern_path_fs / "config.txt", seeds);
 }
 
+SLICER_DLLEXPORT void slice_pattern_variable_width(const char *pattern_directory, int seeds) {
+    fs::path pattern_path_fs(pattern_directory);
+    variableWidthOptimisation(pattern_path_fs, seeds);
+}
