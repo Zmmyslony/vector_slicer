@@ -153,8 +153,10 @@ void DesiredPattern::adjustMargins() {
     adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
     adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);
     adjustRowsAndColumns(y_field_preferred, null_rows, null_columns);
-    adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
-    adjustRowsAndColumns(splay_array, null_rows, null_columns);
+    if (!splay_vector_array.empty()) {
+        adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
+        adjustRowsAndColumns(splay_array, null_rows, null_columns);
+    }
 
     dimensions = getTableDimensions(shape_matrix);
 }
