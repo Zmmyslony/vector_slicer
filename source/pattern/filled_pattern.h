@@ -76,7 +76,7 @@ class FilledPattern : public FillingConfig {
     void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
                                     const coord &previous_step);
 
-    coord_d getNewStep(coord_d &real_coordinates, coord_d &previous_move, int &length) const;
+    coord_d getNewStep(coord_d &real_coordinates, coord_d &previous_move, int length) const;
 
     bool propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length);
 
@@ -116,7 +116,7 @@ class FilledPattern : public FillingConfig {
 
     std::vector<std::vector<SeedPoint>> separateLines(std::vector<std::vector<coord>> list_of_lines, int line_index);
 
-    coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length);
+    coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length, const Path &current_path);
 
     [[nodiscard]] bool isDirectorContinuous(const coord_d &previous_coordinates, const coord_d &new_coordinates) const;
 
@@ -132,7 +132,7 @@ class FilledPattern : public FillingConfig {
 
     bool isFillable(const coord &coordinate) const;
 
-    bool isTerminable(const coord_d &coordinate, const coord_d &direction);
+    bool isTerminable(const coord_d &coordinate, const Path &current_path);
 
     std::vector<unsigned int> findOverlappingSeedLines();
 

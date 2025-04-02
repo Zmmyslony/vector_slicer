@@ -387,18 +387,17 @@ coord_d FilledPattern::getDirector(const coord &coordinates) const {
     return desired_pattern.get().getDirector(coordinates);
 }
 
-coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_move, int &length) const {
-    coord_d new_move = getDirector(real_coordinates) * length;
+coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_move, int length) const {
+    coord_d current_director = getDirector(real_coordinates);
 
-    if (dot(new_move, previous_move) >= 0) {
-        return new_move;
-    } else {
-        return -1 * new_move;
-    }
+    if (dot(current_director, previous_move) < 0) { length *= -1; }
+    return length * current_director;
 }
 
 
-coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previous_step, int length) {
+coord_d FilledPattern::calculateNextPosition(
+        coord_d &positions, coord_d &previous_step, int length, const Path &current_path) {
+
     coord_d new_step = getNewStep(positions, previous_step, length);
     coord_d new_positions = positions + new_step;
 
@@ -406,12 +405,11 @@ coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previo
         coord_d repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
                                                   new_step, new_positions, desired_pattern.get().getDimensions(),
                                                   getPrintRadius(), getRepulsion(), getRepulsionAngleCosine());
-        new_positions = new_positions + repulsion;
-        new_step = new_step + repulsion;
+        new_positions += repulsion;
     }
 
     // Check if newly generated position is valid
-    if (isTerminable(new_positions, new_step)) {
+    if (isTerminable(new_positions, current_path)) {
         return INVALID_POSITION;
     } else {
         return new_positions;
@@ -444,33 +442,28 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     // Try creating the longest possible step
     coord_d new_positions = INVALID_POSITION;
     /// Keeps last valid position, even if it is discontinuous.
-    coord_d last_discontinuous_positions = INVALID_POSITION;
+    coord_d previous_discontinuous_position = INVALID_POSITION;
 
-    while (--length > 1 && !isValid(new_positions)) {
-        new_positions = calculateNextPosition(positions, previous_step, length);
+    while (--length > 0 && !isValid(new_positions)) {
+        new_positions = calculateNextPosition(positions, previous_step, length, current_path);
 
-        if (desired_pattern.get().isInShape(new_positions)) {
-            bool is_director_continuous = isDirectorContinuous(positions, new_positions);
-            switch (desired_pattern.get().getDiscontinuityBehaviour()) {
-                case DISCONTINUITY_IGNORE:
-                    break;
-                case DISCONTINUITY_STICK:
-                    if (is_director_continuous) {
-                        if (isValid(last_discontinuous_positions)) {
-                            new_positions = last_discontinuous_positions;
-                        }
-                        break;
-                    } else {
-                        last_discontinuous_positions = new_positions;
-                        new_positions = INVALID_POSITION;
-                    }
-                case DISCONTINUITY_TERMINATE:
-                    if (is_director_continuous) {
-                        break;
-                    } else {
-                        new_positions = INVALID_POSITION;
-                    }
-            }
+        if (!desired_pattern.get().isInShape(new_positions)) { continue; }
+
+        bool is_director_continuous = isDirectorContinuous(positions, new_positions);
+        switch (desired_pattern.get().getDiscontinuityBehaviour()) {
+            case DISCONTINUITY_IGNORE:
+                break;
+            case DISCONTINUITY_STICK:
+                if ((is_director_continuous || length == 1) && isValid(previous_discontinuous_position)) {
+                    new_positions = previous_discontinuous_position;
+                } else {
+                    previous_discontinuous_position = new_positions;
+                    new_positions = INVALID_POSITION;
+                }
+                break;
+            case DISCONTINUITY_TERMINATE:
+                if (!is_director_continuous) { new_positions = INVALID_POSITION; }
+                break;
         }
     }
 
@@ -479,7 +472,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     previous_step = new_positions - positions;
     if (norm(previous_step) < 1) { return false; }
 
-    coord_d tangent = normalisedResultant(previous_step, getDirector(positions));
+    coord_d tangent = normalisedResultant(previous_step, getDirector(new_positions));
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
@@ -534,7 +527,7 @@ void FilledPattern::updatePathsOverlap() {
 }
 
 Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const coord_d &starting_step) {
-    Path path(seed_point, getPrintRadius());
+    Path path(seed_point, getPrintRadius(), starting_step);
     coord_d current_positions = to_coord_d(seed_point.getCoordinates());
     coord_d current_step = starting_step;
 
@@ -799,15 +792,19 @@ bool FilledPattern::isTerminable(const coord &point) const {
     return false;
 }
 
-bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direction) {
+bool
+FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path) {
     if (!isFillable(coordinate)) { return true; }
-    if (getTerminationRadius() <= 0) { return !isFillable(coordinate); }
+    if (getTerminationRadius() <= 1) { return false; }
 
-    coord_d tangent = normalized(direction) * getTerminationRadius();
-    coord_d normal = perpendicular(tangent);
     auto point = coord(coordinate);
     for (auto &displacement: collision_list) {
-        if (isFilled(point + displacement) && isLeftOfEdge(displacement, normal, -1 * normal, true)) {
+        if (
+                isFilled(point + displacement) &&
+                isLeftOfEdge(point + displacement, current_path.getPositivePathEdge().back(),
+                             current_path.getNegativePathEdge().back(),
+                             false)
+                ) {
             return true;
         }
     }
