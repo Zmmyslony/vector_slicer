@@ -44,9 +44,9 @@ void Path::addPoint(const coord_d &positions, const coord_d &positive_edge, cons
 }
 
 
-Path::Path(SeedPoint seed, double print_radius) : seed_point(seed) {
+Path::Path(SeedPoint seed, double print_radius, const coord_d &tangent_starting) : seed_point(seed) {
     coord_d positions = to_coord_d(seed_point.getCoordinates());
-    coord_d tangent = normalized(seed_point.getDirector());
+    coord_d tangent = normalized(tangent_starting);
     coord_d normal = perpendicular(tangent) * print_radius;
     addPoint(positions, positions + normal, positions - normal);
 }

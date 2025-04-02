@@ -47,7 +47,7 @@ class Path {
     double tensorDistance(const coord_d &point);
 public:
 
-    explicit Path(SeedPoint seed, double print_radius);
+    explicit Path(SeedPoint seed, double print_radius, const coord_d &tangent_starting);
 
     Path(const Path& forward_path, const Path& backward_path);
 
