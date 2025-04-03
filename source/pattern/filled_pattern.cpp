@@ -38,8 +38,6 @@
 #include "auxiliary/simple_math_operations.h"
 
 #define INVALID_POSITION {-1, -1}
-/// Minimal value of cosine between current and previous director for it to be assumed as continuous.
-#define DIRECTOR_DISCONTINUITY_THRESHOLD 0
 
 bool isValid(const coord &positions) {
     return positions.x >= 0 && positions.y >= 0;
@@ -94,7 +92,7 @@ void FilledPattern::extendSeedLines() {
         coord_d previous_displacement = to_coord_d(seed_line.front() - seed_line[3]);
         if (dot(front_dual, previous_displacement) < 0) { front_dual = front_dual * (-1); }
 
-        std::vector<coord> front_displacements = pixeliseLine(front_dual * 2 * getSeedSpacing());
+        std::vector<coord> front_displacements = pixeliseLine(front_dual * getPrintRadius() * getSeedSpacing());
         coord front = seed_line.front();
         for (auto &displacement: front_displacements) {
             coord current = front + displacement;
@@ -107,7 +105,7 @@ void FilledPattern::extendSeedLines() {
         previous_displacement = to_coord_d(seed_line.back() - seed_line[seed_line.size() - 4]);
         if (dot(back_dual, previous_displacement) < 0) { back_dual = back_dual * (-1); }
 
-        std::vector<coord> back_displacements = pixeliseLine(back_dual * 2 * getSeedSpacing());
+        std::vector<coord> back_displacements = pixeliseLine(back_dual * getPrintRadius() * getSeedSpacing());
         coord back = seed_line.back();
         for (auto &displacement: back_displacements) {
             coord current = back + displacement;
@@ -394,8 +392,8 @@ coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_m
         coord_d previous_position = real_coordinates - previous_move;
         coord_d previous_director = getDirector(previous_position);
         if (abs(dot(current_director, previous_director)) < desired_pattern.get().getDiscontinuityThresholdCos()) {
-            coord_d positive_director = getDirector(real_coordinates + 2 * current_director);
-            coord_d negative_director = getDirector(real_coordinates - 2 * current_director);
+            coord_d positive_director = getDirector(real_coordinates + getPrintRadius() * current_director);
+            coord_d negative_director = getDirector(real_coordinates - getPrintRadius() * current_director);
 
             if (abs(dot(current_director, positive_director)) < 0.9 * abs(dot(current_director, negative_director))) {
                 length *= -1;
@@ -459,8 +457,8 @@ coord_d FilledPattern::normalisedResultant(const coord_d &move, const coord_d &n
     coord_d new_director = getDirector(new_position);
 
     if (is_discontinuity_detected) {
-        coord_d positive_director = getDirector(new_position + 2 * new_director);
-        coord_d negative_director = getDirector(new_position - 2 * new_director);
+        coord_d positive_director = getDirector(new_position + getPrintRadius() * new_director);
+        coord_d negative_director = getDirector(new_position - getPrintRadius() * new_director);
 
         if (abs(dot(new_director, positive_director)) > 0.9 * abs(dot(new_director, negative_director))) {
             resultant = move_direction + new_director;
@@ -517,7 +515,6 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     if (!isValid(new_positions)) { return false; }
 
     previous_step = new_positions - positions;
-    if (norm(previous_step) < 1) { return false; }
 
     coord_d tangent = normalisedResultant(previous_step, new_positions, is_discontinuity_detected);
     coord_d normal = perpendicular(tangent) * getPrintRadius();
@@ -848,9 +845,9 @@ FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path)
     for (auto &displacement: collision_list) {
         if (
                 isFilled(point + displacement) &&
-                isLeftOfEdge(point + displacement, current_path.getPositivePathEdge().back(),
+                !isLeftOfEdge(point + displacement, current_path.getPositivePathEdge().back(),
                              current_path.getNegativePathEdge().back(),
-                             false)
+                             true)
                 ) {
             return true;
         }
