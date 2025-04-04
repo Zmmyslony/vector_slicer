@@ -460,9 +460,12 @@ coord_d FilledPattern::normalisedResultant(const coord_d &move, const coord_d &n
         coord_d positive_director = getDirector(new_position + getPrintRadius() * new_director);
         coord_d negative_director = getDirector(new_position - getPrintRadius() * new_director);
 
-        if (abs(dot(new_director, positive_director)) > 0.9 * abs(dot(new_director, negative_director))) {
+        double positive_projection = fabs(dot(new_director, positive_director));
+        double negative_projection = fabs(dot(new_director, negative_director));
+
+        if (positive_projection > negative_projection) {
             resultant = move_direction + new_director;
-        } else{
+        } else {
             resultant = move_direction - new_director;
         }
     } else {
@@ -477,6 +480,33 @@ coord_d FilledPattern::normalisedResultant(const coord_d &move, const coord_d &n
     return resultant / projection;
 }
 
+coord_d getPositionNearDiscontinuity(const coord_d &continuous, const coord_d &discontinuous) {
+    bool is_x_different = floor(discontinuous.x + 0.5) != floor(continuous.x + 0.5);
+    bool is_y_different = floor(discontinuous.y + 0.5) != floor(continuous.y + 0.5);
+
+    double x_length = discontinuous.x - continuous.x;
+    double y_length = discontinuous.y - continuous.y;
+
+    double x_shortened = floor(discontinuous.x + 0.5) + (x_length >= 0 ? -0.49999: 0.49999);
+    double y_shortened = floor(discontinuous.y + 0.5) + (y_length >= 0 ? -0.49999: 0.49999);
+
+    double x_shortening = (x_shortened - continuous.x) / x_length;
+    double y_shortening = (y_shortened - continuous.y) / y_length;
+
+    double shortening = 1;
+    if (is_x_different && !is_y_different) {
+        shortening = x_shortening;
+    } else if (!is_x_different && is_y_different) {
+        shortening = y_shortening;
+    } else if (is_x_different && is_y_different) {
+        shortening = fmax(x_shortening, y_shortening);
+    } else {
+        throw std::runtime_error("getPositionNearDiscontinuity fail: both coordinates correspond to the same "
+                                 "grid element.");
+    }
+    return continuous + (discontinuous - continuous) * shortening;
+}
+
 
 /// Returns bool depending whether propagation was successful.
 bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length) {
@@ -488,7 +518,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     coord_d previous_discontinuous_position = INVALID_POSITION;
     bool is_discontinuity_detected = false;
 
-    while (--length > 0 && !isValid(new_positions)) {
+    while (length-- >= 1 && !isValid(new_positions)) {
         new_positions = calculateNextPosition(positions, previous_step, length, current_path);
 
         if (!desired_pattern.get().isInShape(new_positions)) { continue; }
@@ -499,7 +529,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
                 break;
             case DISCONTINUITY_STICK:
                 if (is_director_continuous && isValid(previous_discontinuous_position)) {
-                    new_positions = previous_discontinuous_position;
+                    new_positions = getPositionNearDiscontinuity(new_positions, previous_discontinuous_position);
                 } else if (!is_director_continuous) {
                     previous_discontinuous_position = new_positions;
                     is_discontinuity_detected = true;
@@ -511,7 +541,9 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
                 break;
         }
     }
-    if (is_discontinuity_detected) { new_positions = previous_discontinuous_position; }
+    if (!isValid(new_positions) && is_discontinuity_detected) {
+        new_positions = getPositionNearDiscontinuity(positions, previous_discontinuous_position);
+    }
     if (!isValid(new_positions)) { return false; }
 
     previous_step = new_positions - positions;
@@ -524,7 +556,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
-    if (current_points_to_fill.empty()) { return false; }
+    if (current_points_to_fill.empty() && !is_discontinuity_detected) { return false; }
 
     positions = new_positions;
     return true;
@@ -846,8 +878,8 @@ FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path)
         if (
                 isFilled(point + displacement) &&
                 !isLeftOfEdge(point + displacement, current_path.getPositivePathEdge().back(),
-                             current_path.getNegativePathEdge().back(),
-                             true)
+                              current_path.getNegativePathEdge().back(),
+                              false)
                 ) {
             return true;
         }

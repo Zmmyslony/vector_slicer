@@ -40,7 +40,7 @@ isLeftOfEdge(const coord &point, const coord_d &edge_point_first, const coord_d 
     if (is_exclusive) {
         return cross_product > 0;
     } else {
-        return cross_product >= 0;
+        return cross_product > -1e-6;
     }
 }
 
