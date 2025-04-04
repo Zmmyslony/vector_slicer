@@ -70,18 +70,9 @@ class FilledPattern : public FillingConfig {
 
     void fillPointsFromList(const std::vector<coord> &points_to_fill, const coord_d &direction, int value);
 
-    void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
-                                    const coord &previous_step, int value);
-
-    void fillPointsFromDisplacement(const coord &starting_position, const std::vector<coord> &list_of_displacements,
-                                    const coord &previous_step);
-
     coord_d getNewStep(coord_d &real_coordinates, coord_d &previous_move, int length) const;
 
     bool propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length);
-
-
-    [[nodiscard]] matrix_d getDualTensor(const coord &coordinates) const;
 
     double distance(const coord &first_point, const coord &second_point);
 
@@ -114,8 +105,6 @@ class FilledPattern : public FillingConfig {
 
     void setupRootPoints();
 
-    std::vector<std::vector<SeedPoint>> separateLines(std::vector<std::vector<coord>> list_of_lines, int line_index);
-
     coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length, const Path &current_path);
 
     [[nodiscard]] bool isDirectorContinuous(const coord_d &previous_coordinates, const coord_d &new_coordinates) const;
@@ -126,11 +115,13 @@ class FilledPattern : public FillingConfig {
 
     void updatePathOverlap(Path &path);
 
-    coord_d getDirector(const coord_d &coordinates) const;
+    [[nodiscard]] coord_d getDirector(const coord_d &coordinates) const;
 
-    coord_d getDirector(const coord &coordinates) const;
+    [[nodiscard]] coord_d getDirector(const coord &coordinates) const;
 
-    bool isFillable(const coord &coordinate) const;
+    [[nodiscard]] bool isFillable(const coord &coordinate) const;
+
+    [[nodiscard]] bool isFillable(const coord_d &coordinate) const;
 
     bool isTerminable(const coord_d &coordinate, const Path &current_path);
 
@@ -149,6 +140,10 @@ class FilledPattern : public FillingConfig {
     coord_d
     normalisedResultant(const coord_d &primary_vector, const coord_d &secondary_vector, bool is_discontinuity_detected);
 
+    [[nodiscard]] coord_d getDualDirector(const coord &coordinates) const;
+
+    [[nodiscard]] coord_d getDualDirector(const coord_d &coordinates) const;
+
 public:
 
     std::vector<std::vector<double>> x_field_filled;
@@ -164,7 +159,7 @@ public:
 
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
-    FilledPattern(const DesiredPattern &new_desired_pattern, const FillingConfig new_config);
+    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
 
     /// Sets up the objects deriving from the FillingConfig
     void setup();
@@ -177,9 +172,6 @@ public:
 
     /// Fills points around the coordinates in a radius of print_radius
     void fillPointsInCircle(const coord &coordinates);
-
-    /// Fills points in half circle at the end of the path
-    void fillPointsInHalfCircle(const coord &last_coordinate, const coord &previous_coordinate, int value);
 
     /// Looks for a suitable point where a new path can be started from. If
     SeedPoint findSeedPoint();
@@ -200,9 +192,6 @@ public:
 
     void fillPointsInHalfCircle(const Path &path, int value, bool is_front);
 
-
-    bool isFillable(const coord_d &coordinate) const;
-
     void
     fillPointsFromDisplacementNonAligned(const coord &starting_position,
                                          const std::vector<coord> &list_of_displacements,
@@ -210,13 +199,7 @@ public:
 
     void fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value);
 
-    bool isInRange(const coord_d &index) const;
-
     bool isFilled(const coord &coordinate) const;
-
-    void setIsReseedingEnabled(bool is_reseeding_enabled);
-
-
 };
 
 
