@@ -121,6 +121,10 @@ std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second,
     }
 
     std::vector<coord> coords_to_fill;
+    if ((x_max  + 1 - x_min) * (y_max + 1 - y_min) > 1e6) {
+        std::cout << x_min << " " << x_max << " " << y_min << " " << y_max << std::endl;
+        throw std::runtime_error("More than 1e6 points are scanned when looking for points to fill.");
+    }
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
         for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
             coord pos ={x_curr, y_curr};

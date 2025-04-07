@@ -216,5 +216,12 @@ const std::vector<coord_d> &Path::getNegativePathEdge() const {
     return negative_path_edge;
 }
 
+bool Path::isMovedLessThan(double distance, int step_count) const {
+    /// Checks whether the path has moved than the given distance in past step counts.
+    unsigned int current_size = size();
+    if (current_size <= step_count) { return false; }
+    return norm(sequence_of_positions[current_size - step_count - 1] - last()) < distance;
+}
+
 
 

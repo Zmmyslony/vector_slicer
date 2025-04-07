@@ -189,24 +189,9 @@ double DesiredPattern::getDirectorY(int x, int y) const {
 
 
 coord_d DesiredPattern::getDirector(const coord_d &positions) const {
-    int x_base = floor(positions.x + 0.5);
-    int y_base = floor(positions.y + 0.5);
+    int x_base = (short)lround(positions.x);
+    int y_base = (short)lround(positions.y);
     return {getDirectorX(x_base, y_base), getDirectorY(x_base, y_base)};
-//    double x_fraction = 1 - (positions.x - floor(positions.x));
-//    double y_fraction = 1 - (positions.y - floor(positions.y));
-//
-//    double x_director =  x_fraction * y_fraction * getDirectorX(x_base, y_base);
-//    x_director += (1 - x_fraction) * y_fraction * getDirectorX(x_base + 1, y_base);
-//    x_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorX(x_base + 1, y_base + 1);
-//    x_director += x_fraction * (1 - y_fraction) * getDirectorX(x_base, y_base + 1);
-//
-//    double y_director =  x_fraction * y_fraction * getDirectorY(x_base, y_base);
-//    y_director += (1 - x_fraction) * y_fraction * getDirectorY(x_base + 1, y_base);
-//    y_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorY(x_base + 1, y_base + 1);
-//    y_director += x_fraction * (1 - y_fraction) * getDirectorY(x_base, y_base + 1);
-
-//    double norm = sqrt(x_director * x_director + y_director * y_director);
-//    return {x_director / norm, y_director / norm};
 }
 
 bool DesiredPattern::isInRange(const coord &coordinate) const {

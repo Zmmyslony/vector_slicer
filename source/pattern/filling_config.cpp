@@ -353,7 +353,7 @@ bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, Fi
 }
 
 void FillingConfig::convertToVariableWidth() {
-    repulsion = 1;
+    repulsion = 0;
     collision_radius = 1;
-    starting_point_separation = 2 * print_radius;
+    starting_point_separation = 2 * print_radius - 1;
 }
