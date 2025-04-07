@@ -131,19 +131,19 @@ coord_set skeletonize(coord_set shape, int grow_size, const std::vector<std::vec
     shape = grow_pattern(shape, grow_size, shape_matrix);
     /// Instead of doing the skeletonisation until convergence, we only aim to reduce what was added by the growth.
     for (int i = 0; i <= grow_size * 2; i++) {
-        coord_vector coordinates_to_remove_stage_one;
+        coord_set coordinates_to_remove_stage_one;
         for (auto &coordinate: shape) {
             if (isRemovedEastSouth(shape, coordinate)) {
-                coordinates_to_remove_stage_one.emplace_back(coordinate);
+                coordinates_to_remove_stage_one.insert(coordinate);
             }
         }
 
         for (auto &coordinate: coordinates_to_remove_stage_one) { shape.erase(coordinate); }
 
-        coord_vector coordinates_to_remove_stage_two;
+        coord_set coordinates_to_remove_stage_two;
         for (auto &coordinate: shape) {
             if (isRemovedNorthWest(shape, coordinate)) {
-                coordinates_to_remove_stage_two.emplace_back(coordinate);
+                coordinates_to_remove_stage_two.insert(coordinate);
             }
         }
 

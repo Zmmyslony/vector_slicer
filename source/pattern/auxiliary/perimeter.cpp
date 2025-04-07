@@ -138,30 +138,30 @@ bool isValidPerimeterPoint(const coord &positions, const std::vector<std::vector
     return dot(outward_pointing_vector, current_splay) > zero_splay_threshold;
 }
 
-std::vector<coord> findValidPerimeterPoints(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes,
-                                            const std::vector<std::vector<coord_d>> &splay_array) {
-    std::vector<coord> unsorted_perimeters;
+coord_set findValidPerimeterPoints(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes,
+                                   const std::vector<std::vector<coord_d>> &splay_array) {
+    coord_set unsorted_perimeters;
     std::vector<coord> tested_circle = circleDisplacements(4);
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
             coord current_position = {i, j};
             if (isValidPerimeterPoint({i, j}, shape_matrix, sizes, tested_circle, splay_array)) {
-                unsorted_perimeters.push_back(current_position);
+                unsorted_perimeters.insert(current_position);
             }
         }
     }
     return unsorted_perimeters;
 }
 
-std::vector<coord> findGeometricalPerimeter(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes) {
-    std::vector<coord> unsorted_perimeters;
+coord_set findGeometricalPerimeter(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes) {
+    coord_set unsorted_perimeters;
     // It is set to constant radius, maybe add a control over it?
     std::vector<coord> tested_circle = circleDisplacements(4);
     for (int i = 0; i < sizes[0]; i++) {
         for (int j = 0; j < sizes[1]; j++) {
             coord current_position = {i, j};
             if (isOnEdge(shape_matrix, {i, j}, sizes)) {
-                unsorted_perimeters.push_back(current_position);
+                unsorted_perimeters.insert(current_position);
             }
         }
     }
@@ -172,7 +172,7 @@ std::vector<coord> findGeometricalPerimeter(const std::vector<std::vector<uint8_
 std::vector<std::vector<coord>>
 findSeparatedPerimeters(const std::vector<std::vector<uint8_t>> &shape_matrix, const veci &sizes,
                         const std::vector<std::vector<coord_d>> &splay_array) {
-    std::vector<coord> unsorted_perimeters = findValidPerimeterPoints(shape_matrix, sizes, splay_array);
+    coord_set unsorted_perimeters = findValidPerimeterPoints(shape_matrix, sizes, splay_array);
     std::vector<std::vector<coord>> separated_perimeters = separateIntoLines(unsorted_perimeters, {0, 0}, 2);
     // If using the splay approach for selecting splay-valid perimeter points yields single points that are unconnected
     // then separation into perimeters will not detect any lines. Therefore, we revert to the simple geometrical

@@ -586,17 +586,13 @@ void DesiredPattern::findLineDensityMinima() {
     std::cout << "\rSearch for seeding lines complete." << std::endl;
     solution_set = skeletonize(solution_set, 10, shape_matrix);
 //    exportCoord(solution_set, "/home/mlz22/OneDrive/tmp/splay_lines.csv");
-    std::vector<coord> line_density_minima_local;
-    for (auto &vector: solution_set) {
-        line_density_minima_local.emplace_back(coord{vector.x, vector.y});
-    }
 
-    if (line_density_minima_local.empty()) {
+    if (solution_set.empty()) {
         std::cout << "No splay seeding lines found, which indicates a pattern being composed of +1 defects. "
                      "Proceeding with dual seeding. " << std::endl;
         return;
     }
-    std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
+    std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(solution_set,
                                                                                            {0, 0}, sqrt(2));
     if (separated_lines_of_minimal_density.size() > 1) {
         std::cout << " \t" << separated_lines_of_minimal_density.size() << " splay seeding lines found."
