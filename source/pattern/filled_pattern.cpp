@@ -481,7 +481,7 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
-    if ((current_points_to_fill.empty() || norm(previous_step) < 1) && !is_discontinuity_detected) { return false; }
+    if ((current_points_to_fill.empty())) { return false; }
     if (current_path.isMovedLessThan(1, 2)) { return false; }
 
     positions = new_positions;
