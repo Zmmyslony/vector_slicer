@@ -36,12 +36,7 @@ isLeftOfEdge(const coord &point, const coord_d &edge_point_first, const coord_d 
     double cross_product =
             (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y) -
             (edge_point_second.y - edge_point_first.y) * (point.x - edge_point_first.x);
-
-    if (is_exclusive) {
-        return cross_product > 0;
-    } else {
-        return cross_product > -1e-6;
-    }
+    return cross_product > (is_exclusive ? 0 : -1e-6);
 }
 
 bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const coord_d &edge_point_second,
@@ -50,11 +45,7 @@ bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const c
             (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y) -
             (edge_point_second.y - edge_point_first.y) * (point.x - edge_point_first.x);
 
-    if (is_exclusive) {
-        return cross_product > 0;
-    } else {
-        return cross_product >= 0;
-    }
+    return cross_product > (is_exclusive ? 0 : -1e-6);
 }
 
 bool isInRectangle(const coord_d &point, const coord_d &corner_first, const coord_d &corner_second,

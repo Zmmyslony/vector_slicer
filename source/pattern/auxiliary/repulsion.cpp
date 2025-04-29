@@ -33,13 +33,13 @@
 
 
 std::vector<coord> generateLineDisplacements(const coord_d &tangent, double radius) {
-    coord_d normal = normalized(perpendicular(tangent)) * radius;
+    coord_d normal = perpendicular(tangent) * (radius / norm(tangent));
 
     int distance_i = (int) std::max(fabs(normal.x), fabs(normal.y));
     std::vector<coord> displacement_list;
+    displacement_list.reserve(2 * distance_i + 1);
     for (int i = -distance_i; i <= distance_i; i++) {
-        coord_d displacement_d = normal * (double) i / (double) distance_i;
-        displacement_list.emplace_back(displacement_d);
+        displacement_list.emplace_back(normal * ((double) i / (double) distance_i));
     }
     return displacement_list;
 }
