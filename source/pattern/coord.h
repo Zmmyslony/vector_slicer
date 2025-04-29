@@ -128,7 +128,7 @@ inline coord_d normalized(const coord_d &pt) { return pt.normalized(); }
 struct coord_hash {
 public:
     unsigned int operator()(const coord &x) const {
-        return ((int) x.x + 32768) * 65536 + ((int)x.y + 32768);
+        return (int) x.x * (int) x.x - (int) x.y ;
     }
 };
 
