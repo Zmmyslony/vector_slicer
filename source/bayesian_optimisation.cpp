@@ -532,7 +532,7 @@ void variableWidthOptimisation(const fs::path &pattern_path, int seeds) {
     std::cout << "\n\nCurrent directory: " << pattern_path << std::endl;
 
     Simulation simulation(pattern_path, true);
-    simulation.setOverlapWeight(simulation.getOverlapWeight() / 100);
+    simulation.setOverlapWeight(simulation.getEmptySpotWeight() / 1000);
     fs::path config_path = pattern_path / "config.txt";
     FillingConfig optimised_config(config_path);
     optimised_config.convertToVariableWidth();
