@@ -61,6 +61,7 @@ void exportHeaderToFile(const std::string &header, const fs::path &filename) {
     if (file.is_open()) {
         file << header;
     } else {
+        std::cout << "File " << filename << " failed to create." << std::endl;
         throw std::runtime_error("File " + filename.string() + " failed to create.");
     }
 }
