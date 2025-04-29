@@ -34,30 +34,18 @@ Reading and plotting the slicer output.
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
 
-from . import slicer_setup as slicer
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
-import os.path
+from lib import project_paths
 import math
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-
-def get_slicer_output_directory():
-    slicer_directory = slicer.get_project_directory()
-    output_directory = slicer_directory / "output"
-    return output_directory
-
-
-def get_plot_output_directory():
-    plot_output_directory = slicer.get_project_directory() / "python" / "output"
-    if not os.path.exists(plot_output_directory):
-        os.mkdir(plot_output_directory)
-    return plot_output_directory
+from lib.pattern.pattern import Pattern
 
 
 def read_fill_matrix(pattern_name):
-    input_path = get_slicer_output_directory() / "filled_matrices" / (pattern_name + ".csv")
+    input_path = project_paths.get_slicer_output_directory() / "filled_matrices" / (pattern_name + ".csv")
     data = np.genfromtxt(input_path, dtype=int, delimiter=",").transpose()
     return data
 
@@ -96,7 +84,7 @@ def read_optimisation_sequence(pattern_name) -> list:
     :param pattern_name:
     :return: List of disagreements in each optimisation iteration.
     """
-    input_path = get_slicer_output_directory() / "optimisation_save" / (pattern_name + ".txt")
+    input_path = project_paths.get_slicer_output_directory() / "optimisation_save" / (pattern_name + ".txt")
 
     file = open(input_path, "r")
     optimisation_sequence = []
@@ -135,7 +123,7 @@ def read_paths(pattern_name):
     :param pattern_name:
     :return:
     """
-    input_path = get_slicer_output_directory() / "paths" / (pattern_name + ".csv")
+    input_path = project_paths.get_slicer_output_directory() / "paths" / (pattern_name + ".csv")
 
     file = open(input_path, "r")
     list_of_lines = []
@@ -151,7 +139,7 @@ def read_paths(pattern_name):
 
 
 def read_seeds(pattern_name):
-    input_path = get_slicer_output_directory() / "used_seeds" / (pattern_name + ".csv")
+    input_path = project_paths.get_slicer_output_directory() / "used_seeds" / (pattern_name + ".csv")
     seeds = np.genfromtxt(input_path, delimiter=",")
     return seeds
 
@@ -173,11 +161,11 @@ def plot_paths(axis: plt.axis, list_of_lines, is_non_printing_moves_shown=True):
     return axis
 
 
-def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True,
+def plot_pattern(pattern: str or Pattern, axis: plt.axis = None, is_fill_density_shown=True, is_paths_shown=True,
                  is_axes_shown=True, max_fill_value=None, is_non_printing_moves_shown=True, is_seeds_shown=False):
     """
     Plots the sliced pattern with fill density (gray), printing moves (blue) and non-printing moves (orange).
-    :param pattern_name:
+    :param pattern:
     :param axis: If specified the plots will not be immediately shown but returned for further manipulation.
     :param is_fill_density_shown: allows to choose whether gray background showing the fill density is shown.
     :param is_paths_shown: allows to choose printer movements are shown.
@@ -186,6 +174,10 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
     :param max_fill_value: maximum value of the fill matrix.
     :return:
     """
+    if isinstance(pattern, Pattern):
+        pattern_name = pattern.name
+    else:
+        pattern_name = pattern
 
     if axis is None:
         fig = plt.figure(figsize=[6, 4], dpi=300)
@@ -216,17 +208,17 @@ def plot_pattern(pattern_name, axis: plt.axis = None, is_fill_density_shown=True
         plt.tight_layout()
 
     if axis is None:
-        save_name = get_plot_output_directory() / f"{pattern_name}_pattern.svg"
+        save_name = project_paths.get_plot_output_directory() / f"{pattern_name}_pattern.svg"
         plt.savefig(save_name, transparent=True)
         plt.show()
     return axis
 
 
 def plot_director_distribution_disagreement(pattern_name, bucket_count=None):
-    input_path = get_slicer_output_directory() / "bucketed_disagreement" / (pattern_name + ".csv")
+    input_path = project_paths.get_slicer_output_directory() / "bucketed_disagreement" / (pattern_name + ".csv")
     original_data = np.genfromtxt(input_path, delimiter=",")
-    original_data /= np.sum(original_data) # Normalize
-    original_data *= 100 # Percentages
+    original_data /= np.sum(original_data)  # Normalize
+    original_data *= 100  # Percentages
     original_angle_separators = np.linspace(0, 90, original_data.shape[0], endpoint=True)
     if bucket_count is not None:
         interval = math.ceil(original_data.shape[0] / bucket_count)
@@ -260,7 +252,7 @@ def plot_disagreement_progress(pattern_name):
     ax.set_xlabel("iteration")
     ax.set_ylabel("disagreement")
     ax.legend()
-    save_name = get_plot_output_directory() / f"{pattern_name}_disagreement_progress.svg"
+    save_name = project_paths.get_plot_output_directory() / f"{pattern_name}_disagreement_progress.svg"
     plt.savefig(save_name)
 
     plt.show()
