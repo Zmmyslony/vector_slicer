@@ -1,13 +1,3 @@
-"""
-This file implements some of the director patterns designed in:
-
-Metric mechanics with nontrivial topology: Actuating irises, cylinders, and evertors
-D. Duffy, M. Javed, M. K. Abdelrahman, T. H. Ware, M. Warner, and J. S. Biggins
-Phys. Rev. E 104, 065004 – Published 20 December 2021
-
-https://journals.aps.org/pre/abstract/10.1103/PhysRevE.104.065004
-"""
-
 #  Copyright (c) 2023-2025, Michał Zmyślony, mlz22@cam.ac.uk.
 #
 #  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
@@ -24,21 +14,17 @@ https://journals.aps.org/pre/abstract/10.1103/PhysRevE.104.065004
 #
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
-#
-#  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
-#
-#  This file is part of Vector Slicer.
-#
-#  Vector Slicer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-#  License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
-#  later version.
-#
-#  Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
-#  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-#  Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License along with Vector Slicer.
-#  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+This file implements some of the director patterns designed in:
+
+Metric mechanics with nontrivial topology: Actuating irises, cylinders, and evertors
+D. Duffy, M. Javed, M. K. Abdelrahman, T. H. Ware, M. Warner, and J. S. Biggins
+Phys. Rev. E 104, 065004 – Published 20 December 2021
+
+https://journals.aps.org/pre/abstract/10.1103/PhysRevE.104.065004
+"""
+
 
 import numpy as np
 from lib.shape import basic as shapes

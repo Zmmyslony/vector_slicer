@@ -1,13 +1,3 @@
-"""
-This file implements some of the director patterns designed in:
-
-Defective nematogenesis: Gauss curvature in programmable shape-responsive sheets with topological defects
-D. Duffy and J. S. Biggins
-Soft Mat. 16.48 – Published 1 October 2020
-
-https://doi.org/10.1039/D0SM01192D
-"""
-
 #  Copyright (c) 2023-2025, Michał Zmyślony, mlz22@cam.ac.uk.
 #
 #  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
@@ -24,21 +14,16 @@ https://doi.org/10.1039/D0SM01192D
 #
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
-#
-#  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
-#
-#  This file is part of Vector Slicer.
-#
-#  Vector Slicer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-#  License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
-#  later version.
-#
-#  Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
-#  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-#  Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License along with Vector Slicer.
-#  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+This file implements some of the director patterns designed in:
+
+Defective nematogenesis: Gauss curvature in programmable shape-responsive sheets with topological defects
+D. Duffy and J. S. Biggins
+Soft Mat. 16.48 – Published 1 October 2020
+
+https://doi.org/10.1039/D0SM01192D
+"""
 
 import numpy as np
 from lib.shape import basic as shapes
