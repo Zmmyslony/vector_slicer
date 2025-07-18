@@ -16,16 +16,20 @@
 """
 This file contains methods for locating directories important for the communication with Vector Slicer and
 saving the outputs.
+
+WARNING: These functions will stop working if the directory structure of the library is changed.
 """
 
 import os
 import pathlib
 
+PROJECT_PATH = pathlib.Path(os.path.dirname(__file__)).parent.parent.absolute()
+
 def get_project_directory():
     """
     :return: Vector Slicer directory
     """
-    return pathlib.Path().absolute().parent
+    return PROJECT_PATH
 
 
 def get_patterns_directory():
