@@ -44,9 +44,9 @@ void Path::addPoint(const coord_d &positions, const coord_d &positive_edge, cons
 }
 
 
-Path::Path(SeedPoint seed, double print_radius) : seed_point(seed) {
+Path::Path(SeedPoint seed, double print_radius, const coord_d &tangent_starting) : seed_point(seed) {
     coord_d positions = to_coord_d(seed_point.getCoordinates());
-    coord_d tangent = normalized(seed_point.getDirector());
+    coord_d tangent = normalized(tangent_starting);
     coord_d normal = perpendicular(tangent) * print_radius;
     addPoint(positions, positions + normal, positions - normal);
 }
@@ -214,6 +214,13 @@ const std::vector<coord_d> &Path::getPositivePathEdge() const {
 
 const std::vector<coord_d> &Path::getNegativePathEdge() const {
     return negative_path_edge;
+}
+
+bool Path::isMovedLessThan(double distance, int step_count) const {
+    /// Checks whether the path has moved than the given distance in past step counts.
+    unsigned int current_size = size();
+    if (current_size <= step_count) { return false; }
+    return norm(sequence_of_positions[current_size - step_count - 1] - last()) < distance;
 }
 
 

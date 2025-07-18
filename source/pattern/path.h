@@ -47,7 +47,7 @@ class Path {
     double tensorDistance(const coord_d &point);
 public:
 
-    explicit Path(SeedPoint seed, double print_radius);
+    explicit Path(SeedPoint seed, double print_radius, const coord_d &tangent_starting);
 
     Path(const Path& forward_path, const Path& backward_path);
 
@@ -96,6 +96,8 @@ public:
     std::vector<coord> findPointsToFill(int i, bool is_position_filled) const;
 
     std::vector<coord> findPointsToFill(bool is_position_filled) const;
+
+    bool isMovedLessThan(double distance, int step_count) const;
 };
 
 

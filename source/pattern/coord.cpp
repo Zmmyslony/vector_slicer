@@ -69,7 +69,8 @@ bool coord_d::operator==(const coord_d &other) const {
 }
 
 double coord_d::norm() const {
-    return sqrt(x * x + y * y);
+    double norm = sqrt(x * x + y * y);
+    return norm != 0 ? norm : 1e-6;
 }
 
 coord_d coord_d::normalized() const {
@@ -109,7 +110,8 @@ void coord::operator*=(int multiplier) {
 }
 
 double coord::norm() const {
-    return sqrt(x * x + y * y);
+    double norm = sqrt(x * x + y * y);
+    return norm != 0 ? norm : 1e-6;
 }
 
 coord_d coord::normalized() const {

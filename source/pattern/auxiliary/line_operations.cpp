@@ -28,27 +28,27 @@
 #include <cmath>
 
 #include "valarray_operations.h"
-#include "simple_math_operations.h"
 
 
-void removeElement(std::vector<coord> &array, int index) {
-    array.erase(array.begin() + index);
-}
+coord findClosestNeighbour(coord_set &array, coord &element) {
+    coord closest_element = *array.begin();
 
-coord findClosestNeighbour(std::vector<coord> &array, coord &element) {
-    coord closest_element;
-    auto closest_distance = DBL_MAX;
+    std::vector<coord> displacements = {{1,  0},
+                                        {0,  1},
+                                        {-1, 0},
+                                        {0,  -1},
+                                        {1,  1},
+                                        {-1, 1},
+                                        {-1, -1},
+                                        {1,  -1}};
 
-    int i_min = 0;
-    for (int i = 0; i < array.size(); i++) {
-        double distance = norm(array[i] - element);
-        if (distance < closest_distance) {
-            closest_element = array[i];
-            i_min = i;
-            closest_distance = distance;
+    for (const coord &displacement: displacements) {
+        if (array.find(element + displacement) != array.end()) {
+            closest_element = element + displacement;
+            break;
         }
     }
-    removeElement(array, i_min);
+    array.erase(element);
     return closest_element;
 }
 
@@ -60,7 +60,7 @@ bool isLooped(const std::vector<coord> &line) {
 }
 
 std::vector<std::vector<coord>>
-separateIntoLines(std::vector<coord> &unsorted_perimeters, coord starting_coordinates, double separation_distance) {
+separateIntoLines(coord_set &unsorted_perimeters, coord starting_coordinates, double separation_distance) {
     coord current_element = findClosestNeighbour(unsorted_perimeters, starting_coordinates);
     std::vector<std::vector<coord>> forwards_paths;
     std::vector<std::vector<coord>> backwards_paths;

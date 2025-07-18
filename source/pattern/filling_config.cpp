@@ -32,6 +32,9 @@
 #include <unordered_map>
 #include <iomanip>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 
 void FillingConfig::printConfig() {
@@ -214,6 +217,7 @@ void FillingConfig::readLineOfConfig(std::vector<std::string> line) {
 
 
 FillingConfig::FillingConfig(const fs::path &config_path) : FillingConfig() {
+    if (!fs::exists(config_path)) { throw std::runtime_error("ERROR: Missing config path."); }
     std::string line;
     std::ifstream file(config_path.string());
 
@@ -339,7 +343,17 @@ double FillingConfig::getRepulsionAngle() const {
     return repulsion_angle;
 }
 
+bool FillingConfig::isSplayFillingEnabled() {
+    return filling_method == Splay;
+}
+
 
 bool isConfigOptionTheSame(configOptions option, FillingConfig &first_config, FillingConfig &second_config) {
     return first_config.getConfigOption(option) == second_config.getConfigOption(option);
+}
+
+void FillingConfig::convertToVariableWidth() {
+    repulsion = 0;
+    collision_radius = 1;
+    starting_point_separation = 2 * print_radius - 1;
 }

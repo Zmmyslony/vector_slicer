@@ -50,8 +50,8 @@ std::vector<int> readConfigTable(const fs::path &config_path) {
     return config_variables;
 }
 
-DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_splay_filling_enabled, int threads,
-                                        const FillingMethodConfig &filling) {
+DesiredPattern
+openPatternFromDirectory(const fs::path &directory_path, int threads, const FillingMethodConfig &filling) {
     fs::path shape_path = directory_path / "shape.csv";
     fs::path theta_field_path = directory_path / "theta_field.csv";
     fs::path x_field_path = directory_path / "xField.csv";
@@ -61,21 +61,20 @@ DesiredPattern openPatternFromDirectory(const fs::path &directory_path, bool is_
     if (!fs::exists(shape_path)) {
         throw std::runtime_error("Shape matrix does not exist in the searched directory.");
     }
-
     DesiredPattern pattern;
     if (fs::exists(theta_field_path)) {
-        pattern = {shape_path.string(), theta_field_path.string(), is_splay_filling_enabled, threads, filling};
+        pattern = {shape_path.string(), theta_field_path.string(), true, threads, filling};
     } else if (fs::exists(x_field_path) && fs::exists(y_field_path)) {
-        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string(), is_splay_filling_enabled, threads, filling};
+        pattern = {shape_path.string(), x_field_path.string(), y_field_path.string(), true, threads, filling};
     } else {
         throw std::runtime_error("Neither theta nor xy field matrices are found in the searched directory.");
     }
 
     if (fs::exists(splay_path)) {
         pattern.setSplayVector(splay_path.string());
-    } else if (is_splay_filling_enabled) {
+    } else {
         std::cout
-                << "Splay filling is enabled but no splay file is provided. Calculating splay numerically - output "
+                << "No splay file is provided. Calculating splay numerically - output "
                    "quality may be decreased" << std::endl;
     }
     pattern.updateProperties();

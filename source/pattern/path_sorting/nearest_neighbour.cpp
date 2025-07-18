@@ -33,11 +33,11 @@ std::vector<Path> nearestNeighbourSort(const FilledPattern &pattern, const coord
     std::vector<Path> unsorted_paths = pattern.getSequenceOfPaths();
     std::vector<Path> sorted_paths;
     coord_d previous_end = to_coord_d(starting_coordinates);
-    int j = 0;
+
     while (!unsorted_paths.empty()) {
         int i_nearest = 0;
-        double minimal_distance = DBL_MAX;
-        for (int i = 1; i < unsorted_paths.size(); i++) {
+        auto minimal_distance = DBL_MAX;
+        for (int i = 0; i < unsorted_paths.size(); i++) {
             double current_distance = unsorted_paths[i].distance(previous_end, is_vector_sorted);
             if (current_distance < minimal_distance) {
                 i_nearest = i;

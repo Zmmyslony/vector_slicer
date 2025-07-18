@@ -35,7 +35,7 @@ using veci = std::vector<int>;
 std::vector<std::vector<veci>> separateLines(std::vector<veci> &sorted_perimeters, double separation_distance);
 
 std::vector<std::vector<coord>>
-separateIntoLines(std::vector<coord> &unsorted_perimeters, coord starting_coordinates, double separation_distance);
+separateIntoLines(coord_set &unsorted_perimeters, coord starting_coordinates, double separation_distance);
 
 bool isLooped(const std::vector<coord> &line);
 

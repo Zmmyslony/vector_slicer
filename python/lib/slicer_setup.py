@@ -35,23 +35,10 @@ Configuration of the slicer library.
 #  If not, see <https://www.gnu.org/licenses/>.
 
 import ctypes
-import pathlib
 import sys
 import os
-
-
-def get_project_directory():
-    """
-    :return: Vector Slicer directory
-    """
-    return pathlib.Path().absolute().parent
-
-
-def get_patterns_directory():
-    """
-    :return: Patterns (input) directory.
-    """
-    return get_project_directory() / "patterns"
+from lib import project_paths
+from lib.pattern.pattern import Pattern
 
 
 def configure_slicer(slicer):
@@ -64,6 +51,7 @@ def configure_slicer(slicer):
     slicer.slice_pattern_with_config.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     slicer.re_slice_pattern.argtypes = [ctypes.c_char_p]
     slicer.slice_pattern_seeds_only.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    slicer.slice_pattern_variable_width.argtypes = [ctypes.c_char_p, ctypes.c_int]
 
 
 def import_slicer(build_directory=None):
@@ -78,7 +66,7 @@ def import_slicer(build_directory=None):
             raise Exception("VECTOR_SLICER_API environment variable is not set to point to the built library.")
 
     else:
-        project_directory = get_project_directory()
+        project_directory = project_paths.get_project_directory()
         if sys.platform == "win32":
             library_name = "vector_slicer_api.dll"
         elif sys.platform == "linux":
@@ -92,21 +80,27 @@ def import_slicer(build_directory=None):
 
 
     if not os.path.exists(vector_slicer_lib_path):
-        print(f"Vector Slicer Api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose the "
+        print(f"Vector Slicer api does not exist in \"{vector_slicer_lib_path}\". Remember to build it and choose the "
               f"correct build directory.")
         raise Exception('api_not_found')
+    else:
+        print(f"Vector Slicer api found in \"{vector_slicer_lib_path}\".")
 
     slicer = ctypes.CDLL(str(vector_slicer_lib_path))
     return slicer
 
 
-def convert_pattern_name_into_input_name(pattern_name: str):
+def convert_pattern_name_into_input_name(pattern: str or Pattern):
     """
     Converts string filename to binary format used by the library.
-    :param pattern_name:
+    :param pattern:
     :return: UTF-8 encoded path.
     """
-    patterns_directory = get_patterns_directory()
+    if isinstance(pattern, Pattern):
+        pattern_name = pattern.name
+    else :
+        pattern_name = pattern
+    patterns_directory = project_paths.get_patterns_directory()
     pattern_name = patterns_directory / pattern_name
     pattern_name_b = str(pattern_name).encode('utf-8')
     return pattern_name_b

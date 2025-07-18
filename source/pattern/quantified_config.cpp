@@ -45,7 +45,7 @@ QuantifiedConfig::QuantifiedConfig(const FilledPattern &pattern,
         Simulation(simulation) {
 }
 
-QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
+QuantifiedConfig::QuantifiedConfig(const DesiredPattern &desired_pattern, const FillingConfig &filling_config,
                                    const Simulation &simulation) :
         FilledPattern(desired_pattern, filling_config),
         Simulation(simulation) {

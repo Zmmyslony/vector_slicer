@@ -36,12 +36,7 @@ isLeftOfEdge(const coord &point, const coord_d &edge_point_first, const coord_d 
     double cross_product =
             (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y) -
             (edge_point_second.y - edge_point_first.y) * (point.x - edge_point_first.x);
-
-    if (is_exclusive) {
-        return cross_product > 0;
-    } else {
-        return cross_product >= 0;
-    }
+    return cross_product > (is_exclusive ? 0 : -1e-6);
 }
 
 bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const coord_d &edge_point_second,
@@ -50,11 +45,7 @@ bool isLeftOfEdge(const coord_d &point, const coord_d &edge_point_first, const c
             (edge_point_second.x - edge_point_first.x) * (point.y - edge_point_first.y) -
             (edge_point_second.y - edge_point_first.y) * (point.x - edge_point_first.x);
 
-    if (is_exclusive) {
-        return cross_product > 0;
-    } else {
-        return cross_product >= 0;
-    }
+    return cross_product > (is_exclusive ? 0 : -1e-6);
 }
 
 bool isInRectangle(const coord_d &point, const coord_d &corner_first, const coord_d &corner_second,
@@ -121,6 +112,10 @@ std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second,
     }
 
     std::vector<coord> coords_to_fill;
+    if ((x_max  + 1 - x_min) * (y_max + 1 - y_min) > 1e6) {
+        std::cout << x_min << " " << x_max << " " << y_min << " " << y_max << std::endl;
+        throw std::runtime_error("More than 1e6 points are scanned when looking for points to fill.");
+    }
     for (int x_curr = x_min; x_curr <= x_max; x_curr++) {
         for (int y_curr = y_min; y_curr <= y_max; y_curr++) {
             coord pos ={x_curr, y_curr};

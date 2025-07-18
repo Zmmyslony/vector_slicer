@@ -32,24 +32,17 @@
 #include "auxiliary/geometry.h"
 #include "auxiliary/perimeter.h"
 #include "auxiliary/repulsion.h"
-#include "auxiliary/valarray_operations.h"
 #include "auxiliary/vector_operations.h"
 #include "auxiliary/line_operations.h"
-#include "auxiliary/simple_math_operations.h"
 
 #define INVALID_POSITION {-1, -1}
-/// Minimal value of cosine between current and previous director for it to be assumed as continuous.
-#define DIRECTOR_DISCONTINUITY_THRESHOLD 0
 
-bool isValid(const coord &positions) {
-    return positions.x >= 0 && positions.y >= 0;
-}
 
 bool isValid(const coord_d &positions) {
     return positions.x >= 0 && positions.y >= 0;
 }
 
-FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config) :
+FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, const FillingConfig new_config) :
         desired_pattern(std::cref(new_desired_pattern)),
         FillingConfig(new_config) {
     desired_pattern.get().isPatternUpdated();
@@ -62,27 +55,6 @@ FilledPattern::FilledPattern(const DesiredPattern &new_desired_pattern, FillingC
     setup();
 }
 
-/**
- * Takes in a list of seed lines which are sorted by adjacency (ordered), shuffles the order of lines, separates in
- * equidistant seeds and returns shuffled seeds.
- * @param list_of_lines
- * @param line_index starting line index
- * @return 2D array of Seed objects, shuffled so that they can be popped back
- */
-std::vector<std::vector<SeedPoint>>
-FilledPattern::separateLines(std::vector<std::vector<coord>> list_of_lines, int line_index) {
-    std::vector<std::vector<SeedPoint>> separated_lines;
-    std::shuffle(list_of_lines.begin(), list_of_lines.end(), random_engine);
-    for (auto &line: list_of_lines) {
-        std::vector<SeedPoint> spaced_line = getSpacedLine(line, line_index, 0);
-        if (is_random_filling_enabled) {
-            std::shuffle(spaced_line.begin(), spaced_line.end(), random_engine);
-        }
-        separated_lines.emplace_back(spaced_line);
-        line_index++;
-    }
-    return separated_lines;
-}
 
 /// Extends the seed lines by SeedSeparation in the dual direction, so there is an overlap between different seed lines
 /// which will make the inter-seed-line spacing consistent.
@@ -94,7 +66,7 @@ void FilledPattern::extendSeedLines() {
         coord_d previous_displacement = to_coord_d(seed_line.front() - seed_line[3]);
         if (dot(front_dual, previous_displacement) < 0) { front_dual = front_dual * (-1); }
 
-        std::vector<coord> front_displacements = pixeliseLine(front_dual * 2 * getSeedSpacing());
+        std::vector<coord> front_displacements = pixeliseLine(front_dual * getPrintRadius() * getSeedSpacing());
         coord front = seed_line.front();
         for (auto &displacement: front_displacements) {
             coord current = front + displacement;
@@ -107,7 +79,7 @@ void FilledPattern::extendSeedLines() {
         previous_displacement = to_coord_d(seed_line.back() - seed_line[seed_line.size() - 4]);
         if (dot(back_dual, previous_displacement) < 0) { back_dual = back_dual * (-1); }
 
-        std::vector<coord> back_displacements = pixeliseLine(back_dual * 2 * getSeedSpacing());
+        std::vector<coord> back_displacements = pixeliseLine(back_dual * getPrintRadius() * getSeedSpacing());
         coord back = seed_line.back();
         for (auto &displacement: back_displacements) {
             coord current = back + displacement;
@@ -195,23 +167,7 @@ std::vector<unsigned int> FilledPattern::findOverlappingSeedLines() {
 }
 
 std::vector<SeedPoint> FilledPattern::getSeedsFromRandomSeedLine() {
-//    uint sum_of_sizes = 0;
-//    for (auto &seed_line  : seed_lines) {
-//        sum_of_sizes += seed_line.size();
-//    }
-//    std::uniform_int_distribution<> distribution(0, sum_of_sizes - 1);
-//    int i_raw = distribution(random_engine);
-//    uint previous_line_end = 0;
-//    int i = 0;
-//    for (int j = 0; i < seed_lines.size(); j++) {
-//        if (i_raw >= previous_line_end && i_raw < previous_line_end + seed_lines[j].size()) {
-//            i = j;
-//            break;
-//        }
-//        previous_line_end += seed_lines[j].size();
-//    }
-    
-    std::uniform_int_distribution<> distribution(0, seed_lines.size() - 1);
+    std::uniform_int_distribution<> distribution(0, (int) seed_lines.size() - 1);
     unsigned int i = distribution(random_engine);
     std::vector<coord> current_seed_line = seed_lines[i];
     seed_lines.erase(seed_lines.begin() + i);
@@ -220,30 +176,14 @@ std::vector<SeedPoint> FilledPattern::getSeedsFromRandomSeedLine() {
 }
 
 std::vector<SeedPoint> FilledPattern::getSpacedLineRandom(const std::vector<coord> &line, int line_index) {
-    std::uniform_int_distribution<> index_distribution(0, line.size() - 1);
+    std::uniform_int_distribution<> index_distribution(0, (int) line.size() - 1);
     int starting_index = index_distribution(random_engine);
     return getSpacedLine(line, line_index, starting_index);
 }
 
 std::vector<SeedPoint>
 FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indices) {
-//    uint sum_of_sizes = 0;
-//    for (uint j : overlapping_indices) {
-//        sum_of_sizes += seed_lines[j].size();
-//    }
-//    std::uniform_int_distribution<> distribution(0, sum_of_sizes - 1);
-//    int i_raw = distribution(random_engine);
-//    uint previous_line_end = 0;
-//    int i = 0;
-//    for (uint j : overlapping_indices) {
-//        if (i_raw >= previous_line_end && i_raw < previous_line_end + seed_lines[j].size()) {
-//            i = j;
-//            break;
-//        }
-//        previous_line_end += seed_lines[j].size();
-//    }
-
-    std::uniform_int_distribution<> distribution(0, overlapping_indices.size() - 1);
+    std::uniform_int_distribution<> distribution(0, (int) overlapping_indices.size() - 1);
     unsigned int i = overlapping_indices[distribution(random_engine)];
     std::vector<coord> current_seed_line = seed_lines[i];
     seed_lines.erase(seed_lines.begin() + i);
@@ -262,7 +202,7 @@ std::vector<SeedPoint> FilledPattern::getSpacedLineOverlapping(const std::vector
         throw std::runtime_error(
                 "No overlapping coordinates were found during spacing the path. This cannot happen.");
     }
-    std::uniform_int_distribution<> index_distribution(0, i_overlapping.size() - 1);
+    std::uniform_int_distribution<> index_distribution(0, (int) i_overlapping.size() - 1);
     int starting_index = i_overlapping[index_distribution(random_engine)];
     return getSpacedLine(line, line_index, starting_index);
 }
@@ -289,12 +229,12 @@ void FilledPattern::updateSeedPoints() {
             return;
         }
         std::vector<coord> dual_line = findDualLine(root_point);
-        int first_seed_position = (int) getPrintRadius();
+        unsigned long first_seed_position = (int) getPrintRadius();
         if (dual_line.size() <= (int) (getSeedSpacing())) {
             first_seed_position = dual_line.size() / 2;
         }
         std::vector<SeedPoint> spaced_dual_line = getSpacedLine(dual_line, current_seed_line_index,
-                                                                first_seed_position);
+                                                                (int) first_seed_position);
         current_seed_line_index++;
         if (is_random_filling_enabled) {
             std::shuffle(spaced_dual_line.begin(), spaced_dual_line.end(), random_engine);
@@ -319,8 +259,7 @@ coord FilledPattern::findRemainingRootPoint() {
 }
 
 void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_direction, int value) {
-
-    if (isInRange(point)) {
+    if (isInRange(point) && number_of_times_filled[point.x][point.y] + value >= 0) {
         number_of_times_filled[point.x][point.y] += value;
 
         if (normalized_direction.x * x_field_filled[point.x][point.y] +
@@ -333,7 +272,7 @@ void FilledPattern::fillPoint(const coord &point, const coord_d &normalized_dire
 }
 
 void FilledPattern::fillPointNonAligned(const coord &point, const coord_d &normalized_direction, int value) {
-    if (isInRange(point)) {
+    if (isInRange(point) && number_of_times_filled[point.x][point.y] + value >= 0) {
         number_of_times_filled[point.x][point.y] += value;
         x_field_filled[point.x][point.y] += normalized_direction.x * value;
         y_field_filled[point.x][point.y] += normalized_direction.y * value;
@@ -345,19 +284,6 @@ void FilledPattern::fillPointsFromList(const std::vector<coord> &points_to_fill,
     coord_d normalized_direction = normalized(direction);
     for (auto &point: points_to_fill) {
         fillPoint(point, normalized_direction, value);
-    }
-}
-
-
-void FilledPattern::fillPointsFromDisplacement(const coord &starting_position,
-                                               const std::vector<coord> &list_of_displacements,
-                                               const coord &previous_step, int value) {
-    coord_d normalized_direction = normalized(previous_step);
-    for (auto &displacement: list_of_displacements) {
-        coord point = starting_position + displacement;
-        if (isInRange(point)) {
-            fillPoint(point, normalized_direction, value);
-        }
     }
 }
 
@@ -373,13 +299,6 @@ void FilledPattern::fillPointsFromDisplacementNonAligned(const coord &starting_p
     }
 }
 
-
-void FilledPattern::fillPointsFromDisplacement(const coord &starting_position,
-                                               const std::vector<coord> &list_of_displacements,
-                                               const coord &previous_step) {
-    fillPointsFromDisplacement(starting_position, list_of_displacements, previous_step, 1);
-}
-
 coord_d FilledPattern::getDirector(const coord_d &coordinates) const {
     return desired_pattern.get().getDirector(coordinates);
 }
@@ -388,18 +307,40 @@ coord_d FilledPattern::getDirector(const coord &coordinates) const {
     return desired_pattern.get().getDirector(coordinates);
 }
 
-coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_move, int &length) const {
-    coord_d new_move = getDirector(real_coordinates) * length;
+coord_d FilledPattern::getDualDirector(const coord &coordinates) const {
+    return perpendicular(getDirector(coordinates));
+}
 
-    if (dot(new_move, previous_move) >= 0) {
-        return new_move;
-    } else {
-        return -1 * new_move;
+coord_d FilledPattern::getDualDirector(const coord_d &coordinates) const {
+    return perpendicular(getDirector(coordinates));
+}
+
+coord_d FilledPattern::getNewStep(coord_d &real_coordinates, coord_d &previous_move, int length) const {
+    coord_d current_director = getDirector(real_coordinates);
+
+    // If discontinuity sticking is enabled, and there was discontinuity was detected at the previous step,
+    // the next step will move towards regions of the same director as the current.
+    if (desired_pattern.get().getDiscontinuityBehaviour() == DISCONTINUITY_STICK &&
+        !isDirectorContinuous(real_coordinates - previous_move, real_coordinates)) {
+
+        coord_d positive_director = getDirector(real_coordinates + getPrintRadius() * current_director);
+        coord_d negative_director = getDirector(real_coordinates - getPrintRadius() * current_director);
+
+        if (dot(current_director, negative_director) > dot(current_director, positive_director)) {
+            length *= -1;
+        }
+
+    } else if (dot(current_director, previous_move) < 0) {
+        length *= -1;
     }
+
+    return length * current_director;
 }
 
 
-coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previous_step, int length) {
+coord_d FilledPattern::calculateNextPosition(
+        coord_d &positions, coord_d &previous_step, int length, const Path &current_path) {
+
     coord_d new_step = getNewStep(positions, previous_step, length);
     coord_d new_positions = positions + new_step;
 
@@ -407,24 +348,16 @@ coord_d FilledPattern::calculateNextPosition(coord_d &positions, coord_d &previo
         coord_d repulsion = getLineBasedRepulsion(desired_pattern.get().getShapeMatrix(), number_of_times_filled,
                                                   new_step, new_positions, desired_pattern.get().getDimensions(),
                                                   getPrintRadius(), getRepulsion(), getRepulsionAngleCosine());
-        new_positions = new_positions + repulsion;
-        new_step = new_step + repulsion;
+        new_positions += repulsion;
     }
 
     // Check if newly generated position is valid
-    if (isTerminable(new_positions, new_step)) {
-        return INVALID_POSITION;
-    } else {
-        return new_positions;
-    }
+    return isTerminable(new_positions, current_path) ? coord_d(INVALID_POSITION) : new_positions;
+
 }
 
 bool FilledPattern::isInRange(const coord &index) const {
     return desired_pattern.get().isInRange(index);
-}
-
-bool FilledPattern::isInRange(const coord_d &index) const {
-    return desired_pattern.get().isInRange(coord(index));
 }
 
 
@@ -438,6 +371,64 @@ bool FilledPattern::isDirectorContinuous(const coord_d &previous_coordinates, co
     return product >= desired_pattern.get().getDiscontinuityThresholdCos();
 }
 
+coord_d FilledPattern::normalisedResultant(const coord_d &move, const coord_d &new_position,
+                                           bool is_discontinuity_detected) {
+    coord_d resultant;
+    coord_d move_direction = normalized(move);
+    coord_d new_director = getDirector(new_position);
+
+    if (is_discontinuity_detected) {
+        coord_d positive_director = getDirector(new_position + getPrintRadius() * new_director);
+        coord_d negative_director = getDirector(new_position - getPrintRadius() * new_director);
+
+        double positive_alignment = dot(new_director, positive_director);
+        double negative_alignment = dot(new_director, negative_director);
+
+        if (positive_alignment >= negative_alignment) {
+            resultant = move_direction + new_director;
+        } else if (negative_alignment > positive_alignment) {
+            resultant = move_direction - new_director;
+        }
+    } else {
+        if (dot(move, new_director) >= 0) {
+            resultant = move_direction + new_director;
+        } else {
+            resultant = move_direction - new_director;
+        }
+    }
+    double projection = dot(resultant, move_direction);
+
+    return fabs(projection) > 0.2 ? resultant / projection : normalized(resultant);
+}
+
+coord_d getPositionNearDiscontinuity(const coord_d &continuous, const coord_d &discontinuous) {
+    bool is_x_different = lround(discontinuous.x) != lround(continuous.x);
+    bool is_y_different = lround(discontinuous.y) != lround(continuous.y);
+
+    double x_length = discontinuous.x - continuous.x;
+    double y_length = discontinuous.y - continuous.y;
+
+    double x_shortened = floor(discontinuous.x + 0.5) + (x_length >= 0 ? -0.49999 : 0.49999);
+    double y_shortened = floor(discontinuous.y + 0.5) + (y_length >= 0 ? -0.49999 : 0.49999);
+
+    double x_shortening = (x_shortened - continuous.x) / x_length;
+    double y_shortening = (y_shortened - continuous.y) / y_length;
+
+    double shortening;
+    if (is_x_different && !is_y_different) {
+        shortening = x_shortening;
+    } else if (!is_x_different && is_y_different) {
+        shortening = y_shortening;
+    } else if (is_x_different && is_y_different) {
+        shortening = fmax(x_shortening, y_shortening);
+    } else {
+        throw std::runtime_error("getPositionNearDiscontinuity fail: both coordinates correspond to the same "
+                                 "grid element.");
+    }
+    return continuous + (discontinuous - continuous) * shortening;
+}
+
+
 /// Returns bool depending whether propagation was successful.
 bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length) {
     if (!desired_pattern.get().isInShape(positions)) { return false; }
@@ -445,42 +436,44 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     // Try creating the longest possible step
     coord_d new_positions = INVALID_POSITION;
     /// Keeps last valid position, even if it is discontinuous.
-    coord_d last_discontinuous_positions = INVALID_POSITION;
+    coord_d previous_discontinuous_position = INVALID_POSITION;
+    bool is_discontinuity_detected = false;
 
-    while (--length > 1 && !isValid(new_positions)) {
-        new_positions = calculateNextPosition(positions, previous_step, length);
+    while (--length >= 1 && !isValid(new_positions)) {
+        new_positions = calculateNextPosition(positions, previous_step, length, current_path);
 
-        if (desired_pattern.get().isInShape(new_positions)) {
-            bool is_director_continuous = isDirectorContinuous(positions, new_positions);
-            switch (desired_pattern.get().getDiscontinuityBehaviour()) {
-                case DISCONTINUITY_IGNORE:
-                    break;
-                case DISCONTINUITY_STICK:
-                    if (is_director_continuous) {
-                        if (isValid(last_discontinuous_positions)) {
-                            new_positions = last_discontinuous_positions;
-                        }
-                        break;
-                    } else {
-                        last_discontinuous_positions = new_positions;
-                        new_positions = INVALID_POSITION;
-                    }
-                case DISCONTINUITY_TERMINATE:
-                    if (is_director_continuous) {
-                        break;
-                    } else {
-                        new_positions = INVALID_POSITION;
-                    }
-            }
+        if (!desired_pattern.get().isInShape(new_positions)) { continue; }
+
+        bool is_director_continuous = isDirectorContinuous(positions, new_positions);
+        switch (desired_pattern.get().getDiscontinuityBehaviour()) {
+            case DISCONTINUITY_IGNORE:
+                break;
+            case DISCONTINUITY_STICK:
+                if (is_director_continuous && isValid(previous_discontinuous_position)) {
+                    new_positions = getPositionNearDiscontinuity(new_positions, previous_discontinuous_position);
+                } else if (!is_director_continuous && isValid(new_positions)) {
+                    previous_discontinuous_position = new_positions;
+                    is_discontinuity_detected = true;
+                    new_positions = INVALID_POSITION;
+                }
+                break;
+            case DISCONTINUITY_TERMINATE:
+                if (!is_director_continuous) { new_positions = INVALID_POSITION; }
+                break;
         }
     }
 
-    if (!isValid(new_positions)) { return false; }
+    if (!isValid(new_positions)) {
+        if (is_discontinuity_detected) {
+            new_positions = getPositionNearDiscontinuity(positions, previous_discontinuous_position);
+        } else {
+            return false;
+        }
+    }
 
     previous_step = new_positions - positions;
-    if (norm(previous_step) < 1) { return false; }
 
-    coord_d tangent = normalisedResultant(previous_step, getDirector(positions));
+    coord_d tangent = normalisedResultant(previous_step, new_positions, is_discontinuity_detected);
     coord_d normal = perpendicular(tangent) * getPrintRadius();
 
     current_path.addPoint(new_positions, new_positions + normal, new_positions - normal);
@@ -488,14 +481,15 @@ bool FilledPattern::propagatePath(Path &current_path, coord_d &positions, coord_
     fillPointsFromList(current_points_to_fill, previous_step, 1);
     // If no points were filled in this step, it indicates that the move ``bounced'' in an unpredicted direction
     // indicating the path is no longer valid as it most likely encountered a singularity.
-    if (current_points_to_fill.empty()) { return false; }
+    if ((current_points_to_fill.empty())) { return false; }
+    if (current_path.isMovedLessThan(1, 2)) { return false; }
 
     positions = new_positions;
     return true;
 }
 
 double FilledPattern::getOverlap(const std::vector<coord> &points_to_check) {
-    int points_count = points_to_check.size();
+    unsigned long points_count = points_to_check.size();
     int overlap = 0;
     for (auto &point: points_to_check) {
         if (isInRange(point)) {
@@ -535,7 +529,7 @@ void FilledPattern::updatePathsOverlap() {
 }
 
 Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, const coord_d &starting_step) {
-    Path path(seed_point, getPrintRadius());
+    Path path(seed_point, getPrintRadius(), starting_step);
     coord_d current_positions = to_coord_d(seed_point.getCoordinates());
     coord_d current_step = starting_step;
 
@@ -549,7 +543,7 @@ Path FilledPattern::generateNewPathForDirection(const SeedPoint &seed_point, con
 
 
 Path FilledPattern::generateNewPath(const SeedPoint &seed_point) {
-    const coord_d starting_step = getDirector(seed_point.getCoordinates());
+    const coord_d starting_step = 2 * getDirector(seed_point.getCoordinates());
     Path forward_path = generateNewPathForDirection(seed_point, starting_step);
     Path backward_path = generateNewPathForDirection(seed_point, (-1) * starting_step);
 
@@ -583,7 +577,6 @@ void FilledPattern::removeLine(Path path) {
     for (int i = 2; i < path.size(); i++) {
         current_coordinates = path.position(i);
         previous_coordinates = path.position(i - 1);
-        coord_d second_previous_coordinates = path.position(i - 2);
         current_points_to_fill = path.findPointsToFill(i, isFillable(previous_coordinates));
 
         new_step = current_coordinates - previous_coordinates;
@@ -644,8 +637,7 @@ FilledPattern::fillPointsInHalfCircle(const Path &path, int value, bool is_front
 
 
 void FilledPattern::exportFilledMatrix(const fs::path &path) const {
-    fs::path filled_filename = path;
-    exportVectorTableToFile(number_of_times_filled, filled_filename);
+    exportVectorTableToFile(number_of_times_filled, path);
 }
 
 
@@ -657,11 +649,6 @@ std::vector<Path> FilledPattern::getSequenceOfPaths() const {
 void FilledPattern::addNewPath(Path &new_path) {
     sequence_of_paths.push_back(new_path);
 }
-
-coord_d normalizedDualVector(const coord_d &vector) {
-    return normalized(perpendicular(vector));
-}
-
 
 void
 FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector &line, coord_d previous_dual_director) {
@@ -678,7 +665,7 @@ FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector 
         if (line.empty() || current_coord != line.back()) {
             line.emplace_back(current_coord);
         }
-        coord_d dual_director = normalizedDualVector(getDirector(position));
+        coord_d dual_director = getDualDirector(position);
         if (dot(dual_director, previous_dual_director) < 0) {
             dual_director = -1 * dual_director;
         }
@@ -691,7 +678,7 @@ FilledPattern::updateDualLineInDirection(coord_set &line_elements, coord_vector 
 std::vector<coord> FilledPattern::findDualLine(const coord &start) {
     coord_set line_elements = {start};
     coord_vector line_sequence = {start};
-    coord_d starting_dual_director = normalizedDualVector(getDirector(start));
+    coord_d starting_dual_director = getDualDirector(start);
 
     updateDualLineInDirection(line_elements, line_sequence, starting_dual_director);
     std::reverse(line_sequence.begin(), line_sequence.end());
@@ -706,21 +693,12 @@ std::vector<coord> FilledPattern::findDualLine(const coord &start) {
     return line_vector;
 }
 
-
-matrix_d FilledPattern::getDualTensor(const coord &coordinates) const {
-    coord_d dual_director = normalizedDualVector(getDirector(coordinates));
-    return tensor(dual_director, dual_director);
-}
-
 double FilledPattern::distance(const coord &first_point, const coord &second_point) {
     coord_d connecting_vector = to_coord_d(second_point - first_point);
-    matrix_d first_dual_tensor = getDualTensor(first_point);
-    matrix_d second_dual_tensor = getDualTensor(second_point);
-    double first_distance = sqrt(dot(connecting_vector, matrix_multiply(first_dual_tensor, connecting_vector)));
-    double second_distance = sqrt(dot(connecting_vector, matrix_multiply(second_dual_tensor, connecting_vector)));
 
-    double dist = 2 * first_distance * second_distance / (first_distance + second_distance);
-    return std::max({first_distance, second_distance, dist});
+    coord_d dual_first = getDualDirector(first_point);
+    coord_d dual_second = getDualDirector(second_point);
+    return fabs(dot(dual_first, connecting_vector / 2)) + fabs(dot(dual_second, connecting_vector / 2));
 }
 
 
@@ -800,15 +778,18 @@ bool FilledPattern::isTerminable(const coord &point) const {
     return false;
 }
 
-bool FilledPattern::isTerminable(const coord_d &coordinate, const coord_d &direction) {
+bool
+FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path) {
     if (!isFillable(coordinate)) { return true; }
-    if (getTerminationRadius() <= 0) { return !isFillable(coordinate); }
 
-    coord_d tangent = normalized(direction) * getTerminationRadius();
-    coord_d normal = perpendicular(tangent);
     auto point = coord(coordinate);
     for (auto &displacement: collision_list) {
-        if (isFilled(point + displacement) && isLeftOfEdge(displacement, normal, -1 * normal, true)) {
+        if (
+                !isLeftOfEdge(point + displacement, current_path.getNegativePathEdge().back(),
+                              current_path.getPositivePathEdge().back(),
+                              false) &&
+                isFilled(point + displacement)
+                ) {
             return true;
         }
     }
@@ -852,10 +833,6 @@ std::vector<coord> FilledPattern::getSeedCoordinates() {
         seed_coordinates.emplace_back(coordinates);
     }
     return seed_coordinates;
-}
-
-void FilledPattern::setIsReseedingEnabled(bool is_reseeding_enabled) {
-    FilledPattern::is_reseeding_enabled = is_reseeding_enabled;
 }
 
 #pragma clang diagnostic pop

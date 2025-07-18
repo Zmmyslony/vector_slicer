@@ -44,11 +44,10 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from lib.director.director import Director
-from lib.output_reading import get_plot_output_directory
+from lib.project_paths import get_plot_output_directory
 from lib.shape.shape import Shape
 from lib.shape.basic import regular_hexagon, square, regular_triangle
-from lib import slicer_setup as slicer
-
+from lib import project_paths
 
 def refine_low_magnitude_splay(shape_grid, theta_grid, splay):
     splay_magnitude = np.linalg.norm(splay, axis=2)
@@ -372,10 +371,10 @@ class Pattern:
 
         current_stage = 3
         if pattern_name is not None:
-            pattern_directory = slicer.get_patterns_directory() / pattern_name
+            pattern_directory = project_paths.get_patterns_directory() / pattern_name
             if not pattern_directory.exists():
-                if not slicer.get_patterns_directory().exists():
-                    os.mkdir(slicer.get_patterns_directory())
+                if not project_paths.get_patterns_directory().exists():
+                    os.mkdir(project_paths.get_patterns_directory())
                 os.mkdir(pattern_directory)
 
             np.savetxt(pattern_directory / "shape.csv", shape_grid, delimiter=',', fmt="%d")

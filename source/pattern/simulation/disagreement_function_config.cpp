@@ -153,3 +153,33 @@ double DisagreementFunctionConfig::getDirectorPower() const {
 double DisagreementFunctionConfig::getPathsPower() const {
     return paths_power;
 }
+
+void DisagreementFunctionConfig::setDirectorPower(double director_power) {
+    DisagreementFunctionConfig::director_power = director_power;
+}
+
+void DisagreementFunctionConfig::setOverlapPower(double overlap_power) {
+    DisagreementFunctionConfig::overlap_power = overlap_power;
+}
+
+void DisagreementFunctionConfig::setEmptySpotWeight(double empty_spot_weight) {
+    DisagreementFunctionConfig::empty_spot_weight = empty_spot_weight;
+}
+
+void DisagreementFunctionConfig::setEmptySpotPower(double empty_spot_power) {
+    DisagreementFunctionConfig::empty_spot_power = empty_spot_power;
+}
+
+void DisagreementFunctionConfig::setOverlapWeight(double overlap_weight) {
+    DisagreementFunctionConfig::overlap_weight = overlap_weight;
+}
+
+void DisagreementFunctionConfig::setDirectorWeight(double director_weight) {
+    DisagreementFunctionConfig::director_weight = director_weight;
+}
+
+void DisagreementFunctionConfig::setPathsPower(double paths_power) {
+    DisagreementFunctionConfig::paths_power = paths_power;
+}
+
+

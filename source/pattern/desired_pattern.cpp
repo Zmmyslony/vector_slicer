@@ -153,8 +153,10 @@ void DesiredPattern::adjustMargins() {
     adjustRowsAndColumns(shape_matrix, null_rows, null_columns);
     adjustRowsAndColumns(x_field_preferred, null_rows, null_columns);
     adjustRowsAndColumns(y_field_preferred, null_rows, null_columns);
-    adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
-    adjustRowsAndColumns(splay_array, null_rows, null_columns);
+    if (!splay_vector_array.empty()) {
+        adjustRowsAndColumns(splay_vector_array, null_rows, null_columns);
+        adjustRowsAndColumns(splay_array, null_rows, null_columns);
+    }
 
     dimensions = getTableDimensions(shape_matrix);
 }
@@ -187,29 +189,9 @@ double DesiredPattern::getDirectorY(int x, int y) const {
 
 
 coord_d DesiredPattern::getDirector(const coord_d &positions) const {
-    int x_base = floor(positions.x);
-    int y_base = floor(positions.y);
-    double x_fraction = 1 - (positions.x - floor(positions.x));
-    double y_fraction = 1 - (positions.y - floor(positions.y));
-
-    double x_director =  x_fraction * y_fraction * getDirectorX(x_base, y_base);
-    x_director += (1 - x_fraction) * y_fraction * getDirectorX(x_base + 1, y_base);
-    x_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorX(x_base + 1, y_base + 1);
-    x_director += x_fraction * (1 - y_fraction) * getDirectorX(x_base, y_base + 1);
-
-    double y_director =  x_fraction * y_fraction * getDirectorY(x_base, y_base);
-    y_director += (1 - x_fraction) * y_fraction * getDirectorY(x_base + 1, y_base);
-    y_director += (1 - x_fraction) * (1 - y_fraction) * getDirectorY(x_base + 1, y_base + 1);
-    y_director += x_fraction * (1 - y_fraction) * getDirectorY(x_base, y_base + 1);
-
-    return {x_director, y_director};
-//    coord_d director = {0, 0};
-//    director += x_fraction * y_fraction * getDirector(coord{x_base, y_base});
-//    director += (1 - x_fraction) * y_fraction * getDirector(coord{x_base + 1, y_base});
-//    director += (1 - x_fraction) * (1 - y_fraction) * getDirector(coord{x_base + 1, y_base + 1});
-//    director += x_fraction * (1 - y_fraction) * getDirector(coord{x_base, y_base + 1});
-
-//    return director;
+    int x_base = (short)lround(positions.x);
+    int y_base = (short)lround(positions.y);
+    return {getDirectorX(x_base, y_base), getDirectorY(x_base, y_base)};
 }
 
 bool DesiredPattern::isInRange(const coord &coordinate) const {
@@ -604,17 +586,13 @@ void DesiredPattern::findLineDensityMinima() {
     std::cout << "\rSearch for seeding lines complete." << std::endl;
     solution_set = skeletonize(solution_set, 10, shape_matrix);
 //    exportCoord(solution_set, "/home/mlz22/OneDrive/tmp/splay_lines.csv");
-    std::vector<coord> line_density_minima_local;
-    for (auto &vector: solution_set) {
-        line_density_minima_local.emplace_back(coord{vector.x, vector.y});
-    }
 
-    if (line_density_minima_local.empty()) {
+    if (solution_set.empty()) {
         std::cout << "No splay seeding lines found, which indicates a pattern being composed of +1 defects. "
                      "Proceeding with dual seeding. " << std::endl;
         return;
     }
-    std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(line_density_minima_local,
+    std::vector<std::vector<coord>> separated_lines_of_minimal_density = separateIntoLines(solution_set,
                                                                                            {0, 0}, sqrt(2));
     if (separated_lines_of_minimal_density.size() > 1) {
         std::cout << " \t" << separated_lines_of_minimal_density.size() << " splay seeding lines found."

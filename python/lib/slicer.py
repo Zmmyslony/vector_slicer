@@ -34,12 +34,8 @@ Slicer object used for slicing the director patterns.
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
 
-import ctypes
-import pathlib
-import sys
-import os
-
 from lib import slicer_setup
+from lib.pattern.pattern import Pattern
 
 
 class Slicer:
@@ -47,31 +43,41 @@ class Slicer:
         self.slicer = slicer_setup.import_slicer(build_directory)
         slicer_setup.configure_slicer(self.slicer)
 
-    def slice(self, pattern_file_name: str, use_default=True):
+    def slice(self, pattern: str or Pattern, use_default=True):
         """
         Slices the pattern name using either default configuration or opening a prompt asking for modifications.
-        :param pattern_file_name:
+        :param pattern:
         :param use_default:
         :return:
         """
-        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern)
         self.slicer.slice_pattern(input_name, use_default)
 
-    def re_slice(self, pattern_file_name: str):
+    def re_slice(self, pattern: str or Pattern):
         """
         Re-slices the pattern using the best config exported during prior optimisation.
-        :param pattern_file_name:
+        :param pattern:
         :return:
         """
-        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern)
         self.slicer.re_slice_pattern(input_name)
 
-    def slice_seeds_only(self, pattern_file_name: str, seeds: int):
+    def slice_seeds_only(self, pattern: str or Pattern, seeds: int):
         """
         Slices the pattern using the config in the input directory for a given number of seeds.
-        :param pattern_file_name:
+        :param pattern:
         :param seeds:
         :return:
         """
-        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern_file_name)
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern)
         self.slicer.slice_pattern_seeds_only(input_name, seeds)
+
+    def slice_variable_width(self, pattern: str or Pattern, seeds: int):
+        """
+                Slices the pattern using the config in the input with a variable width preset for a given number of seeds.
+                :param pattern:
+                :param seeds:
+                :return:
+                """
+        input_name = slicer_setup.convert_pattern_name_into_input_name(pattern)
+        self.slicer.slice_pattern_variable_width(input_name, seeds)

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(vector_slicer VERSION 0.8.0)
+project(vector_slicer VERSION 0.8.1)
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
@@ -106,7 +106,8 @@ set(SOURCES
         source/pattern/path_sorting/nearest_neighbour.h
         source/pattern/coord.h
         source/pattern/position.h
-        source/pattern/coord.cpp)
+        source/pattern/coord.cpp
+)
 
 add_executable(Vector_Slicer main.cpp
         ${SOURCES})

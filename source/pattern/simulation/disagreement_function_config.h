@@ -66,6 +66,20 @@ public:
     double getDirectorPower() const;
 
     double getPathsPower() const;
+
+    void setDirectorPower(double director_power);
+
+    void setOverlapPower(double overlap_power);
+
+    void setEmptySpotWeight(double empty_spot_weight);
+
+    void setEmptySpotPower(double empty_spot_power);
+
+    void setOverlapWeight(double overlap_weight);
+
+    void setDirectorWeight(double director_weight);
+
+    void setPathsPower(double paths_power);
 };
 
 

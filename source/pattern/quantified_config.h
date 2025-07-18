@@ -71,7 +71,7 @@ public:
 
     QuantifiedConfig(const FilledPattern &pattern, const Simulation &simulation);
 
-    QuantifiedConfig(const DesiredPattern &desired_pattern, FillingConfig &filling_config,
+    QuantifiedConfig(const DesiredPattern &desired_pattern, const FillingConfig &filling_config,
                      const Simulation &simulation);
 
     /// Function allowing BayesianOptimisation to create new FillingConfig using vectord input
