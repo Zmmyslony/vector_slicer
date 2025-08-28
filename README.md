@@ -16,14 +16,17 @@ realised by modification of the penalty function.
 
 Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and suggestions.
 
-## Citing
-If used in the research work that will be published, please use the following publication for citation:
+### Issues or queries
+In case of any encountered issues with the installation or any later part of the programme, please use the "Issues" tab on GitHub or 
+get in touch with Michał Zmyślony (mlz22@cam.ac.uk) or John Biggins (jsb56@cam.ac.uk). The software is meant to be useful for the 3D printing
+community and may be lightly maintained.
 
-[1] Michał Zmyślony M., Klaudia Dradrach, John S. Biggins,
-Slicing vector fields into tool paths for additive manufacturing of nematic elastomers,
-Additive Manufacturing, Volume 97, 2025, 104604, ISSN 2214-8604, https://doi.org/10.1016/j.addma.2024.104604.
+### Citations
+Please cite following publication if you use any part of this code in work you publish or distribute:
 
-***
+    [1] Michał Zmyślony M., Klaudia Dradrach, John S. Biggins,
+     Slicing vector fields into tool paths for additive manufacturing of nematic elastomers,
+     Additive Manufacturing, Volume 97, 2025, 104604, ISSN 2214-8604, https://doi.org/10.1016/j.addma.2024.104604.
 
 ## Installation guide
 Please ensure that system specific C++ compiler, git (https://git-scm.com/) and cmake (https://cmake.org/) are installed.
@@ -54,6 +57,8 @@ Please export environment variables according to the instructions displayed afte
 in order for the python scripts to work as intended.
 
 ### Windows
+**The install_win.bat requires Visual Studio compiler to be installed on your device. Please download it from https://visualstudio.microsoft.com/vs/features/cplusplus/**
+
 In the desired parent directory run in terminal
 ```
 git clone https://github.com/Zmmyslony/vector_slicer.git
@@ -153,6 +158,11 @@ Remaining files:
 * **optimisation_save** - Bayesopt optimisation progress for re-optimisation or optimisation monitoring.
 * **used_seeds** - list of coordinates of seeds used for propagation of paths in the best numerical seed.
 ***
+
+
+### Guarantee
+Software is published without any guarantee or promise of maintenance. It was
+developed for internal use, and is published without extensive documentation.
 
 ## Funding
 <img alt="EU logo" src="https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/eu_flag.jpg" width="200">
