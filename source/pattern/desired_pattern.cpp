@@ -35,6 +35,7 @@
 #include <fstream>
 #include <iterator>
 #include <random>
+#include <chrono>
 
 #include "importing_and_exporting/table_reading.h"
 #include "auxiliary/simple_math_operations.h"

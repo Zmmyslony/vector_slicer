@@ -1,6 +1,3 @@
-"""
-Base class defining pattern operations and input file generation together with plotting the input files.
-"""
 #  Copyright (c) 2023-2025, Michał Zmyślony, mlz22@cam.ac.uk.
 #
 #  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
@@ -17,21 +14,10 @@ Base class defining pattern operations and input file generation together with p
 #
 #  You should have received a copy of the GNU General Public License along with Vector Slicer.
 #  If not, see <https://www.gnu.org/licenses/>.
-#
-#  Please cite Michał Zmyślony and Dr John Biggins if you use any part of this code in work you publish or distribute.
-#
-#  This file is part of Vector Slicer.
-#
-#  Vector Slicer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-#  License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
-#  later version.
-#
-#  Vector Slicer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
-#  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-#  Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License along with Vector Slicer.
-#  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+Base class defining pattern operations and input file generation together with plotting the input files.
+"""
 
 from copy import copy
 import math
@@ -44,10 +30,12 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from lib.director.director import Director
+from lib.director.basic import uniaxial_alignment
 from lib.project_paths import get_plot_output_directory
 from lib.shape.shape import Shape
 from lib.shape.basic import regular_hexagon, square, regular_triangle
 from lib import project_paths
+
 
 def refine_low_magnitude_splay(shape_grid, theta_grid, splay):
     splay_magnitude = np.linalg.norm(splay, axis=2)
@@ -154,18 +142,15 @@ def plot_pattern(shape_grid, mesh, theta_grid, shape: Shape, splay, filename=Non
         plt.close()
 
 
-def domain_director(domain, director_function, default_director=lambda mesh: 0):
+def domain_director(domain, inside_director: Director, outside_director: Director = uniaxial_alignment(0)):
     def local_director(mesh):
-        return np.where(domain.shape_function(mesh), director_function(mesh), default_director(mesh))
+        return np.where(domain.shape_function(mesh), inside_director.director(mesh), outside_director.director(mesh))
 
-    return local_director
-
-
-def domain_splay(domain, splay_function, default_splay=lambda mesh: np.zeros_like(mesh)):
     def local_splay(mesh):
-        return np.where(domain.shape_function(mesh)[:, :, None], splay_function(mesh), default_splay(mesh))
+        return np.where(domain.shape_function(mesh)[:, :, None], inside_director.splay(mesh),
+                        outside_director.splay(mesh))
 
-    return local_splay
+    return Director(local_director, splay_function=local_splay)
 
 
 def generate_shape_matrix(shape: Shape, pixel_size: float, x_excess: float = 0, y_excess: float = 0):
@@ -306,18 +291,15 @@ class Tiling:
 
 
 class Pattern:
-    def __init__(self, domain: Shape, director: Director, name=None):
+    def __init__(self, shape: Shape, director: Director, name=None):
         """
         Combination of the Director and Shape, where the director is defined over the domain.
-        :param domain:
+        :param shape:
         :param director:
         """
         self.name = name
-        self.domain = domain
-        self.shape_list = [domain]
-        self.director_list = [director]
-        self.domain_director = domain_director(domain, director.director)
-        self.domain_splay = domain_splay(domain, director.splay)
+        self.shape = shape
+        self.director = director
 
     def __add__(self, other):
         """
@@ -326,14 +308,17 @@ class Pattern:
         :return:
         """
         shape_copy = copy(self)
-        shape_copy.domain = self.domain + other.domain
-        shape_copy.shape_list = self.shape_list + other.shape_list
-        shape_copy.director_list = self.director_list + other.director_list
-        shape_copy.domain_director = domain_director(other.domain, other.domain_director, self.domain_director)
-        shape_copy.domain_splay = domain_splay(other.domain, other.domain_splay, self.domain_splay)
+        shape_copy.shape = self.shape + other.shape
+        shape_copy.director = domain_director(other.shape, other.director, self.director)
+
         return shape_copy
 
-    def generateInputFiles(self, line_width_millimetre: float, pattern_name:str=None, line_width_pixel: int = 9,
+    def rotate(self, angle):
+        director = self.director.rotate(angle)
+        shape = self.shape.rotate(angle)
+        return Pattern(shape, director, name=self.name)
+
+    def generateInputFiles(self, line_width_millimetre: float, pattern_name: str = None, line_width_pixel: int = 9,
                            filling_method=None, is_displayed=False, tiling: Tiling = None, is_splay_shown=False,
                            is_director_shown=True) -> str:
         """
@@ -356,17 +341,17 @@ class Pattern:
         begin_time = time.time()
         print(f"\n{time.time() - begin_time:.3f}s: [1/{stage_count:d}] Generating input files for {pattern_name}.")
         if tiling is None:
-            mesh, shape_grid = generate_shape_matrix(self.domain, line_width_millimetre / line_width_pixel)
+            mesh, shape_grid = generate_shape_matrix(self.shape, line_width_millimetre / line_width_pixel)
         else:
             mesh, shape_grid = tiling.generate_shape_matrix(line_width_millimetre / line_width_pixel)
             # Domain boundaries have to be updated for later plots
-            self.domain.x_min = mesh[:, :, 0].min()
-            self.domain.y_min = mesh[:, :, 1].min()
-            self.domain.x_max = mesh[:, :, 0].max()
-            self.domain.y_max = mesh[:, :, 1].max()
+            self.shape.x_min = mesh[:, :, 0].min()
+            self.shape.y_min = mesh[:, :, 1].min()
+            self.shape.x_max = mesh[:, :, 0].max()
+            self.shape.y_max = mesh[:, :, 1].max()
 
         print(f"{time.time() - begin_time:.3f}s: [2/{stage_count:d}] Meshing complete.")
-        director_grid, splay_grid = generate_director_field(mesh, self.domain_director, self.domain_splay)
+        director_grid, splay_grid = generate_director_field(mesh, self.director.director, self.director.splay)
         print(f"{time.time() - begin_time:.3f}s: [3/{stage_count:d}] Director and splay calculation complete.")
 
         current_stage = 3
@@ -399,7 +384,7 @@ class Pattern:
         else:
             director_filename = get_plot_output_directory() / f"{pattern_name}_design.png"
 
-        plot_pattern(shape_grid, mesh, director_grid, self.domain, splay_grid, filename=director_filename,
+        plot_pattern(shape_grid, mesh, director_grid, self.shape, splay_grid, filename=director_filename,
                      is_splay_shown=is_splay_shown, is_director_shown=is_director_shown)
         current_stage += 1
 
@@ -407,18 +392,13 @@ class Pattern:
 
         return pattern_name
 
+    def symmetrise(self, arm_number: int, begin_angle: float = None):
+        if arm_number < 1:
+            raise RuntimeError("Symmetrisation requires a positive number of arms")
+        elif arm_number == 1:
+            return self
 
-def symmetrise(self, arm_number: int, begin_angle: float = None):
-    if arm_number < 1:
-        raise RuntimeError("Symmetrisation requires a positive number of arms")
-    elif arm_number == 1:
-        return self
-
-    symmetrised_pattern = SymmetricPattern(self.shape_list[0], self.director_list[0], arm_number, begin_angle)
-    patterns_number = len(self.shape_list)
-    for i in range(1, patterns_number):
-        symmetrised_pattern += SymmetricPattern(self.shape_list[i], self.director_list[i], arm_number, begin_angle)
-    return symmetrised_pattern
+        return SymmetricPattern(self.shape, self.director, arm_number, begin_angle)
 
 
 def SymmetricPattern(shape: Shape, director: Director, arm_number: int, begin_angle: float = None):
