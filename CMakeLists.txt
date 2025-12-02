@@ -1,17 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(vector_slicer VERSION 0.8.2)
 
-set(Boost_NO_WARN_NEW_VERSIONS 1)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-ADD_SUBDIRECTORY(bayesopt)
-include_directories(${PROJECT_SOURCE_DIR}/bayesopt/include)
-include_directories(${PROJECT_SOURCE_DIR}/bayesopt/utils)
-set_property(TARGET bayesopt PROPERTY POSITION_INDEPENDENT_CODE ON)
-SET(EXT_LIBS bayesopt)
-
 if(APPLE)
+    set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib /opt/local/Library)
+    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /opt/local/include /opt/local/Library)
+    set(CMAKE_PROGRAM_PATH ${CMAKE_PROGRAM_PATH} /opt/local/bin/ /opt/local/Library)
+
     if(CMAKE_C_COMPILER_ID MATCHES "Clang")
         set(OpenMP_C "${CMAKE_C_COMPILER}" CACHE STRING "" FORCE)
         set(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument" CACHE STRING "" FORCE)
@@ -29,6 +23,16 @@ if(APPLE)
         set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
     endif()
 endif()
+
+set(Boost_NO_WARN_NEW_VERSIONS 1)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+ADD_SUBDIRECTORY(bayesopt)
+include_directories(${PROJECT_SOURCE_DIR}/bayesopt/include)
+include_directories(${PROJECT_SOURCE_DIR}/bayesopt/utils)
+set_property(TARGET bayesopt PROPERTY POSITION_INDEPENDENT_CODE ON)
+SET(EXT_LIBS bayesopt)
 
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
@@ -110,7 +114,8 @@ set(SOURCES
 )
 
 add_executable(Vector_Slicer main.cpp
-        ${SOURCES})
+        ${SOURCES}
+)
 
 target_link_libraries(Vector_Slicer
         ${Boost_SYSTEM_LIBRARY}
@@ -121,10 +126,11 @@ target_link_libraries(Vector_Slicer
 add_library(vector_slicer_api SHARED
         ${SOURCES}
         source/vector_slicer_api.h
-        source/vector_slicer_api.cpp)
+        source/vector_slicer_api.cpp
+)
 
 target_link_libraries(vector_slicer_api
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}  -ldl
         bayesopt
-        )
+)
