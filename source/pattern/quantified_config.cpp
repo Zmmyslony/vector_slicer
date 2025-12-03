@@ -255,8 +255,8 @@ double QuantifiedConfig::getDisagreement() const {
     return total_disagreement;
 }
 
-DesiredPattern QuantifiedConfig::getDesiredPattern() {
-    return {desired_pattern};
+DesiredPattern QuantifiedConfig::getDesiredPattern() const {
+    return desired_pattern;
 }
 
 

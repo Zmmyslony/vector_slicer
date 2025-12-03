@@ -82,7 +82,7 @@ public:
 
     [[nodiscard]] FilledPattern getFilledPattern() const;
 
-    DesiredPattern getDesiredPattern();
+    DesiredPattern getDesiredPattern() const;
 
     [[nodiscard]] FillingConfig getConfig() const;
 
