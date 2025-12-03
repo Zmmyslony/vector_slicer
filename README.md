@@ -14,12 +14,10 @@ As an ideal slicing of a pattern where the direction is prescribed is not genera
 the amount of holes, overlaps and director agreement in order to obtain the best slicing for the application, which can be 
 realised by modification of the penalty function.
 
-Please contact Michał Zmyślony at mlz22@cam.ac.uk with any comments and suggestions.
-
 ### Issues or queries
 In case of any encountered issues with the installation or any later part of the programme, please use the "Issues" tab on GitHub or 
 get in touch with Michał Zmyślony (mlz22@cam.ac.uk) or John Biggins (jsb56@cam.ac.uk). The software is meant to be useful for the 3D printing
-community and may be lightly maintained.
+community and may be lightly maintained if the number of users will increase.
 
 ### Citations
 Please cite following publication if you use any part of this code in work you publish or distribute:
@@ -43,8 +41,8 @@ Please export environment variables according to the instructions displayed afte
 in order for the python scripts to work as intended.
 
 ### macOS
-**Warning: This software uses OpenMP and so is incompatible with AppleClang.
-By default, the installation script uses LLVM.**
+**Warning: MacOS installation is the least well polished, so you may encounter issues. If that is the case, please 
+get in touch with us, so we can improve the CMake file.**
 
 In the desired parent directory run
 ```
