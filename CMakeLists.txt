@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(vector_slicer VERSION 0.8.2)
+cmake_minimum_required(VERSION 3.30)
+project(vector_slicer VERSION 0.8.3)
 
 if(APPLE)
     set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib /opt/local/Library)
@@ -24,9 +24,12 @@ if(APPLE)
     endif()
 endif()
 
-set(Boost_NO_WARN_NEW_VERSIONS 1)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+
+include_directories(
+        ${Boost_INCLUDE_DIRS}
+        ${Boost_LIBRARY_PATH}
+)
 
 ADD_SUBDIRECTORY(bayesopt)
 include_directories(${PROJECT_SOURCE_DIR}/bayesopt/include)
@@ -49,72 +52,78 @@ include_directories(${PROJECT_BINARY_DIR})
 
 set(SOURCES
         source/pattern/auxiliary/simple_math_operations.cpp
-        source/pattern/auxiliary/simple_math_operations.h
         source/pattern/importing_and_exporting/table_reading.cpp
-        source/pattern/importing_and_exporting/table_reading.h
-        source/pattern/filled_pattern.cpp
-        source/pattern/filled_pattern.h
         source/pattern/desired_pattern.cpp
-        source/pattern/desired_pattern.h
+        source/pattern/filled_pattern.cpp
         source/pattern/path.cpp
-        source/pattern/path.h
         source/pattern/auxiliary/perimeter.cpp
-        source/pattern/auxiliary/perimeter.h
         source/pattern/auxiliary/geometry.cpp
-        source/pattern/auxiliary/geometry.h
         source/pattern/importing_and_exporting/open_files.cpp
-        source/pattern/importing_and_exporting/open_files.h
         source/pattern/filling_patterns.cpp
-        source/pattern/filling_patterns.h
         source/pattern/quantified_config.cpp
-        source/pattern/quantified_config.h
-        source/pattern/importing_and_exporting/exporting.h
         source/pattern/importing_and_exporting/exporting.cpp
         source/pattern/auxiliary/valarray_operations.cpp
-        source/pattern/auxiliary/valarray_operations.h
         source/pattern/auxiliary/progress_bar.cpp
-        source/pattern/auxiliary/progress_bar.h
         source/pattern/filling_config.cpp
-        source/pattern/filling_config.h
-        source/bayesian_optimisation.cpp
-        source/bayesian_optimisation.h
         source/pattern/auxiliary/vector_operations.cpp
-        source/pattern/auxiliary/vector_operations.h
-        source/pattern/importing_and_exporting/importing_patterns.h
         source/pattern/importing_and_exporting/importing_patterns.cpp
         source/pattern/simulation/configuration_reading.cpp
-        source/pattern/simulation/configuration_reading.h
         source/pattern/auxiliary/repulsion.cpp
-        source/pattern/auxiliary/repulsion.h
         source/pattern/auxiliary/line_operations.cpp
-        source/pattern/auxiliary/line_operations.h
         source/pattern/auxiliary/line_thinning.cpp
-        source/pattern/auxiliary/line_thinning.h
         source/pattern/simulation/interactive_input.cpp
-        source/pattern/simulation/interactive_input.h
         source/pattern/simulation/simulation.cpp
-        source/pattern/simulation/simulation.h
         source/pattern/simulation/bayesian_optimisation_config.cpp
-        source/pattern/simulation/bayesian_optimisation_config.h
         source/pattern/simulation/disagreement_config.cpp
-        source/pattern/simulation/disagreement_config.h
         source/pattern/simulation/disagreement_function_config.cpp
-        source/pattern/simulation/disagreement_function_config.h
         source/pattern/simulation/filling_method_config.cpp
-        source/pattern/simulation/filling_method_config.h
         source/pattern/seed_point.cpp
-        source/pattern/seed_point.h
         source/pattern/path_sorting/seed_line.cpp
-        source/pattern/path_sorting/seed_line.h
         source/pattern/path_sorting/nearest_neighbour.cpp
-        source/pattern/path_sorting/nearest_neighbour.h
-        source/pattern/coord.h
         source/pattern/position.h
         source/pattern/coord.cpp
+        source/bayesian_optimisation.cpp
 )
 
-add_executable(Vector_Slicer main.cpp
+set(HEADERS
+        source/pattern/auxiliary/simple_math_operations.h
+        source/pattern/importing_and_exporting/table_reading.h
+        source/pattern/desired_pattern.h
+        source/pattern/filled_pattern.h
+        source/pattern/path.h
+        source/pattern/auxiliary/perimeter.h
+        source/pattern/auxiliary/geometry.h
+        source/pattern/importing_and_exporting/open_files.h
+        source/pattern/filling_patterns.h
+        source/pattern/quantified_config.h
+        source/pattern/importing_and_exporting/exporting.h
+        source/pattern/auxiliary/valarray_operations.h
+        source/pattern/auxiliary/progress_bar.h
+        source/pattern/filling_config.h
+        source/pattern/auxiliary/vector_operations.h
+        source/pattern/importing_and_exporting/importing_patterns.h
+        source/pattern/simulation/configuration_reading.h
+        source/pattern/auxiliary/repulsion.h
+        source/pattern/auxiliary/line_operations.h
+        source/pattern/auxiliary/line_thinning.h
+        source/pattern/simulation/interactive_input.h
+        source/pattern/simulation/simulation.h
+        source/pattern/simulation/bayesian_optimisation_config.h
+        source/pattern/simulation/disagreement_config.h
+        source/pattern/simulation/disagreement_function_config.h
+        source/pattern/simulation/filling_method_config.h
+        source/pattern/seed_point.h
+        source/pattern/path_sorting/seed_line.h
+        source/pattern/path_sorting/nearest_neighbour.h
+        source/pattern/position.h
+        source/pattern/coord.h
+        source/bayesian_optimisation.h
+)
+
+add_executable(Vector_Slicer
         ${SOURCES}
+        ${HEADERS}
+        main.cpp
 )
 
 target_link_libraries(Vector_Slicer
@@ -125,12 +134,13 @@ target_link_libraries(Vector_Slicer
 
 add_library(vector_slicer_api SHARED
         ${SOURCES}
+        ${HEADERS}
         source/vector_slicer_api.h
         source/vector_slicer_api.cpp
 )
 
 target_link_libraries(vector_slicer_api
         ${Boost_SYSTEM_LIBRARY}
-        ${Boost_FILESYSTEM_LIBRARY}  -ldl
+        ${Boost_FILESYSTEM_LIBRARY} -ldl
         bayesopt
 )

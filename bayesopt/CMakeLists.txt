@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------
 
 PROJECT(BayesOpt CXX)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.30)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 17)
