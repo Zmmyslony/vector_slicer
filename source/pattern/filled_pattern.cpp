@@ -143,7 +143,7 @@ void FilledPattern::setupRootPoints() {
     if (root_points.empty()) {
         return;
     }
-
+#pragma omp parallel for
     for (auto &bin: root_points) {
         if (!bin.empty()) {
             std::shuffle(bin.begin(), bin.end(), random_engine);
@@ -778,8 +778,12 @@ bool FilledPattern::isTerminable(const coord &point) const {
     return false;
 }
 
+bool FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path) const {
+    return isTerminableVariableWidth(coordinate, current_path);
+}
+
 bool
-FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path) {
+FilledPattern::isTerminableConstantWidth(const coord_d &coordinate, const Path &current_path) const {
     if (!isFillable(coordinate)) { return true; }
 
     auto point = coord(coordinate);
@@ -792,6 +796,32 @@ FilledPattern::isTerminable(const coord_d &coordinate, const Path &current_path)
                 ) {
             return true;
         }
+    }
+    return false;
+}
+
+bool
+FilledPattern::isTerminableVariableWidth(const coord_d &coordinate, const Path &current_path) const {
+    if (!isFillable(coordinate)) { return true; }
+    const coord_d tangent = normalized(coordinate - current_path.endPoint()) * getTerminationRadius();
+
+    std::vector<coord_d> new_collision_list = {
+        tangent,
+        {tangent.y, -tangent.x},
+        {-tangent.y, tangent.x},
+        {M_SQRT1_2 * tangent.x - M_SQRT1_2 * tangent.y, M_SQRT1_2 * tangent.x + M_SQRT1_2 * tangent.y},
+        {M_SQRT1_2 * tangent.x + M_SQRT1_2 * tangent.y, -M_SQRT1_2 * tangent.x + M_SQRT1_2 * tangent.y},
+    };
+    for (auto &displacement: new_collision_list) {
+        auto point = coord(coordinate + displacement);
+        if (
+                !isLeftOfEdge(point, current_path.getNegativePathEdge().back(),
+                              current_path.getPositivePathEdge().back(),
+                              false) &&
+                isFilled(point)
+                ) {
+            return true;
+                }
     }
     return false;
 }

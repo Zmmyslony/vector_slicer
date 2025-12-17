@@ -123,7 +123,11 @@ class FilledPattern : public FillingConfig {
 
     [[nodiscard]] bool isFillable(const coord_d &coordinate) const;
 
-    bool isTerminable(const coord_d &coordinate, const Path &current_path);
+    bool isTerminableConstantWidth(const coord_d &coordinate, const Path &current_path) const;
+
+    bool isTerminableVariableWidth(const coord_d &coordinate, const Path &current_path) const;
+
+    bool isTerminable(const coord_d &coordinate, const Path &current_path) const;
 
     std::vector<unsigned int> findOverlappingSeedLines();
 
