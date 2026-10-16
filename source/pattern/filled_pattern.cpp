@@ -227,7 +227,7 @@ std::vector<SeedPoint>
 FilledPattern::getSeedsFromOverlappingSeedLine(const std::vector<unsigned int> &overlapping_indices) {
     std::uniform_int_distribution<> distribution(0, static_cast<int>(overlapping_indices.size()) - 1);
     unsigned int i = overlapping_indices[distribution(random_engine)];
-    const std::vector<coord> &current_seed_line = seed_lines[i];
+    const std::vector<coord> current_seed_line = seed_lines[i];
     seed_lines.erase(seed_lines.begin() + i);
 
     return getSpacedLineOverlapping(current_seed_line, current_seed_line_index);
