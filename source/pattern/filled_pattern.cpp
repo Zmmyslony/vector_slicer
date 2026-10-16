@@ -144,7 +144,8 @@ void FilledPattern::setupRootPoints() {
         return;
     }
 #pragma omp parallel for
-    for (auto &bin: root_points) {
+    for (int i = 0; i < root_points.size(); ++i) {
+        auto &bin = root_points[i];
         if (!bin.empty()) {
             std::shuffle(bin.begin(), bin.end(), random_engine);
         }
