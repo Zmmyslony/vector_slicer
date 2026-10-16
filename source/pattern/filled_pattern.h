@@ -70,13 +70,13 @@ class FilledPattern : public FillingConfig {
 
     void fillPointsFromList(const std::vector<coord> &points_to_fill, const coord_d &direction, int value);
 
-    coord_d getNewStep(coord_d &real_coordinates, coord_d &previous_move, int length) const;
+    coord_d getNewStep(const coord_d &real_coordinates, const coord_d &previous_move, int length) const;
 
     bool propagatePath(Path &current_path, coord_d &positions, coord_d &previous_step, int length);
 
-    double distance(const coord &first_point, const coord &second_point);
+    double distance(const coord &first_point, const coord &second_point) const;
 
-    void updateDualLineInDirection(coord_set &line_elements, coord_vector &line, coord_d previous_dual_director);
+    void updateDualLineInDirection(coord_set &line_elements, coord_vector &line, coord_d previous_dual_director) const;
 
     coord findRemainingRootPoint();
 
@@ -89,14 +89,14 @@ class FilledPattern : public FillingConfig {
 
     [[nodiscard]] bool isFillablePointLeft() const;
 
-    std::vector<coord> findDualLine(const coord &start);
+    std::vector<coord> findDualLine(const coord &start) const;
 
     void tryAddingPointToSpacedLine(const coord &current_position, coord &previous_position,
                                     bool &is_filled_coordinate_encountered, double separation,
                                     std::vector<SeedPoint> &separated_starting_points, int line_index,
-                                    int point_index);
+                                    int point_index) const;
 
-    std::vector<SeedPoint> getSpacedLine(const std::vector<coord> &line, int line_index, int starting_index);
+    std::vector<SeedPoint> getSpacedLine(const std::vector<coord> &line, int line_index, int starting_index) const;
 
     /// Creates a path starting in starting_coordinates, where the first step is in the direction starting_step
     Path generateNewPathForDirection(const SeedPoint &seed_point, const coord_d &starting_step);
@@ -105,15 +105,15 @@ class FilledPattern : public FillingConfig {
 
     void setupRootPoints();
 
-    coord_d calculateNextPosition(coord_d &positions, coord_d &previous_step, int length, const Path &current_path);
+    coord_d calculateNextPosition(const coord_d &positions, const coord_d &previous_step, int length, const Path &current_path) const;
 
     [[nodiscard]] bool isDirectorContinuous(const coord_d &previous_coordinates, const coord_d &new_coordinates) const;
 
     [[nodiscard]] bool isInRange(const coord &index) const;
 
-    double getOverlap(const std::vector<coord> &points_to_check);
+    double getOverlap(const std::vector<coord> &points_to_check) const;
 
-    void updatePathOverlap(Path &path);
+    void updatePathOverlap(Path &path) const;
 
     [[nodiscard]] coord_d getDirector(const coord_d &coordinates) const;
 
@@ -129,7 +129,7 @@ class FilledPattern : public FillingConfig {
 
     bool isTerminable(const coord_d &coordinate, const Path &current_path) const;
 
-    std::vector<unsigned int> findOverlappingSeedLines();
+    std::vector<unsigned int> findOverlappingSeedLines() const;
 
     std::vector<SeedPoint> getSeedsFromRandomSeedLine();
 
@@ -142,7 +142,7 @@ class FilledPattern : public FillingConfig {
     void extendSeedLines();
 
     coord_d
-    normalisedResultant(const coord_d &primary_vector, const coord_d &secondary_vector, bool is_discontinuity_detected);
+    normalisedResultant(const coord_d &primary_vector, const coord_d &secondary_vector, bool is_discontinuity_detected) const;
 
     [[nodiscard]] coord_d getDualDirector(const coord &coordinates) const;
 
@@ -163,7 +163,7 @@ public:
 
     FilledPattern(const DesiredPattern &desired_pattern, int print_radius, int collision_radius, int step_length);
 
-    FilledPattern(const DesiredPattern &new_desired_pattern, FillingConfig new_config);
+    FilledPattern(const DesiredPattern &new_desired_pattern, const FillingConfig& new_config);
 
     /// Sets up the objects deriving from the FillingConfig
     void setup();
@@ -183,7 +183,7 @@ public:
     /// Creates a path starting from starting_coordinates, going in both directions of the vector field
     Path generateNewPath(const SeedPoint &seed_point);
 
-    void addNewPath(Path &new_path);
+    void addNewPath(const Path &new_path);
 
     [[nodiscard]] std::vector<Path> getSequenceOfPaths() const;
 
@@ -192,7 +192,7 @@ public:
     /// Updates overlaps in Paths for postprocessing.
     void updatePathsOverlap();
 
-    std::vector<coord> getSeedCoordinates();
+    std::vector<coord> getSeedCoordinates() const;
 
     void fillPointsInHalfCircle(const Path &path, int value, bool is_front);
 

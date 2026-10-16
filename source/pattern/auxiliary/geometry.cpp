@@ -80,10 +80,8 @@ double maxValue(const std::vector<double> &values) {
 
 std::vector<coord> findPointsToFill(coord_d corner_first, coord_d corner_second, coord_d corner_third,
                                     coord_d corner_fourth, bool is_exclusive) {
-    std::vector<double> x_coordinates = {corner_first.x, corner_second.x, corner_third.x,
-                                         corner_fourth.x};
-    std::vector<double> y_coordinates = {corner_first.y, corner_second.y, corner_third.y,
-                                         corner_fourth.y};
+    std::vector x_coordinates = {corner_first.x, corner_second.x, corner_third.x, corner_fourth.x};
+    std::vector y_coordinates = {corner_first.y, corner_second.y, corner_third.y, corner_fourth.y};
     int x_min = (int) minValue(x_coordinates);
     int x_max = (int) maxValue(x_coordinates) + 1;
     int y_min = (int) minValue(y_coordinates);
